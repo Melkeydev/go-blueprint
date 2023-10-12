@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/spf13/cobra"
 )
 
 type Project struct {
@@ -25,34 +24,54 @@ func (p *Project) ExitCLI(tprogram *tea.Program) {
 }
 
 func (p *Project) CreateAPIProject() {
-	appDir := fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName)
-	if _, err := os.Stat(p.AbsolutePath); err == nil {
+	appDir := filepath.Join(p.AbsolutePath, p.ProjectName)
+	if _, err := os.Stat(appDir); os.IsNotExist(err) {
 		if err := os.Mkdir(appDir, 0755); err != nil {
-			cobra.CheckErr(err)
+			fmt.Printf("Error creating project directory: %v\n", err)
+			return
 		}
 	}
 
-	// Get the current working directory
-	currentDir, err := os.Getwd()
-	if err != nil {
-		fmt.Printf("Error getting current working directory: %v\n", err)
+	// Define the Bash script content
+	scriptContent := `#!/bin/bash
+
+app_name="my-go-project"
+
+go mod init "$app_name"
+
+touch Makefile
+
+mkdir -p cmd/api
+echo 'package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("Hello, World!")
+}
+' > cmd/api/main.go
+
+echo "Go project '$app_name' created and initialized with 'go mod init'."`
+
+	// Create a temporary Bash script file
+	tempScriptPath := filepath.Join(appDir, "temp_script.sh")
+	if err := os.WriteFile(tempScriptPath, []byte(scriptContent), 0755); err != nil {
+		fmt.Printf("Error creating temporary script file: %v\n", err)
 		return
 	}
+	defer os.Remove(tempScriptPath) // Clean up the temporary script file
 
-	scriptRelPath := filepath.Join(currentDir, "cmd", "scripts", "create_structure.sh")
+	// Create the command to execute the Bash script
+	cmd := exec.Command("bash", tempScriptPath)
 
-	// Check if the script file exists
-	if _, err := os.Stat(scriptRelPath); os.IsNotExist(err) {
-		fmt.Printf("Script file '%s' does not exist\n", scriptRelPath)
-		return
-	}
-
-	cmd := exec.Command("bash", scriptRelPath)
+	// Set the working directory to appDir
 	cmd.Dir = appDir
 
+	// Redirect standard output and error to the current process's standard output and error
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
+	// Run the command
 	if err := cmd.Run(); err != nil {
 		fmt.Printf("Error executing Bash script: %v\n", err)
 		return
