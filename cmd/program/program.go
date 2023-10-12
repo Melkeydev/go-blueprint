@@ -32,46 +32,39 @@ func (p *Project) CreateAPIProject() {
 		}
 	}
 
-	// Define the Bash script content
 	scriptContent := `#!/bin/bash
+		app_name="my-go-project"
 
-app_name="my-go-project"
+		go mod init "$app_name"
 
-go mod init "$app_name"
+		touch Makefile
 
-touch Makefile
+		mkdir -p cmd/api
+		echo 'package main
 
-mkdir -p cmd/api
-echo 'package main
+		import "fmt"
 
-import "fmt"
+		func main() {
+			fmt.Println("Hello, World!")
+		}
+		' > cmd/api/main.go
 
-func main() {
-    fmt.Println("Hello, World!")
-}
-' > cmd/api/main.go
+		echo "Go project '$app_name' created and initialized with 'go mod init'."`
 
-echo "Go project '$app_name' created and initialized with 'go mod init'."`
-
-	// Create a temporary Bash script file
 	tempScriptPath := filepath.Join(appDir, "temp_script.sh")
 	if err := os.WriteFile(tempScriptPath, []byte(scriptContent), 0755); err != nil {
 		fmt.Printf("Error creating temporary script file: %v\n", err)
 		return
 	}
-	defer os.Remove(tempScriptPath) // Clean up the temporary script file
+	defer os.Remove(tempScriptPath)
 
-	// Create the command to execute the Bash script
 	cmd := exec.Command("bash", tempScriptPath)
 
-	// Set the working directory to appDir
 	cmd.Dir = appDir
 
-	// Redirect standard output and error to the current process's standard output and error
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	// Run the command
 	if err := cmd.Run(); err != nil {
 		fmt.Printf("Error executing Bash script: %v\n", err)
 		return
