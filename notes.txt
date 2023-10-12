@@ -1,0 +1,28 @@
+Server Structure:
+project-root/
+    go.mod
+    internal/
+        auth/
+            auth.go
+            auth_test.go
+        types/
+            types.go
+    cmd/
+        api/
+            main.go
+    Makefile
+
+
+Serverless Structure:
+project-root/
+    go.mod 
+    Makefile
+    lambda/
+        main.go
+    cdk/
+        lib/
+            lamba-stack
+        bin/
+            cdk.ts
+    package.json
+    cdk.json
