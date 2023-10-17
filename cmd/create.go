@@ -54,7 +54,11 @@ var createCmd = &cobra.Command{
 
 		project.AbsolutePath = currentWorkingDir
 
-		project.CreateAPIProject()
+		err = project.CreateMainFile()
+		if err != nil {
+			cobra.CheckErr(err)
+		}
+		// project.CreateAPIProject()
 
 	},
 }

@@ -5,8 +5,11 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"text/template"
 
 	tea "github.com/charmbracelet/bubbletea"
+	tpl "github.com/melkeydev/go-blueprint/cmd/template"
+	"github.com/spf13/cobra"
 )
 
 type Project struct {
@@ -21,6 +24,37 @@ func (p *Project) ExitCLI(tprogram *tea.Program) {
 		tprogram.ReleaseTerminal()
 		os.Exit(1)
 	}
+}
+
+func (p *Project) CreateMainFile() error {
+	// check if AbsolutePath exists
+	if _, err := os.Stat(p.AbsolutePath); os.IsNotExist(err) {
+		// create directory
+		if err := os.Mkdir(p.AbsolutePath, 0754); err != nil {
+			return err
+		}
+	}
+
+	// create cmd/root.go
+	if _, err := os.Stat(fmt.Sprintf("%s/test", p.AbsolutePath)); os.IsNotExist(err) {
+		cobra.CheckErr(os.Mkdir(fmt.Sprintf("%s/test", p.AbsolutePath), 0751))
+	}
+
+	mainFile, err := os.Create(fmt.Sprintf("%s/test/main.go", p.AbsolutePath))
+	if err != nil {
+		return err
+	}
+
+	defer mainFile.Close()
+
+	mainTemplate := template.Must(template.New("main").Parse(string(tpl.MainTemplate())))
+	err = mainTemplate.Execute(mainFile, p)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
 }
 
 func (p *Project) CreateAPIProject() {
