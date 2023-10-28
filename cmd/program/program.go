@@ -1,11 +1,12 @@
 package program
 
 import (
+	"bytes"
 	"fmt"
+	"html/template"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"text/template"
 
 	tea "github.com/charmbracelet/bubbletea"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
@@ -26,6 +27,29 @@ func (p *Project) ExitCLI(tprogram *tea.Program) {
 	}
 }
 
+func executeCmd(name string, args []string, dir string) error {
+	command := exec.Command(name, args...)
+	command.Dir = dir
+	var out bytes.Buffer
+	command.Stdout = &out
+	if err := command.Run(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func initGoMod(projectName string, appDir string) {
+	if err := executeCmd("go",
+		[]string{"mod", "init", projectName},
+		appDir); err != nil {
+		cobra.CheckErr(err)
+	}
+}
+
+// things to do:
+// create a Makefile
+// create project structure
+
 func (p *Project) CreateMainFile() error {
 	// check if AbsolutePath exists
 	if _, err := os.Stat(p.AbsolutePath); os.IsNotExist(err) {
@@ -35,18 +59,35 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
-	// create cmd/root.go
-	if _, err := os.Stat(fmt.Sprintf("%s/test", p.AbsolutePath)); os.IsNotExist(err) {
-		cobra.CheckErr(os.Mkdir(fmt.Sprintf("%s/test", p.AbsolutePath), 0751))
+	// First lets create a new director with the project name
+	if _, err := os.Stat(fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName)); os.IsNotExist(err) {
+		err := os.MkdirAll(fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName), 0751)
+		if err != nil {
+			fmt.Printf("Error creating root project directory %v\n", err)
+		}
 	}
 
-	mainFile, err := os.Create(fmt.Sprintf("%s/test/main.go", p.AbsolutePath))
+	projectPath := fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName)
+
+	// we need to create a go mod init
+	initGoMod(p.ProjectName, projectPath)
+
+	// create /cmd/api
+	if _, err := os.Stat(fmt.Sprintf("%s/cmd/api", projectPath)); os.IsNotExist(err) {
+		err := os.MkdirAll(fmt.Sprintf("%s/cmd/api", projectPath), 0751)
+		if err != nil {
+			fmt.Printf("Error creating directory %v\n", err)
+		}
+	}
+
+	mainFile, err := os.Create(fmt.Sprintf("%s/cmd/api/main.go", projectPath))
 	if err != nil {
 		return err
 	}
 
 	defer mainFile.Close()
 
+	// inject template
 	mainTemplate := template.Must(template.New("main").Parse(string(tpl.MainTemplate())))
 	err = mainTemplate.Execute(mainFile, p)
 	if err != nil {
@@ -57,6 +98,7 @@ func (p *Project) CreateMainFile() error {
 
 }
 
+// We want to deprecate this approach
 func (p *Project) CreateAPIProject() {
 	appDir := filepath.Join(p.AbsolutePath, p.ProjectName)
 	if _, err := os.Stat(appDir); os.IsNotExist(err) {
@@ -70,18 +112,6 @@ func (p *Project) CreateAPIProject() {
 		app_name="my-go-project"
 
 		go mod init "$app_name"
-
-		touch Makefile
-
-		mkdir -p cmd/api
-		echo 'package main
-
-		import "fmt"
-
-		func main() {
-			fmt.Println("Hello, World!")
-		}
-		' > cmd/api/main.go
 
 		echo "Go project '$app_name' created and initialized with 'go mod init'."`
 

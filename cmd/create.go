@@ -54,6 +54,7 @@ var createCmd = &cobra.Command{
 
 		project.AbsolutePath = currentWorkingDir
 
+		// This calls the templates
 		err = project.CreateMainFile()
 		if err != nil {
 			cobra.CheckErr(err)
