@@ -59,7 +59,6 @@ var createCmd = &cobra.Command{
 		if err != nil {
 			cobra.CheckErr(err)
 		}
-		// project.CreateAPIProject()
 
 	},
 }

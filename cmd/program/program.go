@@ -45,10 +45,8 @@ func initGoMod(projectName string, appDir string) {
 	}
 }
 
-// things to do:
-// create a Makefile
-// create project structure
-
+// We can clean this up after
+// seperate it
 func (p *Project) CreateMainFile() error {
 	// check if AbsolutePath exists
 	if _, err := os.Stat(p.AbsolutePath); os.IsNotExist(err) {
@@ -106,6 +104,40 @@ func (p *Project) CreateMainFile() error {
 	if err != nil {
 		return err
 	}
+
+	// create /internal/server
+	if _, err := os.Stat(fmt.Sprintf("%s/internal/server", projectPath)); os.IsNotExist(err) {
+		err := os.MkdirAll(fmt.Sprintf("%s/internal/server", projectPath), 0751)
+		if err != nil {
+			fmt.Printf("Error creating directory %v\n", err)
+		}
+	}
+
+	serverFile, err := os.Create(fmt.Sprintf("%s/internal/server/server.go", projectPath))
+	if err != nil {
+		return err
+	}
+
+	serverFileTemplate := template.Must(template.New("server").Parse(string(tpl.MakeHTTPServer())))
+	err = serverFileTemplate.Execute(serverFile, p)
+	if err != nil {
+		return err
+	}
+
+	defer serverFile.Close()
+
+	routesFile, err := os.Create(fmt.Sprintf("%s/internal/server/routes.go", projectPath))
+	if err != nil {
+		return err
+	}
+
+	routesFileTemplate := template.Must(template.New("routes").Parse(string(tpl.MakeHTTPRoutes())))
+	err = routesFileTemplate.Execute(routesFile, p)
+	if err != nil {
+		return err
+	}
+
+	defer routesFile.Close()
 
 	return nil
 }
