@@ -6,7 +6,6 @@ import (
 	"html/template"
 	"os"
 	"os/exec"
-	"path/filepath"
 
 	tea "github.com/charmbracelet/bubbletea"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
@@ -94,45 +93,19 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
+	makeFile, err := os.Create(fmt.Sprintf("%s/Makefile", projectPath))
+	if err != nil {
+		return err
+	}
+
+	defer makeFile.Close()
+
+	// inject makefile template
+	makeFileTemplate := template.Must(template.New("makefile").Parse(string(tpl.MakeTemplate())))
+	err = makeFileTemplate.Execute(makeFile, p)
+	if err != nil {
+		return err
+	}
+
 	return nil
-
-}
-
-// We want to deprecate this approach
-func (p *Project) CreateAPIProject() {
-	appDir := filepath.Join(p.AbsolutePath, p.ProjectName)
-	if _, err := os.Stat(appDir); os.IsNotExist(err) {
-		if err := os.Mkdir(appDir, 0755); err != nil {
-			fmt.Printf("Error creating project directory: %v\n", err)
-			return
-		}
-	}
-
-	scriptContent := `#!/bin/bash
-		app_name="my-go-project"
-
-		go mod init "$app_name"
-
-		echo "Go project '$app_name' created and initialized with 'go mod init'."`
-
-	tempScriptPath := filepath.Join(appDir, "temp_script.sh")
-	if err := os.WriteFile(tempScriptPath, []byte(scriptContent), 0755); err != nil {
-		fmt.Printf("Error creating temporary script file: %v\n", err)
-		return
-	}
-	defer os.Remove(tempScriptPath)
-
-	cmd := exec.Command("bash", tempScriptPath)
-
-	cmd.Dir = appDir
-
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	if err := cmd.Run(); err != nil {
-		fmt.Printf("Error executing Bash script: %v\n", err)
-		return
-	}
-
-	fmt.Println("Project structure created successfully in", appDir)
 }
