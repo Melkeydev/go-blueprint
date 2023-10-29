@@ -42,8 +42,9 @@ func MakeHTTPRoutes() []byte {
 package server
 
 import (
-	"fmt"
 	"net/http"
+	"encoding/json"
+	"log"
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
@@ -55,7 +56,15 @@ func (s *Server) RegisterRoutes() http.Handler {
 }
 
 func (s *Server) handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Hello World")
+	resp := make(map[string]string)
+	resp["message"] = "Hello World"
+
+	jsonResp, err := json.Marshal(resp)
+	if err != nil {
+		log.Fatalf("error handling JSON marshal. Err: %v", err)
+	}
+
+	w.Write(jsonResp)
 }
 `)
 }

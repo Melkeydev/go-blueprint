@@ -5,12 +5,17 @@ func MainTemplate() []byte {
 package main
 
 import (
-	"fmt"
 	"{{.ProjectName}}/internal/server"
 ) 
 
 func main() {
-	fmt.Println("Hello World")
+
+	server := server.NewServer()
+
+	err := server.ListenAndServe()
+	if err != nil {
+		panic("cannot start server")
+	}
 }
 `)
 }
