@@ -11,5 +11,23 @@ project-root/
             main.go
     Makefile
 
-// what if we added an option to add diff Go frameworks?
-// Chi, or Gorilla or Fiber or whatever
+// Chi: Done
+// Gorilla: Done
+// httpRouter: Done
+// Gin: Done
+// Fiber:
+
+
+Serverless Structure:
+project-root/
+    go.mod 
+    Makefile
+    lambda/
+        main.go
+    cdk/
+        lib/
+            lamba-stack
+        bin/
+            cdk.ts
+    package.json
+    cdk.json

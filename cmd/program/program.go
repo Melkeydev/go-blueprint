@@ -18,6 +18,14 @@ type Project struct {
 	AbsolutePath string
 }
 
+const (
+	chiPackage     = "github.com/go-chi/chi/v5"
+	gorillaPackage = "github.com/gorilla/mux"
+	routerPackage  = "github.com/julienschmidt/httprouter"
+	ginPackage     = "github.com/gin-gonic/gin"
+	fiberPacker    = "github.com/gofiber/fiber/v2"
+)
+
 func (p *Project) ExitCLI(tprogram *tea.Program) {
 	if p.Exit {
 		// logo render here
@@ -40,6 +48,14 @@ func executeCmd(name string, args []string, dir string) error {
 func initGoMod(projectName string, appDir string) {
 	if err := executeCmd("go",
 		[]string{"mod", "init", projectName},
+		appDir); err != nil {
+		cobra.CheckErr(err)
+	}
+}
+
+func goGetPackage(appDir, packageName string) {
+	if err := executeCmd("go",
+		[]string{"get", "-u", packageName},
 		appDir); err != nil {
 		cobra.CheckErr(err)
 	}
