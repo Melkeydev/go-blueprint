@@ -22,9 +22,16 @@ type Project struct {
 
 type Framework struct {
 	packageName string
-	mainFunc    func() []byte
-	serverFunc  func() []byte
-	routesFunc  func() []byte
+	templater   Templater
+	// mainFunc    func() []byte
+	// serverFunc  func() []byte
+	// routesFunc  func() []byte
+}
+
+type Templater interface {
+	Main() []byte
+	Server() []byte
+	Routes() []byte
 }
 
 const (
@@ -75,44 +82,32 @@ func (p *Project) createFrameworkMap() {
 
 	p.FrameworkMap["chi"] = Framework{
 		packageName: chiPackage,
-		mainFunc:    tpl.MainTemplate,
-		serverFunc:  tpl.MakeHTTPServer,
-		routesFunc:  tpl.MakeChiRoutes,
+		templater:   tpl.ChiTemplates{},
 	}
 
 	p.FrameworkMap["standard lib"] = Framework{
 		packageName: "",
-		mainFunc:    tpl.MainTemplate,
-		serverFunc:  tpl.MakeHTTPServer,
-		routesFunc:  tpl.MakeHTTPRoutes,
+		templater:   tpl.StandardLibTemplate{},
 	}
 
 	p.FrameworkMap["gin"] = Framework{
 		packageName: ginPackage,
-		mainFunc:    tpl.MainTemplate,
-		serverFunc:  tpl.MakeHTTPServer,
-		routesFunc:  tpl.MakeGinRoutes,
+		templater:   tpl.GinTemplates{},
 	}
 
 	p.FrameworkMap["fiber"] = Framework{
 		packageName: fiberPackage,
-		mainFunc:    tpl.MakeFiberMain,
-		serverFunc:  tpl.MakeFiberServer,
-		routesFunc:  tpl.MakeFiberRoutes,
+		templater:   tpl.FiberTemplates{},
 	}
 
 	p.FrameworkMap["gorilla/mux"] = Framework{
 		packageName: gorillaPackage,
-		mainFunc:    tpl.MainTemplate,
-		serverFunc:  tpl.MakeHTTPServer,
-		routesFunc:  tpl.MakeGorillaRoutes,
+		templater:   tpl.GorillaTemplates{},
 	}
 
 	p.FrameworkMap["httpRouter"] = Framework{
 		packageName: routerPackage,
-		mainFunc:    tpl.MainTemplate,
-		serverFunc:  tpl.MakeHTTPServer,
-		routesFunc:  tpl.MakeRouterRoutes,
+		templater:   tpl.RouterTemplates{},
 	}
 }
 
@@ -164,8 +159,7 @@ func (p *Project) CreateMainFile() error {
 	defer mainFile.Close()
 
 	// inject template
-	// TODO: here
-	mainTemplate := template.Must(template.New("main").Parse(string(p.FrameworkMap[p.ProjectType].mainFunc())))
+	mainTemplate := template.Must(template.New("main").Parse(string(p.FrameworkMap[p.ProjectType].templater.Main())))
 	err = mainTemplate.Execute(mainFile, p)
 	if err != nil {
 		fmt.Printf("this is the err %v\n", err)
@@ -199,7 +193,7 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	serverFileTemplate := template.Must(template.New("server").Parse(string(p.FrameworkMap[p.ProjectType].serverFunc())))
+	serverFileTemplate := template.Must(template.New("server").Parse(string(p.FrameworkMap[p.ProjectType].templater.Server())))
 	err = serverFileTemplate.Execute(serverFile, p)
 	if err != nil {
 		return err
@@ -212,7 +206,7 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	routesFileTemplate := template.Must(template.New("routes").Parse(string(p.FrameworkMap[p.ProjectType].routesFunc())))
+	routesFileTemplate := template.Must(template.New("routes").Parse(string(p.FrameworkMap[p.ProjectType].templater.Routes())))
 	err = routesFileTemplate.Execute(routesFile, p)
 	if err != nil {
 		return err

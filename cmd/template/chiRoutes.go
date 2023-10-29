@@ -1,5 +1,19 @@
 package template
 
+type ChiTemplates struct{}
+
+func (c ChiTemplates) Main() []byte {
+	return MainTemplate()
+}
+
+func (c ChiTemplates) Server() []byte {
+	return MakeHTTPServer()
+}
+
+func (c ChiTemplates) Routes() []byte {
+	return MakeChiRoutes()
+}
+
 func MakeChiRoutes() []byte {
 	return []byte(`
 package server

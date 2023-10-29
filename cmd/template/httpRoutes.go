@@ -1,5 +1,19 @@
 package template
 
+type StandardLibTemplate struct{}
+
+func (s StandardLibTemplate) Main() []byte {
+	return MainTemplate()
+}
+
+func (s StandardLibTemplate) Server() []byte {
+	return MakeHTTPServer()
+}
+
+func (s StandardLibTemplate) Routes() []byte {
+	return MakeRouterRoutes()
+}
+
 func MakeHTTPServer() []byte {
 	return []byte(`
 package server

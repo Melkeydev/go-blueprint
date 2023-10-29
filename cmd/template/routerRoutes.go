@@ -1,5 +1,17 @@
 package template
 
+type RouterTemplates struct{}
+
+func (r RouterTemplates) Main() []byte {
+	return MainTemplate()
+}
+func (r RouterTemplates) Server() []byte {
+	return MakeHTTPServer()
+}
+func (r RouterTemplates) Routes() []byte {
+	return MakeRouterRoutes()
+}
+
 func MakeRouterRoutes() []byte {
 	return []byte(`
 package server
