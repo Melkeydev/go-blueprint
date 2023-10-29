@@ -22,9 +22,9 @@ func InitSteps(options *Options) *Steps {
 	steps := &Steps{
 		[]StepSchema{
 			{
-				StepName: "Project Type",
-				Options:  []string{"API Server", "Serverless Lambda"},
-				Headers:  "What kind of Go project are you building?",
+				StepName: "Go Project Framework",
+				Options:  []string{"standard lib", "chi", "gin", "fiber", "gorilla/mux", "httpRouter"},
+				Headers:  "What framework do you want to use in your Go project?",
 				Field:    &options.ProjectType,
 			},
 		},

@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -26,7 +27,9 @@ var createCmd = &cobra.Command{
 			ProjectName: &textinput.Output{},
 		}
 
-		project := &program.Project{}
+		project := &program.Project{
+			FrameworkMap: make(map[string]program.Framework),
+		}
 		steps := steps.InitSteps(&options)
 
 		tprogram := tea.NewProgram(textinput.InitialTextInputModel(options.ProjectName, "What is the name of your project?", project))
@@ -47,6 +50,8 @@ var createCmd = &cobra.Command{
 		}
 
 		project.ProjectName = options.ProjectName.Output
+		project.ProjectType = options.ProjectType
+		fmt.Println(project.ProjectType, "This is projectType better not be chi")
 		currentWorkingDir, err := os.Getwd()
 		if err != nil {
 			cobra.CheckErr(err)

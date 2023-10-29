@@ -16,6 +16,14 @@ type Project struct {
 	ProjectName  string
 	Exit         bool
 	AbsolutePath string
+	ProjectType  string
+	FrameworkMap map[string]Framework
+}
+
+type Framework struct {
+	packageName string
+	serverFunc  func() []byte
+	routesFunc  func() []byte
 }
 
 const (
@@ -23,7 +31,7 @@ const (
 	gorillaPackage = "github.com/gorilla/mux"
 	routerPackage  = "github.com/julienschmidt/httprouter"
 	ginPackage     = "github.com/gin-gonic/gin"
-	fiberPacker    = "github.com/gofiber/fiber/v2"
+	fiberPackage   = "github.com/gofiber/fiber/v2"
 )
 
 func (p *Project) ExitCLI(tprogram *tea.Program) {
@@ -61,6 +69,45 @@ func goGetPackage(appDir, packageName string) {
 	}
 }
 
+func (p *Project) createFrameworkMap() {
+
+	p.FrameworkMap["chi"] = Framework{
+		packageName: chiPackage,
+		serverFunc:  tpl.MakeHTTPServer,
+		routesFunc:  tpl.MakeChiRoutes,
+	}
+
+	p.FrameworkMap["standard lib"] = Framework{
+		packageName: "",
+		serverFunc:  tpl.MakeHTTPServer,
+		routesFunc:  tpl.MakeHTTPRoutes,
+	}
+
+	p.FrameworkMap["gin"] = Framework{
+		packageName: ginPackage,
+		serverFunc:  tpl.MakeHTTPServer,
+		routesFunc:  tpl.MakeGinRoutes,
+	}
+
+	p.FrameworkMap["fiber"] = Framework{
+		packageName: fiberPackage,
+		serverFunc:  tpl.MakeFiberServer,
+		routesFunc:  tpl.MakeFiberRoutes,
+	}
+
+	p.FrameworkMap["gorilla/mux"] = Framework{
+		packageName: gorillaPackage,
+		serverFunc:  tpl.MakeHTTPServer,
+		routesFunc:  tpl.MakeGorillaRoutes,
+	}
+
+	p.FrameworkMap["httpRouter"] = Framework{
+		packageName: routerPackage,
+		serverFunc:  tpl.MakeHTTPServer,
+		routesFunc:  tpl.MakeRouterRoutes,
+	}
+}
+
 // We can clean this up after
 // seperate it
 func (p *Project) CreateMainFile() error {
@@ -84,6 +131,14 @@ func (p *Project) CreateMainFile() error {
 
 	// we need to create a go mod init
 	initGoMod(p.ProjectName, projectPath)
+
+	// we need to install the correct package
+	if p.ProjectType != "standard lib" {
+		goGetPackage(projectPath, p.ProjectType)
+	}
+
+	// i hate my life
+	p.createFrameworkMap()
 
 	// create /cmd/api
 	if _, err := os.Stat(fmt.Sprintf("%s/cmd/api", projectPath)); os.IsNotExist(err) {
@@ -135,7 +190,7 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	serverFileTemplate := template.Must(template.New("server").Parse(string(tpl.MakeHTTPServer())))
+	serverFileTemplate := template.Must(template.New("server").Parse(string(p.FrameworkMap[p.ProjectType].serverFunc())))
 	err = serverFileTemplate.Execute(serverFile, p)
 	if err != nil {
 		return err
@@ -148,7 +203,7 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	routesFileTemplate := template.Must(template.New("routes").Parse(string(tpl.MakeHTTPRoutes())))
+	routesFileTemplate := template.Must(template.New("routes").Parse(string(p.FrameworkMap[p.ProjectType].routesFunc())))
 	err = routesFileTemplate.Execute(routesFile, p)
 	if err != nil {
 		return err
