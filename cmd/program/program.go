@@ -100,13 +100,16 @@ func (p *Project) CreateMainFile() error {
 
 	projectPath := fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName)
 
-	// i hate my life
+	// this needsto be fixed
+	// error handling
 	p.createFrameworkMap()
 
 	// we need to create a go mod init
+	// error handling
 	utils.InitGoMod(p.ProjectName, projectPath)
 
 	// we need to install the correct package
+	// error handling
 	if p.ProjectType != "standard lib" {
 		utils.GoGetPackage(projectPath, p.FrameworkMap[p.ProjectType].packageName)
 	}
@@ -159,7 +162,6 @@ func (p *Project) CreateMainFile() error {
 	return nil
 }
 
-// cmd/api
 func (p *Project) CreatePath(pathToCreate string, projectPath string) error {
 	if _, err := os.Stat(fmt.Sprintf("%s/%s", projectPath, pathToCreate)); os.IsNotExist(err) {
 		err := os.MkdirAll(fmt.Sprintf("%s/%s", projectPath, pathToCreate), 0751)
@@ -172,7 +174,6 @@ func (p *Project) CreatePath(pathToCreate string, projectPath string) error {
 	return nil
 }
 
-// cmd/api
 func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath string, fileName string, methodName string) error {
 	createdFile, err := os.Create(fmt.Sprintf("%s/%s/%s", projectPath, pathToCreate, fileName))
 	if err != nil {
