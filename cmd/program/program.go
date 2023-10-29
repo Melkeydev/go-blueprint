@@ -104,6 +104,7 @@ func (p *Project) CreateMainFile() error {
 	mainTemplate := template.Must(template.New("main").Parse(string(tpl.MainTemplate())))
 	err = mainTemplate.Execute(mainFile, p)
 	if err != nil {
+		fmt.Printf("this is the err %v\n", err)
 		return err
 	}
 

@@ -1,12 +1,13 @@
 package template
 
-// defines the files to be created
-
 func MainTemplate() []byte {
 	return []byte(`
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"{{.ProjectName}}/internal/server"
+) 
 
 func main() {
 	fmt.Println("Hello World")
