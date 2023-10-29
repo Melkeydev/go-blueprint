@@ -1,14 +1,13 @@
 package program
 
 import (
-	"bytes"
 	"fmt"
 	"html/template"
 	"os"
-	"os/exec"
 
 	tea "github.com/charmbracelet/bubbletea"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
+	"github.com/melkeydev/go-blueprint/cmd/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -23,9 +22,6 @@ type Project struct {
 type Framework struct {
 	packageName string
 	templater   Templater
-	// mainFunc    func() []byte
-	// serverFunc  func() []byte
-	// routesFunc  func() []byte
 }
 
 type Templater interface {
@@ -47,34 +43,6 @@ func (p *Project) ExitCLI(tprogram *tea.Program) {
 		// logo render here
 		tprogram.ReleaseTerminal()
 		os.Exit(1)
-	}
-}
-
-func executeCmd(name string, args []string, dir string) error {
-	command := exec.Command(name, args...)
-	command.Dir = dir
-	var out bytes.Buffer
-	command.Stdout = &out
-	if err := command.Run(); err != nil {
-		return err
-	}
-	return nil
-}
-
-func initGoMod(projectName string, appDir string) {
-	if err := executeCmd("go",
-		[]string{"mod", "init", projectName},
-		appDir); err != nil {
-		cobra.CheckErr(err)
-	}
-}
-
-func goGetPackage(appDir, packageName string) {
-	fmt.Println("this is the packageName", packageName)
-	if err := executeCmd("go",
-		[]string{"get", "-u", packageName},
-		appDir); err != nil {
-		cobra.CheckErr(err)
 	}
 }
 
@@ -136,38 +104,28 @@ func (p *Project) CreateMainFile() error {
 	p.createFrameworkMap()
 
 	// we need to create a go mod init
-	initGoMod(p.ProjectName, projectPath)
+	utils.InitGoMod(p.ProjectName, projectPath)
 
 	// we need to install the correct package
 	if p.ProjectType != "standard lib" {
-		goGetPackage(projectPath, p.FrameworkMap[p.ProjectType].packageName)
+		utils.GoGetPackage(projectPath, p.FrameworkMap[p.ProjectType].packageName)
 	}
 
-	// create /cmd/api
-	if _, err := os.Stat(fmt.Sprintf("%s/cmd/api", projectPath)); os.IsNotExist(err) {
-		err := os.MkdirAll(fmt.Sprintf("%s/cmd/api", projectPath), 0751)
-		if err != nil {
-			fmt.Printf("Error creating directory %v\n", err)
-		}
-	}
-
-	mainFile, err := os.Create(fmt.Sprintf("%s/cmd/api/main.go", projectPath))
+	err := p.CreatePath("cmd/api", projectPath)
 	if err != nil {
+		cobra.CheckErr(err)
 		return err
 	}
 
-	defer mainFile.Close()
-
-	// inject template
-	mainTemplate := template.Must(template.New("main").Parse(string(p.FrameworkMap[p.ProjectType].templater.Main())))
-	err = mainTemplate.Execute(mainFile, p)
+	err = p.CreateFileWithInjection("cmd/api", projectPath, "main.go", "main")
 	if err != nil {
-		fmt.Printf("this is the err %v\n", err)
+		cobra.CheckErr(err)
 		return err
 	}
 
 	makeFile, err := os.Create(fmt.Sprintf("%s/Makefile", projectPath))
 	if err != nil {
+		cobra.CheckErr(err)
 		return err
 	}
 
@@ -180,39 +138,65 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	// create /internal/server
-	if _, err := os.Stat(fmt.Sprintf("%s/internal/server", projectPath)); os.IsNotExist(err) {
-		err := os.MkdirAll(fmt.Sprintf("%s/internal/server", projectPath), 0751)
+	err = p.CreatePath("internal/server", projectPath)
+	if err != nil {
+		cobra.CheckErr(err)
+		return err
+	}
+
+	err = p.CreateFileWithInjection("internal/server", projectPath, "server.go", "server")
+	if err != nil {
+		cobra.CheckErr(err)
+		return err
+	}
+
+	err = p.CreateFileWithInjection("internal/server", projectPath, "routes.go", "routes")
+	if err != nil {
+		cobra.CheckErr(err)
+		return err
+	}
+
+	return nil
+}
+
+// cmd/api
+func (p *Project) CreatePath(pathToCreate string, projectPath string) error {
+	if _, err := os.Stat(fmt.Sprintf("%s/%s", projectPath, pathToCreate)); os.IsNotExist(err) {
+		err := os.MkdirAll(fmt.Sprintf("%s/%s", projectPath, pathToCreate), 0751)
 		if err != nil {
 			fmt.Printf("Error creating directory %v\n", err)
+			return err
 		}
 	}
 
-	serverFile, err := os.Create(fmt.Sprintf("%s/internal/server/server.go", projectPath))
+	return nil
+}
+
+// cmd/api
+func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath string, fileName string, methodName string) error {
+	createdFile, err := os.Create(fmt.Sprintf("%s/%s/%s", projectPath, pathToCreate, fileName))
 	if err != nil {
 		return err
 	}
 
-	serverFileTemplate := template.Must(template.New("server").Parse(string(p.FrameworkMap[p.ProjectType].templater.Server())))
-	err = serverFileTemplate.Execute(serverFile, p)
+	defer createdFile.Close()
+
+	// inject template
+	switch methodName {
+	case "main":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Main())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "server":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Server())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "routes":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Routes())))
+		err = createdTemplate.Execute(createdFile, p)
+	}
+
 	if err != nil {
 		return err
 	}
-
-	defer serverFile.Close()
-
-	routesFile, err := os.Create(fmt.Sprintf("%s/internal/server/routes.go", projectPath))
-	if err != nil {
-		return err
-	}
-
-	routesFileTemplate := template.Must(template.New("routes").Parse(string(p.FrameworkMap[p.ProjectType].templater.Routes())))
-	err = routesFileTemplate.Execute(routesFile, p)
-	if err != nil {
-		return err
-	}
-
-	defer routesFile.Close()
 
 	return nil
 }
