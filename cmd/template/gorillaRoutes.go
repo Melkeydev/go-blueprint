@@ -13,7 +13,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func (s *Server) RegisterGorillaRoutes() http.Handler {
+func (s *Server) RegisterRoutes() http.Handler {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/", s.helloWorldHandler)

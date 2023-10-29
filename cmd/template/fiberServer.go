@@ -51,7 +51,7 @@ func MakeFiberMain() []byte {
 package main
 
 import (
-	"myproject/server"
+	"{{.ProjectName}}/internal/server"
 )
 	
 func main() {
@@ -60,7 +60,7 @@ func main() {
 
 	server.RegisterFiberRoutes()
 
-	err := server.Listen(":3000")
+	err := server.Listen(":8080")
 	if err != nil {
 		panic("cannot start server")
 	}

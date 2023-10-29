@@ -22,6 +22,7 @@ type Project struct {
 
 type Framework struct {
 	packageName string
+	mainFunc    func() []byte
 	serverFunc  func() []byte
 	routesFunc  func() []byte
 }
@@ -74,36 +75,42 @@ func (p *Project) createFrameworkMap() {
 
 	p.FrameworkMap["chi"] = Framework{
 		packageName: chiPackage,
+		mainFunc:    tpl.MainTemplate,
 		serverFunc:  tpl.MakeHTTPServer,
 		routesFunc:  tpl.MakeChiRoutes,
 	}
 
 	p.FrameworkMap["standard lib"] = Framework{
 		packageName: "",
+		mainFunc:    tpl.MainTemplate,
 		serverFunc:  tpl.MakeHTTPServer,
 		routesFunc:  tpl.MakeHTTPRoutes,
 	}
 
 	p.FrameworkMap["gin"] = Framework{
 		packageName: ginPackage,
+		mainFunc:    tpl.MainTemplate,
 		serverFunc:  tpl.MakeHTTPServer,
 		routesFunc:  tpl.MakeGinRoutes,
 	}
 
 	p.FrameworkMap["fiber"] = Framework{
 		packageName: fiberPackage,
+		mainFunc:    tpl.MakeFiberMain,
 		serverFunc:  tpl.MakeFiberServer,
 		routesFunc:  tpl.MakeFiberRoutes,
 	}
 
 	p.FrameworkMap["gorilla/mux"] = Framework{
 		packageName: gorillaPackage,
+		mainFunc:    tpl.MainTemplate,
 		serverFunc:  tpl.MakeHTTPServer,
 		routesFunc:  tpl.MakeGorillaRoutes,
 	}
 
 	p.FrameworkMap["httpRouter"] = Framework{
 		packageName: routerPackage,
+		mainFunc:    tpl.MainTemplate,
 		serverFunc:  tpl.MakeHTTPServer,
 		routesFunc:  tpl.MakeRouterRoutes,
 	}
@@ -157,7 +164,8 @@ func (p *Project) CreateMainFile() error {
 	defer mainFile.Close()
 
 	// inject template
-	mainTemplate := template.Must(template.New("main").Parse(string(tpl.MainTemplate())))
+	// TODO: here
+	mainTemplate := template.Must(template.New("main").Parse(string(p.FrameworkMap[p.ProjectType].mainFunc())))
 	err = mainTemplate.Execute(mainFile, p)
 	if err != nil {
 		fmt.Printf("this is the err %v\n", err)
