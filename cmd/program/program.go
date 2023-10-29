@@ -62,6 +62,7 @@ func initGoMod(projectName string, appDir string) {
 }
 
 func goGetPackage(appDir, packageName string) {
+	fmt.Println("this is the packageName", packageName)
 	if err := executeCmd("go",
 		[]string{"get", "-u", packageName},
 		appDir); err != nil {
@@ -129,16 +130,16 @@ func (p *Project) CreateMainFile() error {
 
 	projectPath := fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName)
 
+	// i hate my life
+	p.createFrameworkMap()
+
 	// we need to create a go mod init
 	initGoMod(p.ProjectName, projectPath)
 
 	// we need to install the correct package
 	if p.ProjectType != "standard lib" {
-		goGetPackage(projectPath, p.ProjectType)
+		goGetPackage(projectPath, p.FrameworkMap[p.ProjectType].packageName)
 	}
-
-	// i hate my life
-	p.createFrameworkMap()
 
 	// create /cmd/api
 	if _, err := os.Stat(fmt.Sprintf("%s/cmd/api", projectPath)); os.IsNotExist(err) {
