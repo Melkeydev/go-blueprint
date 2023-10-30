@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/melkeydev/go-blueprint/cmd/program"
@@ -50,8 +51,7 @@ var createCmd = &cobra.Command{
 		}
 
 		project.ProjectName = options.ProjectName.Output
-		project.ProjectType = options.ProjectType
-		fmt.Println(project.ProjectType, "This is projectType better not be chi")
+		project.ProjectType = strings.ToLower(options.ProjectType)
 		currentWorkingDir, err := os.Getwd()
 		if err != nil {
 			cobra.CheckErr(err)
@@ -65,5 +65,8 @@ var createCmd = &cobra.Command{
 			cobra.CheckErr(err)
 		}
 
+		// Display the message to the user in bullet form
+		fmt.Println("\nNext steps:")
+		fmt.Printf("• cd %s\n", project.ProjectName)
 	},
 }

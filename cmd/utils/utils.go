@@ -2,10 +2,7 @@ package utils
 
 import (
 	"bytes"
-	"fmt"
 	"os/exec"
-
-	"github.com/spf13/cobra"
 )
 
 func ExecuteCmd(name string, args []string, dir string) error {
@@ -19,19 +16,22 @@ func ExecuteCmd(name string, args []string, dir string) error {
 	return nil
 }
 
-func InitGoMod(projectName string, appDir string) {
+func InitGoMod(projectName string, appDir string) error {
 	if err := ExecuteCmd("go",
 		[]string{"mod", "init", projectName},
 		appDir); err != nil {
-		cobra.CheckErr(err)
+		return err
 	}
+
+	return nil
 }
 
-func GoGetPackage(appDir, packageName string) {
-	fmt.Println("this is the packageName", packageName)
+func GoGetPackage(appDir, packageName string) error {
 	if err := ExecuteCmd("go",
 		[]string{"get", "-u", packageName},
 		appDir); err != nil {
-		cobra.CheckErr(err)
+		return err
 	}
+
+	return nil
 }

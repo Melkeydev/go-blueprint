@@ -36,6 +36,9 @@ const (
 	routerPackage  = "github.com/julienschmidt/httprouter"
 	ginPackage     = "github.com/gin-gonic/gin"
 	fiberPackage   = "github.com/gofiber/fiber/v2"
+
+	cmdApiPath         = "cmd/api"
+	internalServerPath = "internal/server"
 )
 
 func (p *Project) ExitCLI(tprogram *tea.Program) {
@@ -53,7 +56,7 @@ func (p *Project) createFrameworkMap() {
 		templater:   tpl.ChiTemplates{},
 	}
 
-	p.FrameworkMap["standard lib"] = Framework{
+	p.FrameworkMap["standard library"] = Framework{
 		packageName: "",
 		templater:   tpl.StandardLibTemplate{},
 	}
@@ -79,8 +82,6 @@ func (p *Project) createFrameworkMap() {
 	}
 }
 
-// We can clean this up after
-// seperate it
 func (p *Project) CreateMainFile() error {
 	// check if AbsolutePath exists
 	if _, err := os.Stat(p.AbsolutePath); os.IsNotExist(err) {
@@ -100,27 +101,30 @@ func (p *Project) CreateMainFile() error {
 
 	projectPath := fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName)
 
-	// this needsto be fixed
-	// error handling
+	// Create the map for our program
 	p.createFrameworkMap()
 
-	// we need to create a go mod init
-	// error handling
-	utils.InitGoMod(p.ProjectName, projectPath)
-
-	// we need to install the correct package
-	// error handling
-	if p.ProjectType != "standard lib" {
-		utils.GoGetPackage(projectPath, p.FrameworkMap[p.ProjectType].packageName)
+	// Create go mod
+	err := utils.InitGoMod(p.ProjectName, projectPath)
+	if err != nil {
+		cobra.CheckErr(err)
 	}
 
-	err := p.CreatePath("cmd/api", projectPath)
+	// We need to install the correct package
+	if p.ProjectType != "standard library" {
+		err = utils.GoGetPackage(projectPath, p.FrameworkMap[p.ProjectType].packageName)
+		if err != nil {
+			cobra.CheckErr(err)
+		}
+	}
+
+	err = p.CreatePath(cmdApiPath, projectPath)
 	if err != nil {
 		cobra.CheckErr(err)
 		return err
 	}
 
-	err = p.CreateFileWithInjection("cmd/api", projectPath, "main.go", "main")
+	err = p.CreateFileWithInjection(cmdApiPath, projectPath, "main.go", "main")
 	if err != nil {
 		cobra.CheckErr(err)
 		return err
@@ -141,19 +145,19 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	err = p.CreatePath("internal/server", projectPath)
+	err = p.CreatePath(internalServerPath, projectPath)
 	if err != nil {
 		cobra.CheckErr(err)
 		return err
 	}
 
-	err = p.CreateFileWithInjection("internal/server", projectPath, "server.go", "server")
+	err = p.CreateFileWithInjection(internalServerPath, projectPath, "server.go", "server")
 	if err != nil {
 		cobra.CheckErr(err)
 		return err
 	}
 
-	err = p.CreateFileWithInjection("internal/server", projectPath, "routes.go", "routes")
+	err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routes")
 	if err != nil {
 		cobra.CheckErr(err)
 		return err
@@ -182,7 +186,6 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 
 	defer createdFile.Close()
 
-	// inject template
 	switch methodName {
 	case "main":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Main())))
