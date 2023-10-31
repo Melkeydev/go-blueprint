@@ -6,11 +6,30 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/melkeydev/go-blueprint/cmd/program"
 	"github.com/melkeydev/go-blueprint/cmd/steps"
 	"github.com/melkeydev/go-blueprint/cmd/ui/multiInput"
 	"github.com/melkeydev/go-blueprint/cmd/ui/textinput"
 	"github.com/spf13/cobra"
+)
+
+const logo = `
+
+ ____  _                       _       _   
+|  _ \| |                     (_)     | |  
+| |_) | |_   _  ___ _ __  _ __ _ _ __ | |_ 
+|  _ <| | | | |/ _ \ '_ \| '__| | '_ \| __|
+| |_) | | |_| |  __/ |_) | |  | | | | | |_ 
+|____/|_|\__,_|\___| .__/|_|  |_|_| |_|\__|
+				   | |                     
+				   |_|                     
+
+`
+
+var (
+	logoStyle      = lipgloss.NewStyle().Foreground(lipgloss.Color("#01FAC6")).Bold(true)
+	endingMsgStyle = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("170")).Bold(true)
 )
 
 func init() {
@@ -32,6 +51,8 @@ var createCmd = &cobra.Command{
 			FrameworkMap: make(map[string]program.Framework),
 		}
 		steps := steps.InitSteps(&options)
+
+		fmt.Printf("%s\n", logoStyle.Render(logo))
 
 		tprogram := tea.NewProgram(textinput.InitialTextInputModel(options.ProjectName, "What is the name of your project?", project))
 		if _, err := tprogram.Run(); err != nil {
@@ -65,8 +86,6 @@ var createCmd = &cobra.Command{
 			cobra.CheckErr(err)
 		}
 
-		// Display the message to the user in bullet form
-		fmt.Println("\nNext steps:")
-		fmt.Printf("• cd %s\n", project.ProjectName)
+		fmt.Println(endingMsgStyle.Render("\nNext steps cd into the newly created project with:"))
 	},
 }

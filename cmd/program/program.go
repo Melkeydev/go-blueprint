@@ -76,7 +76,7 @@ func (p *Project) createFrameworkMap() {
 		templater:   tpl.GorillaTemplates{},
 	}
 
-	p.FrameworkMap["httpRouter"] = Framework{
+	p.FrameworkMap["httprouter"] = Framework{
 		packageName: routerPackage,
 		templater:   tpl.RouterTemplates{},
 	}
