@@ -3,6 +3,7 @@ package program
 import (
 	"fmt"
 	"html/template"
+	"log"
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -87,6 +88,7 @@ func (p *Project) CreateMainFile() error {
 	if _, err := os.Stat(p.AbsolutePath); os.IsNotExist(err) {
 		// create directory
 		if err := os.Mkdir(p.AbsolutePath, 0754); err != nil {
+			log.Printf("Could not create directory: %v", err)
 			return err
 		}
 	}
@@ -95,7 +97,8 @@ func (p *Project) CreateMainFile() error {
 	if _, err := os.Stat(fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName)); os.IsNotExist(err) {
 		err := os.MkdirAll(fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName), 0751)
 		if err != nil {
-			fmt.Printf("Error creating root project directory %v\n", err)
+			log.Printf("Error creating root project directory %v\n", err)
+			return err
 		}
 	}
 
@@ -107,6 +110,7 @@ func (p *Project) CreateMainFile() error {
 	// Create go mod
 	err := utils.InitGoMod(p.ProjectName, projectPath)
 	if err != nil {
+		log.Printf("Could not init go mod in new project %v\n", err)
 		cobra.CheckErr(err)
 	}
 
@@ -114,12 +118,14 @@ func (p *Project) CreateMainFile() error {
 	if p.ProjectType != "standard library" {
 		err = utils.GoGetPackage(projectPath, p.FrameworkMap[p.ProjectType].packageName)
 		if err != nil {
+			log.Printf("Could not install go dependency for chosen framework %v\n", err)
 			cobra.CheckErr(err)
 		}
 	}
 
 	err = p.CreatePath(cmdApiPath, projectPath)
 	if err != nil {
+		log.Printf("Error creating path: %s", projectPath)
 		cobra.CheckErr(err)
 		return err
 	}
@@ -147,18 +153,21 @@ func (p *Project) CreateMainFile() error {
 
 	err = p.CreatePath(internalServerPath, projectPath)
 	if err != nil {
+		log.Printf("Error creating path: %s", internalServerPath)
 		cobra.CheckErr(err)
 		return err
 	}
 
 	err = p.CreateFileWithInjection(internalServerPath, projectPath, "server.go", "server")
 	if err != nil {
+		log.Printf("Error injecting server.go file: %v", err)
 		cobra.CheckErr(err)
 		return err
 	}
 
 	err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routes")
 	if err != nil {
+		log.Printf("Error injecting routes.go file: %v", err)
 		cobra.CheckErr(err)
 		return err
 	}
@@ -170,7 +179,7 @@ func (p *Project) CreatePath(pathToCreate string, projectPath string) error {
 	if _, err := os.Stat(fmt.Sprintf("%s/%s", projectPath, pathToCreate)); os.IsNotExist(err) {
 		err := os.MkdirAll(fmt.Sprintf("%s/%s", projectPath, pathToCreate), 0751)
 		if err != nil {
-			fmt.Printf("Error creating directory %v\n", err)
+			log.Printf("Error creating directory %v\n", err)
 			return err
 		}
 	}

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -56,6 +57,7 @@ var createCmd = &cobra.Command{
 
 		tprogram := tea.NewProgram(textinput.InitialTextInputModel(options.ProjectName, "What is the name of your project?", project))
 		if _, err := tprogram.Run(); err != nil {
+			log.Printf("Name of project contains an error: %v", err)
 			cobra.CheckErr(err)
 		}
 		project.ExitCLI(tprogram)
@@ -75,6 +77,7 @@ var createCmd = &cobra.Command{
 		project.ProjectType = strings.ToLower(options.ProjectType)
 		currentWorkingDir, err := os.Getwd()
 		if err != nil {
+			log.Printf("could not get current working directory: %v", err)
 			cobra.CheckErr(err)
 		}
 
@@ -83,6 +86,7 @@ var createCmd = &cobra.Command{
 		// This calls the templates
 		err = project.CreateMainFile()
 		if err != nil {
+			log.Printf("Problem creating files for project. %v", err)
 			cobra.CheckErr(err)
 		}
 

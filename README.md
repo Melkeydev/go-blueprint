@@ -15,7 +15,7 @@ Are you tired of starting Golang projects from scratch, struggling with inconsis
 
 - Easy to set up and install
 - Have the entire Go structure already established
-- Setting up a Go HTTP server (or Fasthtto with Fiber)
+- Setting up a Go HTTP server (or Fasthttp with Fiber)
 - Integrate with a popular frameworks
 - Focus on the actual code of your application
 
