@@ -43,6 +43,7 @@ go-blueprint create
 - [Fiber](https://github.com/gofiber/fiber)
 - [HttpRouter](https://github.com/julienschmidt/httprouter)
 - [Gorilla/mux](https://github.com/gorilla/mux)
+- [Echo](https://github.com/labstack/echo)
 
 ### License
 
