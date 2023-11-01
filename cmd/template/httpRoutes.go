@@ -15,8 +15,7 @@ func (s StandardLibTemplate) Routes() []byte {
 }
 
 func MakeHTTPServer() []byte {
-	return []byte(`
-package server
+	return []byte(`package server
 
 import (
 	"fmt"
@@ -51,8 +50,7 @@ func NewServer() *http.Server {
 }
 
 func MakeHTTPRoutes() []byte {
-	return []byte(`
-package server
+	return []byte(`package server
 
 import (
 	"net/http"

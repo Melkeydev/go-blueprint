@@ -13,9 +13,7 @@ func (g GorillaTemplates) Routes() []byte {
 }
 
 func MakeGorillaRoutes() []byte {
-	return []byte(`
-
-package server
+	return []byte(`package server
 
 import (
 	"encoding/json"

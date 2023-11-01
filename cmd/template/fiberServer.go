@@ -13,9 +13,7 @@ func (f FiberTemplates) Routes() []byte {
 	return MakeFiberRoutes()
 }
 func MakeFiberServer() []byte {
-	return []byte(`
-
-package server
+	return []byte(`package server
 
 import "github.com/gofiber/fiber/v2"
 
@@ -35,9 +33,7 @@ func New() *FiberServer {
 }
 
 func MakeFiberRoutes() []byte {
-	return []byte(`
-
-package server
+	return []byte(`package server
 
 import (
 	"github.com/gofiber/fiber/v2"
@@ -58,9 +54,7 @@ func (s *FiberServer) helloWorldHandler(c *fiber.Ctx) error {
 }
 
 func MakeFiberMain() []byte {
-	return []byte(`
-
-package main
+	return []byte(`package main
 
 import (
 	"{{.ProjectName}}/internal/server"

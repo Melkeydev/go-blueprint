@@ -1,8 +1,7 @@
 package template
 
 func MainTemplate() []byte {
-	return []byte(`
-package main
+	return []byte(`package main
 
 import (
 	"{{.ProjectName}}/internal/server"
