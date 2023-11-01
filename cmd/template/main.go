@@ -5,7 +5,7 @@ func MainTemplate() []byte {
 
 import (
 	"{{.ProjectName}}/internal/server"
-) 
+)
 
 func main() {
 
@@ -29,11 +29,11 @@ all: build
 
 build:
 	@echo "Building..."
-	@go build -o main cmd/api/main.go 
+	@go build -o main cmd/api/main.go
 
 # Run the application
 run:
-	@go run cmd/api/main.go 
+	@go run cmd/api/main.go
 
 # Test the application
 test:
@@ -43,7 +43,7 @@ test:
 # Clean the binary
 clean:
 	@echo "Cleaning..."
-	@rm -f main 
+	@rm -f main
 
 .PHONY: all build run test clean
 		`)
