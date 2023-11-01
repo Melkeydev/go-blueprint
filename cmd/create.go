@@ -91,5 +91,6 @@ var createCmd = &cobra.Command{
 		}
 
 		fmt.Println(endingMsgStyle.Render("\nNext steps cd into the newly created project with:"))
+		fmt.Println(endingMsgStyle.Render(fmt.Sprintf("• cd %s\n", project.ProjectName)))
 	},
 }
