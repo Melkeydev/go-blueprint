@@ -1,17 +1,49 @@
+     ____  _                       _       _
+    |  _ \| |                     (_)     | |
+    | |_) | |_   _  ___ _ __  _ __ _ _ __ | |_
+    |  _ <| | | | |/ _ \ '_ \| '__| | '_ \| __|
+    | |_) | | |_| |  __/ |_) | |  | | | | | |_
+    |____/|_|\__,_|\___| .__/|_|  |_|_| |_|\__|
+                        | |
+                        |_|
+
 ### 🚀 Introducing the Ultimate Golang Blueprint Library 🚀
 
-Are you tired of starting Golang projects from scratch, struggling with inconsistent structures and code conventions? 
-Look no further! Our Golang Blueprint Library is your go-to solution for supercharging your development process.
+Are you tired of starting Golang projects from scratch, struggling with inconsistent structures and code conventions? Go Blueprint is a CLI tool that allows users to spin up a Go project with the corresponding structure seamlessly. It also gives the option to integrate with one of the more popular Go frameworks!
 
-### 🏗️ Build with Confidence 
+### Why Would I use this?
 
-Our blueprint library offers pre-defined project templates, best practices, and standardized structures that will kickstart 
-your Golang project in no time. Say goodbye to project initiation headaches and hello to consistent, high-quality code.
+- Easy to set up and install
+- Have the entire Go structure already established
+- Setting up a Go HTTP server (or Fasthtto with Fiber)
+- Integrate with a popular frameworks
+- Focus on the actual code of your application
 
-### 🤖 Streamline Your Workflow
+### Install
 
-Say hello to automation! Our library includes handy scripts and tools for dependency management, testing, and deployment. 
-You'll be amazed at how much time you'll save, allowing you to focus on what you do best – writing amazing Golang code.
+```
+go install github.com/melkeydev/go-blueprint@latest
+```
 
-Don't waste another minute. Level up your Golang projects with our Blueprint Library today and watch your development 
-process soar to new heights. Get started now! 🚀
+This installs a go binary that will automatically bind to your $GOPATH
+
+Then in a new terminal run:
+
+```
+go-blueprint create
+```
+
+![Starter Image](./public/blueprint_1.png)
+![Framework Image](./public/blueprint_2.png)
+
+### Frameworks Supported
+
+- [Chi](https://github.com/go-chi/chi)
+- [Gin](https://github.com/gin-gonic/gin)
+- [Fiber](https://github.com/gofiber/fiber)
+- [HttpRouter](https://github.com/julienschmidt/httprouter)
+- [Gorilla/mux](https://github.com/gorilla/mux)
+
+### License
+
+Licensed under [MIT License](./LICENSE)
