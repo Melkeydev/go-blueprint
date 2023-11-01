@@ -35,3 +35,13 @@ func GoGetPackage(appDir, packageName string) error {
 
 	return nil
 }
+
+func GoFmt(appDir string) error {
+	if err := ExecuteCmd("gofmt",
+		[]string{"-s", "-w", "."},
+		appDir); err != nil {
+		return err
+	}
+
+	return nil
+}
