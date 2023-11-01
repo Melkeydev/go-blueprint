@@ -37,6 +37,7 @@ const (
 	routerPackage  = "github.com/julienschmidt/httprouter"
 	ginPackage     = "github.com/gin-gonic/gin"
 	fiberPackage   = "github.com/gofiber/fiber/v2"
+	echoPackage    = "github.com/labstack/echo/v4"
 
 	cmdApiPath         = "cmd/api"
 	internalServerPath = "internal/server"
@@ -80,6 +81,11 @@ func (p *Project) createFrameworkMap() {
 	p.FrameworkMap["httprouter"] = Framework{
 		packageName: routerPackage,
 		templater:   tpl.RouterTemplates{},
+	}
+
+	p.FrameworkMap["echo"] = Framework{
+		packageName: echoPackage,
+		templater:   tpl.EchoTemplates{},
 	}
 }
 
