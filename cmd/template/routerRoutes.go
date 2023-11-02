@@ -1,5 +1,7 @@
 package template
 
+// RouterTemplates contains the methods used for building
+// an app that uses [github.com/julienschmidt/httprouter]
 type RouterTemplates struct{}
 
 func (r RouterTemplates) Main() []byte {
@@ -12,6 +14,8 @@ func (r RouterTemplates) Routes() []byte {
 	return MakeRouterRoutes()
 }
 
+// MakeRouterRoutes returns a byte slice that represents 
+// the internal/server/routes.go file when using HttpRouter
 func MakeRouterRoutes() []byte {
 	return []byte(`package server
 
