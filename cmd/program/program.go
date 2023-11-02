@@ -37,6 +37,7 @@ const (
 	routerPackage  = "github.com/julienschmidt/httprouter"
 	ginPackage     = "github.com/gin-gonic/gin"
 	fiberPackage   = "github.com/gofiber/fiber/v2"
+	beegoPackage   = "github.com/beego/beego"
 
 	cmdApiPath         = "cmd/api"
 	internalServerPath = "internal/server"
@@ -80,6 +81,10 @@ func (p *Project) createFrameworkMap() {
 	p.FrameworkMap["httprouter"] = Framework{
 		packageName: routerPackage,
 		templater:   tpl.RouterTemplates{},
+	}
+	p.FrameworkMap["beego"] = Framework{
+		packageName: beegoPackage,
+		templater:   tpl.BeegoTemplates{},
 	}
 }
 
