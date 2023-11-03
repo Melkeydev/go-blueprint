@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"os"
+	"os/exec"
 
 	tea "github.com/charmbracelet/bubbletea"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
@@ -170,6 +171,16 @@ func (p *Project) CreateMainFile() error {
 		log.Printf("Error injecting routes.go file: %v", err)
 		cobra.CheckErr(err)
 		return err
+	}
+
+    // Initialize git repo
+	gitInitCmd := exec.Command("npx", "gitignore", "go")
+    gitInitCmd.Dir = projectPath
+	gitInitCmd.Stdout = os.Stdout
+	gitInitCmd.Stderr = os.Stderr
+	if err := gitInitCmd.Run(); err != nil {
+		log.Printf("Error initializing Git repository: %v", err)
+		return nil
 	}
 
 	return nil
