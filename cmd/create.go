@@ -37,6 +37,7 @@ func init() {
 	rootCmd.AddCommand(createCmd)
 }
 
+// createCmd defines the "create" command for the CLI
 var createCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create a Go project and don't worry about the structure",
