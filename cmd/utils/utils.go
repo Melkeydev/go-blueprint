@@ -1,3 +1,5 @@
+// Package utils provides extra utility
+// for the program
 package utils
 
 import (
@@ -5,6 +7,7 @@ import (
 	"os/exec"
 )
 
+// ExecuteCmd provides a shorthand way to run a shell command 
 func ExecuteCmd(name string, args []string, dir string) error {
 	command := exec.Command(name, args...)
 	command.Dir = dir
@@ -16,6 +19,8 @@ func ExecuteCmd(name string, args []string, dir string) error {
 	return nil
 }
 
+// InitGoMod initializes go.mod with the given project name
+// in the selected directory
 func InitGoMod(projectName string, appDir string) error {
 	if err := ExecuteCmd("go",
 		[]string{"mod", "init", projectName},
@@ -26,6 +31,8 @@ func InitGoMod(projectName string, appDir string) error {
 	return nil
 }
 
+// GoGetPackage runs "go get" for a given package in the
+// selected directory
 func GoGetPackage(appDir, packageName string) error {
 	if err := ExecuteCmd("go",
 		[]string{"get", "-u", packageName},
