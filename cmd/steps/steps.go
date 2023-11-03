@@ -20,6 +20,7 @@ type Item struct {
 type Options struct {
 	ProjectName *textinput.Output
 	ProjectType string
+	DBDriver    string
 }
 
 func InitSteps(options *Options) *Steps {
@@ -58,10 +59,10 @@ func InitSteps(options *Options) *Steps {
 					{Title: "Postgresql"},
 					{Title: "Sqlite"},
 					{Title: "Mongodb"},
-					{Title: "none"},
+					{Title: "None"},
 				},
-				Headers: "What database do you want to use in your Go project?",
-				Field:   &options.ProjectType,
+				Headers: "What database driver do you want to use in your Go project?",
+				Field:   &options.DBDriver,
 			},
 		},
 	}

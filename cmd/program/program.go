@@ -17,12 +17,18 @@ type Project struct {
 	Exit         bool
 	AbsolutePath string
 	ProjectType  string
+	DBDriver     string
 	FrameworkMap map[string]Framework
+	DBDriverMap  map[string]DBDriver
 }
 
 type Framework struct {
 	packageName string
 	templater   Templater
+}
+
+type DBDriver struct {
+	packageName string
 }
 
 type Templater interface {
@@ -37,6 +43,11 @@ const (
 	routerPackage  = "github.com/julienschmidt/httprouter"
 	ginPackage     = "github.com/gin-gonic/gin"
 	fiberPackage   = "github.com/gofiber/fiber/v2"
+
+	mysqlDriver    = "https://github.com/go-sql-driver/mysql"
+	postgresDriver = "https://github.com/lib/pq"
+	sqliteDriver   = "https://github.com/mattn/go-sqlite3"
+	mongoDriver    = "https://github.com/mongodb/mongo-go-driver"
 
 	cmdApiPath         = "cmd/api"
 	internalServerPath = "internal/server"
@@ -80,6 +91,21 @@ func (p *Project) createFrameworkMap() {
 	p.FrameworkMap["httprouter"] = Framework{
 		packageName: routerPackage,
 		templater:   tpl.RouterTemplates{},
+	}
+}
+
+func (p *Project) createDBDriverMap() {
+	p.DBDriverMap["mysql"] = DBDriver{
+		packageName: mysqlDriver,
+	}
+	p.DBDriverMap["postgres"] = DBDriver{
+		packageName: postgresDriver,
+	}
+	p.DBDriverMap["sqlite"] = DBDriver{
+		packageName: sqliteDriver,
+	}
+	p.DBDriverMap["mongo"] = DBDriver{
+		packageName: mongoDriver,
 	}
 }
 

@@ -50,6 +50,7 @@ var createCmd = &cobra.Command{
 
 		project := &program.Project{
 			FrameworkMap: make(map[string]program.Framework),
+			DBDriverMap:  make(map[string]program.DBDriver),
 		}
 		steps := steps.InitSteps(&options)
 
@@ -75,6 +76,7 @@ var createCmd = &cobra.Command{
 
 		project.ProjectName = options.ProjectName.Output
 		project.ProjectType = strings.ToLower(options.ProjectType)
+		project.DBDriver = strings.ToLower(options.DBDriver)
 		currentWorkingDir, err := os.Getwd()
 		if err != nil {
 			log.Printf("could not get current working directory: %v", err)

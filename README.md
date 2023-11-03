@@ -41,8 +41,15 @@ go-blueprint create
 - [Chi](https://github.com/go-chi/chi)
 - [Gin](https://github.com/gin-gonic/gin)
 - [Fiber](https://github.com/gofiber/fiber)
-- [HttpRouter](https://github.com/julienschmidt/httprouter)
-- [Gorilla/mux](https://github.com/gorilla/mux)
+- [HttpRouter](https://github.com/mattn/go-sqlite3)
+- [Gorilla/mux](https://github.com/mongodb/mongo-go-driver)
+
+### Database Drivers Supported
+
+- [Mysql](https://github.com/go-sql-driver/mysql)
+- [Postgres](https://github.com/lib/pq)
+- [Sqlite](https://github.com/gofiber/fiber)
+- [Mongo](https://github.com/julienschmidt/httprouter)
 
 ### License
 
