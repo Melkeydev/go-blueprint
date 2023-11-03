@@ -5,8 +5,6 @@ import (
 	"html/template"
 	"log"
 	"os"
-	"os/exec"
-
 	tea "github.com/charmbracelet/bubbletea"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
@@ -173,17 +171,21 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-    // Initialize git repo
-	gitInitCmd := exec.Command("npx", "gitignore", "go")
-    gitInitCmd.Dir = projectPath
-	gitInitCmd.Stdout = os.Stdout
-	gitInitCmd.Stderr = os.Stderr
-	if err := gitInitCmd.Run(); err != nil {
-		log.Printf("Error initializing Git repository: %v", err)
-		return nil
-	}
-
-	return nil
+	// Initialize git repo
+    err = utils.ExecuteCmd("git", []string{"init"}, projectPath)
+    if err != nil {
+        log.Printf("Error initializing git repo: %v", err)
+        cobra.CheckErr(err)
+        return err
+    }
+    // Create gitignore
+    err = utils.ExecuteCmd("npx", []string{"gitignore", "go"}, projectPath)
+    if err != nil {
+        log.Printf("Error creating gitignore: %v", err)
+        cobra.CheckErr(err)
+        return err
+    }
+    return nil
 }
 
 func (p *Project) CreatePath(pathToCreate string, projectPath string) error {
