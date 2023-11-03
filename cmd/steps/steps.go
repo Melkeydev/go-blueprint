@@ -54,19 +54,10 @@ func InitSteps(options *Options) *Steps {
 			{
 				StepName: "Go Project Database",
 				Options: []Item{
-					{
-						Title: "Mysql",
-						Desc:  "The built-in Go standard library HTTP package",
-					},
-					{Title: "Postgres",
-						Desc: "A lightweight, idiomatic and composable router for building Go HTTP services",
-					},
-					{Title: "Sqlite",
-						Desc: "Features a martini-like API with performance that is up to 40 times faster thanks to httprouter",
-					},
-					{Title: "Mongodb",
-						Desc: "An Express inspired web framework built on top of Fasthttp",
-					},
+					{Title: "Mysql"},
+					{Title: "Postgresql"},
+					{Title: "Sqlite"},
+					{Title: "Mongodb"},
 				},
 				Headers: "What database do you want to use in your Go project?",
 				Field:   &options.ProjectType,
