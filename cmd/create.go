@@ -50,7 +50,7 @@ var createCmd = &cobra.Command{
 
 		project := &program.Project{
 			FrameworkMap: make(map[string]program.Framework),
-			DBDriverMap:  make(map[string]program.DBDriver),
+			DBDriverMap:  make(map[string]program.Driver),
 		}
 		steps := steps.InitSteps(&options)
 
@@ -78,12 +78,12 @@ var createCmd = &cobra.Command{
 		project.ProjectType = strings.ToLower(options.ProjectType)
 		project.DBDriver = strings.ToLower(options.DBDriver)
 		currentWorkingDir, err := os.Getwd()
+		project.AbsolutePath = currentWorkingDir
+
 		if err != nil {
 			log.Printf("could not get current working directory: %v", err)
 			cobra.CheckErr(err)
 		}
-
-		project.AbsolutePath = currentWorkingDir
 
 		// This calls the templates
 		err = project.CreateMainFile()

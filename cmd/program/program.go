@@ -2,14 +2,14 @@ package program
 
 import (
 	"fmt"
+	tea "github.com/charmbracelet/bubbletea"
+	tpl "github.com/melkeydev/go-blueprint/cmd/template"
+	"github.com/melkeydev/go-blueprint/cmd/template/DBDriver"
+	"github.com/melkeydev/go-blueprint/cmd/utils"
+	"github.com/spf13/cobra"
 	"html/template"
 	"log"
 	"os"
-
-	tea "github.com/charmbracelet/bubbletea"
-	tpl "github.com/melkeydev/go-blueprint/cmd/template"
-	"github.com/melkeydev/go-blueprint/cmd/utils"
-	"github.com/spf13/cobra"
 )
 
 type Project struct {
@@ -19,7 +19,7 @@ type Project struct {
 	ProjectType  string
 	DBDriver     string
 	FrameworkMap map[string]Framework
-	DBDriverMap  map[string]DBDriver
+	DBDriverMap  map[string]Driver
 }
 
 type Framework struct {
@@ -27,14 +27,19 @@ type Framework struct {
 	templater   Templater
 }
 
-type DBDriver struct {
+type Driver struct {
 	packageName string
+	templater   DBDriverTemplater
 }
 
 type Templater interface {
 	Main() []byte
 	Server() []byte
 	Routes() []byte
+}
+
+type DBDriverTemplater interface {
+	Service() []byte
 }
 
 const (
@@ -44,13 +49,14 @@ const (
 	ginPackage     = "github.com/gin-gonic/gin"
 	fiberPackage   = "github.com/gofiber/fiber/v2"
 
-	mysqlDriver    = "https://github.com/go-sql-driver/mysql"
-	postgresDriver = "https://github.com/lib/pq"
-	sqliteDriver   = "https://github.com/mattn/go-sqlite3"
-	mongoDriver    = "https://github.com/mongodb/mongo-go-driver"
+	mysqlDriver    = "github.com/go-sql-driver/mysql"
+	postgresDriver = "github.com/lib/pq"
+	sqliteDriver   = "github.com/mattn/go-sqlite3"
+	mongoDriver    = "go.mongodb.org/mongo-driver"
 
 	cmdApiPath         = "cmd/api"
 	internalServerPath = "internal/server"
+	service            = "services"
 )
 
 func (p *Project) ExitCLI(tprogram *tea.Program) {
@@ -95,17 +101,21 @@ func (p *Project) createFrameworkMap() {
 }
 
 func (p *Project) createDBDriverMap() {
-	p.DBDriverMap["mysql"] = DBDriver{
+	p.DBDriverMap["mysql"] = Driver{
 		packageName: mysqlDriver,
+		templater:   DBDriver.MysqlTemplate{},
 	}
-	p.DBDriverMap["postgres"] = DBDriver{
+	p.DBDriverMap["postgres"] = Driver{
 		packageName: postgresDriver,
+		templater:   DBDriver.PostgresTemplate{},
 	}
-	p.DBDriverMap["sqlite"] = DBDriver{
+	p.DBDriverMap["sqlite"] = Driver{
 		packageName: sqliteDriver,
+		templater:   DBDriver.SqliteTemplate{},
 	}
-	p.DBDriverMap["mongo"] = DBDriver{
+	p.DBDriverMap["mongo"] = Driver{
 		packageName: mongoDriver,
+		templater:   DBDriver.MysqlTemplate{},
 	}
 }
 
@@ -146,6 +156,31 @@ func (p *Project) CreateMainFile() error {
 		if err != nil {
 			log.Printf("Could not install go dependency for chosen framework %v\n", err)
 			cobra.CheckErr(err)
+		}
+	}
+
+	if p.DBDriver != "None" {
+		// Create the map for our program
+		p.createDBDriverMap()
+
+		err = utils.GoGetPackage(projectPath, p.DBDriverMap[p.DBDriver].packageName)
+		if err != nil {
+			log.Printf("Could not install go dependency for chosen framework %v\n", err)
+			cobra.CheckErr(err)
+		}
+
+		err = p.CreatePath(service, projectPath)
+		if err != nil {
+			log.Printf("Error creating path: %s", service)
+			cobra.CheckErr(err)
+			return err
+		}
+
+		err = p.CreateFileWithInjection(service, projectPath, "service.go", "services")
+		if err != nil {
+			log.Printf("Error injecting server.go file: %v", err)
+			cobra.CheckErr(err)
+			return err
 		}
 	}
 
@@ -230,6 +265,10 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		err = createdTemplate.Execute(createdFile, p)
 	case "routes":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Routes())))
+		err = createdTemplate.Execute(createdFile, p)
+
+	case "services":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.Service())))
 		err = createdTemplate.Execute(createdFile, p)
 	}
 

@@ -56,9 +56,9 @@ func InitSteps(options *Options) *Steps {
 				StepName: "Go Project Database",
 				Options: []Item{
 					{Title: "Mysql"},
-					{Title: "Postgresql"},
+					{Title: "Postgres"},
 					{Title: "Sqlite"},
-					{Title: "Mongodb"},
+					{Title: "Mongo"},
 					{Title: "None"},
 				},
 				Headers: "What database driver do you want to use in your Go project?",
