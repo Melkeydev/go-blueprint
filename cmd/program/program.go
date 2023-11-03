@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"os"
+	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
@@ -93,7 +94,13 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
-	// First lets create a new director with the project name
+	// First Check if project name has any invalid characters
+	containsSpace := strings.Contains(p.ProjectName, " ")
+	if containsSpace {
+		log.Println("Invlaid Project Name")
+	}
+
+	// Then lets create a new directory with the project name
 	if _, err := os.Stat(fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName)); os.IsNotExist(err) {
 		err := os.MkdirAll(fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName), 0751)
 		if err != nil {
