@@ -58,6 +58,7 @@ func InitSteps(options *Options) *Steps {
 					{Title: "Postgresql"},
 					{Title: "Sqlite"},
 					{Title: "Mongodb"},
+					{Title: "none"},
 				},
 				Headers: "What database do you want to use in your Go project?",
 				Field:   &options.ProjectType,
