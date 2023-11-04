@@ -49,7 +49,7 @@ go-blueprint create
 
 - [Mysql](https://github.com/go-sql-driver/mysql)
 - [Postgres](https://github.com/lib/pq)
-- [Sqlite](https://github.com/gofiber/fiber)
+- [Sqlite](https://github.com/mattn/go-sqlite3)
 - [Mongo](go.mongodb.org/mongo-driver)
 
 ### License
