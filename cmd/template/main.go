@@ -52,7 +52,7 @@ clean:
 func ReadmeTemplate() []byte {
 	return []byte(
 		`
-# Project Title
+# Project {{.ProjectName}}
 
 One Paragraph of project description goes here
 
