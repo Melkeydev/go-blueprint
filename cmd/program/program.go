@@ -23,7 +23,7 @@ type Project struct {
 }
 
 type Framework struct {
-	packageName string
+	packageName []string
 	templater   Templater
 }
 
@@ -42,13 +42,16 @@ type DBDriverTemplater interface {
 	Service() []byte
 }
 
-const (
-	chiPackage     = "github.com/go-chi/chi/v5"
-	gorillaPackage = "github.com/gorilla/mux"
-	routerPackage  = "github.com/julienschmidt/httprouter"
-	ginPackage     = "github.com/gin-gonic/gin"
-	fiberPackage   = "github.com/gofiber/fiber/v2"
+var (
+	chiPackage     = []string{"github.com/go-chi/chi/v5"}
+	gorillaPackage = []string{"github.com/gorilla/mux"}
+	routerPackage  = []string{"github.com/julienschmidt/httprouter"}
+	ginPackage     = []string{"github.com/gin-gonic/gin"}
+	fiberPackage   = []string{"github.com/gofiber/fiber/v2"}
+	echoPackage    = []string{"github.com/labstack/echo/v4", "github.com/labstack/echo/v4/middleware"}
+)
 
+const (
 	mysqlDriver    = "github.com/go-sql-driver/mysql"
 	postgresDriver = "github.com/lib/pq"
 	sqliteDriver   = "github.com/mattn/go-sqlite3"
@@ -68,14 +71,13 @@ func (p *Project) ExitCLI(tprogram *tea.Program) {
 }
 
 func (p *Project) createFrameworkMap() {
-
 	p.FrameworkMap["chi"] = Framework{
 		packageName: chiPackage,
 		templater:   framework.ChiTemplates{},
 	}
 
 	p.FrameworkMap["standard library"] = Framework{
-		packageName: "",
+		packageName: []string{},
 		templater:   framework.StandardLibTemplate{},
 	}
 
@@ -116,6 +118,11 @@ func (p *Project) createDBDriverMap() {
 	p.DBDriverMap["mongo"] = Driver{
 		packageName: mongoDriver,
 		templater:   DBDriver.MysqlTemplate{},
+	}
+
+	p.FrameworkMap["echo"] = Framework{
+		packageName: echoPackage,
+		templater:   framework.EchoTemplates{},
 	}
 }
 
@@ -231,6 +238,12 @@ func (p *Project) CreateMainFile() error {
 		log.Printf("Error injecting routes.go file: %v", err)
 		cobra.CheckErr(err)
 		return err
+	}
+
+	err = utils.GoFmt(projectPath)
+	if err != nil {
+		log.Printf("Could not gofmt in new project %v\n", err)
+		cobra.CheckErr(err)
 	}
 
 	return nil
