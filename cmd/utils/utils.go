@@ -26,11 +26,13 @@ func InitGoMod(projectName string, appDir string) error {
 	return nil
 }
 
-func GoGetPackage(appDir, packageName string) error {
-	if err := ExecuteCmd("go",
-		[]string{"get", "-u", packageName},
-		appDir); err != nil {
-		return err
+func GoGetPackage(appDir string, packages []string) error {
+	for _, packageName := range packages {
+		if err := ExecuteCmd("go",
+			[]string{"get", "-u", packageName},
+			appDir); err != nil {
+			return err
+		}
 	}
 
 	return nil
