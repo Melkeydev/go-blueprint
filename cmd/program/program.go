@@ -11,6 +11,7 @@ import (
 	"github.com/melkeydev/go-blueprint/cmd/utils"
 	"github.com/spf13/cobra"
 )
+// declaring variables
 
 type Project struct {
 	ProjectName  string
@@ -41,48 +42,47 @@ const (
 	cmdApiPath         = "cmd/api"
 	internalServerPath = "internal/server"
 )
-
+// Exit function purpose is to exit program
 func (p *Project) ExitCLI(tprogram *tea.Program) {
 	if p.Exit {
-		// logo render here
 		tprogram.ReleaseTerminal()
 		os.Exit(1)
 	}
 }
-
+// adding the go framework templates
 func (p *Project) createFrameworkMap() {
-
+	// chi
 	p.FrameworkMap["chi"] = Framework{
 		packageName: chiPackage,
 		templater:   tpl.ChiTemplates{},
 	}
-
+	// http/net
 	p.FrameworkMap["standard library"] = Framework{
 		packageName: "",
 		templater:   tpl.StandardLibTemplate{},
 	}
-
+	// gin
 	p.FrameworkMap["gin"] = Framework{
 		packageName: ginPackage,
 		templater:   tpl.GinTemplates{},
 	}
-
+	// fiber
 	p.FrameworkMap["fiber"] = Framework{
 		packageName: fiberPackage,
 		templater:   tpl.FiberTemplates{},
 	}
-
+	// gorilla/mux
 	p.FrameworkMap["gorilla/mux"] = Framework{
 		packageName: gorillaPackage,
 		templater:   tpl.GorillaTemplates{},
 	}
-
+	// go http router
 	p.FrameworkMap["httprouter"] = Framework{
 		packageName: routerPackage,
 		templater:   tpl.RouterTemplates{},
 	}
 }
-
+// creating the go.main file and the directory
 func (p *Project) CreateMainFile() error {
 	// check if AbsolutePath exists
 	if _, err := os.Stat(p.AbsolutePath); os.IsNotExist(err) {
@@ -101,7 +101,7 @@ func (p *Project) CreateMainFile() error {
 			return err
 		}
 	}
-
+	// declaring the path
 	projectPath := fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName)
 
 	// Create the map for our program
@@ -122,7 +122,7 @@ func (p *Project) CreateMainFile() error {
 			cobra.CheckErr(err)
 		}
 	}
-
+	// errors
 	err = p.CreatePath(cmdApiPath, projectPath)
 	if err != nil {
 		log.Printf("Error creating path: %s", projectPath)
@@ -164,7 +164,7 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 		return err
 	}
-
+	// adding routes.go file
 	err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routes")
 	if err != nil {
 		log.Printf("Error injecting routes.go file: %v", err)
