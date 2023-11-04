@@ -28,7 +28,7 @@ type Framework struct {
 }
 
 type Driver struct {
-	packageName string
+	packageName []string
 	templater   DBDriverTemplater
 }
 
@@ -49,14 +49,14 @@ var (
 	ginPackage     = []string{"github.com/gin-gonic/gin"}
 	fiberPackage   = []string{"github.com/gofiber/fiber/v2"}
 	echoPackage    = []string{"github.com/labstack/echo/v4", "github.com/labstack/echo/v4/middleware"}
+
+	mysqlDriver    = []string{"github.com/go-sql-driver/mysql"}
+	postgresDriver = []string{"github.com/lib/pq"}
+	sqliteDriver   = []string{"github.com/mattn/go-sqlite3"}
+	mongoDriver    = []string{"go.mongodb.org/mongo-driver"}
 )
 
 const (
-	mysqlDriver    = "github.com/go-sql-driver/mysql"
-	postgresDriver = "github.com/lib/pq"
-	sqliteDriver   = "github.com/mattn/go-sqlite3"
-	mongoDriver    = "go.mongodb.org/mongo-driver"
-
 	cmdApiPath         = "cmd/api"
 	internalServerPath = "internal/server"
 	service            = "services"
