@@ -1,5 +1,5 @@
-// Package program contains utility that help
-// with the operation of the CLI program
+// Package program provides functions that
+// act as the main functionality of Blueprint
 package program
 
 import (
