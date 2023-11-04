@@ -1,5 +1,5 @@
-// Package program provides functions that
-// act as the main functionality of Blueprint
+// Package program provides the
+// main functionality of Blueprint
 package program
 
 import (
