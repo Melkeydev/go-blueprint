@@ -172,6 +172,12 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
+	err = utils.GoFmt(projectPath)
+	if err != nil {
+		log.Printf("Could not gofmt in new project %v\n", err)
+		cobra.CheckErr(err)
+	}
+
 	return nil
 }
 
