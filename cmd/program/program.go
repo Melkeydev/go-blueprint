@@ -165,7 +165,7 @@ func (p *Project) CreateMainFile() error {
 
 		err = utils.GoGetPackage(projectPath, p.DBDriverMap[p.DBDriver].packageName)
 		if err != nil {
-			log.Printf("Could not install go dependency for chosen framework %v\n", err)
+			log.Printf("Could not install go dependency for chosen driver %v\n", err)
 			cobra.CheckErr(err)
 		}
 
