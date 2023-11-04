@@ -37,8 +37,8 @@ var (
 func init() {
 	rootCmd.AddCommand(createCmd)
 
-	createCmd.Flags().StringP("project-name", "n", "", "Name of project to create")
-	createCmd.Flags().StringP("project-type", "t", "", fmt.Sprintf("Type of project to create. Allowed values: %s", strings.Join(allowedProjectTypes, ", ")))
+	createCmd.Flags().StringP("name", "n", "", "Name of project to create")
+	createCmd.Flags().StringP("framework", "f", "", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(allowedProjectTypes, ", ")))
 }
 
 var createCmd = &cobra.Command{
@@ -53,18 +53,20 @@ var createCmd = &cobra.Command{
 			ProjectName: &textinput.Output{},
 		}
 
-		flagName := cmd.Flag("project-name").Value.String()
-		flagType := cmd.Flag("project-type").Value.String()
+		flagName := cmd.Flag("name").Value.String()
+		flagFramework := cmd.Flag("framework").Value.String()
 
-		isValid := isValidProjectType(flagType, allowedProjectTypes)
-		if !isValid {
-			cobra.CheckErr(fmt.Errorf("Project type '%s' is not valid. Valid types are: %s", flagType, strings.Join(allowedProjectTypes, ", ")))
+		if flagFramework != "" {
+			isValid := isValidProjectType(flagFramework, allowedProjectTypes)
+			if !isValid {
+				cobra.CheckErr(fmt.Errorf("Project type '%s' is not valid. Valid types are: %s", flagFramework, strings.Join(allowedProjectTypes, ", ")))
+			}
 		}
 
 		project := &program.Project{
 			FrameworkMap: make(map[string]program.Framework),
 			ProjectName:  flagName,
-			ProjectType:  strings.ReplaceAll(flagType, "-", " "),
+			ProjectType:  strings.ReplaceAll(flagFramework, "-", " "),
 		}
 
 		steps := steps.InitSteps(&options)
