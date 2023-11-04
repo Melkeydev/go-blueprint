@@ -1,18 +1,20 @@
-package template
+package framework
 
-type GorillaTemplates struct{}
+type ChiTemplates struct{}
 
-func (g GorillaTemplates) Main() []byte {
+func (c ChiTemplates) Main() []byte {
 	return MainTemplate()
 }
-func (g GorillaTemplates) Server() []byte {
+
+func (c ChiTemplates) Server() []byte {
 	return MakeHTTPServer()
 }
-func (g GorillaTemplates) Routes() []byte {
-	return MakeGorillaRoutes()
+
+func (c ChiTemplates) Routes() []byte {
+	return MakeChiRoutes()
 }
 
-func MakeGorillaRoutes() []byte {
+func MakeChiRoutes() []byte {
 	return []byte(`package server
 
 import (
@@ -20,13 +22,15 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
-	r := mux.NewRouter()
+	r := chi.NewRouter()
+	r.Use(middleware.Logger)
 
-	r.HandleFunc("/", s.helloWorldHandler)
+	r.Get("/", s.helloWorldHandler)
 
 	return r
 }

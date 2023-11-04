@@ -3,8 +3,8 @@ package program
 import (
 	"fmt"
 	tea "github.com/charmbracelet/bubbletea"
-	tpl "github.com/melkeydev/go-blueprint/cmd/template"
 	"github.com/melkeydev/go-blueprint/cmd/template/DBDriver"
+	"github.com/melkeydev/go-blueprint/cmd/template/framework"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
 	"github.com/spf13/cobra"
 	"html/template"
@@ -71,32 +71,32 @@ func (p *Project) createFrameworkMap() {
 
 	p.FrameworkMap["chi"] = Framework{
 		packageName: chiPackage,
-		templater:   tpl.ChiTemplates{},
+		templater:   framework.ChiTemplates{},
 	}
 
 	p.FrameworkMap["standard library"] = Framework{
 		packageName: "",
-		templater:   tpl.StandardLibTemplate{},
+		templater:   framework.StandardLibTemplate{},
 	}
 
 	p.FrameworkMap["gin"] = Framework{
 		packageName: ginPackage,
-		templater:   tpl.GinTemplates{},
+		templater:   framework.GinTemplates{},
 	}
 
 	p.FrameworkMap["fiber"] = Framework{
 		packageName: fiberPackage,
-		templater:   tpl.FiberTemplates{},
+		templater:   framework.FiberTemplates{},
 	}
 
 	p.FrameworkMap["gorilla/mux"] = Framework{
 		packageName: gorillaPackage,
-		templater:   tpl.GorillaTemplates{},
+		templater:   framework.GorillaTemplates{},
 	}
 
 	p.FrameworkMap["httprouter"] = Framework{
 		packageName: routerPackage,
-		templater:   tpl.RouterTemplates{},
+		templater:   framework.RouterTemplates{},
 	}
 }
 
@@ -206,7 +206,7 @@ func (p *Project) CreateMainFile() error {
 	defer makeFile.Close()
 
 	// inject makefile template
-	makeFileTemplate := template.Must(template.New("makefile").Parse(string(tpl.MakeTemplate())))
+	makeFileTemplate := template.Must(template.New("makefile").Parse(string(framework.MakeTemplate())))
 	err = makeFileTemplate.Execute(makeFile, p)
 	if err != nil {
 		return err

@@ -7,6 +7,7 @@ func (m PostgresTemplate) Service() []byte {
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	_ "github.com/lib/pq"
 	"log"
 	"time"

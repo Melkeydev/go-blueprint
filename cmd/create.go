@@ -2,10 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"log"
-	"os"
-	"strings"
-
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/melkeydev/go-blueprint/cmd/program"
@@ -13,6 +9,9 @@ import (
 	"github.com/melkeydev/go-blueprint/cmd/ui/multiInput"
 	"github.com/melkeydev/go-blueprint/cmd/ui/textinput"
 	"github.com/spf13/cobra"
+	"log"
+	"os"
+	"strings"
 )
 
 const logo = `

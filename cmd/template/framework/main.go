@@ -1,4 +1,4 @@
-package template
+package framework
 
 func MainTemplate() []byte {
 	return []byte(`package main

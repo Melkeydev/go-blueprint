@@ -1,4 +1,4 @@
-package template
+package framework
 
 type FiberTemplates struct{}
 

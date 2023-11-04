@@ -1,18 +1,18 @@
-package template
+package framework
 
-type RouterTemplates struct{}
+type GorillaTemplates struct{}
 
-func (r RouterTemplates) Main() []byte {
+func (g GorillaTemplates) Main() []byte {
 	return MainTemplate()
 }
-func (r RouterTemplates) Server() []byte {
+func (g GorillaTemplates) Server() []byte {
 	return MakeHTTPServer()
 }
-func (r RouterTemplates) Routes() []byte {
-	return MakeRouterRoutes()
+func (g GorillaTemplates) Routes() []byte {
+	return MakeGorillaRoutes()
 }
 
-func MakeRouterRoutes() []byte {
+func MakeGorillaRoutes() []byte {
 	return []byte(`package server
 
 import (
@@ -20,12 +20,13 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/julienschmidt/httprouter"
+	"github.com/gorilla/mux"
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
-	r := httprouter.New()
-	r.HandlerFunc(http.MethodGet, "/", s.helloWorldHandler)
+	r := mux.NewRouter()
+
+	r.HandleFunc("/", s.helloWorldHandler)
 
 	return r
 }
@@ -41,7 +42,6 @@ func (s *Server) helloWorldHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Write(jsonResp)
 }
-
 
 `)
 }

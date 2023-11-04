@@ -53,7 +53,7 @@ func InitSteps(options *Options) *Steps {
 				Field:   &options.ProjectType,
 			},
 			{
-				StepName: "Go Project Database",
+				StepName: "Go Project Database Driver",
 				Options: []Item{
 					{Title: "Mysql"},
 					{Title: "Postgres"},

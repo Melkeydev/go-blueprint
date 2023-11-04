@@ -1,20 +1,18 @@
-package template
+package framework
 
-type ChiTemplates struct{}
+type RouterTemplates struct{}
 
-func (c ChiTemplates) Main() []byte {
+func (r RouterTemplates) Main() []byte {
 	return MainTemplate()
 }
-
-func (c ChiTemplates) Server() []byte {
+func (r RouterTemplates) Server() []byte {
 	return MakeHTTPServer()
 }
-
-func (c ChiTemplates) Routes() []byte {
-	return MakeChiRoutes()
+func (r RouterTemplates) Routes() []byte {
+	return MakeRouterRoutes()
 }
 
-func MakeChiRoutes() []byte {
+func MakeRouterRoutes() []byte {
 	return []byte(`package server
 
 import (
@@ -22,15 +20,12 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	"github.com/julienschmidt/httprouter"
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
-	r := chi.NewRouter()
-	r.Use(middleware.Logger)
-
-	r.Get("/", s.helloWorldHandler)
+	r := httprouter.New()
+	r.HandlerFunc(http.MethodGet, "/", s.helloWorldHandler)
 
 	return r
 }
@@ -46,6 +41,7 @@ func (s *Server) helloWorldHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Write(jsonResp)
 }
+
 
 `)
 }
