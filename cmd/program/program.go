@@ -151,6 +151,7 @@ func (p *Project) createDBDriverMap() {
 	}
 }
 
+
 // CreateMainFile creates the project folders and files,
 // and writes to them depending on the selected options
 func (p *Project) CreateMainFile() error {

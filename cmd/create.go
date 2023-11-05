@@ -7,6 +7,7 @@ import (
 	"github.com/melkeydev/go-blueprint/cmd/program"
 	"github.com/melkeydev/go-blueprint/cmd/steps"
 	"github.com/melkeydev/go-blueprint/cmd/ui/multiInput"
+	"github.com/melkeydev/go-blueprint/cmd/ui/spinner"
 	"github.com/melkeydev/go-blueprint/cmd/ui/textinput"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
 	"github.com/spf13/cobra"
@@ -154,12 +155,25 @@ var createCmd = &cobra.Command{
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
 		project.AbsolutePath = currentWorkingDir
+		spinStatus := make(chan bool)
 
-		// This calls the templates
-		err = project.CreateMainFile()
-		if err != nil {
-			log.Printf("Problem creating files for project. %v", err)
-			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
+		go func() {
+			err = project.CreateMainFile()
+			if err != nil {
+				log.Printf("Problem creating files for project. %v", err)
+				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
+			}
+		}()
+		go func() {
+			tprogram = tea.NewProgram(spinner.InitialModelNew())
+			if _, err := tprogram.Run(); err != nil {
+				cobra.CheckErr(err)
+			}
+		}()
+
+		if <-spinStatus {
+			close(spinStatus)
+			project.ExitCLI(tprogram)
 		}
 
 		fmt.Println(endingMsgStyle.Render("\nNext steps cd into the newly created project with:"))
