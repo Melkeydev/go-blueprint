@@ -62,12 +62,15 @@ import (
 	"net/http"
 	"encoding/json"
 	"log"
+
+	"nhooyr.io/websocket"
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", s.handler)
+	mux.HandleFunc("/ws", s.pingPongWebsocketHandler)
 
 	return mux
 }
@@ -82,6 +85,19 @@ func (s *Server) handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write(jsonResp)
+}
+
+func (s *Server) pingPongWebsocketHandler(w http.ResponseWriter, r *http.Request) {
+	socket, _ := websocket.Accept(w, r, nil)
+	ctx := r.Context()
+	for {
+		_, socketBytes, _ := socket.Read(ctx)
+		if string(socketBytes) == "PING" {
+			_ = socket.Write(ctx, websocket.MessageText, []byte("PONG"))
+		} else {
+			_ = socket.Write(ctx, websocket.MessageText, []byte("HUH?"))
+		}
+	}
 }
 `)
 }
