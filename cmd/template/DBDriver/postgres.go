@@ -4,13 +4,15 @@ type PostgresTemplate struct{}
 
 func (m PostgresTemplate) Service() []byte {
 	return []byte(`package services
+
 import (
 	"context"
 	"database/sql"
 	"fmt"
-	_ "github.com/lib/pq"
 	"log"
 	"time"
+
+	_ "github.com/lib/pq"
 )
 
 type Service struct {

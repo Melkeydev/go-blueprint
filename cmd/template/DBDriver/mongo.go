@@ -3,9 +3,11 @@ package DBDriver
 type MongoTemplate struct{}
 
 func (m MongoTemplate) Service() []byte {
-	return []byte(`
+	return []byte(`package service
+
 import (
 	"context"
+
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )

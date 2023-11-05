@@ -9,10 +9,10 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	_ "github.com/mattn/go-sqlite3"
 	"log"
-	"net/http"
 	"time"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type Service struct {
@@ -37,7 +37,7 @@ func (s *Service) Health() {
 
 	err := s.db.PingContext(ctx)
 	if err != nil {
-		fmt.Errorf(fmt.Sprintf("db down: %v", err), http.StatusFailedDependency)
+		fmt.Errorf(fmt.Sprintf("db down: %v", err))
 		return
 	}
 }

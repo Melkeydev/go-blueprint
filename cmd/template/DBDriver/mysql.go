@@ -4,13 +4,15 @@ type MysqlTemplate struct{}
 
 func (m MysqlTemplate) Service() []byte {
 	return []byte(`package services
+
 import (
 	"context"
 	"database/sql"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"time"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type Service struct {
