@@ -2,9 +2,9 @@ package program
 
 import (
 	"fmt"
-	"html/template"
-	"log"
-	"os"
+    "html/template"
+    "log"
+    "os"
 	tea "github.com/charmbracelet/bubbletea"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
@@ -172,20 +172,28 @@ func (p *Project) CreateMainFile() error {
 	}
 
 	// Initialize git repo
-    err = utils.ExecuteCmd("git", []string{"init"}, projectPath)
-    if err != nil {
-        log.Printf("Error initializing git repo: %v", err)
-        cobra.CheckErr(err)
-        return err
-    }
-    // Create gitignore
-    err = utils.ExecuteCmd("npx", []string{"gitignore", "go"}, projectPath)
-    if err != nil {
-        log.Printf("Error creating gitignore: %v", err)
-        cobra.CheckErr(err)
-        return err
-    }
-    return nil
+	err = utils.ExecuteCmd("git", []string{"init"}, projectPath)
+	if err != nil {
+		log.Printf("Error initializing git repo: %v", err)
+		cobra.CheckErr(err)
+		return err
+	}
+	// Create gitignore
+	gitignoreFile, err := os.Create(fmt.Sprintf("%s/.gitignore", projectPath))
+	if err != nil {
+		cobra.CheckErr(err)
+		return err
+	}
+
+	defer gitignoreFile.Close()
+
+	// inject gitignore template
+	gitignoreTemplate := template.Must(template.New(".gitignore").Parse(string(tpl.GitIgnoreTemplate())))
+	err = gitignoreTemplate.Execute(gitignoreFile, p)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (p *Project) CreatePath(pathToCreate string, projectPath string) error {
