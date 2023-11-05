@@ -104,7 +104,7 @@ func (p *Project) createFrameworkMap() {
 
 // CreateMainFile creates the project folders and files,
 // and writes to them depending on the selected options
-func (p *Project) CreateMainFile() error {
+func (p *Project) CreateMainFile(spinStatus chan<- bool) error {
 	// check if AbsolutePath exists
 	if _, err := os.Stat(p.AbsolutePath); os.IsNotExist(err) {
 		// create directory
@@ -254,6 +254,8 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 		return err
 	}
+
+	spinStatus <- true
 	return nil
 }
 
