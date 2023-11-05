@@ -199,6 +199,14 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 		return err
 	}
+    // Switch to main branch
+    err = utils.ExecuteCmd("git", []string{"branch", "-M", "main"}, projectPath)
+    if err != nil {
+        log.Printf("Error switching to main branch: %v", err)
+        cobra.CheckErr(err)
+        return err
+    }
+
 	// Create gitignore
 	gitignoreFile, err := os.Create(fmt.Sprintf("%s/.gitignore", projectPath))
 	if err != nil {
