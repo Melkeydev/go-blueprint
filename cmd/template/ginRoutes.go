@@ -50,9 +50,9 @@ func (s *Server) pingPongWebsocketHandler(c *gin.Context) {
 	for {
 		_, socketBytes, _ := socket.Read(ctx)
 		if string(socketBytes) == "PING" {
-			_ = socket.Write(ctx, websocket.MessageText, "PONG")
+			_ = socket.Write(ctx, websocket.MessageText, []byte("PONG"))
 		} else {
-			_ = socket.Write(ctx, websocket.MessageText, "HUH?")
+			_ = socket.Write(ctx, websocket.MessageText, []byte("HUH?"))
 		}
 	}
 }
