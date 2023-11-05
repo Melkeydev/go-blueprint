@@ -25,12 +25,14 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"nhooyr.io/websocket"
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
 	r := gin.Default()
 
 	r.GET("/", s.helloWorldHandler)
+	r.GET("/ws", s.pingPongWebsocketHandler)
 
 	return r
 }
@@ -42,5 +44,17 @@ func (s *Server) helloWorldHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
+func (s *Server) pingPongWebsocketHandler(c *gin.Context) {
+	socket, _ := websocket.Accept(c.Writer, c.Request, nil)
+	ctx := c.Request.Context()
+	for {
+		_, socketBytes, _ := socket.Read(ctx)
+		if string(socketBytes) == "PING" {
+			_ = socket.Write(ctx, websocket.MessageText, "PONG")
+		} else {
+			_ = socket.Write(ctx, websocket.MessageText, "HUH?")
+		}
+	}
+}
 `)
 }
