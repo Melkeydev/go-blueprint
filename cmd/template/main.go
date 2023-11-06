@@ -3,7 +3,7 @@
 package template
 
 // MakeHTTPRoutes returns a byte slice that represents 
-// the default cmd/api/main.go file.
+// the default cmd/api/main.go file template.
 func MainTemplate() []byte {
 	return []byte(`package main
 
@@ -55,6 +55,8 @@ clean:
 		`)
 }
 
+// ReadmeTemplate returns a byte slice that represents 
+// the default README.md file template.
 func ReadmeTemplate() []byte {
 	return []byte(
 		`

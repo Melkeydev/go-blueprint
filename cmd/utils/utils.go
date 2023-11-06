@@ -46,6 +46,8 @@ func GoGetPackage(appDir string, packages []string) error {
 	return nil
 }
 
+// GoFmt runs "gofmt" in a selected directory using the
+// simplify and overwrite flags
 func GoFmt(appDir string) error {
 	if err := ExecuteCmd("gofmt",
 		[]string{"-s", "-w", "."},
