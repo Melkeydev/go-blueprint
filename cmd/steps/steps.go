@@ -6,11 +6,10 @@ type StepSchema struct {
 	StepName string
 	Options  []Item
 	Headers  string
-	Field    *string
 }
 
 type Steps struct {
-	Steps []StepSchema
+	Steps map[string]StepSchema
 }
 
 type Item struct {
@@ -23,10 +22,10 @@ type Options struct {
 	DBDriver    string
 }
 
-func InitFrameworkSteps(options *Options) *Steps {
+func InitSteps() *Steps {
 	steps := &Steps{
-		[]StepSchema{
-			{
+		map[string]StepSchema{
+			"framework": {
 				StepName: "Go Project Framework",
 				Options: []Item{
 					{
@@ -53,23 +52,13 @@ func InitFrameworkSteps(options *Options) *Steps {
 						Title: "HttpRouter",
 						Desc:  "HttpRouter is a lightweight high performance HTTP request router for Go",
 					},
-					{
-						Title: "Echo",
-						Desc:  "High performance, extensible, minimalist Go web framework",
+					{Title: "Echo",
+						Desc: "High performance, extensible, minimalist Go web framework",
 					},
 				},
 				Headers: "What framework do you want to use in your Go project?",
-				Field:   &options.ProjectType,
 			},
-		},
-	}
-	return steps
-}
-
-func InitDBDriverSteps(options *Options) *Steps {
-	steps := &Steps{
-		[]StepSchema{
-			{
+			"driver": {
 				StepName: "Go Project Database Driver",
 				Options: []Item{
 					{
@@ -90,7 +79,6 @@ func InitDBDriverSteps(options *Options) *Steps {
 						Desc:  "Choose this option if you don't wish to install a specific database driver."},
 				},
 				Headers: "What database driver do you want to use in your Go project?",
-				Field:   &options.DBDriver,
 			},
 		},
 	}

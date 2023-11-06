@@ -1,8 +1,8 @@
-package DBDriver
+package dbdriver
 
-type SqliteTemplate struct{}
+type PostgresTemplate struct{}
 
-func (m SqliteTemplate) Service() []byte {
+func (m PostgresTemplate) Service() []byte {
 	return []byte(`package services
 
 import (
@@ -12,7 +12,7 @@ import (
 	"log"
 	"time"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/lib/pq"
 )
 
 type Service struct {
@@ -20,11 +20,9 @@ type Service struct {
 }
 
 func New() *Service {
-	const file string = "example.db"
-	db, err := sql.Open("sqlite3", file)
+	connStr := "user=pqgotest dbname=pqgotest sslmode=verify-full"
+	db, err := sql.Open("postgres", connStr)
 	if err != nil {
-		// This will not be a connection error, but a DSN parse error or
-		// another initialization error.
 		log.Fatal(err)
 	}
 	s := &Service{db: db}

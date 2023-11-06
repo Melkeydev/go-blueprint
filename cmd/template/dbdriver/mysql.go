@@ -1,8 +1,8 @@
-package DBDriver
+package dbdriver
 
-type PostgresTemplate struct{}
+type MysqlTemplate struct{}
 
-func (m PostgresTemplate) Service() []byte {
+func (m MysqlTemplate) Service() []byte {
 	return []byte(`package services
 
 import (
@@ -12,7 +12,7 @@ import (
 	"log"
 	"time"
 
-	_ "github.com/lib/pq"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type Service struct {
@@ -20,11 +20,17 @@ type Service struct {
 }
 
 func New() *Service {
-	connStr := "user=pqgotest dbname=pqgotest sslmode=verify-full"
-	db, err := sql.Open("postgres", connStr)
+	// Opening a driver typically will not attempt to connect to the database.
+	db, err := sql.Open("mysql", "user:password@/dbname")
 	if err != nil {
+		// This will not be a connection error, but a DSN parse error or
+		// another initialization error.
 		log.Fatal(err)
 	}
+	db.SetConnMaxLifetime(0)
+	db.SetMaxIdleConns(50)
+	db.SetMaxOpenConns(50)
+
 	s := &Service{db: db}
 	return s
 }

@@ -31,7 +31,7 @@ var (
 	logoStyle           = lipgloss.NewStyle().Foreground(lipgloss.Color("#01FAC6")).Bold(true)
 	endingMsgStyle      = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("170")).Bold(true)
 	allowedProjectTypes = []string{"chi", "gin", "fiber", "gorilla/mux", "httprouter", "standard-library", "echo"}
-	allowedDBDrivers    = []string{"mysql", "postgres", "sqlite", "mongo"}
+	allowedDBDrivers    = []string{"mysql", "postgres", "sqlite", "mongo", "none"}
 )
 
 func init() {
@@ -73,15 +73,14 @@ var createCmd = &cobra.Command{
 		}
 
 		project := &program.Project{
-			FrameworkMap: make(map[string]program.Framework),
-			DBDriverMap:  make(map[string]program.Driver),
 			ProjectName:  flagName,
 			ProjectType:  strings.ReplaceAll(flagFramework, "-", " "),
 			DBDriver:     flagDBDriver,
+			FrameworkMap: make(map[string]program.Framework),
+			DBDriverMap:  make(map[string]program.Driver),
 		}
 
-		frameworkSteps := steps.InitFrameworkSteps(&options)
-		driverSteps := steps.InitDBDriverSteps(&options)
+		steps := steps.InitSteps()
 		fmt.Printf("%s\n", logoStyle.Render(logo))
 
 		if project.ProjectName == "" {
@@ -97,31 +96,25 @@ var createCmd = &cobra.Command{
 		}
 
 		if project.ProjectType == "" {
-			for _, step := range frameworkSteps.Steps {
-				s := &multiInput.Selection{}
-				tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, s, step.Headers, project))
-				if _, err := tprogram.Run(); err != nil {
-					cobra.CheckErr(err)
-				}
+			step := steps.Steps["framework"]
+			s := &multiInput.Selection{}
+			tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, s, step.Headers, project))
+			if _, err := tprogram.Run(); err != nil {
+				cobra.CheckErr(err)
 				project.ExitCLI(tprogram)
-
-				*step.Field = s.Choice
 			}
-			project.ProjectType = strings.ToLower(options.ProjectType)
+			project.ProjectType = strings.ToLower(s.Choice)
 		}
 
 		if project.DBDriver == "" {
-			for _, step := range driverSteps.Steps {
-				s := &multiInput.Selection{}
-				tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, s, step.Headers, project))
-				if _, err := tprogram.Run(); err != nil {
-					cobra.CheckErr(err)
-				}
+			step := steps.Steps["driver"]
+			s := &multiInput.Selection{}
+			tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, s, step.Headers, project))
+			if _, err := tprogram.Run(); err != nil {
+				cobra.CheckErr(err)
 				project.ExitCLI(tprogram)
-
-				*step.Field = s.Choice
 			}
-			project.DBDriver = strings.ToLower(options.DBDriver)
+			project.DBDriver = strings.ToLower(s.Choice)
 		}
 
 		currentWorkingDir, err := os.Getwd()

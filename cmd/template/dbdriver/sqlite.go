@@ -1,8 +1,8 @@
-package DBDriver
+package dbdriver
 
-type MysqlTemplate struct{}
+type SqliteTemplate struct{}
 
-func (m MysqlTemplate) Service() []byte {
+func (m SqliteTemplate) Service() []byte {
 	return []byte(`package services
 
 import (
@@ -12,7 +12,7 @@ import (
 	"log"
 	"time"
 
-	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type Service struct {
@@ -20,17 +20,13 @@ type Service struct {
 }
 
 func New() *Service {
-	// Opening a driver typically will not attempt to connect to the database.
-	db, err := sql.Open("mysql", "user:password@/dbname")
+	const file string = "example.db"
+	db, err := sql.Open("sqlite3", file)
 	if err != nil {
 		// This will not be a connection error, but a DSN parse error or
 		// another initialization error.
 		log.Fatal(err)
 	}
-	db.SetConnMaxLifetime(0)
-	db.SetMaxIdleConns(50)
-	db.SetMaxOpenConns(50)
-
 	s := &Service{db: db}
 	return s
 }

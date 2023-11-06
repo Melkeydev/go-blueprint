@@ -1,4 +1,4 @@
-package DBDriver
+package dbdriver
 
 type MongoTemplate struct{}
 

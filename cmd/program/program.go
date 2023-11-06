@@ -3,7 +3,7 @@ package program
 import (
 	"fmt"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/melkeydev/go-blueprint/cmd/template/DBDriver"
+	"github.com/melkeydev/go-blueprint/cmd/template/dbdriver"
 	"github.com/melkeydev/go-blueprint/cmd/template/framework"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
 	"github.com/spf13/cobra"
@@ -59,7 +59,7 @@ var (
 const (
 	cmdApiPath          = "cmd/api"
 	internalServerPath  = "internal/server"
-	internalServicePath = "internal/services"
+	internalServicePath = "internal/database"
 )
 
 func (p *Project) ExitCLI(tprogram *tea.Program) {
@@ -100,29 +100,28 @@ func (p *Project) createFrameworkMap() {
 		packageName: routerPackage,
 		templater:   framework.RouterTemplates{},
 	}
+	p.FrameworkMap["echo"] = Framework{
+		packageName: echoPackage,
+		templater:   framework.EchoTemplates{},
+	}
 }
 
 func (p *Project) createDBDriverMap() {
 	p.DBDriverMap["mysql"] = Driver{
 		packageName: mysqlDriver,
-		templater:   DBDriver.MysqlTemplate{},
+		templater:   dbdriver.MysqlTemplate{},
 	}
 	p.DBDriverMap["postgres"] = Driver{
 		packageName: postgresDriver,
-		templater:   DBDriver.PostgresTemplate{},
+		templater:   dbdriver.PostgresTemplate{},
 	}
 	p.DBDriverMap["sqlite"] = Driver{
 		packageName: sqliteDriver,
-		templater:   DBDriver.SqliteTemplate{},
+		templater:   dbdriver.SqliteTemplate{},
 	}
 	p.DBDriverMap["mongo"] = Driver{
 		packageName: mongoDriver,
-		templater:   DBDriver.MysqlTemplate{},
-	}
-
-	p.FrameworkMap["echo"] = Framework{
-		packageName: echoPackage,
-		templater:   framework.EchoTemplates{},
+		templater:   dbdriver.MysqlTemplate{},
 	}
 }
 
@@ -166,7 +165,7 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
-	if p.DBDriver != "None" {
+	if p.DBDriver != "none" {
 		// Create the map for our program
 		p.createDBDriverMap()
 
@@ -183,7 +182,7 @@ func (p *Project) CreateMainFile() error {
 			return err
 		}
 
-		err = p.CreateFileWithInjection(internalServicePath, projectPath, "service.go", "services")
+		err = p.CreateFileWithInjection(internalServicePath, projectPath, "database.go", "database")
 		if err != nil {
 			log.Printf("Error injecting server.go file: %v", err)
 			cobra.CheckErr(err)
@@ -295,7 +294,7 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Routes())))
 		err = createdTemplate.Execute(createdFile, p)
 
-	case "services":
+	case "database":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.Service())))
 		err = createdTemplate.Execute(createdFile, p)
 	}
