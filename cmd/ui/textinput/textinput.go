@@ -11,9 +11,7 @@ import (
 	"github.com/melkeydev/go-blueprint/cmd/program"
 )
 
-var (
-	titleStyle = lipgloss.NewStyle().Background(lipgloss.Color("#01FAC6")).Foreground(lipgloss.Color("#030303")).Bold(true).Padding(0, 1, 0)
-)
+var titleStyle = lipgloss.NewStyle().Background(lipgloss.Color("#01FAC6")).Foreground(lipgloss.Color("#030303")).Bold(true).Padding(0, 1, 0)
 
 type (
 	errMsg error

@@ -27,7 +27,7 @@ type Project struct {
 // A Framework contains the name and templater for a
 // given Framework
 type Framework struct {
-	packageName string
+	packageName []string
 	templater   Templater
 }
 
@@ -39,12 +39,13 @@ type Templater interface {
 	Routes() []byte
 }
 
-const (
-	chiPackage     = "github.com/go-chi/chi/v5"
-	gorillaPackage = "github.com/gorilla/mux"
-	routerPackage  = "github.com/julienschmidt/httprouter"
-	ginPackage     = "github.com/gin-gonic/gin"
-	fiberPackage   = "github.com/gofiber/fiber/v2"
+var (
+	chiPackage     = []string{"github.com/go-chi/chi/v5"}
+	gorillaPackage = []string{"github.com/gorilla/mux"}
+	routerPackage  = []string{"github.com/julienschmidt/httprouter"}
+	ginPackage     = []string{"github.com/gin-gonic/gin"}
+	fiberPackage   = []string{"github.com/gofiber/fiber/v2"}
+	echoPackage    = []string{"github.com/labstack/echo/v4", "github.com/labstack/echo/v4/middleware"}
 
 	cmdApiPath         = "cmd/api"
 	internalServerPath = "internal/server"
@@ -63,14 +64,13 @@ func (p *Project) ExitCLI(tprogram *tea.Program) {
 // createFrameWorkMap adds the current supported
 // Frameworks into a Project's FrameworkMap
 func (p *Project) createFrameworkMap() {
-
 	p.FrameworkMap["chi"] = Framework{
 		packageName: chiPackage,
 		templater:   tpl.ChiTemplates{},
 	}
 
 	p.FrameworkMap["standard library"] = Framework{
-		packageName: "",
+		packageName: []string{},
 		templater:   tpl.StandardLibTemplate{},
 	}
 
@@ -92,6 +92,11 @@ func (p *Project) createFrameworkMap() {
 	p.FrameworkMap["httprouter"] = Framework{
 		packageName: routerPackage,
 		templater:   tpl.RouterTemplates{},
+	}
+
+	p.FrameworkMap["echo"] = Framework{
+		packageName: echoPackage,
+		templater:   tpl.EchoTemplates{},
 	}
 }
 
@@ -165,6 +170,21 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
+	readmeFile, err := os.Create(fmt.Sprintf("%s/README.md", projectPath))
+	if err != nil {
+		cobra.CheckErr(err)
+		return err
+	}
+
+	defer readmeFile.Close()
+
+	// inject readme template
+	readmeFileTemplate := template.Must(template.New("readme").Parse(string(tpl.ReadmeTemplate())))
+	err = readmeFileTemplate.Execute(readmeFile, p)
+	if err != nil {
+		return err
+	}
+
 	err = p.CreatePath(internalServerPath, projectPath)
 	if err != nil {
 		log.Printf("Error creating path: %s", internalServerPath)
@@ -184,6 +204,12 @@ func (p *Project) CreateMainFile() error {
 		log.Printf("Error injecting routes.go file: %v", err)
 		cobra.CheckErr(err)
 		return err
+	}
+
+	err = utils.GoFmt(projectPath)
+	if err != nil {
+		log.Printf("Could not gofmt in new project %v\n", err)
+		cobra.CheckErr(err)
 	}
 
 	return nil
