@@ -9,6 +9,9 @@ import (
 	"github.com/melkeydev/go-blueprint/cmd/ui/multiInput"
 	"github.com/melkeydev/go-blueprint/cmd/ui/textinput"
 	"github.com/spf13/cobra"
+	"log"
+	"os"
+	"strings"
 )
 
 const logo = `
@@ -28,6 +31,7 @@ var (
 	logoStyle           = lipgloss.NewStyle().Foreground(lipgloss.Color("#01FAC6")).Bold(true)
 	endingMsgStyle      = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("170")).Bold(true)
 	allowedProjectTypes = []string{"chi", "gin", "fiber", "gorilla/mux", "httprouter", "standard-library", "echo"}
+	allowedDBDrivers    = []string{"mysql", "postgres", "sqlite", "mongo"}
 )
 
 func init() {
@@ -35,6 +39,7 @@ func init() {
 
 	createCmd.Flags().StringP("name", "n", "", "Name of project to create")
 	createCmd.Flags().StringP("framework", "f", "", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(allowedProjectTypes, ", ")))
+	createCmd.Flags().StringP("driver", "d", "", fmt.Sprintf("database drivers to use. Allowed values: %s", strings.Join(allowedDBDrivers, ", ")))
 }
 
 var createCmd = &cobra.Command{
@@ -51,6 +56,7 @@ var createCmd = &cobra.Command{
 
 		flagName := cmd.Flag("name").Value.String()
 		flagFramework := cmd.Flag("framework").Value.String()
+		flagDBDriver := cmd.Flag("driver").Value.String()
 
 		if flagFramework != "" {
 			isValid := isValidProjectType(flagFramework, allowedProjectTypes)
@@ -59,14 +65,23 @@ var createCmd = &cobra.Command{
 			}
 		}
 
+		if flagDBDriver != "" {
+			isValid := isValidDBDriver(flagDBDriver, allowedDBDrivers)
+			if !isValid {
+				cobra.CheckErr(fmt.Errorf("Database driver '%s' is not valid. Valid types are: %s", flagDBDriver, strings.Join(allowedDBDrivers, ", ")))
+			}
+		}
+
 		project := &program.Project{
 			FrameworkMap: make(map[string]program.Framework),
 			DBDriverMap:  make(map[string]program.Driver),
 			ProjectName:  flagName,
 			ProjectType:  strings.ReplaceAll(flagFramework, "-", " "),
+			DBDriver:     flagDBDriver,
 		}
 
-		steps := steps.InitSteps(&options)
+		frameworkSteps := steps.InitFrameworkSteps(&options)
+		driverSteps := steps.InitDBDriverSteps(&options)
 		fmt.Printf("%s\n", logoStyle.Render(logo))
 
 		if project.ProjectName == "" {
@@ -82,7 +97,7 @@ var createCmd = &cobra.Command{
 		}
 
 		if project.ProjectType == "" {
-			for _, step := range steps.Steps {
+			for _, step := range frameworkSteps.Steps {
 				s := &multiInput.Selection{}
 				tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, s, step.Headers, project))
 				if _, err := tprogram.Run(); err != nil {
@@ -92,10 +107,21 @@ var createCmd = &cobra.Command{
 
 				*step.Field = s.Choice
 			}
-
 			project.ProjectType = strings.ToLower(options.ProjectType)
-			project.DBDriver = strings.ToLower(options.DBDriver)
+		}
 
+		if project.DBDriver == "" {
+			for _, step := range driverSteps.Steps {
+				s := &multiInput.Selection{}
+				tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, s, step.Headers, project))
+				if _, err := tprogram.Run(); err != nil {
+					cobra.CheckErr(err)
+				}
+				project.ExitCLI(tprogram)
+
+				*step.Field = s.Choice
+			}
+			project.DBDriver = strings.ToLower(options.DBDriver)
 		}
 
 		currentWorkingDir, err := os.Getwd()
@@ -123,6 +149,15 @@ var createCmd = &cobra.Command{
 func isValidProjectType(input string, allowedTypes []string) bool {
 	for _, t := range allowedTypes {
 		if input == t {
+			return true
+		}
+	}
+	return false
+}
+
+func isValidDBDriver(input string, allowedDBDrivers []string) bool {
+	for _, d := range allowedDBDrivers {
+		if input == d {
 			return true
 		}
 	}

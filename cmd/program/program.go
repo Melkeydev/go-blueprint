@@ -57,9 +57,9 @@ var (
 )
 
 const (
-	cmdApiPath         = "cmd/api"
-	internalServerPath = "internal/server"
-	service            = "services"
+	cmdApiPath          = "cmd/api"
+	internalServerPath  = "internal/server"
+	internalServicePath = "internal/services"
 )
 
 func (p *Project) ExitCLI(tprogram *tea.Program) {
@@ -176,14 +176,14 @@ func (p *Project) CreateMainFile() error {
 			cobra.CheckErr(err)
 		}
 
-		err = p.CreatePath(service, projectPath)
+		err = p.CreatePath(internalServicePath, projectPath)
 		if err != nil {
-			log.Printf("Error creating path: %s", service)
+			log.Printf("Error creating path: %s", internalServicePath)
 			cobra.CheckErr(err)
 			return err
 		}
 
-		err = p.CreateFileWithInjection(service, projectPath, "service.go", "services")
+		err = p.CreateFileWithInjection(internalServicePath, projectPath, "service.go", "services")
 		if err != nil {
 			log.Printf("Error injecting server.go file: %v", err)
 			cobra.CheckErr(err)
@@ -228,7 +228,7 @@ func (p *Project) CreateMainFile() error {
 	defer readmeFile.Close()
 
 	// inject readme template
-	readmeFileTemplate := template.Must(template.New("readme").Parse(string(tpl.ReadmeTemplate())))
+	readmeFileTemplate := template.Must(template.New("readme").Parse(string(framework.ReadmeTemplate())))
 	err = readmeFileTemplate.Execute(readmeFile, p)
 	if err != nil {
 		return err

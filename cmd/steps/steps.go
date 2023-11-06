@@ -23,7 +23,7 @@ type Options struct {
 	DBDriver    string
 }
 
-func InitSteps(options *Options) *Steps {
+func InitFrameworkSteps(options *Options) *Steps {
 	steps := &Steps{
 		[]StepSchema{
 			{
@@ -60,6 +60,14 @@ func InitSteps(options *Options) *Steps {
 				Headers: "What framework do you want to use in your Go project?",
 				Field:   &options.ProjectType,
 			},
+		},
+	}
+	return steps
+}
+
+func InitDBDriverSteps(options *Options) *Steps {
+	steps := &Steps{
+		[]StepSchema{
 			{
 				StepName: "Go Project Database Driver",
 				Options: []Item{
