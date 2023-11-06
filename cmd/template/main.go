@@ -71,6 +71,16 @@ func GitIgnoreTemplate() []byte {
 
 # Go workspace file
 go.work
+
+vendor/
+tmp/
+
+# IDE specific files
+.vscode
+.idea
+
+# build output
+air
 		`)
 }
 func ReadmeTemplate() []byte {
