@@ -53,8 +53,9 @@ func InitFrameworkSteps(options *Options) *Steps {
 						Title: "HttpRouter",
 						Desc:  "HttpRouter is a lightweight high performance HTTP request router for Go",
 					},
-					{Title: "Echo",
-						Desc: "High performance, extensible, minimalist Go web framework",
+					{
+						Title: "Echo",
+						Desc:  "High performance, extensible, minimalist Go web framework",
 					},
 				},
 				Headers: "What framework do you want to use in your Go project?",
@@ -71,11 +72,22 @@ func InitDBDriverSteps(options *Options) *Steps {
 			{
 				StepName: "Go Project Database Driver",
 				Options: []Item{
-					{Title: "Mysql"},
-					{Title: "Postgres"},
-					{Title: "Sqlite"},
-					{Title: "Mongo"},
-					{Title: "None"},
+					{
+						Title: "Mysql",
+						Desc:  "MySQL-Driver for Go's database/sql package",
+					},
+					{
+						Title: "Postgres",
+						Desc:  "Go postgres driver for Go's database/sql package"},
+					{
+						Title: "Sqlite",
+						Desc:  "sqlite3 driver conforming to the built-in database/sql interface"},
+					{
+						Title: "Mongo",
+						Desc:  "The MongoDB supported driver for Go."},
+					{
+						Title: "None",
+						Desc:  "Choose this option if you don't wish to install a specific database driver."},
 				},
 				Headers: "What database driver do you want to use in your Go project?",
 				Field:   &options.DBDriver,
