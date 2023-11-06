@@ -1,7 +1,5 @@
 package steps
 
-import textinput "github.com/melkeydev/go-blueprint/cmd/ui/textinput"
-
 type StepSchema struct {
 	StepName string
 	Options  []Item
@@ -14,12 +12,6 @@ type Steps struct {
 
 type Item struct {
 	Title, Desc string
-}
-
-type Options struct {
-	ProjectName *textinput.Output
-	ProjectType string
-	DBDriver    string
 }
 
 func InitSteps() *Steps {

@@ -42,6 +42,12 @@ func init() {
 	createCmd.Flags().StringP("driver", "d", "", fmt.Sprintf("database drivers to use. Allowed values: %s", strings.Join(allowedDBDrivers, ", ")))
 }
 
+type Options struct {
+	ProjectName *textinput.Output
+	ProjectType *multiInput.Selection
+	DBDriver    *multiInput.Selection
+}
+
 var createCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create a Go project and don't worry about the structure",
@@ -50,8 +56,10 @@ var createCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var tprogram *tea.Program
 
-		options := steps.Options{
+		options := Options{
 			ProjectName: &textinput.Output{},
+			ProjectType: &multiInput.Selection{},
+			DBDriver:    &multiInput.Selection{},
 		}
 
 		flagName := cmd.Flag("name").Value.String()
@@ -97,24 +105,22 @@ var createCmd = &cobra.Command{
 
 		if project.ProjectType == "" {
 			step := steps.Steps["framework"]
-			s := &multiInput.Selection{}
-			tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, s, step.Headers, project))
+			tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, options.ProjectType, step.Headers, project))
 			if _, err := tprogram.Run(); err != nil {
 				cobra.CheckErr(err)
 				project.ExitCLI(tprogram)
 			}
-			project.ProjectType = strings.ToLower(s.Choice)
+			project.ProjectType = strings.ToLower(options.ProjectType.Choice)
 		}
 
 		if project.DBDriver == "" {
 			step := steps.Steps["driver"]
-			s := &multiInput.Selection{}
-			tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, s, step.Headers, project))
+			tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, options.DBDriver, step.Headers, project))
 			if _, err := tprogram.Run(); err != nil {
 				cobra.CheckErr(err)
 				project.ExitCLI(tprogram)
 			}
-			project.DBDriver = strings.ToLower(s.Choice)
+			project.DBDriver = strings.ToLower(options.DBDriver.Choice)
 		}
 
 		currentWorkingDir, err := os.Getwd()
