@@ -219,6 +219,21 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
+	readmeFile, err := os.Create(fmt.Sprintf("%s/README.md", projectPath))
+	if err != nil {
+		cobra.CheckErr(err)
+		return err
+	}
+
+	defer readmeFile.Close()
+
+	// inject readme template
+	readmeFileTemplate := template.Must(template.New("readme").Parse(string(tpl.ReadmeTemplate())))
+	err = readmeFileTemplate.Execute(readmeFile, p)
+	if err != nil {
+		return err
+	}
+
 	err = p.CreatePath(internalServerPath, projectPath)
 	if err != nil {
 		log.Printf("Error creating path: %s", internalServerPath)
