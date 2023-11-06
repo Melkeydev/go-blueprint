@@ -43,11 +43,13 @@ func MakeFiberRoutes() []byte {
 	return []byte(`package server
 
 import (
+	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 )
 
 func (s *FiberServer) RegisterFiberRoutes() {
 	s.App.Get("/", s.helloWorldHandler)
+	s.App.Get("/ws", websocket.New(s.pingPongWebsocketHandler))
 }
 
 func (s *FiberServer) helloWorldHandler(c *fiber.Ctx) error {
@@ -56,6 +58,18 @@ func (s *FiberServer) helloWorldHandler(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(resp)
+}
+
+func (s *FiberServer) pingPongWebsocketHandler(con *websocket.Conn) {
+	for {
+		messageType, socketBytes, _ := con.ReadMessage()
+
+		if string(socketBytes) == "PING" {
+			_ = con.WriteMessage(messageType, []byte("PONG"))
+		} else {
+			_ = con.WriteMessage(messageType, []byte("HUH?"))
+		}
+	}
 }
 `)
 }
