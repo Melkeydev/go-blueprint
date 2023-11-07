@@ -21,8 +21,7 @@ func (c ChiTemplates) Routes() []byte {
 func MakeChiRoutes() []byte {
 	return []byte(`package server
 
-import (
-	"encoding/json"
+import ( "encoding/json"
 	"log"
 	"net/http"
 
@@ -58,6 +57,9 @@ func (s *Server) pingPongWebsocketHandler(w http.ResponseWriter, r *http.Request
 
 	if err != nil {
 		log.Print("could not open websocket")
+		// pray this works for your user
+		_, _ = w.Write([]byte("could not open websocket"))
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 

@@ -53,7 +53,8 @@ func (s *Server) pingPongWebsocketHandler(w http.ResponseWriter, r *http.Request
 
 	if err != nil {
 		log.Print("could not open websocket")
-		w.Write([]byte("could not open websocket"))
+		// pray this works for your user
+		_, _ = w.Write([]byte("could not open websocket"))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -61,6 +62,11 @@ func (s *Server) pingPongWebsocketHandler(w http.ResponseWriter, r *http.Request
 	ctx := r.Context()
 	for {
 		msgType , socketBytes, err := socket.Read(ctx)
+
+		if err != nil {
+			log.Print("could not read from websocket")
+			return
+		}
 
 		if string(socketBytes) == "PING" {
 			if err := socket.Write(ctx, msgType, []byte("PONG")); err != nil {

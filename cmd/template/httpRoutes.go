@@ -92,12 +92,13 @@ func (s *Server) pingPongWebsocketHandler(w http.ResponseWriter, r *http.Request
 
 	if err != nil {
 		log.Print("could not open websocket")
-		w.Write([]byte("could not open websocket"))
+		// pray this works for your user
+		_, _ = w.Write([]byte("could not open websocket"))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	ctx := c.Request.Context()
+	ctx := r.Context()
 	for {
 		msgType, socketBytes, err := socket.Read(ctx)
 

@@ -22,6 +22,7 @@ func MakeGinRoutes() []byte {
 	return []byte(`package server
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -49,8 +50,9 @@ func (s *Server) pingPongWebsocketHandler(c *gin.Context) {
 
 	if err != nil {
 		log.Print("could not open websocket")
-		w.Write([]byte("could not open websocket"))
-		w.WriteHeader(http.StatusInternalServerError)
+		// pray this works for your user
+		_, _ = c.Writer.Write([]byte("could not open websocket"))
+		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
