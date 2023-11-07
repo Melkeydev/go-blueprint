@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"os"
+	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
@@ -97,6 +98,9 @@ func (p *Project) CreateMainFile() error {
 			return err
 		}
 	}
+
+	// Remove trailing whitespaces from ProjectName
+	p.ProjectName = strings.TrimSpace(p.ProjectName)
 
 	// First lets create a new director with the project name
 	if _, err := os.Stat(fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName)); os.IsNotExist(err) {
