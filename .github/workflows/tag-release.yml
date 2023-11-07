@@ -29,6 +29,8 @@ jobs:
         run: |
           env GOOS=linux GOARCH=amd64 go build -o bin/go-blueprint-Linux_x86_64 main.go
           env GOOS=linux GOARCH=arm64 go build -o bin/go-blueprint-Linux_arm64 main.go
+          env GOOS=darwin GOARCH=amd64 go build -o bin/go-blueprint-Darwin_amd64 main.go
+          env GOOS=darwin GOARCH=arm64 go build -o bin/go-blueprint-Darwin_arm64 main.go
 
       - name: Create release
         id: release
