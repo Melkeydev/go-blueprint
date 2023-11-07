@@ -1,5 +1,7 @@
 package template
 
+// GorillaTemplates contains the methods used for building
+// an app that uses [github.com/gorilla/mux]
 type GorillaTemplates struct{}
 
 func (g GorillaTemplates) Main() []byte {
@@ -12,6 +14,8 @@ func (g GorillaTemplates) Routes() []byte {
 	return MakeGorillaRoutes()
 }
 
+// MakeGorillaRoutes returns a byte slice that represents 
+// the internal/server/routes.go file when using gorilla/mux.
 func MakeGorillaRoutes() []byte {
 	return []byte(`package server
 

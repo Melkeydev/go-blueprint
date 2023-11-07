@@ -1,3 +1,5 @@
+// Package textinput provides functions that
+// help define and draw a text-input step
 package textinput
 
 import (
@@ -15,14 +17,19 @@ type (
 	errMsg error
 )
 
+// Output represents the text provided in a textinput step
 type Output struct {
 	Output string
 }
 
+// Output.update updates the value of the Output
 func (o *Output) update(val string) {
 	o.Output = val
 }
 
+// A textnput.model contains the data for the textinput step.
+//
+// It has the required methods that make it a bubbletea.Model
 type model struct {
 	textInput textinput.Model
 	err       error
@@ -31,6 +38,8 @@ type model struct {
 	exit      *bool
 }
 
+// InitialTextInputModel initializes a textinput step
+// with the given data
 func InitialTextInputModel(output *Output, header string, program *program.Project) model {
 	ti := textinput.New()
 	ti.Focus()
@@ -46,10 +55,14 @@ func InitialTextInputModel(output *Output, header string, program *program.Proje
 	}
 }
 
+// Init is called at the beginning of a textinput step
+// and sets the cursor to blink
 func (m model) Init() tea.Cmd {
 	return textinput.Blink
 }
 
+// Update is called when "things happen", it checks for the users text input,
+// and for Ctrl+C or Esc to close the program.
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
@@ -77,6 +90,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
+// View is called to draw the textinput step
 func (m model) View() string {
 	return fmt.Sprintf("%s\n\n%s\n\n",
 		m.header,
