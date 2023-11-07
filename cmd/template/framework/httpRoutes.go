@@ -1,5 +1,7 @@
 package framework
 
+// StandardLibTemplate contains the methods used for building
+// an app that uses [net/http]
 type StandardLibTemplate struct{}
 
 func (s StandardLibTemplate) Main() []byte {
@@ -18,6 +20,8 @@ func (g StandardLibTemplate) RoutesWithDB() []byte {
 	return MakeGorillaRoutes()
 }
 
+// MakeHTTPServer returns a byte slice that represents
+// the default internal/server/server.go file.
 func MakeHTTPServer() []byte {
 	return []byte(`package server
 
@@ -53,6 +57,8 @@ func NewServer() *http.Server {
 `)
 }
 
+// MakeHTTPRoutes returns a byte slice that represents
+// the internal/server/routes.go file when using net/http
 func MakeHTTPRoutes() []byte {
 	return []byte(`package server
 

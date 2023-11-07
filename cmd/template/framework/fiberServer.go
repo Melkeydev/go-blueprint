@@ -1,5 +1,7 @@
 package framework
 
+// FiberTemplates contains the methods used for building
+// an app that uses [github.com/gofiber/fiber]
 type FiberTemplates struct{}
 
 func (f FiberTemplates) Main() []byte {
@@ -12,6 +14,9 @@ func (f FiberTemplates) Server() []byte {
 func (f FiberTemplates) Routes() []byte {
 	return MakeFiberRoutes()
 }
+
+// MakeFiberServer returns a byte slice that represents
+// the internal/server/server.go file when using Fiber.
 
 func (f FiberTemplates) RoutesWithDB() []byte {
 	return MakeFiberRoutes()
@@ -37,6 +42,8 @@ func New() *FiberServer {
 `)
 }
 
+// MakeFiberRoutes returns a byte slice that represents
+// the internal/server/routes.go file when using Fiber.
 func MakeFiberRoutes() []byte {
 	return []byte(`package server
 
@@ -58,6 +65,8 @@ func (s *FiberServer) helloWorldHandler(c *fiber.Ctx) error {
 `)
 }
 
+// MakeHTTPRoutes returns a byte slice that represents
+// the cmd/api/main.go file when using Fiber.
 func MakeFiberMain() []byte {
 	return []byte(`package main
 

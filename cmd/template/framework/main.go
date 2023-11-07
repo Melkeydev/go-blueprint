@@ -1,5 +1,9 @@
+// Package template provides utility functions that
+// help with the templating of created files.
 package framework
 
+// MakeHTTPRoutes returns a byte slice that represents
+// the default cmd/api/main.go file template.
 func MainTemplate() []byte {
 	return []byte(`package main
 
@@ -19,6 +23,8 @@ func main() {
 `)
 }
 
+// MakeHTTPRoutes returns a byte slice that represents
+// the default Makefile.
 func MakeTemplate() []byte {
 	return []byte(
 		`
@@ -49,6 +55,8 @@ clean:
 		`)
 }
 
+// ReadmeTemplate returns a byte slice that represents
+// the default README.md file template.
 func ReadmeTemplate() []byte {
 	return []byte(
 		`

@@ -48,6 +48,7 @@ type Options struct {
 	DBDriver    *multiInput.Selection
 }
 
+// createCmd defines the "create" command for the CLI
 var createCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create a Go project and don't worry about the structure",
@@ -145,6 +146,8 @@ var createCmd = &cobra.Command{
 	},
 }
 
+// isValidProjectType checks if the inputted project type matches 
+// the currently supported list of project types
 func isValidProjectType(input string, allowedTypes []string) bool {
 	for _, t := range allowedTypes {
 		if input == t {
