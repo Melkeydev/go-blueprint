@@ -31,6 +31,7 @@ jobs:
           env GOOS=linux GOARCH=arm64 go build -o bin/go-blueprint-Linux_arm64 main.go
           env GOOS=darwin GOARCH=amd64 go build -o bin/go-blueprint-Darwin_amd64 main.go
           env GOOS=darwin GOARCH=arm64 go build -o bin/go-blueprint-Darwin_arm64 main.go
+          env GOOS=windows GOARCH=amd64 go build -o bin/go-blueprint-Windows_amd64.exe main.go
 
       - name: Create release
         id: release
