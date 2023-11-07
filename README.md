@@ -9,7 +9,9 @@
 
 ### 🚀 Introducing the Ultimate Golang Blueprint Library 🚀
 
-Are you tired of starting Golang projects from scratch, struggling with inconsistent structures and code conventions? Go Blueprint is a CLI tool that allows users to spin up a Go project with the corresponding structure seamlessly. It also gives the option to integrate with one of the more popular Go frameworks!
+Are you tired of starting Golang projects from scratch, struggling with inconsistent structures and code conventions? Go
+Blueprint is a CLI tool that allows users to spin up a Go project with the corresponding structure seamlessly. It also
+gives the option to integrate with one of the more popular Go frameworks!
 
 ### Why Would I use this?
 
@@ -32,6 +34,13 @@ Then in a new terminal run:
 ```
 go-blueprint create
 ```
+
+You can also use the provided flags to set up a project without interacting with the UI.
+```
+go-blueprint create --name my-project --framework gin
+```
+
+See `go-blueprint create -h` for all the options and shorthands.
 
 ![Starter Image](./public/blueprint_1.png)
 ![Framework Image](./public/blueprint_2.png)
