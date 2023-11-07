@@ -21,7 +21,8 @@ func (c ChiTemplates) Routes() []byte {
 func MakeChiRoutes() []byte {
 	return []byte(`package server
 
-import ( "encoding/json"
+import (
+	"encoding/json"
 	"log"
 	"net/http"
 
