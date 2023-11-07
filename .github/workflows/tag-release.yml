@@ -27,8 +27,8 @@ jobs:
 
       - name: Build
         run: |
-          env GOOS=linux GOARCH=amd64 go build -o bin/go-blueprint-x86 main.go
-          env GOOS=linux GOARCH=arm64 go build -o bin/go-blueprint-arm main.go
+          env GOOS=linux GOARCH=amd64 go build -o bin/go-blueprint-Linux_x86_64 main.go
+          env GOOS=linux GOARCH=arm64 go build -o bin/go-blueprint-Linux_arm64 main.go
 
       - name: Create release
         id: release
