@@ -62,12 +62,23 @@ func (s *FiberServer) helloWorldHandler(c *fiber.Ctx) error {
 
 func (s *FiberServer) pingPongWebsocketHandler(con *websocket.Conn) {
 	for {
-		messageType, socketBytes, _ := con.ReadMessage()
+		messageType, socketBytes, err := con.ReadMessage()
+
+		if err != nil {
+			log.Print("could not read from websocket")
+			return
+		}
 
 		if string(socketBytes) == "PING" {
-			_ = con.WriteMessage(messageType, []byte("PONG"))
+			if err := con.WriteMessage(messageType, []byte("PONG")); err != nil {
+				log.Print("could not write to socket")
+				return
+			}
 		} else {
-			_ = con.WriteMessage(messageType, []byte("HUH?"))
+			if err  := con.WriteMessage(messageType, []byte("HUH?")); err != nil {
+				log.Print("could not write to socket")
+				return
+			}
 		}
 	}
 }

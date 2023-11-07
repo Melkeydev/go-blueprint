@@ -54,14 +54,32 @@ func (s *Server) helloWorldHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) pingPongWebsocketHandler(w http.ResponseWriter, r *http.Request) {
-	socket, _ := websocket.Accept(w, r, nil)
+	socket, err := websocket.Accept(w, r, nil)
+
+	if err != nil {
+		log.Print("could not open websocket")
+		return
+	}
+
 	ctx := r.Context()
 	for {
-		_, socketBytes, _ := socket.Read(ctx)
+		msgType, socketBytes, err := socket.Read(ctx)
+
+		if err != nil {
+			log.Print("could not read from websocket")
+			return
+		}
+
 		if string(socketBytes) == "PING" {
-			_ = socket.Write(ctx, websocket.MessageText, []byte("PONG"))
+			if err := socket.Write(ctx, msgType, []byte("PONG")); err != nil {
+				log.Print("could not write to socket")
+				return
+			}
 		} else {
-			_ = socket.Write(ctx, websocket.MessageText, []byte("HUH?"))
+			if err := socket.Write(ctx, msgType, []byte("HUH?")); err != nil {
+				log.Print("could not write to socket")
+				return
+			}
 		}
 	}
 }
