@@ -3,7 +3,7 @@ package dbdriver
 type MysqlTemplate struct{}
 
 func (m MysqlTemplate) Service() []byte {
-	return []byte(`package services
+	return []byte(`package database
 
 import (
 	"context"
@@ -15,11 +15,15 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-type Service struct {
+type Service interface {
+	Health() map[string]string
+}
+
+type service struct {
 	db *sql.DB
 }
 
-func New() *Service {
+func New() *service {
 	// Opening a driver typically will not attempt to connect to the database.
 	db, err := sql.Open("mysql", "user:password@/dbname")
 	if err != nil {
@@ -31,18 +35,21 @@ func New() *Service {
 	db.SetMaxIdleConns(50)
 	db.SetMaxOpenConns(50)
 
-	s := &Service{db: db}
+	s := &service{db: db}
 	return s
 }
 
-func (s *Service) Health() {
+func (s *service) Health() map[string]string {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
 	err := s.db.PingContext(ctx)
 	if err != nil {
-		fmt.Errorf(fmt.Sprintf("db down: %v", err))
-		return
+		log.Fatalf(fmt.Sprintf("db down: %v", err))
+	}
+
+	return map[string]string{
+		"message": "It's healthy",
 	}
 }
 `)

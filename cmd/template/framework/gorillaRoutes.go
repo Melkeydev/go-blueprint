@@ -12,6 +12,10 @@ func (g GorillaTemplates) Routes() []byte {
 	return MakeGorillaRoutes()
 }
 
+func (g GorillaTemplates) RoutesWithDB() []byte {
+	return MakeGorillaRoutes()
+}
+
 func MakeGorillaRoutes() []byte {
 	return []byte(`package server
 

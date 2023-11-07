@@ -36,6 +36,7 @@ type Templater interface {
 	Main() []byte
 	Server() []byte
 	Routes() []byte
+	RoutesWithDB() []byte
 }
 
 type DBDriverTemplater interface {
@@ -121,7 +122,7 @@ func (p *Project) createDBDriverMap() {
 	}
 	p.DBDriverMap["mongo"] = Driver{
 		packageName: mongoDriver,
-		templater:   dbdriver.MysqlTemplate{},
+		templater:   dbdriver.MongoTemplate{},
 	}
 }
 
@@ -247,7 +248,11 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routes")
+	if p.DBDriver != "none" {
+		err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routesWithDB")
+	} else {
+		err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routes")
+	}
 	if err != nil {
 		log.Printf("Error injecting routes.go file: %v", err)
 		cobra.CheckErr(err)
@@ -257,6 +262,12 @@ func (p *Project) CreateMainFile() error {
 	err = utils.GoFmt(projectPath)
 	if err != nil {
 		log.Printf("Could not gofmt in new project %v\n", err)
+		cobra.CheckErr(err)
+	}
+
+	err = utils.GoTidy(projectPath)
+	if err != nil {
+		log.Printf("Could not go tidy in new project %v\n", err)
 		cobra.CheckErr(err)
 	}
 
@@ -293,7 +304,9 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 	case "routes":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Routes())))
 		err = createdTemplate.Execute(createdFile, p)
-
+	case "routesWithDB":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.RoutesWithDB())))
+		err = createdTemplate.Execute(createdFile, p)
 	case "database":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.Service())))
 		err = createdTemplate.Execute(createdFile, p)

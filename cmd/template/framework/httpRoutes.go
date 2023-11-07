@@ -14,6 +14,10 @@ func (s StandardLibTemplate) Routes() []byte {
 	return MakeHTTPRoutes()
 }
 
+func (g StandardLibTemplate) RoutesWithDB() []byte {
+	return MakeGorillaRoutes()
+}
+
 func MakeHTTPServer() []byte {
 	return []byte(`package server
 

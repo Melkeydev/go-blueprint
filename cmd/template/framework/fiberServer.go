@@ -12,6 +12,11 @@ func (f FiberTemplates) Server() []byte {
 func (f FiberTemplates) Routes() []byte {
 	return MakeFiberRoutes()
 }
+
+func (f FiberTemplates) RoutesWithDB() []byte {
+	return MakeFiberRoutes()
+}
+
 func MakeFiberServer() []byte {
 	return []byte(`package server
 

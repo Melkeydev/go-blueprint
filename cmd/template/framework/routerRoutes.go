@@ -12,6 +12,10 @@ func (r RouterTemplates) Routes() []byte {
 	return MakeRouterRoutes()
 }
 
+func (r RouterTemplates) RoutesWithDB() []byte {
+	return MakeGorillaRoutes()
+}
+
 func MakeRouterRoutes() []byte {
 	return []byte(`package server
 

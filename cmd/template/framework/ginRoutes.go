@@ -14,6 +14,10 @@ func (g GinTemplates) Routes() []byte {
 	return MakeGinRoutes()
 }
 
+func (g GinTemplates) RoutesWithDB() []byte {
+	return MakeGinRoutes()
+}
+
 func MakeGinRoutes() []byte {
 	return []byte(`package server
 

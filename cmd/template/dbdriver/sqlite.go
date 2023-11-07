@@ -3,7 +3,7 @@ package dbdriver
 type SqliteTemplate struct{}
 
 func (m SqliteTemplate) Service() []byte {
-	return []byte(`package services
+	return []byte(`package database
 
 import (
 	"context"
@@ -15,11 +15,15 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-type Service struct {
+type Service interface {
+	Health() map[string]string
+}
+
+type service struct {
 	db *sql.DB
 }
 
-func New() *Service {
+func New() *service {
 	const file string = "example.db"
 	db, err := sql.Open("sqlite3", file)
 	if err != nil {
@@ -27,18 +31,21 @@ func New() *Service {
 		// another initialization error.
 		log.Fatal(err)
 	}
-	s := &Service{db: db}
+	s := &service{db: db}
 	return s
 }
 
-func (s *Service) Health() {
+func (s *service) Health() map[string]string {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
 	err := s.db.PingContext(ctx)
 	if err != nil {
-		fmt.Errorf(fmt.Sprintf("db down: %v", err))
-		return
+		log.Fatalf(fmt.Sprintf("db down: %v", err))
+	}
+
+	return map[string]string{
+		"message": "It's healthy",
 	}
 }
 `)

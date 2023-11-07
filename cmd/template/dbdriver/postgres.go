@@ -3,7 +3,7 @@ package dbdriver
 type PostgresTemplate struct{}
 
 func (m PostgresTemplate) Service() []byte {
-	return []byte(`package services
+	return []byte(`package database
 
 import (
 	"context"
@@ -15,28 +15,35 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type Service struct {
+type Service interface {
+	Health() map[string]string
+}
+
+type service struct {
 	db *sql.DB
 }
 
-func New() *Service {
+func New() *service {
 	connStr := "user=pqgotest dbname=pqgotest sslmode=verify-full"
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal(err)
 	}
-	s := &Service{db: db}
+	s := &service{db: db}
 	return s
 }
 
-func (s *Service) Health() {
+func (s *service) Health() map[string]string {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
 	err := s.db.PingContext(ctx)
 	if err != nil {
-		fmt.Errorf(fmt.Sprintf("db down: %v", err))
-		return
+		log.Fatalf(fmt.Sprintf("db down: %v", err))
+	}
+
+	return map[string]string{
+		"message": "It's healthy",
 	}
 }
 `)
