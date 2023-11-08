@@ -99,7 +99,6 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
-	// Remove trailing whitespaces from ProjectName
 	p.ProjectName = strings.TrimSpace(p.ProjectName)
 
 	// First lets create a new director with the project name
