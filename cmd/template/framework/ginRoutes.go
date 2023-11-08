@@ -17,7 +17,7 @@ func (g GinTemplates) Routes() []byte {
 }
 
 func (g GinTemplates) RoutesWithDB() []byte {
-	return MakeGinRoutes()
+	return MakeGinRoutesWithDB()
 }
 
 // MakeGinRoutes returns a byte slice that represents
@@ -46,5 +46,47 @@ func (s *Server) helloWorldHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
+`)
+}
+
+func MakeGinRoutesWithDB() []byte {
+	return []byte(`package server
+
+import (
+	"net/http"
+	"{{.ProjectName}}/internal/database"
+
+	"github.com/gin-gonic/gin"
+)
+
+type healthHandler struct {
+	s database.Service
+}
+
+func (s *Server) RegisterRoutes() http.Handler {
+	r := gin.Default()
+	h := NewHealthHandler()
+	r.GET("/", s.helloWorldHandler)
+	r.GET("/health", h.healthHandler)
+
+	return r
+}
+
+func (s *Server) helloWorldHandler(c *gin.Context) {
+	resp := make(map[string]string)
+	resp["message"] = "Hello World"
+
+	c.JSON(http.StatusOK, resp)
+}
+
+func NewHealthHandler() *healthHandler {
+	return &healthHandler{
+		s: database.New(),
+	}
+}
+
+func (h *healthHandler) healthHandler(c *gin.Context) error {
+	c.JSON(http.StatusOK, h.s.Health())
+}
 `)
 }

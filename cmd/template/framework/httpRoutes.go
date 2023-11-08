@@ -17,7 +17,7 @@ func (s StandardLibTemplate) Routes() []byte {
 }
 
 func (g StandardLibTemplate) RoutesWithDB() []byte {
-	return MakeGorillaRoutes()
+	return MakeHTTPRoutesWithDB()
 }
 
 // MakeHTTPServer returns a byte slice that represents
@@ -81,6 +81,61 @@ func (s *Server) handler(w http.ResponseWriter, r *http.Request) {
 	resp["message"] = "Hello World"
 
 	jsonResp, err := json.Marshal(resp)
+	if err != nil {
+		log.Fatalf("error handling JSON marshal. Err: %v", err)
+	}
+
+	w.Write(jsonResp)
+}
+`)
+}
+
+func MakeHTTPRoutesWithDB() []byte {
+	return []byte(`package server
+
+import (
+	"net/http"
+	"encoding/json"
+	"log"
+	"{{.ProjectName}}/internal/database"
+)
+
+type healthHandler struct {
+	s database.Service
+}
+
+func (s *Server) RegisterRoutes() http.Handler {
+
+	mux := http.NewServeMux()
+	h := NewHealthHandler()
+
+	mux.HandleFunc("/", s.handler)
+	mux.HandleFunc("/health", h.healthHandler)
+
+	return mux
+}
+
+func (s *Server) handler(w http.ResponseWriter, r *http.Request) {
+	resp := make(map[string]string)
+	resp["message"] = "Hello World"
+
+	jsonResp, err := json.Marshal(resp)
+	if err != nil {
+		log.Fatalf("error handling JSON marshal. Err: %v", err)
+	}
+
+	w.Write(jsonResp)
+}
+
+func NewHealthHandler() *healthHandler {
+	return &healthHandler{
+		s: database.New(),
+	}
+}
+
+func (h *healthHandler) healthHandler(w http.ResponseWriter, r *http.Request) {
+	jsonResp, err := json.Marshal(h.s.Health())
+
 	if err != nil {
 		log.Fatalf("error handling JSON marshal. Err: %v", err)
 	}

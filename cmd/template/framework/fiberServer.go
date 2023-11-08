@@ -16,7 +16,7 @@ func (f FiberTemplates) Routes() []byte {
 }
 
 func (f FiberTemplates) RoutesWithDB() []byte {
-	return MakeFiberRoutes()
+	return MakeFiberRoutesWithDB()
 }
 
 // MakeFiberServer returns a byte slice that represents
@@ -60,6 +60,43 @@ func (s *FiberServer) helloWorldHandler(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(resp)
+}
+`)
+}
+
+func MakeFiberRoutesWithDB() []byte {
+	return []byte(`package server
+
+import (
+	"github.com/gofiber/fiber/v2"
+	"{{.ProjectName}}/internal/database"
+)
+
+type healthHandler struct {
+	s database.Service
+}
+
+func (s *FiberServer) RegisterFiberRoutes() {
+	h := NewHealthHandler()
+	s.App.Get("/", s.helloWorldHandler)
+	s.App.Get("/health", h.healthHandler)
+}
+
+func (s *FiberServer) helloWorldHandler(c *fiber.Ctx) error {
+	resp := map[string]string{
+		"message": "Hello World",
+	}
+	return c.JSON(resp)
+}
+
+func NewHealthHandler() *healthHandler {
+	return &healthHandler{
+		s: database.New(),
+	}
+}
+
+func (h *healthHandler) healthHandler(c *fiber.Ctx) error {
+	return c.JSON(h.s.Health())
 }
 `)
 }

@@ -15,7 +15,7 @@ func (g GorillaTemplates) Routes() []byte {
 }
 
 func (g GorillaTemplates) RoutesWithDB() []byte {
-	return MakeGorillaRoutes()
+	return MakeGorillaRoutesWithDB()
 }
 
 // MakeGorillaRoutes returns a byte slice that represents
@@ -51,5 +51,61 @@ func (s *Server) helloWorldHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonResp)
 }
 
+`)
+}
+
+func MakeGorillaRoutesWithDB() []byte {
+	return []byte(`package server
+
+import (
+	"encoding/json"
+	"log"
+	"net/http"
+	"{{.ProjectName}}/internal/database"
+
+	"github.com/gorilla/mux"
+)
+
+type healthHandler struct {
+	s database.Service
+}
+
+func (s *Server) RegisterRoutes() http.Handler {
+	r := mux.NewRouter()
+	h := NewHealthHandler()
+
+	r.HandleFunc("/", s.helloWorldHandler)
+	r.HandleFunc("/health", h.healthHandler)
+
+	return r
+}
+
+func (s *Server) helloWorldHandler(w http.ResponseWriter, r *http.Request) {
+	resp := make(map[string]string)
+	resp["message"] = "Hello World"
+
+	jsonResp, err := json.Marshal(resp)
+	if err != nil {
+		log.Fatalf("error handling JSON marshal. Err: %v", err)
+	}
+
+	w.Write(jsonResp)
+}
+
+func NewHealthHandler() *healthHandler {
+	return &healthHandler{
+		s: database.New(),
+	}
+}
+
+func (h *healthHandler) healthHandler(w http.ResponseWriter, r *http.Request) {
+	jsonResp, err := json.Marshal(h.s.Health())
+
+	if err != nil {
+		log.Fatalf("error handling JSON marshal. Err: %v", err)
+	}
+
+	w.Write(jsonResp)
+}
 `)
 }

@@ -15,12 +15,12 @@ func (e EchoTemplates) Routes() []byte {
 	return MakeEchoRoutes()
 }
 
-// MakeEchoRoutes returns a byte slice that represents
-// the internal/server/routes.go file when using Echo.
 func (e EchoTemplates) RoutesWithDB() []byte {
 	return MakeEchoRoutesWithDB()
 }
 
+// MakeEchoRoutes returns a byte slice that represents
+// the internal/server/routes.go file when using Echo.
 func MakeEchoRoutes() []byte {
 	return []byte(`package server
 
