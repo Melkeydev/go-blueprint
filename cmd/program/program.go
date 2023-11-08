@@ -4,9 +4,16 @@ package program
 
 import (
 	"fmt"
+
     "html/template"
     "log"
     "os"
+	"html/template"
+	"log"
+	"os"
+	"strings"
+
+
 	tea "github.com/charmbracelet/bubbletea"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
@@ -111,6 +118,8 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
+	p.ProjectName = strings.TrimSpace(p.ProjectName)
+
 	// Create a new directory with the project name
 	if _, err := os.Stat(fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName)); os.IsNotExist(err) {
 		err := os.MkdirAll(fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName), 0751)
@@ -205,6 +214,7 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
+
   // Initialize git repo
   err = utils.ExecuteCmd("git", []string{"init"}, projectPath)
   if err != nil {
@@ -249,6 +259,23 @@ func (p *Project) CreateMainFile() error {
   if err != nil {
       return err
   }
+
+	// Create .air.toml file
+	airTomlFile, err := os.Create(fmt.Sprintf("%s/.air.toml", projectPath))
+	if err != nil {
+		cobra.CheckErr(err)
+		return err
+	}
+
+	defer airTomlFile.Close()
+
+	// inject air.toml template
+	airTomlTemplate := template.Must(template.New("airtoml").Parse(string(tpl.AirTomlTemplate())))
+	err = airTomlTemplate.Execute(airTomlFile, p)
+	if err != nil {
+		return err
+	}
+
 
 	err = utils.GoFmt(projectPath)
 	if err != nil {
