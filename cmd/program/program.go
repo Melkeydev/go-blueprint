@@ -7,6 +7,7 @@ import (
 	"html/template"
 	"log"
 	"os"
+	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/melkeydev/go-blueprint/cmd/template/dbdriver"
@@ -152,6 +153,8 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
+	p.ProjectName = strings.TrimSpace(p.ProjectName)
+
 	// Create a new directory with the project name
 	if _, err := os.Stat(fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName)); os.IsNotExist(err) {
 		err := os.MkdirAll(fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName), 0751)
@@ -272,6 +275,22 @@ func (p *Project) CreateMainFile() error {
 	if err != nil {
 		log.Printf("Error injecting routes.go file: %v", err)
 		cobra.CheckErr(err)
+		return err
+	}
+
+	// Create .air.toml file
+	airTomlFile, err := os.Create(fmt.Sprintf("%s/.air.toml", projectPath))
+	if err != nil {
+		cobra.CheckErr(err)
+		return err
+	}
+
+	defer airTomlFile.Close()
+
+	// inject air.toml template
+	airTomlTemplate := template.Must(template.New("airtoml").Parse(string(tpl.AirTomlTemplate())))
+	err = airTomlTemplate.Execute(airTomlFile, p)
+	if err != nil {
 		return err
 	}
 
