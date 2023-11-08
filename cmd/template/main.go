@@ -2,7 +2,7 @@
 // help with the templating of created files.
 package template
 
-// MakeHTTPRoutes returns a byte slice that represents 
+// MakeHTTPRoutes returns a byte slice that represents
 // the default cmd/api/main.go file template.
 func MainTemplate() []byte {
 	return []byte(`package main
@@ -23,7 +23,7 @@ func main() {
 `)
 }
 
-// MakeHTTPRoutes returns a byte slice that represents 
+// MakeHTTPRoutes returns a byte slice that represents
 // the default Makefile.
 func MakeTemplate() []byte {
 	return []byte(
@@ -82,8 +82,6 @@ func GitIgnoreTemplate() []byte {
 
 # Go workspace file
 go.work
-
-vendor/
 tmp/
 
 # IDE specific files
@@ -148,7 +146,7 @@ tmp_dir = "tmp"
 }
 
 
-// ReadmeTemplate returns a byte slice that represents 
+// ReadmeTemplate returns a byte slice that represents
 // the default README.md file template.
 func ReadmeTemplate() []byte {
 	return []byte(

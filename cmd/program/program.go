@@ -260,21 +260,6 @@ func (p *Project) CreateMainFile() error {
       return err
   }
 
-	// Create .air.toml file
-	airTomlFile, err := os.Create(fmt.Sprintf("%s/.air.toml", projectPath))
-	if err != nil {
-		cobra.CheckErr(err)
-		return err
-	}
-
-	defer airTomlFile.Close()
-
-	// inject air.toml template
-	airTomlTemplate := template.Must(template.New("airtoml").Parse(string(tpl.AirTomlTemplate())))
-	err = airTomlTemplate.Execute(airTomlFile, p)
-	if err != nil {
-		return err
-	}
 
 
 	err = utils.GoFmt(projectPath)
