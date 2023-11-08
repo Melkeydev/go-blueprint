@@ -218,7 +218,7 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 	// rename master to main
-	err = utils.ExecuteCmd("git", []string{"branch", "-move", "main"}, projectPath)
+    err = utils.ExecuteCmd("git", []string{"branch", "-move", "main"}, projectPath)
 	if err != nil {
 		log.Printf("Error renaming master branch to main: %v", err)
 		cobra.CheckErr(err)
