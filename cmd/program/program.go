@@ -35,7 +35,6 @@ type Framework struct {
 	templater   Templater
 }
 
-
 type Driver struct {
 	packageName []string
 	templater   DBDriverTemplater
@@ -288,7 +287,7 @@ func (p *Project) CreateMainFile() error {
 	defer airTomlFile.Close()
 
 	// inject air.toml template
-	airTomlTemplate := template.Must(template.New("airtoml").Parse(string(tpl.AirTomlTemplate())))
+	airTomlTemplate := template.Must(template.New("airtoml").Parse(string(framework.AirTomlTemplate())))
 	err = airTomlTemplate.Execute(airTomlFile, p)
 	if err != nil {
 		return err
