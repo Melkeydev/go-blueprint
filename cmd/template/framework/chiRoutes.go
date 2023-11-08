@@ -1,5 +1,7 @@
 package framework
 
+// ChiTemplates contains the methods used for building
+// an app that uses [github.com/go-chi/chi]
 type ChiTemplates struct{}
 
 func (c ChiTemplates) Main() []byte {
@@ -18,6 +20,8 @@ func (c ChiTemplates) RoutesWithDB() []byte {
 	return MakeChiRoutesWithDB()
 }
 
+// MakeChiRoutes returns a byte slice that represents
+// the internal/server/routes.go file when using Chi.
 func MakeChiRoutes() []byte {
 	return []byte(`package server
 

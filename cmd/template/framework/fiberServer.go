@@ -15,13 +15,12 @@ func (f FiberTemplates) Routes() []byte {
 	return MakeFiberRoutes()
 }
 
-// MakeFiberServer returns a byte slice that represents
-// the internal/server/server.go file when using Fiber.
-
 func (f FiberTemplates) RoutesWithDB() []byte {
 	return MakeFiberRoutes()
 }
 
+// MakeFiberServer returns a byte slice that represents
+// the internal/server/server.go file when using Fiber.
 func MakeFiberServer() []byte {
 	return []byte(`package server
 
