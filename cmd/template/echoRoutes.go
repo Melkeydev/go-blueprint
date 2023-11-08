@@ -1,5 +1,7 @@
 package template
 
+// EchoTemplates contains the methods used for building
+// an app that uses [github.com/labstack/echo]
 type EchoTemplates struct{}
 
 func (e EchoTemplates) Main() []byte {
@@ -13,6 +15,8 @@ func (e EchoTemplates) Routes() []byte {
 	return MakeEchoRoutes()
 }
 
+// MakeEchoRoutes returns a byte slice that represents 
+// the internal/server/routes.go file when using Echo.
 func MakeEchoRoutes() []byte {
 	return []byte(`package server
 
