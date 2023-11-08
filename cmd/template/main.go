@@ -2,7 +2,7 @@
 // help with the templating of created files.
 package template
 
-// MakeHTTPRoutes returns a byte slice that represents 
+// MakeHTTPRoutes returns a byte slice that represents
 // the default cmd/api/main.go file template.
 func MainTemplate() []byte {
 	return []byte(`package main
@@ -23,7 +23,7 @@ func main() {
 `)
 }
 
-// MakeHTTPRoutes returns a byte slice that represents 
+// MakeHTTPRoutes returns a byte slice that represents
 // the default Makefile.
 func MakeTemplate() []byte {
 	return []byte(
@@ -54,6 +54,15 @@ clean:
 # Live Reload
 watch:
 	@echo "Watching..."
+	@if ! command -v air &> /dev/null; then \
+	    read -p "air is not installed. Do you want to install it now? (y/n) " choice; \
+	    if [ "$$choice" = "y" ]; then \
+	        go install github.com/cosmtrek/air@latest; \
+	    else \
+	        echo "You chose not to install air. Exiting..."; \
+	        exit 1; \
+	    fi; \
+	fi
 	@air
 
 .PHONY: all build run test clean
@@ -114,7 +123,7 @@ tmp_dir = "tmp"
 }
 
 
-// ReadmeTemplate returns a byte slice that represents 
+// ReadmeTemplate returns a byte slice that represents
 // the default README.md file template.
 func ReadmeTemplate() []byte {
 	return []byte(
@@ -142,6 +151,11 @@ make build
 run the application
 ` + "```bash" + `
 make run
+` + "```" + `
+
+live reload the application
+` + "```bash" + `
+make watch
 ` + "```" + `
 
 run the test suite
