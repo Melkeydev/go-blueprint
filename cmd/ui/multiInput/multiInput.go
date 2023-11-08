@@ -1,3 +1,5 @@
+// Package multiInput provides functions that
+// help define and draw a multi-input step
 package multiInput
 
 import (
@@ -23,14 +25,19 @@ var (
 	descriptionStyle      = lipgloss.NewStyle().Foreground(lipgloss.Color("#40BDA3"))
 )
 
+// A Selection represents a choice made in a multiInput step
 type Selection struct {
 	Choice string
 }
 
+// Update changes the value of a Selection's Choice
 func (s *Selection) Update(value string) {
 	s.Choice = value
 }
 
+// A multiInput.model contains the data for the multiInput step.
+//
+// It has the required methods that make it a bubbletea.Model
 type model struct {
 	cursor   int
 	choices  []steps.Item
@@ -44,6 +51,8 @@ func (m model) Init() tea.Cmd {
 	return nil
 }
 
+// InitialModelMulti initializes a multiInput step with
+// the given data
 func InitialModelMulti(choices []steps.Item, selection *Selection, header string, program *program.Project) model {
 	return model{
 		choices:  choices,
@@ -54,6 +63,9 @@ func InitialModelMulti(choices []steps.Item, selection *Selection, header string
 	}
 }
 
+// Update is called when "things happen", it checks for
+// important keystrokes to signal when to quit, change selection,
+// and confirm the selection.
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
@@ -89,6 +101,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
+// View is called to draw the multiInput step
 func (m model) View() string {
 	s := m.header + "\n\n"
 
