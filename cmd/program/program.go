@@ -1,3 +1,5 @@
+// Package program provides the
+// main functionality of Blueprint
 package program
 
 import (
@@ -13,6 +15,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// A Project contains the data for the project folder
+// being created, and methods that help with that process
 type Project struct {
 	ProjectName  string
 	Exit         bool
@@ -21,11 +25,15 @@ type Project struct {
 	FrameworkMap map[string]Framework
 }
 
+// A Framework contains the name and templater for a
+// given Framework
 type Framework struct {
 	packageName []string
 	templater   Templater
 }
 
+// A Templater has the methods that help build the files
+// in the Project folder, and is specific to a Framework
 type Templater interface {
 	Main() []byte
 	Server() []byte
@@ -44,6 +52,8 @@ var (
 	internalServerPath = "internal/server"
 )
 
+// ExitCLI checks if the Project has been exited, and closes
+// out of the CLI if it has
 func (p *Project) ExitCLI(tprogram *tea.Program) {
 	if p.Exit {
 		// logo render here
@@ -52,6 +62,8 @@ func (p *Project) ExitCLI(tprogram *tea.Program) {
 	}
 }
 
+// createFrameWorkMap adds the current supported
+// Frameworks into a Project's FrameworkMap
 func (p *Project) createFrameworkMap() {
 	p.FrameworkMap["chi"] = Framework{
 		packageName: chiPackage,
@@ -89,6 +101,8 @@ func (p *Project) createFrameworkMap() {
 	}
 }
 
+// CreateMainFile creates the project folders and files,
+// and writes to them depending on the selected options
 func (p *Project) CreateMainFile() error {
 	// check if AbsolutePath exists
 	if _, err := os.Stat(p.AbsolutePath); os.IsNotExist(err) {
@@ -101,7 +115,7 @@ func (p *Project) CreateMainFile() error {
 
 	p.ProjectName = strings.TrimSpace(p.ProjectName)
 
-	// First lets create a new director with the project name
+	// Create a new directory with the project name
 	if _, err := os.Stat(fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName)); os.IsNotExist(err) {
 		err := os.MkdirAll(fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName), 0751)
 		if err != nil {
@@ -115,18 +129,18 @@ func (p *Project) CreateMainFile() error {
 	// Create the map for our program
 	p.createFrameworkMap()
 
-	// Create go mod
+	// Create go.mod
 	err := utils.InitGoMod(p.ProjectName, projectPath)
 	if err != nil {
-		log.Printf("Could not init go mod in new project %v\n", err)
+		log.Printf("Could not initialize go.mod in new project %v\n", err)
 		cobra.CheckErr(err)
 	}
 
-	// We need to install the correct package
+	// Install the correct package for the selected framework
 	if p.ProjectType != "standard library" {
 		err = utils.GoGetPackage(projectPath, p.FrameworkMap[p.ProjectType].packageName)
 		if err != nil {
-			log.Printf("Could not install go dependency for chosen framework %v\n", err)
+			log.Printf("Could not install go dependency for the chosen framework %v\n", err)
 			cobra.CheckErr(err)
 		}
 	}
@@ -195,6 +209,22 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
+	// Create .air.toml file
+	airTomlFile, err := os.Create(fmt.Sprintf("%s/.air.toml", projectPath))
+	if err != nil {
+		cobra.CheckErr(err)
+		return err
+	}
+
+	defer airTomlFile.Close()
+
+	// inject air.toml template
+	airTomlTemplate := template.Must(template.New("airtoml").Parse(string(tpl.AirTomlTemplate())))
+	err = airTomlTemplate.Execute(airTomlFile, p)
+	if err != nil {
+		return err
+	}
+
 	err = utils.GoFmt(projectPath)
 	if err != nil {
 		log.Printf("Could not gofmt in new project %v\n", err)
@@ -204,6 +234,7 @@ func (p *Project) CreateMainFile() error {
 	return nil
 }
 
+// CreatePath creates the given directory in the projectPath
 func (p *Project) CreatePath(pathToCreate string, projectPath string) error {
 	if _, err := os.Stat(fmt.Sprintf("%s/%s", projectPath, pathToCreate)); os.IsNotExist(err) {
 		err := os.MkdirAll(fmt.Sprintf("%s/%s", projectPath, pathToCreate), 0751)
@@ -216,6 +247,8 @@ func (p *Project) CreatePath(pathToCreate string, projectPath string) error {
 	return nil
 }
 
+// CreateFileWithInjection creates the given file at the
+// project path, and injects the appropriate template
 func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath string, fileName string, methodName string) error {
 	createdFile, err := os.Create(fmt.Sprintf("%s/%s/%s", projectPath, pathToCreate, fileName))
 	if err != nil {
