@@ -15,10 +15,9 @@ jobs:
           go-version: '1.21.1'
 
       - name: Install dependencies
-        run: go mod tidy
-
-      - name: Install dependencies
-        run: go mod download
+        run: |
+        go mod tidy
+        go mod download
 
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v3.7.0
