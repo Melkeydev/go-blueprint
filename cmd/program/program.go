@@ -4,12 +4,10 @@ package program
 
 import (
 	"fmt"
-
 	"html/template"
 	"log"
 	"os"
 	"strings"
-
 	tea "github.com/charmbracelet/bubbletea"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
@@ -218,7 +216,7 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 	// rename master to main
-    err = utils.ExecuteCmd("git", []string{"branch", "-move", "main"}, projectPath)
+    err = utils.ExecuteCmd("git", []string{"branch","-f", "-m","main"}, projectPath)
 	if err != nil {
 		log.Printf("Error renaming master branch to main: %v", err)
 		cobra.CheckErr(err)
