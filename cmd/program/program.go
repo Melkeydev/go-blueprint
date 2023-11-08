@@ -214,28 +214,26 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-
-  // Initialize git repo
-  err = utils.ExecuteCmd("git", []string{"init"}, projectPath)
-  if err != nil {
-    log.Printf("Error initializing git repo: %v", err)
-    cobra.CheckErr(err)
-    return err
-  }
-    // rename to main from master
-    err = utils.ExecuteCmd("git", []string{"branch", "--move", "main"}, projectPath)
+	// Initialize git repo
+	err = utils.ExecuteCmd("git", []string{"init"}, projectPath)
+	if err != nil {
+		log.Printf("Error initializing git repo: %v", err)
+		cobra.CheckErr(err)
+		return err
+	}
+    // rename master to main
+    err = utils.ExecuteCmd("git", []string{"branch", "-m", "main"}, projectPath)
     if err != nil {
         log.Printf("Error renaming master branch to main: %v", err)
         cobra.CheckErr(err)
         return err
     }
-  // Create gitignore
-  gitignoreFile, err := os.Create(fmt.Sprintf("%s/.gitignore", projectPath))
-  if err != nil {
-    cobra.CheckErr(err)
-    return err
-  }
-
+	// Create gitignore
+	gitignoreFile, err := os.Create(fmt.Sprintf("%s/.gitignore", projectPath))
+	if err != nil {
+		cobra.CheckErr(err)
+		return err
+	}
   defer gitignoreFile.Close()
 
   // inject gitignore template
