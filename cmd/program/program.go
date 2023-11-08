@@ -5,14 +5,10 @@ package program
 import (
 	"fmt"
 
-    "html/template"
-    "log"
-    "os"
 	"html/template"
 	"log"
 	"os"
 	"strings"
-
 
 	tea "github.com/charmbracelet/bubbletea"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
@@ -221,46 +217,43 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 		return err
 	}
-    // rename master to main
-    err = utils.ExecuteCmd("git", []string{"branch", "-m", "main"}, projectPath)
-    if err != nil {
-        log.Printf("Error renaming master branch to main: %v", err)
-        cobra.CheckErr(err)
-        return err
-    }
+	// rename master to main
+	err = utils.ExecuteCmd("git", []string{"branch", "-move", "main"}, projectPath)
+	if err != nil {
+		log.Printf("Error renaming master branch to main: %v", err)
+		cobra.CheckErr(err)
+		return err
+	}
 	// Create gitignore
 	gitignoreFile, err := os.Create(fmt.Sprintf("%s/.gitignore", projectPath))
 	if err != nil {
 		cobra.CheckErr(err)
 		return err
 	}
-  defer gitignoreFile.Close()
+	defer gitignoreFile.Close()
 
-  // inject gitignore template
-  gitignoreTemplate := template.Must(template.New(".gitignore").Parse(string(tpl.GitIgnoreTemplate())))
-  err = gitignoreTemplate.Execute(gitignoreFile, p)
-  if err != nil {
-    return err
-  }
+	// inject gitignore template
+	gitignoreTemplate := template.Must(template.New(".gitignore").Parse(string(tpl.GitIgnoreTemplate())))
+	err = gitignoreTemplate.Execute(gitignoreFile, p)
+	if err != nil {
+		return err
+	}
 
-  // Create .air.toml file
-  airTomlFile, err := os.Create(fmt.Sprintf("%s/.air.toml", projectPath))
-  if err != nil {
-      cobra.CheckErr(err)
-      return err
-  }
+	// Create .air.toml file
+	airTomlFile, err := os.Create(fmt.Sprintf("%s/.air.toml", projectPath))
+	if err != nil {
+		cobra.CheckErr(err)
+		return err
+	}
 
+	defer airTomlFile.Close()
 
-  defer airTomlFile.Close()
-
-  // inject air.toml template
-  airTomlTemplate := template.Must(template.New("airtoml").Parse(string(tpl.AirTomlTemplate())))
-  err = airTomlTemplate.Execute(airTomlFile, p)
-  if err != nil {
-      return err
-  }
-
-
+	// inject air.toml template
+	airTomlTemplate := template.Must(template.New("airtoml").Parse(string(tpl.AirTomlTemplate())))
+	err = airTomlTemplate.Execute(airTomlFile, p)
+	if err != nil {
+		return err
+	}
 
 	err = utils.GoFmt(projectPath)
 	if err != nil {
