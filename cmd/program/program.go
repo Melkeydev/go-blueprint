@@ -222,11 +222,13 @@ func (p *Project) CreateMainFile() error {
     cobra.CheckErr(err)
     return err
   }
-  // Switch to main branch
-  err = utils.ExecuteCmd("git", []string{"branch", "-M", "main"}, projectPath)
-  if err != nil {
-      log.Printf("Error switching to main branch: %v", err)
-  }
+    // rename to main from master
+    err = utils.ExecuteCmd("git", []string{"branch", "--move", "main"}, projectPath)
+    if err != nil {
+        log.Printf("Error renaming master branch to main: %v", err)
+        cobra.CheckErr(err)
+        return err
+    }
   // Create gitignore
   gitignoreFile, err := os.Create(fmt.Sprintf("%s/.gitignore", projectPath))
   if err != nil {
@@ -266,8 +268,8 @@ func (p *Project) CreateMainFile() error {
 	if err != nil {
 		log.Printf("Could not gofmt in new project %v\n", err)
 		cobra.CheckErr(err)
+		return err
 	}
-
 	return nil
 }
 
