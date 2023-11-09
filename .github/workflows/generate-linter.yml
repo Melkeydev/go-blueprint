@@ -1,0 +1,26 @@
+name: Linting Generated Blueprints
+
+on:
+    pull_request: {}
+
+jobs:
+    framework_matrix:
+        strategy:
+            matrix:
+                framework: [chi, gin, fiber, gorilla/mux, httprouter, standard-library, echo]
+                goVersion: [1.20]
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: Setup Go
+              uses: actions/setup-go@v3
+              with:
+                go-version: 1.20
+            - name: build templates
+              run: go run main.go create -n ${{ matrix.framework }} -f ${{ matrix.framework}}
+            
+            - name: golangci-lint
+              working-directory: ${{ matrix.framework }}
+              run: |
+                go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.55.2
+                golangci-lint run --timeout 5m
