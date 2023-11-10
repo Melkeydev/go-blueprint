@@ -2,18 +2,18 @@
 // help with the templating of created files.
 package template
 
-// MakeHTTPRoutes returns a byte slice that represents 
+// MakeHTTPRoutes returns a byte slice that represents
 // the default cmd/api/main.go file template.
 func MainTemplate() []byte {
 	return []byte(`package main
 
 import (
+	"{{.ProjectName}}/internal/config"
 	"{{.ProjectName}}/internal/server"
 )
 
 func main() {
-
-	server := server.NewServer()
+	server := server.NewServer(config.AppConfig)
 
 	err := server.ListenAndServe()
 	if err != nil {
@@ -23,7 +23,7 @@ func main() {
 `)
 }
 
-// MakeHTTPRoutes returns a byte slice that represents 
+// MakeHTTPRoutes returns a byte slice that represents
 // the default Makefile.
 func MakeTemplate() []byte {
 	return []byte(
@@ -59,7 +59,6 @@ watch:
 .PHONY: all build run test clean
 		`)
 }
-
 
 func AirTomlTemplate() []byte {
 	return []byte(
@@ -113,8 +112,7 @@ tmp_dir = "tmp"
         `)
 }
 
-
-// ReadmeTemplate returns a byte slice that represents 
+// ReadmeTemplate returns a byte slice that represents
 // the default README.md file template.
 func ReadmeTemplate() []byte {
 	return []byte(

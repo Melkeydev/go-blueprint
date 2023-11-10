@@ -16,19 +16,26 @@ func (g GinTemplates) Routes() []byte {
 	return MakeGinRoutes()
 }
 
-// MakeGinRoutes returns a byte slice that represents 
+func (g GinTemplates) Config() []byte {
+	return ConfigTemplate()
+}
+
+// MakeGinRoutes returns a byte slice that represents
 // the internal/server/routes.go file when using Gin.
 func MakeGinRoutes() []byte {
 	return []byte(`package server
 
 import (
 	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"{{.ProjectName}}/internal/config"
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
 	r := gin.Default()
+	if s.env == config.ProductionEnvironment {
+		gin.SetMode(gin.ReleaseMode)	
+	}
 
 	r.GET("/", s.helloWorldHandler)
 

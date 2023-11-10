@@ -16,7 +16,11 @@ func (c ChiTemplates) Routes() []byte {
 	return MakeChiRoutes()
 }
 
-// MakeChiRoutes returns a byte slice that represents 
+func (c ChiTemplates) Config() []byte {
+	return ConfigTemplate()
+}
+
+// MakeChiRoutes returns a byte slice that represents
 // the internal/server/routes.go file when using Chi.
 func MakeChiRoutes() []byte {
 	return []byte(`package server

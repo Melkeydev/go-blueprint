@@ -16,7 +16,11 @@ func (s StandardLibTemplate) Routes() []byte {
 	return MakeHTTPRoutes()
 }
 
-// MakeHTTPServer returns a byte slice that represents 
+func (s StandardLibTemplate) Config() []byte {
+	return ConfigTemplate()
+}
+
+// MakeHTTPServer returns a byte slice that represents
 // the default internal/server/server.go file.
 func MakeHTTPServer() []byte {
 	return []byte(`package server
@@ -25,18 +29,19 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+	"{{.ProjectName}}/internal/config"
 )
 
-var port = 8080
 
 type Server struct {
 	port int
+	env string
 }
 
-func NewServer() *http.Server {
-
+func NewServer(config config.Config) *http.Server {
 	NewServer := &Server{
-		port: port,
+		port: config.Port,
+		env: config.Environment,
 	}
 
 	// Declare Server config
@@ -53,7 +58,7 @@ func NewServer() *http.Server {
 `)
 }
 
-// MakeHTTPRoutes returns a byte slice that represents 
+// MakeHTTPRoutes returns a byte slice that represents
 // the internal/server/routes.go file when using net/http
 func MakeHTTPRoutes() []byte {
 	return []byte(`package server

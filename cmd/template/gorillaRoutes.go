@@ -7,14 +7,20 @@ type GorillaTemplates struct{}
 func (g GorillaTemplates) Main() []byte {
 	return MainTemplate()
 }
+
 func (g GorillaTemplates) Server() []byte {
 	return MakeHTTPServer()
 }
+
 func (g GorillaTemplates) Routes() []byte {
 	return MakeGorillaRoutes()
 }
 
-// MakeGorillaRoutes returns a byte slice that represents 
+func (g GorillaTemplates) Config() []byte {
+	return ConfigTemplate()
+}
+
+// MakeGorillaRoutes returns a byte slice that represents
 // the internal/server/routes.go file when using gorilla/mux.
 func MakeGorillaRoutes() []byte {
 	return []byte(`package server

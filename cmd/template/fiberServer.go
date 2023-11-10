@@ -15,7 +15,11 @@ func (f FiberTemplates) Routes() []byte {
 	return MakeFiberRoutes()
 }
 
-// MakeFiberServer returns a byte slice that represents 
+func (f FiberTemplates) Config() []byte {
+	return ConfigTemplate()
+}
+
+// MakeFiberServer returns a byte slice that represents
 // the internal/server/server.go file when using Fiber.
 func MakeFiberServer() []byte {
 	return []byte(`package server
@@ -37,7 +41,7 @@ func New() *FiberServer {
 `)
 }
 
-// MakeFiberRoutes returns a byte slice that represents 
+// MakeFiberRoutes returns a byte slice that represents
 // the internal/server/routes.go file when using Fiber.
 func MakeFiberRoutes() []byte {
 	return []byte(`package server
@@ -60,7 +64,7 @@ func (s *FiberServer) helloWorldHandler(c *fiber.Ctx) error {
 `)
 }
 
-// MakeHTTPRoutes returns a byte slice that represents 
+// MakeHTTPRoutes returns a byte slice that represents
 // the cmd/api/main.go file when using Fiber.
 func MakeFiberMain() []byte {
 	return []byte(`package main

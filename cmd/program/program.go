@@ -38,6 +38,7 @@ type Templater interface {
 	Main() []byte
 	Server() []byte
 	Routes() []byte
+	Config() []byte
 }
 
 var (
@@ -47,9 +48,11 @@ var (
 	ginPackage     = []string{"github.com/gin-gonic/gin"}
 	fiberPackage   = []string{"github.com/gofiber/fiber/v2"}
 	echoPackage    = []string{"github.com/labstack/echo/v4", "github.com/labstack/echo/v4/middleware"}
+	viperPackage   = []string{"github.com/spf13/viper"}
 
 	cmdApiPath         = "cmd/api"
 	internalServerPath = "internal/server"
+	configPath         = "internal/config"
 )
 
 // ExitCLI checks if the Project has been exited, and closes
@@ -147,6 +150,12 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
+	err = utils.GoGetPackage(projectPath, viperPackage)
+	if err != nil {
+		log.Printf("Could not install go dependency for this package: %s", viperPackage)
+		cobra.CheckErr(err)
+	}
+
 	err = p.CreatePath(cmdApiPath, projectPath)
 	if err != nil {
 		log.Printf("Error creating path: %s", projectPath)
@@ -188,6 +197,35 @@ func (p *Project) CreateMainFile() error {
 	err = readmeFileTemplate.Execute(readmeFile, p)
 	if err != nil {
 		return err
+	}
+
+	err = p.CreatePath(configPath, projectPath)
+	if err != nil {
+		log.Printf("Error creating path: %s", configPath)
+		cobra.CheckErr(err)
+
+		return err
+	}
+
+	appEnvFile, err := os.Create(fmt.Sprintf("%s/app.env", projectPath+"/"+configPath))
+	if err != nil {
+		cobra.CheckErr(err)
+
+		return err
+	}
+	defer appEnvFile.Close()
+
+	appEnvTemplate := template.Must(template.New("app.env").Parse(string(tpl.AppEnvTemplate())))
+	err = appEnvTemplate.Execute(appEnvFile, p)
+	if err != nil {
+		cobra.CheckErr(err)
+
+		return err
+	}
+
+	err = p.CreateFileWithInjection(configPath, projectPath, "config.go", "config")
+	if err != nil {
+		log.Printf("Error creating path: %s", configPath)
 	}
 
 	err = p.CreatePath(internalServerPath, projectPath)
@@ -268,6 +306,9 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		err = createdTemplate.Execute(createdFile, p)
 	case "routes":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Routes())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "config":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Config())))
 		err = createdTemplate.Execute(createdFile, p)
 	}
 

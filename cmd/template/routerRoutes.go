@@ -7,14 +7,20 @@ type RouterTemplates struct{}
 func (r RouterTemplates) Main() []byte {
 	return MainTemplate()
 }
+
 func (r RouterTemplates) Server() []byte {
 	return MakeHTTPServer()
 }
+
 func (r RouterTemplates) Routes() []byte {
 	return MakeRouterRoutes()
 }
 
-// MakeRouterRoutes returns a byte slice that represents 
+func (r RouterTemplates) Config() []byte {
+	return ConfigTemplate()
+}
+
+// MakeRouterRoutes returns a byte slice that represents
 // the internal/server/routes.go file when using HttpRouter
 func MakeRouterRoutes() []byte {
 	return []byte(`package server
