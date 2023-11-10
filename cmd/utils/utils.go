@@ -86,3 +86,14 @@ func GoFmt(appDir string) error {
 
 	return nil
 }
+
+// GoModTidy runs "go mod tidy" in a selected directory
+func GoModTidy(appDir string) error {
+	if err := ExecuteCmd("go",
+		[]string{"mod", "tidy"},
+		appDir); err != nil {
+		return err
+	}
+
+	return nil
+}
