@@ -24,16 +24,24 @@ func MakeHTTPServer() []byte {
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"time"
-)
+	"strconv"
 
-var port = 8080
+	_ "github.com/joho/godotenv/autoload"
+)
 
 type Server struct {
 	port int
 }
 
 func NewServer() *http.Server {
+
+	port, err := strconv.Atoi(os.Getenv("PORT"))
+	if err != nil {
+		fmt.Printf("error converting variable to int, defaulting to 8080.")
+		port = 8080
+	}
 
 	NewServer := &Server{
 		port: port,

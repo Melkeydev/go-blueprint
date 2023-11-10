@@ -66,7 +66,10 @@ func MakeFiberMain() []byte {
 	return []byte(`package main
 
 import (
+	"os"
 	"{{.ProjectName}}/internal/server"
+
+	_ "github.com/joho/godotenv/autoload"
 )
 
 func main() {
@@ -75,7 +78,7 @@ func main() {
 
 	server.RegisterFiberRoutes()
 
-	err := server.Listen(":8080")
+	err := server.Listen(":" + os.Getenv("PORT"))
 	if err != nil {
 		panic("cannot start server")
 	}

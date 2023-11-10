@@ -113,6 +113,14 @@ tmp_dir = "tmp"
         `)
 }
 
+func EnvFileTemplate() []byte {
+  return []byte(`#Environment Variables
+  
+# Port to run the application on
+PORT="8080"
+  `)
+}
+
 
 // ReadmeTemplate returns a byte slice that represents 
 // the default README.md file template.

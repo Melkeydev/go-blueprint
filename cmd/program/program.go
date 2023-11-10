@@ -227,9 +227,31 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
+	// Create .env.example file
+	envFile, err := os.Create(fmt.Sprintf("%s/.env", projectPath))
+	if err != nil {
+		cobra.CheckErr(err)
+		return err
+	}
+
+	defer envFile.Close()
+
+	// Inject .env template
+	envFileTemplate := template.Must(template.New("envfile").Parse(string(tpl.EnvFileTemplate())))
+	err = envFileTemplate.Execute(envFile, p)
+	if err != nil {
+		return err
+	}
+
 	err = utils.GoFmt(projectPath)
 	if err != nil {
 		log.Printf("Could not gofmt in new project %v\n", err)
+		cobra.CheckErr(err)
+	}
+
+	err = utils.GoModTidy(projectPath)
+	if err != nil {
+		log.Printf("Could not tidy go.mod in new project %v\n", err)
 		cobra.CheckErr(err)
 	}
 
