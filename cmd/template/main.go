@@ -87,9 +87,6 @@ tmp/
 # IDE specific files
 .vscode
 .idea
-
-# build output
-air
 		`)
 }
 

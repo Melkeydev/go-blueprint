@@ -215,13 +215,6 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 		return err
 	}
-	// rename master to main
-    err = utils.ExecuteCmd("git", []string{"branch","-f", "-m","main"}, projectPath)
-	if err != nil {
-		log.Printf("Error renaming master branch to main: %v", err)
-		cobra.CheckErr(err)
-		return err
-	}
 	// Create gitignore
 	gitignoreFile, err := os.Create(fmt.Sprintf("%s/.gitignore", projectPath))
 	if err != nil {
