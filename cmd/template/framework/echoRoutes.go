@@ -57,50 +57,54 @@ func (s *Server) helloWorldHandler(c echo.Context) error {
 func MakeEchoRoutesTest() []byte {
 	return []byte(`package server
 
-import (
-	"net/http"
-	"net/http/httptest"
-	"testing"
-
-	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/assert"
-)
-
-type Server struct{}
-
-// TestRegisterRoutes tests if routes are registered correctly
-func TestRegisterRoutes(t *testing.T) {
-	e := echo.New()
-	s := &Server{}
-	h := s.RegisterRoutes()
-	e.Server.Handler = h
-
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
-	rec := httptest.NewRecorder()
-
-	e.Server.ServeHTTP(rec, req)
-
-	assert.Equal(t, http.StatusOK, rec.Code)
-
-	expected := ` + "`{\"message\":\"Hello World\"}`" + `
-	assert.Equal(t, expected, rec.Body.String())
-}
-
-// TestHelloWorldHandler tests the response from the helloWorldHandler
-func TestHelloWorldHandler(t *testing.T) {
-	e := echo.New()
-	s := &Server{}
-	e.GET("/", s.helloWorldHandler)
-
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
-
-	if assert.NoError(t, s.helloWorldHandler(c)) {
+	import (
+		"net/http"
+		"net/http/httptest"
+		"testing"
+		"io"
+		"github.com/labstack/echo/v4"
+		"github.com/stretchr/testify/assert"
+	)
+	
+	// TestHelloWorldHandler tests the hello world handler
+	func TestHelloWorldHandler(t *testing.T) {
+		e := echo.New()
+		s := &Server{port: 8080}
+	
+		e.GET("/", s.helloWorldHandler)
+	
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+	
+		rec := httptest.NewRecorder()
+	
+		e.ServeHTTP(rec, req)
+	
 		assert.Equal(t, http.StatusOK, rec.Code)
-		expected := ` + "`{\"message\":\"Hello World\"}`" + `
-		assert.Equal(t, expected, rec.Body.String())
+	
+		expected := ` + "`{\"message\":\"Hello World\"}`" + ` 
+		assert.JSONEq(t, expected, rec.Body.String())
 	}
-}
+	
+	// TestRegisterRoutes tests the registration of routes
+	func TestRegisterRoutes(t *testing.T) {
+		s := &Server{port: 8080}
+	
+		handler := s.RegisterRoutes()
+	
+		server := httptest.NewServer(handler)
+		defer server.Close()
+	
+		resp, err := http.Get(server.URL + "/")
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+	
+		// Read and assert the response body
+		body, err := io.ReadAll(resp.Body)
+		resp.Body.Close()
+		assert.NoError(t, err)
+	
+		expected := ` + "`{\"message\":\"Hello World\"}`" + `
+		assert.JSONEq(t, expected, string(body))
+	}
 `)
 }

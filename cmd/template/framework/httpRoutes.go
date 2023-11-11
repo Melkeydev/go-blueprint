@@ -97,7 +97,6 @@ func MakeHTTPServerTest() []byte {
 	return []byte(`package server
 
 import (
-	"net/http"
 	"testing"
 	"time"
 	"fmt"

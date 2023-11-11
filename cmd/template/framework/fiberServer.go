@@ -120,7 +120,7 @@ func MakeFiberRoutesTest() []byte {
 	return []byte(`package server
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http/httptest"
 	"testing"
 
@@ -128,23 +128,20 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type FiberServer struct {
-	App *fiber.App
-}
-
 // TestHelloWorldHandler tests the response from the helloWorldHandler
 func TestHelloWorldHandler(t *testing.T) {
-	app := fiber.New()
-	s := &FiberServer{App: app}
-	s.RegisterFiberRoutes()
+	// Use the New function to create a new FiberServer instance
+	server := New()
+
+	server.RegisterFiberRoutes()
 
 	req := httptest.NewRequest("GET", "/", nil)
-	resp, err := app.Test(req)
+	resp, err := server.App.Test(req)
 	assert.Nil(t, err)
 	assert.Equal(t, fiber.StatusOK, resp.StatusCode)
 
-	// Read the response body
-	body, err := ioutil.ReadAll(resp.Body)
+	// Read the response body using io.ReadAll
+	body, err := io.ReadAll(resp.Body)
 	assert.Nil(t, err)
 
 	// Convert the body to string for assertion

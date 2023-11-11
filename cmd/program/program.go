@@ -46,6 +46,8 @@ type Templater interface {
 	Main() []byte
 	Server() []byte
 	Routes() []byte
+	ServerTest() []byte
+	RoutesTest() []byte
 }
 
 type CICDTemplater interface {
@@ -286,6 +288,20 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
+	err = p.CreateFileWithInjection(internalServerPath, projectPath, "server_test.go", "server_test")
+	if err != nil {
+		log.Printf("Error injecting server_test.go file: %v", err)
+		cobra.CheckErr(err)
+		return err
+	}
+
+	err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes_test.go", "routes_test")
+	if err != nil {
+		log.Printf("Error injecting routes_test.go file: %v", err)
+		cobra.CheckErr(err)
+		return err
+	}
+
 	// Create .air.toml file
 	airTomlFile, err := os.Create(fmt.Sprintf("%s/.air.toml", projectPath))
 	if err != nil {
@@ -349,6 +365,12 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		err = createdTemplate.Execute(createdFile, p)
 	case "routes":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Routes())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "server_test":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.ServerTest())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "routes_test":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.RoutesTest())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "pipline":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.CICDMap[p.CICD].templater.Pipline())))

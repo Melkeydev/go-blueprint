@@ -70,17 +70,14 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
 )
 
-type Server struct{}
-
 // TestRegisterRoutes tests if routes are registered correctly
 func TestRegisterRoutes(t *testing.T) {
-	s := &Server{}
-	r := s.RegisterRoutes()
-	ts := httptest.NewServer(r)
+	server := NewServer()
+
+	ts := httptest.NewServer(server.Handler)
 	defer ts.Close()
 
 	res, err := http.Get(ts.URL + "/")
@@ -96,17 +93,18 @@ func TestRegisterRoutes(t *testing.T) {
 
 // TestHelloWorldHandler tests the response from the helloWorldHandler
 func TestHelloWorldHandler(t *testing.T) {
-	s := &Server{}
-	r := chi.NewRouter()
-	r.Get("/", s.helloWorldHandler)
+	server := NewServer()
 
-	ts := httptest.NewServer(r)
+	// Create an HTTP test server from the server's handler
+	ts := httptest.NewServer(server.Handler)
 	defer ts.Close()
 
+	// Send a request to the test server
 	res, err := http.Get(ts.URL + "/")
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusOK, res.StatusCode)
 
+	// Read and check the response
 	defer res.Body.Close()
 	var resp map[string]string
 	err = json.NewDecoder(res.Body).Decode(&resp)
