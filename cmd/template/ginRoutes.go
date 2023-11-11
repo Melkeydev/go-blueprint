@@ -1,5 +1,7 @@
 package template
 
+import "fmt"
+
 // GinTemplates contains the methods used for building
 // an app that uses [github.com/gin-gonic/gin]
 type GinTemplates struct{}
@@ -19,7 +21,7 @@ func (g GinTemplates) Routes() []byte {
 // MakeGinRoutes returns a byte slice that represents 
 // the internal/server/routes.go file when using Gin.
 func MakeGinRoutes() []byte {
-	return []byte(`package server
+	return []byte(fmt.Sprintf(`package server
 
 import (
 	"log"
@@ -46,37 +48,9 @@ func (s *Server) helloWorldHandler(c *gin.Context) {
 }
 
 func (s *Server) pingPongWebsocketHandler(c *gin.Context) {
-	socket, err := websocket.Accept(c.Writer, c.Request, nil)
-
-	if err != nil {
-		log.Print("could not open websocket")
-		// pray this works for your user
-		_, _ = c.Writer.Write([]byte("could not open websocket"))
-		c.Writer.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	ctx := c.Request.Context()
-	for {
-		msgType, socketBytes, err := socket.Read(ctx)
-
-		if err != nil {
-			log.Print("could not read from websocket")
-			return
-		}
-
-		if string(socketBytes) == "PING" {
-			if err := socket.Write(ctx, msgType, []byte("PONG")); err != nil {
-				log.Print("could not write to socket")
-				return
-			}
-		} else {
-			if err := socket.Write(ctx, msgType, []byte("HUH?")); err != nil {
-				log.Print("could not write to socket")
-				return
-			}
-		}
-	}
+	w := c.Writer
+	r := c.Request
+%s
 }
-`)
+`, websocketTemplate()))
 }

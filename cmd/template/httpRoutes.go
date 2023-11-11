@@ -1,5 +1,7 @@
 package template
 
+import "fmt"
+
 // StandardLibTemplate contains the methods used for building
 // an app that uses [net/http]
 type StandardLibTemplate struct{}
@@ -56,7 +58,7 @@ func NewServer() *http.Server {
 // MakeHTTPRoutes returns a byte slice that represents 
 // the internal/server/routes.go file when using net/http
 func MakeHTTPRoutes() []byte {
-	return []byte(`package server
+	return []byte(fmt.Sprintf(`package server
 
 import (
 	"net/http"
@@ -88,37 +90,7 @@ func (s *Server) handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) pingPongWebsocketHandler(w http.ResponseWriter, r *http.Request) {
-	socket, err := websocket.Accept(w, r, nil)
-
-	if err != nil {
-		log.Print("could not open websocket")
-		// pray this works for your user
-		_, _ = w.Write([]byte("could not open websocket"))
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	ctx := r.Context()
-	for {
-		msgType, socketBytes, err := socket.Read(ctx)
-
-		if err != nil {
-			log.Print("could not read from websocket")
-			return
-		}
-
-		if string(socketBytes) == "PING" {
-			if err := socket.Write(ctx, msgType, []byte("PONG")); err != nil {
-				log.Print("could not write to socket")
-				return
-			}
-		} else {
-			if err := socket.Write(ctx, msgType, []byte("HUH?")); err != nil {
-				log.Print("could not write to socket")
-				return
-			}
-		}
-	}
+%s
 }
-`)
+`, websocketTemplate()))
 }

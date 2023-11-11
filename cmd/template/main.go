@@ -23,6 +23,49 @@ func main() {
 `)
 }
 
+// WebsocketTemplate returns a slice that represents the logic of the websocket
+// handler. This function expects some variables set in the template. See echo
+// router for more details.
+//
+// w http.ResponseWriter
+// r *http.Request
+func websocketTemplate() []byte {
+	return []byte(`
+	errorMessage := []byte("This is another message not PING")
+	socket, err := websocket.Accept(w, r, nil)
+
+	if err != nil {
+		log.Print("could not open websocket")
+		_, _ = w.Write([]byte("could not open websocket"))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	ctx := r.Context()
+	for {
+		msgType, socketBytes, err := socket.Read(ctx)
+
+		if err != nil {
+			log.Print("could not read from websocket")
+			return
+		}
+
+		if string(socketBytes) == "PING" {
+			if err := socket.Write(ctx, msgType, []byte("PONG")); err != nil {
+				log.Print("could not write to socket")
+				return
+			}
+			continue
+		}
+
+		if err := socket.Write(ctx, msgType, errorMessage); err != nil {
+			log.Print("could not write to socket")
+			return
+		}
+	}
+`)
+}
+
 // MakeHTTPRoutes returns a byte slice that represents
 // the default Makefile.
 func MakeTemplate() []byte {
@@ -71,7 +114,6 @@ watch:
 .PHONY: all build run test clean
 		`)
 }
-
 
 func GitIgnoreTemplate() []byte {
 	return []byte(
@@ -153,7 +195,6 @@ tmp_dir = "tmp"
   keep_scroll = true
         `)
 }
-
 
 // ReadmeTemplate returns a byte slice that represents
 // the default README.md file template.
