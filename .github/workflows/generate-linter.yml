@@ -2,6 +2,7 @@ name: Linting Generated Blueprints
 
 on:
     pull_request: {}
+    workflow_dispatch: {}
 
 jobs:
     framework_matrix:
