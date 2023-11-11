@@ -33,7 +33,6 @@ func websocketTemplate() []byte {
 	return []byte(`
 	errorMessage := []byte("This is another message not PING")
 	socket, err := websocket.Accept(w, r, nil)
-	defer socket.Close(websocket.StatusGoingAway, "server closing websocket")
 
 	if err != nil {
 		log.Print("could not open websocket")
@@ -41,6 +40,8 @@ func websocketTemplate() []byte {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	defer socket.Close(websocket.StatusGoingAway, "server closing websocket")
 
 	ctx := r.Context()
 	for {
