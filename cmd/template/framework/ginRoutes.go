@@ -85,7 +85,7 @@ func NewHealthHandler() *healthHandler {
 	}
 }
 
-func (h *healthHandler) healthHandler(c *gin.Context) error {
+func (h *healthHandler) healthHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, h.s.Health())
 }
 `)

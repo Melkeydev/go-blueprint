@@ -10,9 +10,11 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	_ "github.com/lib/pq"
+	_ "github.com/joho/godotenv/autoload"
 )
 
 type Service interface {
@@ -23,8 +25,16 @@ type service struct {
 	db *sql.DB
 }
 
+var (
+	database = os.Getenv("DB_DATABASE")
+	password = os.Getenv("DB_PASSWORD")
+	username = os.Getenv("DB_USERNAME")
+	port     = os.Getenv("DB_PORT")
+	host     = os.Getenv("DB_HOST")
+)
+
 func New() *service {
-	connStr := "user=pqgotest dbname=pqgotest sslmode=verify-full"
+	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", username, password, host, port, database)
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal(err)
@@ -46,5 +56,15 @@ func (s *service) Health() map[string]string {
 		"message": "It's healthy",
 	}
 }
+`)
+}
+
+func (m PostgresTemplate) Env() []byte {
+	return []byte(`
+DB_HOST=
+DB_PORT=
+DB_DATABASE=
+DB_USERNAME=
+DB_PASSWORD=
 `)
 }

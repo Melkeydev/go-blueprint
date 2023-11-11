@@ -51,6 +51,7 @@ type Templater interface {
 
 type DBDriverTemplater interface {
 	Service() []byte
+	Env() []byte
 }
 
 var (
@@ -61,16 +62,17 @@ var (
 	fiberPackage   = []string{"github.com/gofiber/fiber/v2"}
 	echoPackage    = []string{"github.com/labstack/echo/v4", "github.com/labstack/echo/v4/middleware"}
 
-	mysqlDriver    = []string{"github.com/go-sql-driver/mysql"}
-	postgresDriver = []string{"github.com/lib/pq"}
-	sqliteDriver   = []string{"github.com/mattn/go-sqlite3"}
-	mongoDriver    = []string{"go.mongodb.org/mongo-driver"}
+	mysqlDriver    = []string{"github.com/go-sql-driver/mysql", "github.com/joho/godotenv"}
+	postgresDriver = []string{"github.com/lib/pq", "github.com/joho/godotenv"}
+	sqliteDriver   = []string{"github.com/mattn/go-sqlite3", "github.com/joho/godotenv"}
+	mongoDriver    = []string{"go.mongodb.org/mongo-driver", "github.com/joho/godotenv"}
 )
 
 const (
 	cmdApiPath          = "cmd/api"
 	internalServerPath  = "internal/server"
 	internalServicePath = "internal/database"
+	root                = "/"
 )
 
 // ExitCLI checks if the Project has been exited, and closes
@@ -277,6 +279,13 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
+	err = p.CreateFileWithInjection(root, projectPath, ".env", "env")
+	if err != nil {
+		log.Printf("Error injecting .env file: %v", err)
+		cobra.CheckErr(err)
+		return err
+	}
+
 	// Create .air.toml file
 	airTomlFile, err := os.Create(fmt.Sprintf("%s/.air.toml", projectPath))
 	if err != nil {
@@ -346,6 +355,9 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		err = createdTemplate.Execute(createdFile, p)
 	case "database":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.Service())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "env":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.Env())))
 		err = createdTemplate.Execute(createdFile, p)
 	}
 

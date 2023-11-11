@@ -146,7 +146,7 @@ var createCmd = &cobra.Command{
 	},
 }
 
-// isValidProjectType checks if the inputted project type matches 
+// isValidProjectType checks if the inputted project type matches
 // the currently supported list of project types
 func isValidProjectType(input string, allowedTypes []string) bool {
 	for _, t := range allowedTypes {
@@ -157,6 +157,8 @@ func isValidProjectType(input string, allowedTypes []string) bool {
 	return false
 }
 
+// isValidDBDriver checks if the inputted database driver
+// the currently supported list of drivers
 func isValidDBDriver(input string, allowedDBDrivers []string) bool {
 	for _, d := range allowedDBDrivers {
 		if input == d {

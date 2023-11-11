@@ -9,10 +9,12 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	_ "github.com/joho/godotenv/autoload"
 )
 
 type Service interface {
@@ -23,8 +25,14 @@ type service struct {
 	db *mongo.Client
 }
 
+var (
+	host     = os.Getenv("DB_HOST")
+	port     = os.Getenv("DB_PORT")
+	database = os.Getenv("DB_DATABASE")
+)
+
 func New() *service {
-	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://yourIpAddress:yourPort"))
+	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:%s", host, port)))
 
 	if err != nil {
 		log.Fatal(err)
@@ -48,5 +56,13 @@ func (s *service) Health() map[string]string {
 		"message": "It's healthy",
 	}
 }
+`)
+}
+
+func (m MongoTemplate) Env() []byte {
+	return []byte(`
+DB_HOST=
+DB_PORT=
+DB_DATABASE=
 `)
 }

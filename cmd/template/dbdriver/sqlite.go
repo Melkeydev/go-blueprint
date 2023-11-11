@@ -10,9 +10,11 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/joho/godotenv/autoload"
 )
 
 type Service interface {
@@ -23,9 +25,12 @@ type service struct {
 	db *sql.DB
 }
 
+var (
+	dburl = os.Getenv("DB_URL")
+)
+
 func New() *service {
-	const file string = "example.db"
-	db, err := sql.Open("sqlite3", file)
+	db, err := sql.Open("sqlite3", dburl)
 	if err != nil {
 		// This will not be a connection error, but a DSN parse error or
 		// another initialization error.
@@ -48,5 +53,11 @@ func (s *service) Health() map[string]string {
 		"message": "It's healthy",
 	}
 }
+`)
+}
+
+func (m SqliteTemplate) Env() []byte {
+	return []byte(`
+DB_URL=
 `)
 }
