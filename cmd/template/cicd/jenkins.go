@@ -141,7 +141,7 @@ CMD ["/bin/sh", "-c", "setup-sshd && dockerd --host=unix:///var/run/docker.sock"
 	`)
 }
 
-func (j JenkinsTemplate) DockerTag() []byte {
+func (j JenkinsTemplate) Tag() []byte {
 	return []byte(`#!/bin/bash
 
 DOCKER_HUB_USERNAME=$1
@@ -204,7 +204,7 @@ CMD ["./main"]
 }
 
 
-func (j JenkinsTemplate) JenkinsReadme() []byte {
+func (j JenkinsTemplate) Readme() []byte {
     return []byte(`# Jenkins Configuration and Pipeline Setup
 
 This guide offers short instructions for configuring Jenkins Controller and Agents to facilitate the execution of pipeline jobs. While Jenkins can be set up locally using Docker Compose, configuring a dedicated server is recommended. Numerous tutorials are available for controller installation, and you can refer to the official documentation.

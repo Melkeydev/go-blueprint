@@ -46,7 +46,6 @@ type Options struct {
 	ProjectName *textinput.Output
 	ProjectType *multiInput.Selection
 	CICD 		*multiInput.Selection
-	
 }
 
 // createCmd defines the "create" command for the CLI

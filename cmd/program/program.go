@@ -51,8 +51,8 @@ type Templater interface {
 type CICDTemplater interface {
 	Pipline() []byte
 	JenkinsSlave() []byte
-	DockerTag() []byte
-	JenkinsReadme() []byte
+	Tag() []byte
+	Readme() []byte
 	Dockerfile() []byte
 }
 var (
@@ -193,21 +193,21 @@ func (p *Project) CreateMainFile() error {
 			return err
 		}
 		
-		err = p.CreateFileWithInjection(jenkinsConfigPath, projectPath, "docker_tag.sh", "dockerTag")
+		err = p.CreateFileWithInjection(jenkinsConfigPath, projectPath, "docker_tag.sh", "tag")
 		if err != nil {
 			log.Printf("Error injecting server.go file: %v", err)
 			cobra.CheckErr(err)
 			return err
 		}
 
-		err = p.CreateFileWithInjection(jenkinsConfigPath, projectPath, "README.md", "jenkinsReadme")
+		err = p.CreateFileWithInjection(jenkinsConfigPath, projectPath, "README.md", "Readme")
 		if err != nil {
 			log.Printf("Error injecting server.go file: %v", err)
 			cobra.CheckErr(err)
 			return err
 		}
 
-		err = p.CreateFileWithInjection(jenkinsFilePath, projectPath, "Jenkinsfile", "jenkins")
+		err = p.CreateFileWithInjection(jenkinsFilePath, projectPath, "Jenkinsfile", "pipline")
 		if err != nil {
 			log.Printf("Error injecting server.go file: %v", err)
 			cobra.CheckErr(err)
@@ -350,17 +350,17 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 	case "routes":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Routes())))
 		err = createdTemplate.Execute(createdFile, p)
-	case "jenkins":
+	case "pipline":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.CICDMap[p.CICD].templater.Pipline())))
 		err = createdTemplate.Execute(createdFile, p)	
 	case "jenkinsSlave":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.CICDMap[p.CICD].templater.JenkinsSlave())))
 		err = createdTemplate.Execute(createdFile, p)
-	case "dockerTag":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.CICDMap[p.CICD].templater.DockerTag())))
+	case "tag":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.CICDMap[p.CICD].templater.Tag())))
 		err = createdTemplate.Execute(createdFile, p)
-	case "jenkinsReadme":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.CICDMap[p.CICD].templater.JenkinsReadme())))
+	case "Readme":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.CICDMap[p.CICD].templater.Readme())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "dockerfile":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.CICDMap[p.CICD].templater.Dockerfile())))
