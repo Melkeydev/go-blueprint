@@ -61,6 +61,7 @@ func (s *Server) pingPongWebsocketHandler(c echo.Context) error {
 		w.WriteHeader(http.StatusInternalServerError)
 		return errors.New("could not open websocket")
 	}
+	defer socket.Close(websocket.StatusGoingAway, "server closing websocket")
 
 	ctx := r.Context()
 	for {
