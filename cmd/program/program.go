@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"strings"
+
 	tea "github.com/charmbracelet/bubbletea"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
@@ -71,7 +72,7 @@ func (p *Project) createFrameworkMap() {
 		templater:   tpl.ChiTemplates{},
 	}
 
-	p.FrameworkMap["standard library"] = Framework{
+	p.FrameworkMap["standard-library"] = Framework{
 		packageName: []string{},
 		templater:   tpl.StandardLibTemplate{},
 	}

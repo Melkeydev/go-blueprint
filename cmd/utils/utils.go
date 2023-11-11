@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os/exec"
 
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -14,8 +15,8 @@ const ProgramName = "go-blueprint"
 
 // NonInteractiveCommand creates the command string from a flagSet
 // to be used for getting the equivalent non-interactive shell command
-func NonInteractiveCommand(flagSet *pflag.FlagSet) string {
-	nonInteractiveCommand := ProgramName
+func NonInteractiveCommand(cmd *cobra.Command) string {
+	nonInteractiveCommand := fmt.Sprintf("%s %s", ProgramName, cmd.Name())
 
 	visitFn := func(flag *pflag.Flag) {
 		if flag.Name != "help" {
@@ -23,6 +24,7 @@ func NonInteractiveCommand(flagSet *pflag.FlagSet) string {
 		}
 	}
 
+	flagSet := cmd.Flags()
 	flagSet.SortFlags = false
 	flagSet.VisitAll(visitFn)
 

@@ -102,6 +102,7 @@ var createCmd = &cobra.Command{
 			}
 
 			project.ProjectType = strings.ToLower(options.ProjectType)
+			project.ProjectType = strings.ReplaceAll(project.ProjectType, " ", "-")
 			cmd.Flag("framework").Value.Set(project.ProjectType)
 		}
 
@@ -124,7 +125,7 @@ var createCmd = &cobra.Command{
 		fmt.Println(endingMsgStyle.Render(fmt.Sprintf("• cd %s\n", project.ProjectName)))
 
 		if isInteractive {
-			nonInteractiveCommand := utils.NonInteractiveCommand(cmd.Flags())
+			nonInteractiveCommand := utils.NonInteractiveCommand(cmd)
 			fmt.Println(tipMsgStyle.Render("Tip: Repeat the equivalent Blueprint with the following non-interactive command:"))
 			fmt.Println(tipMsgStyle.Italic(false).Render(fmt.Sprintf("• %s\n", nonInteractiveCommand)))
 		}
