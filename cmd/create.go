@@ -12,6 +12,7 @@ import (
 	"github.com/melkeydev/go-blueprint/cmd/steps"
 	"github.com/melkeydev/go-blueprint/cmd/ui/multiInput"
 	"github.com/melkeydev/go-blueprint/cmd/ui/textinput"
+	"github.com/melkeydev/go-blueprint/cmd/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -71,9 +72,11 @@ var createCmd = &cobra.Command{
 		}
 
 		steps := steps.InitSteps(&options)
+		isInteractive := false
 		fmt.Printf("%s\n", logoStyle.Render(logo))
 
 		if project.ProjectName == "" {
+			isInteractive = true
 			tprogram := tea.NewProgram(textinput.InitialTextInputModel(options.ProjectName, "What is the name of your project?", project))
 
 			if _, err := tprogram.Run(); err != nil {
@@ -83,11 +86,14 @@ var createCmd = &cobra.Command{
 			project.ExitCLI(tprogram)
 
 			project.ProjectName = options.ProjectName.Output
+			cmd.Flag("name").Value.Set(project.ProjectName)
 		}
 
 		if project.ProjectType == "" {
 			for _, step := range steps.Steps {
 				s := &multiInput.Selection{}
+				isInteractive = true
+
 				tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, s, step.Headers, project))
 				if _, err := tprogram.Run(); err != nil {
 					cobra.CheckErr(err)
@@ -98,6 +104,7 @@ var createCmd = &cobra.Command{
 			}
 
 			project.ProjectType = strings.ToLower(options.ProjectType)
+			cmd.Flag("framework").Value.Set(project.ProjectType)
 		}
 
 		currentWorkingDir, err := os.Getwd()
@@ -117,10 +124,16 @@ var createCmd = &cobra.Command{
 
 		fmt.Println(endingMsgStyle.Render("\nNext steps cd into the newly created project with:"))
 		fmt.Println(endingMsgStyle.Render(fmt.Sprintf("• cd %s\n", project.ProjectName)))
+
+		if isInteractive {
+			nonInteractiveCommand := utils.NonInteractiveCommand(cmd.Flags())
+			fmt.Println(endingMsgStyle.Render("Tip: Repeat the equivalent Blueprint with the following non-interactive command:"))
+			fmt.Println(endingMsgStyle.Render(nonInteractiveCommand))
+		}
 	},
 }
 
-// isValidProjectType checks if the inputted project type matches 
+// isValidProjectType checks if the inputted project type matches
 // the currently supported list of project types
 func isValidProjectType(input string, allowedTypes []string) bool {
 	for _, t := range allowedTypes {
