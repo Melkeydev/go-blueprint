@@ -52,9 +52,6 @@ type Templater interface {
 
 type CICDTemplater interface {
 	Pipline() []byte
-	JenkinsSlave() []byte
-	Tag() []byte
-	Readme() []byte
 	Dockerfile() []byte
 }
 var (
@@ -71,8 +68,9 @@ var (
 const (
 	cmdApiPath          = "cmd/api"
 	internalServerPath  = "internal/server"
-	jenkinsFilePath		= ""
-	jenkinsConfigPath	= "jenkins"
+	rootPath		    = ""
+	githubActionPath    = ".github/workflows"
+	jenkinsConfigPath   = "jenkins"
 
 )
 
@@ -131,6 +129,11 @@ func (p *Project) createCICDMap() {
 		packageName: []string{},
 		templater: cicd.JenkinsTemplate{},
 	}
+
+	p.CICDMap["github-action"] = CICD{
+		packageName: []string{},
+		templater: cicd.GithubActionTemplate{},
+	}
 }
 
 // CreateMainFile creates the project folders and files,
@@ -178,47 +181,44 @@ func (p *Project) CreateMainFile() error {
 	}
 
 
-	if p.CICD != "none" {
+	if p.CICD == "jenkins"{
 		p.createCICDMap()
 
-		err = p.CreatePath(jenkinsConfigPath, projectPath)
+		err = p.CreateFileWithInjection(rootPath, projectPath, "Jenkinsfile", "pipline")
 		if err != nil {
-			log.Printf("Error creating path: %s", jenkinsConfigPath)
-			cobra.CheckErr(err)
-			return err
-		}
-		
-		err = p.CreateFileWithInjection(jenkinsConfigPath, projectPath, "Dockerfile", "jenkinsSlave")
-		if err != nil {
-			log.Printf("Error injecting server.go file: %v", err)
-			cobra.CheckErr(err)
-			return err
-		}
-		
-		err = p.CreateFileWithInjection(jenkinsConfigPath, projectPath, "docker_tag.sh", "tag")
-		if err != nil {
-			log.Printf("Error injecting server.go file: %v", err)
+			log.Printf("Error injecting Jenkinsfile file: %v", err)
 			cobra.CheckErr(err)
 			return err
 		}
 
-		err = p.CreateFileWithInjection(jenkinsConfigPath, projectPath, "README.md", "Readme")
+		err = p.CreateFileWithInjection(rootPath, projectPath, "Dockerfile", "dockerfile")
 		if err != nil {
-			log.Printf("Error injecting server.go file: %v", err)
+			log.Printf("Error injecting Dockerfile file: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}
+	}
+
+	if p.CICD == "github-action" {
+		p.createCICDMap()
+
+		err = p.CreatePath(githubActionPath, projectPath)
+		if err != nil {
+			log.Printf("Error creating path: %s", githubActionPath)
 			cobra.CheckErr(err)
 			return err
 		}
 
-		err = p.CreateFileWithInjection(jenkinsFilePath, projectPath, "Jenkinsfile", "pipline")
+		err = p.CreateFileWithInjection(githubActionPath, projectPath, "go-action.yml", "pipline")
 		if err != nil {
-			log.Printf("Error injecting server.go file: %v", err)
+			log.Printf("Error injecting go-action.yml file: %v", err)
 			cobra.CheckErr(err)
 			return err
 		}
 
-		err = p.CreateFileWithInjection(jenkinsFilePath, projectPath, "Dockerfile", "dockerfile")
+		err = p.CreateFileWithInjection(rootPath, projectPath, "Dockerfile", "dockerfile")
 		if err != nil {
-			log.Printf("Error injecting server.go file: %v", err)
+			log.Printf("Error injecting Dockerfile file: %v", err)
 			cobra.CheckErr(err)
 			return err
 		}
@@ -375,15 +375,6 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 	case "pipline":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.CICDMap[p.CICD].templater.Pipline())))
 		err = createdTemplate.Execute(createdFile, p)	
-	case "jenkinsSlave":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.CICDMap[p.CICD].templater.JenkinsSlave())))
-		err = createdTemplate.Execute(createdFile, p)
-	case "tag":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.CICDMap[p.CICD].templater.Tag())))
-		err = createdTemplate.Execute(createdFile, p)
-	case "Readme":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.CICDMap[p.CICD].templater.Readme())))
-		err = createdTemplate.Execute(createdFile, p)
 	case "dockerfile":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.CICDMap[p.CICD].templater.Dockerfile())))
 		err = createdTemplate.Execute(createdFile, p)

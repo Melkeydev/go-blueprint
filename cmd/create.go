@@ -31,7 +31,7 @@ var (
 	logoStyle           = lipgloss.NewStyle().Foreground(lipgloss.Color("#01FAC6")).Bold(true)
 	endingMsgStyle      = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("170")).Bold(true)
 	allowedProjectTypes = []string{"chi", "gin", "fiber", "gorilla/mux", "httprouter", "standard-library", "echo"}
-	allowedCICD   		= []string{"jenkins", "none"}
+	allowedCICD   		= []string{"jenkins", "github-action", "none"}
 )
 
 func init() {

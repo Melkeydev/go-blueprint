@@ -65,6 +65,11 @@ func InitSteps() *Steps {
 						Title: "Jenkins",
 						Desc:  "Jenkins pipline with Dockerfile for SSH Agnet",
 					},
+
+					{
+						Title: "Github-Action",
+						Desc:  "Github Action pipline with Dockerfile",
+					},
 			
 					{
 						Title: "None",
