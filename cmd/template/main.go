@@ -33,6 +33,7 @@ func websocketTemplate() []byte {
 	return []byte(`
 	errorMessage := []byte("This is another message not PING")
 	socket, err := websocket.Accept(w, r, nil)
+	defer socket.Close(websocket.StatusGoingAway, "server closing websocket")
 
 	if err != nil {
 		log.Print("could not open websocket")
