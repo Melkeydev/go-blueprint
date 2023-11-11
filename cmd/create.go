@@ -55,6 +55,8 @@ var createCmd = &cobra.Command{
 			ProjectName: &textinput.Output{},
 		}
 
+		isInteractive := !utils.HasChangedFlag(cmd.Flags())
+
 		flagName := cmd.Flag("name").Value.String()
 		flagFramework := cmd.Flag("framework").Value.String()
 
@@ -72,13 +74,10 @@ var createCmd = &cobra.Command{
 		}
 
 		steps := steps.InitSteps(&options)
-		isInteractive := false
 		fmt.Printf("%s\n", logoStyle.Render(logo))
 
 		if project.ProjectName == "" {
-			isInteractive = true
 			tprogram := tea.NewProgram(textinput.InitialTextInputModel(options.ProjectName, "What is the name of your project?", project))
-
 			if _, err := tprogram.Run(); err != nil {
 				log.Printf("Name of project contains an error: %v", err)
 				cobra.CheckErr(err)
@@ -92,8 +91,6 @@ var createCmd = &cobra.Command{
 		if project.ProjectType == "" {
 			for _, step := range steps.Steps {
 				s := &multiInput.Selection{}
-				isInteractive = true
-
 				tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, s, step.Headers, project))
 				if _, err := tprogram.Run(); err != nil {
 					cobra.CheckErr(err)
