@@ -15,6 +15,14 @@ func (f FiberTemplates) Routes() []byte {
 	return MakeFiberRoutes()
 }
 
+func (f FiberTemplates) ServerTest() []byte {
+	return MakeFiberServerTest()
+}
+
+func (f FiberTemplates) RoutesTest() []byte {
+	return MakeFiberRoutesTest()
+}
+
 // MakeFiberServer returns a byte slice that represents 
 // the internal/server/server.go file when using Fiber.
 func MakeFiberServer() []byte {
@@ -33,7 +41,6 @@ func New() *FiberServer {
 
 	return server
 }
-
 `)
 }
 
@@ -79,6 +86,75 @@ func main() {
 	if err != nil {
 		panic("cannot start server")
 	}
+}
+`)
+}
+
+func MakeFiberServerTest() []byte {
+	return []byte(`package server
+
+import (
+	"testing"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/stretchr/testify/assert"
+)
+
+// TestNew tests the New function for creating a new FiberServer instance
+func TestNew(t *testing.T) {
+	server := New()
+
+	// Check if the server is not nil
+	assert.NotNil(t, server)
+
+	// Check if the server is of type *FiberServer
+	assert.IsType(t, &FiberServer{}, server)
+
+	// Check if the App field is correctly initialized
+	assert.IsType(t, &fiber.App{}, server.App)
+}
+`)
+}
+
+func MakeFiberRoutesTest() []byte {
+	return []byte(`package server
+
+import (
+	"io/ioutil"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/stretchr/testify/assert"
+)
+
+type FiberServer struct {
+	App *fiber.App
+}
+
+// TestHelloWorldHandler tests the response from the helloWorldHandler
+func TestHelloWorldHandler(t *testing.T) {
+	app := fiber.New()
+	s := &FiberServer{App: app}
+	s.RegisterFiberRoutes()
+
+	req := httptest.NewRequest("GET", "/", nil)
+	resp, err := app.Test(req)
+	assert.Nil(t, err)
+	assert.Equal(t, fiber.StatusOK, resp.StatusCode)
+
+	// Read the response body
+	body, err := ioutil.ReadAll(resp.Body)
+	assert.Nil(t, err)
+
+	// Convert the body to string for assertion
+	bodyString := string(body)
+	expectedBody := ` + "`{\"message\":\"Hello World\"}`" + `
+	assert.Equal(t, expectedBody, bodyString)
+
+	// Close the response body
+	err = resp.Body.Close()
+	assert.Nil(t, err)
 }
 `)
 }

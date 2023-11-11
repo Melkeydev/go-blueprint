@@ -16,6 +16,14 @@ func (g GinTemplates) Routes() []byte {
 	return MakeGinRoutes()
 }
 
+func (g GinTemplates) ServerTest() []byte {
+	return MakeHTTPServerTest()
+}
+
+func (g GinTemplates) RoutesTest() []byte {
+	return MakeGinRoutesTest()
+}
+
 // MakeGinRoutes returns a byte slice that represents 
 // the internal/server/routes.go file when using Gin.
 func MakeGinRoutes() []byte {
@@ -41,6 +49,75 @@ func (s *Server) helloWorldHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, resp)
 }
+`)
+}
 
+func MakeGinRoutesTest() []byte {
+	return []byte(`package server
+
+import (
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/gin-gonic/gin"
+)
+
+// TestRegisterRoutes tests if routes are registered correctly
+func TestRegisterRoutes(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	s := &Server{}
+	handler := s.RegisterRoutes()
+
+	// Creating a request to pass to the handler
+	req, err := http.NewRequest("GET", "/", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Recording the response
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+
+	// Check the status code
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
+	}
+
+	// Check the response body
+	expected := ` + "`{\"message\":\"Hello World\"}`" + `
+	if rr.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v", rr.Body.String(), expected)
+	}
+}
+
+// TestHelloWorldHandler tests the response from the helloWorldHandler
+func TestHelloWorldHandler(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	s := &Server{}
+	r := gin.New()
+	r.GET("/", s.helloWorldHandler)
+
+	// Creating a request to pass to the handler
+	req, err := http.NewRequest("GET", "/", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Recording the response
+	rr := httptest.NewRecorder()
+	r.ServeHTTP(rr, req)
+
+	// Check the status code
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
+	}
+
+	// Check the response body
+	expected := ` + "`{\"message\":\"Hello World\"}`" + `
+	if rr.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v", rr.Body.String(), expected)
+	}
+}
 `)
 }
