@@ -10,11 +10,12 @@ import (
 	"github.com/spf13/pflag"
 )
 
+const ProgramName = "go-blueprint"
+
 // NonInteractiveCommand creates the command string from a flagSet
 // to be used for getting the equivalent non-interactive shell command
 func NonInteractiveCommand(flagSet *pflag.FlagSet) string {
-	programName := "go-blueprint"
-	nonInteractiveCommand := programName
+	nonInteractiveCommand := ProgramName
 
 	visitFn := func(flag *pflag.Flag) {
 		if flag.Name != "help" {
