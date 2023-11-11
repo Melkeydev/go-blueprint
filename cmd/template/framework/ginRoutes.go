@@ -1,4 +1,4 @@
-package template
+package framework
 
 // GinTemplates contains the methods used for building
 // an app that uses [github.com/gin-gonic/gin]

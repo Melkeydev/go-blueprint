@@ -1,6 +1,6 @@
 // Package template provides utility functions that
 // help with the templating of created files.
-package template
+package framework
 
 // MakeHTTPRoutes returns a byte slice that represents 
 // the default cmd/api/main.go file template.
@@ -37,9 +37,15 @@ build:
 	@echo "Building..."
 	@go build -o main cmd/api/main.go
 
+docker-build:
+	@docker build -t go-app .
+
 # Run the application
 run:
 	@go run cmd/api/main.go
+
+docker-run:
+	@docker run -d -p 8080:8080 go-app
 
 # Test the application
 test:
@@ -139,9 +145,19 @@ build the application
 make build
 ` + "```" + `
 
+build docker conatiner
+` + "```bash" + `
+make docker-build
+` + "```" + `
+
 run the application
 ` + "```bash" + `
 make run
+` + "```" + `
+
+run docker-container
+` + "```bash" + `
+make docker-run
 ` + "```" + `
 
 run the test suite

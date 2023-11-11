@@ -1,4 +1,4 @@
-package template
+package framework 
 
 // FiberTemplates contains the methods used for building
 // an app that uses [github.com/gofiber/fiber]

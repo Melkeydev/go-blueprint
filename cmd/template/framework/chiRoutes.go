@@ -1,4 +1,4 @@
-package template
+package framework 
 
 // ChiTemplates contains the methods used for building
 // an app that uses [github.com/go-chi/chi]

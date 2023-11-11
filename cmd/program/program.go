@@ -10,7 +10,8 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
-	tpl "github.com/melkeydev/go-blueprint/cmd/template"
+	"github.com/melkeydev/go-blueprint/cmd/template/cicd"
+	"github.com/melkeydev/go-blueprint/cmd/template/framework"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
 	"github.com/spf13/cobra"
 )
@@ -22,7 +23,9 @@ type Project struct {
 	Exit         bool
 	AbsolutePath string
 	ProjectType  string
+	CICD 		 string
 	FrameworkMap map[string]Framework
+	CICDMap 	 map[string]CICD
 }
 
 // A Framework contains the name and templater for a
@@ -30,6 +33,11 @@ type Project struct {
 type Framework struct {
 	packageName []string
 	templater   Templater
+}
+
+type CICD struct {
+	packageName []string
+	templater CICDTemplater
 }
 
 // A Templater has the methods that help build the files
@@ -40,6 +48,13 @@ type Templater interface {
 	Routes() []byte
 }
 
+type CICDTemplater interface {
+	Pipline() []byte
+	JenkinsSlave() []byte
+	DockerTag() []byte
+	JenkinsReadme() []byte
+	Dockerfile() []byte
+}
 var (
 	chiPackage     = []string{"github.com/go-chi/chi/v5"}
 	gorillaPackage = []string{"github.com/gorilla/mux"}
@@ -48,8 +63,15 @@ var (
 	fiberPackage   = []string{"github.com/gofiber/fiber/v2"}
 	echoPackage    = []string{"github.com/labstack/echo/v4", "github.com/labstack/echo/v4/middleware"}
 
-	cmdApiPath         = "cmd/api"
-	internalServerPath = "internal/server"
+	
+)
+
+const (
+	cmdApiPath          = "cmd/api"
+	internalServerPath  = "internal/server"
+	jenkinsFilePath		= ""
+	jenkinsConfigPath	= "jenkins"
+
 )
 
 // ExitCLI checks if the Project has been exited, and closes
@@ -69,37 +91,43 @@ func (p *Project) ExitCLI(tprogram *tea.Program) {
 func (p *Project) createFrameworkMap() {
 	p.FrameworkMap["chi"] = Framework{
 		packageName: chiPackage,
-		templater:   tpl.ChiTemplates{},
+		templater:   framework.ChiTemplates{},
 	}
 
 	p.FrameworkMap["standard library"] = Framework{
 		packageName: []string{},
-		templater:   tpl.StandardLibTemplate{},
+		templater:   framework.StandardLibTemplate{},
 	}
 
 	p.FrameworkMap["gin"] = Framework{
 		packageName: ginPackage,
-		templater:   tpl.GinTemplates{},
+		templater:   framework.GinTemplates{},
 	}
 
 	p.FrameworkMap["fiber"] = Framework{
 		packageName: fiberPackage,
-		templater:   tpl.FiberTemplates{},
+		templater:   framework.FiberTemplates{},
 	}
 
 	p.FrameworkMap["gorilla/mux"] = Framework{
 		packageName: gorillaPackage,
-		templater:   tpl.GorillaTemplates{},
+		templater:   framework.GorillaTemplates{},
 	}
 
 	p.FrameworkMap["httprouter"] = Framework{
 		packageName: routerPackage,
-		templater:   tpl.RouterTemplates{},
+		templater:   framework.RouterTemplates{},
 	}
-
 	p.FrameworkMap["echo"] = Framework{
 		packageName: echoPackage,
-		templater:   tpl.EchoTemplates{},
+		templater:   framework.EchoTemplates{},
+	}
+}
+
+func (p *Project) createCICDMap() {
+	p.CICDMap["jenkins"] = CICD{
+		packageName: []string{},
+		templater: cicd.JenkinsTemplate{},
 	}
 }
 
@@ -147,6 +175,53 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
+
+	if p.CICD != "none" {
+		p.createCICDMap()
+
+		err = p.CreatePath(jenkinsConfigPath, projectPath)
+		if err != nil {
+			log.Printf("Error creating path: %s", jenkinsConfigPath)
+			cobra.CheckErr(err)
+			return err
+		}
+		
+		err = p.CreateFileWithInjection(jenkinsConfigPath, projectPath, "Dockerfile", "jenkinsSlave")
+		if err != nil {
+			log.Printf("Error injecting server.go file: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}
+		
+		err = p.CreateFileWithInjection(jenkinsConfigPath, projectPath, "docker_tag.sh", "dockerTag")
+		if err != nil {
+			log.Printf("Error injecting server.go file: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}
+
+		err = p.CreateFileWithInjection(jenkinsConfigPath, projectPath, "README.md", "jenkinsReadme")
+		if err != nil {
+			log.Printf("Error injecting server.go file: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}
+
+		err = p.CreateFileWithInjection(jenkinsFilePath, projectPath, "Jenkinsfile", "jenkins")
+		if err != nil {
+			log.Printf("Error injecting server.go file: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}
+
+		err = p.CreateFileWithInjection(jenkinsFilePath, projectPath, "Dockerfile", "dockerfile")
+		if err != nil {
+			log.Printf("Error injecting server.go file: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}
+	}
+
 	err = p.CreatePath(cmdApiPath, projectPath)
 	if err != nil {
 		log.Printf("Error creating path: %s", projectPath)
@@ -169,7 +244,7 @@ func (p *Project) CreateMainFile() error {
 	defer makeFile.Close()
 
 	// inject makefile template
-	makeFileTemplate := template.Must(template.New("makefile").Parse(string(tpl.MakeTemplate())))
+	makeFileTemplate := template.Must(template.New("makefile").Parse(string(framework.MakeTemplate())))
 	err = makeFileTemplate.Execute(makeFile, p)
 	if err != nil {
 		return err
@@ -184,7 +259,7 @@ func (p *Project) CreateMainFile() error {
 	defer readmeFile.Close()
 
 	// inject readme template
-	readmeFileTemplate := template.Must(template.New("readme").Parse(string(tpl.ReadmeTemplate())))
+	readmeFileTemplate := template.Must(template.New("readme").Parse(string(framework.ReadmeTemplate())))
 	err = readmeFileTemplate.Execute(readmeFile, p)
 	if err != nil {
 		return err
@@ -221,7 +296,7 @@ func (p *Project) CreateMainFile() error {
 	defer airTomlFile.Close()
 
 	// inject air.toml template
-	airTomlTemplate := template.Must(template.New("airtoml").Parse(string(tpl.AirTomlTemplate())))
+	airTomlTemplate := template.Must(template.New("airtoml").Parse(string(framework.AirTomlTemplate())))
 	err = airTomlTemplate.Execute(airTomlFile, p)
 	if err != nil {
 		return err
@@ -230,6 +305,12 @@ func (p *Project) CreateMainFile() error {
 	err = utils.GoFmt(projectPath)
 	if err != nil {
 		log.Printf("Could not gofmt in new project %v\n", err)
+		cobra.CheckErr(err)
+	}
+
+	err = utils.GoTidy(projectPath)
+	if err != nil {
+		log.Printf("Could not go tidy in new project %v\n", err)
 		cobra.CheckErr(err)
 	}
 
@@ -269,10 +350,24 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 	case "routes":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Routes())))
 		err = createdTemplate.Execute(createdFile, p)
+	case "jenkins":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.CICDMap[p.CICD].templater.Pipline())))
+		err = createdTemplate.Execute(createdFile, p)	
+	case "jenkinsSlave":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.CICDMap[p.CICD].templater.JenkinsSlave())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "dockerTag":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.CICDMap[p.CICD].templater.DockerTag())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "jenkinsReadme":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.CICDMap[p.CICD].templater.JenkinsReadme())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "dockerfile":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.CICDMap[p.CICD].templater.Dockerfile())))
+		err = createdTemplate.Execute(createdFile, p)
 	}
 
 	if err != nil {
-		return err
 	}
 
 	return nil
