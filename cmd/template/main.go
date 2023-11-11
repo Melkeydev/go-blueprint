@@ -53,8 +53,20 @@ clean:
 
 # Live Reload
 watch:
-	@echo "Watching..."
-	@air
+	@if [ -x "$(GOPATH)/bin/air" ]; then \
+	    "$(GOPATH)/bin/air"; \
+		@echo "Watching...";\
+	else \
+	    read -p "air is not installed. Do you want to install it now? (y/n) " choice; \
+	    if [ "$$choice" = "y" ]; then \
+			go install github.com/cosmtrek/air@latest; \
+	        "$(GOPATH)/bin/air"; \
+				@echo "Watching...";\
+	    else \
+	        echo "You chose not to install air. Exiting..."; \
+	        exit 1; \
+	    fi; \
+	fi
 
 .PHONY: all build run test clean
 		`)
@@ -171,6 +183,11 @@ make build
 run the application
 ` + "```bash" + `
 make run
+` + "```" + `
+
+live reload the application
+` + "```bash" + `
+make watch
 ` + "```" + `
 
 run the test suite
