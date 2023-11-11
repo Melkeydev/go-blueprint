@@ -16,7 +16,7 @@ func (s StandardLibTemplate) Routes() []byte {
 	return MakeHTTPRoutes()
 }
 
-func (g StandardLibTemplate) RoutesWithDB() []byte {
+func (s StandardLibTemplate) RoutesWithDB() []byte {
 	return MakeHTTPRoutesWithDB()
 }
 
@@ -29,6 +29,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	_ "github.com/joho/godotenv/autoload"
 )
 
 var port = 8080

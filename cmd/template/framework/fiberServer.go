@@ -24,7 +24,10 @@ func (f FiberTemplates) RoutesWithDB() []byte {
 func MakeFiberServer() []byte {
 	return []byte(`package server
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+	_ "github.com/joho/godotenv/autoload"
+)
 
 type FiberServer struct {
 	*fiber.App

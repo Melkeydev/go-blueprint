@@ -4,6 +4,7 @@ package program
 
 import (
 	"fmt"
+	tpl "github.com/melkeydev/go-blueprint/cmd/template"
 	"html/template"
 	"log"
 	"os"
@@ -140,6 +141,10 @@ func (p *Project) createDBDriverMap() {
 		packageName: mongoDriver,
 		templater:   dbdriver.MongoTemplate{},
 	}
+	p.DBDriverMap["none"] = Driver{
+		packageName: []string{},
+		templater:   dbdriver.MongoTemplate{},
+	}
 }
 
 // CreateMainFile creates the project folders and files,
@@ -169,6 +174,7 @@ func (p *Project) CreateMainFile() error {
 
 	// Create the map for our program
 	p.createFrameworkMap()
+	p.createDBDriverMap()
 
 	// Create go.mod
 	err := utils.InitGoMod(p.ProjectName, projectPath)
@@ -187,8 +193,6 @@ func (p *Project) CreateMainFile() error {
 	}
 
 	if p.DBDriver != "none" {
-		// Create the map for our program
-		p.createDBDriverMap()
 
 		err = utils.GoGetPackage(projectPath, p.DBDriverMap[p.DBDriver].packageName)
 		if err != nil {
@@ -357,8 +361,13 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.Service())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "env":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.Env())))
-		err = createdTemplate.Execute(createdFile, p)
+		if p.DBDriver != "none" {
+			createdTemplate := template.Must(template.New(fileName).Parse(string(tpl.GlobalEnvTemplate()) + string(p.DBDriverMap[p.DBDriver].templater.Env())))
+			err = createdTemplate.Execute(createdFile, p)
+		} else {
+			createdTemplate := template.Must(template.New(fileName).Parse(string(tpl.GlobalEnvTemplate())))
+			err = createdTemplate.Execute(createdFile, p)
+		}
 	}
 
 	if err != nil {
