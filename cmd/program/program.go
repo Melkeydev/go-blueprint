@@ -63,10 +63,12 @@ var (
 	fiberPackage   = []string{"github.com/gofiber/fiber/v2"}
 	echoPackage    = []string{"github.com/labstack/echo/v4", "github.com/labstack/echo/v4/middleware"}
 
-	mysqlDriver    = []string{"github.com/go-sql-driver/mysql", "github.com/joho/godotenv"}
-	postgresDriver = []string{"github.com/lib/pq", "github.com/joho/godotenv"}
-	sqliteDriver   = []string{"github.com/mattn/go-sqlite3", "github.com/joho/godotenv"}
-	mongoDriver    = []string{"go.mongodb.org/mongo-driver", "github.com/joho/godotenv"}
+	mysqlDriver    = []string{"github.com/go-sql-driver/mysql"}
+	postgresDriver = []string{"github.com/lib/pq"}
+	sqliteDriver   = []string{"github.com/mattn/go-sqlite3"}
+	mongoDriver    = []string{"go.mongodb.org/mongo-driver"}
+
+	godotenvPackage = []string{"github.com/joho/godotenv"}
 )
 
 const (
@@ -174,7 +176,6 @@ func (p *Project) CreateMainFile() error {
 
 	// Create the map for our program
 	p.createFrameworkMap()
-	p.createDBDriverMap()
 
 	// Create go.mod
 	err := utils.InitGoMod(p.ProjectName, projectPath)
@@ -193,7 +194,7 @@ func (p *Project) CreateMainFile() error {
 	}
 
 	if p.DBDriver != "none" {
-
+		p.createDBDriverMap()
 		err = utils.GoGetPackage(projectPath, p.DBDriverMap[p.DBDriver].packageName)
 		if err != nil {
 			log.Printf("Could not install go dependency for chosen driver %v\n", err)
@@ -213,6 +214,12 @@ func (p *Project) CreateMainFile() error {
 			cobra.CheckErr(err)
 			return err
 		}
+	}
+
+	err = utils.GoGetPackage(projectPath, godotenvPackage)
+	if err != nil {
+		log.Printf("Could not install go dependency %v\n", err)
+		cobra.CheckErr(err)
 	}
 
 	err = p.CreatePath(cmdApiPath, projectPath)
