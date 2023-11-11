@@ -16,8 +16,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-        go mod tidy
-        go mod download
+          go mod tidy
+          go mod download
 
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v3.7.0
