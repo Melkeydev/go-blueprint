@@ -1,0 +1,25 @@
+builds:
+- binary: go-blueprint
+  main: ./
+  goos:
+  - darwin
+  - linux
+  - windows
+  goarch:
+  - amd64
+  - arm64
+  env:
+  - CGO_ENABLED=0
+
+release:
+  prerelease: auto
+
+universal_binaries:
+- replace: true
+
+brews:
+- name: go-blueprint
+  homepage: "https://github.com/Melkeydev/homebrew-melkey"
+
+checksum:
+  name_template: 'checksums.txt'
