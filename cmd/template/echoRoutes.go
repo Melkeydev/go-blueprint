@@ -1,7 +1,5 @@
 package template
 
-import "fmt"
-
 // EchoTemplates contains the methods used for building
 // an app that uses [github.com/labstack/echo]
 type EchoTemplates struct{}
@@ -17,10 +15,10 @@ func (e EchoTemplates) Routes() []byte {
 	return MakeEchoRoutes()
 }
 
-// MakeEchoRoutes returns a byte slice that represents 
+// MakeEchoRoutes returns a byte slice that represents
 // the internal/server/routes.go file when using Echo.
 func MakeEchoRoutes() []byte {
-	return []byte(fmt.Sprintf(`package server
+	return []byte(`package server
 
 	import (
 		"errors"
@@ -54,7 +52,39 @@ func (s *Server) helloWorldHandler(c echo.Context) error {
 func (s *Server) pingPongWebsocketHandler(c echo.Context) error {
 	w := c.Response().Writer
 	r := c.Request()
-	%s
+	errorMessage := []byte("This is another message not PING")
+	socket, err := websocket.Accept(w, r, nil)
+
+	if err != nil {
+		log.Print("could not open websocket")
+		_, _ = w.Write([]byte("could not open websocket"))
+		w.WriteHeader(http.StatusInternalServerError)
+		return errors.New("could not open websocket")
+	}
+
+	ctx := r.Context()
+	for {
+		msgType, socketBytes, err := socket.Read(ctx)
+
+		if err != nil {
+			log.Print("could not read from websocket")
+			return errors.New("could read from websocket")
+		}
+
+		if string(socketBytes) == "PING" {
+			if err := socket.Write(ctx, msgType, []byte("PONG")); err != nil {
+				log.Print("could not write to socket")
+				return errors.New("could write to websocket")
+			}
+			continue
+		}
+
+		if err := socket.Write(ctx, msgType, errorMessage); err != nil {
+			log.Print("could not write to socket")
+			return errors.New("could write to websocket")
+
+		}
+	}
 }
-`, websocketTemplate()))
+`)
 }

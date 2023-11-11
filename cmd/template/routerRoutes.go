@@ -44,7 +44,7 @@ func (s *Server) helloWorldHandler(w http.ResponseWriter, r *http.Request) {
 
 	jsonResp, err := json.Marshal(resp)
 	if err != nil {
-		log.Fatalf("error handling JSON marshal. Err: %v", err)
+		log.Fatalf("error handling JSON marshal. Err: %%v", err)
 	}
 
 	w.Write(jsonResp)

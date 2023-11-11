@@ -18,7 +18,7 @@ func (g GinTemplates) Routes() []byte {
 	return MakeGinRoutes()
 }
 
-// MakeGinRoutes returns a byte slice that represents 
+// MakeGinRoutes returns a byte slice that represents
 // the internal/server/routes.go file when using Gin.
 func MakeGinRoutes() []byte {
 	return []byte(fmt.Sprintf(`package server

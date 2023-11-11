@@ -18,7 +18,7 @@ func (s StandardLibTemplate) Routes() []byte {
 	return MakeHTTPRoutes()
 }
 
-// MakeHTTPServer returns a byte slice that represents 
+// MakeHTTPServer returns a byte slice that represents
 // the default internal/server/server.go file.
 func MakeHTTPServer() []byte {
 	return []byte(`package server
@@ -55,7 +55,7 @@ func NewServer() *http.Server {
 `)
 }
 
-// MakeHTTPRoutes returns a byte slice that represents 
+// MakeHTTPRoutes returns a byte slice that represents
 // the internal/server/routes.go file when using net/http
 func MakeHTTPRoutes() []byte {
 	return []byte(fmt.Sprintf(`package server
@@ -83,7 +83,7 @@ func (s *Server) handler(w http.ResponseWriter, r *http.Request) {
 
 	jsonResp, err := json.Marshal(resp)
 	if err != nil {
-		log.Fatalf("error handling JSON marshal. Err: %v", err)
+		log.Fatalf("error handling JSON marshal. Err: %%v", err)
 	}
 
 	w.Write(jsonResp)
