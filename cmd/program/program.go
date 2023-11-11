@@ -248,6 +248,14 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
+	// This needs to be after all the go files are generated since it checks
+	// what dependencies those files need
+	err = utils.TidyGoMod(p.ProjectName, projectPath)
+	if err != nil {
+		log.Printf("Could not tidy go mod in new project %v\n", err)
+		cobra.CheckErr(err)
+	}
+
 	err = utils.GoFmt(projectPath)
 	if err != nil {
 		log.Printf("Could not gofmt in new project %v\n", err)
