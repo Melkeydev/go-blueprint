@@ -33,7 +33,15 @@ func (j JenkinsTemplate) Pipline() []byte {
         stage('Test') {
             steps {
                 script {
-                    sh "go test -v ./..."
+                    sh "go test -v ./... ${WORKSPACE}/internal/server"
+                }
+            }
+        }
+
+        stage('chmod Tag sh') {
+            steps {
+                script {
+                    sh "chmod 777 ${WORKSPACE}/jenkinsconfig/docker_tag.sh"
                 }
             }
         }
@@ -44,7 +52,7 @@ func (j JenkinsTemplate) Pipline() []byte {
             }
             steps {
                 script {
-                    TAG = sh(script: "/home/jenkins/docker_tag.sh $DOCKER_HUB_USERNAME $DOCKER_REPO_NAME $VERSION_PART", returnStdout: true).trim()
+                    TAG = sh(script: "${WORKSPACE}/jenkinsconfig/docker_tag.sh $DOCKER_HUB_USERNAME $DOCKER_REPO_NAME $VERSION_PART", returnStdout: true).trim()
 
                     if (TAG) {
                         echo "Docker image tag generated successfully: $TAG"

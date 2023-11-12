@@ -70,7 +70,7 @@ const (
 	internalServerPath  = "internal/server"
 	rootPath		    = ""
 	githubActionPath    = ".github/workflows"
-	jenkinsConfigPath   = "jenkins"
+	jenkinsConfigPath   = "jenkinsconfig"
 
 )
 
@@ -184,6 +184,13 @@ func (p *Project) CreateMainFile() error {
 	if p.CICD == "jenkins"{
 		p.createCICDMap()
 
+		err = p.CreatePath(jenkinsConfigPath, projectPath)
+		if err != nil {
+			log.Printf("Error creating path: %s", jenkinsConfigPath)
+			cobra.CheckErr(err)
+			return err
+		}
+		
 		err = p.CreateFileWithInjection(rootPath, projectPath, "Jenkinsfile", "pipline")
 		if err != nil {
 			log.Printf("Error injecting Jenkinsfile file: %v", err)
@@ -195,6 +202,49 @@ func (p *Project) CreateMainFile() error {
 		if err != nil {
 			log.Printf("Error injecting Dockerfile file: %v", err)
 			cobra.CheckErr(err)
+			return err
+		}
+
+		jenkinsSlave, err := os.Create(fmt.Sprintf("%s/jenkinsconfig/Dockerfile.agent", projectPath))
+		if err != nil {
+			cobra.CheckErr(err)
+			return err
+		}
+
+		defer jenkinsSlave.Close()
+
+		jenkinsSlaveTemplate := template.Must(template.New("dockerfile.agent").Parse(string(cicd.JenkinsSlave())))
+		err = jenkinsSlaveTemplate.Execute(jenkinsSlave, p)
+		if err != nil {
+			return err
+		}
+
+		// Tag.sh file
+		tag, err := os.Create(fmt.Sprintf("%s/jenkinsconfig/docker_tag.sh", projectPath))
+		if err != nil {
+		    cobra.CheckErr(err)
+		    return err
+		}
+		defer tag.Close()
+
+		// Write script directly <<< in a bash script is getting interpreted as HTML entities (&lt;&lt;&lt;)
+		_, err = tag.Write(cicd.Tag())
+		if err != nil {
+		    return err
+		}	
+
+		// Readme
+		readme, err := os.Create(fmt.Sprintf("%s/jenkinsconfig/ReadmeJenkins.md", projectPath))
+		if err != nil {
+			cobra.CheckErr(err)
+			return err
+		}
+
+		defer readme.Close()
+
+		readmeTemplate := template.Must(template.New("readmejeniks").Parse(string(cicd.Readme())))
+		err = readmeTemplate.Execute(readme, p)
+		if err != nil {
 			return err
 		}
 	}
