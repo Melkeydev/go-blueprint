@@ -22,7 +22,15 @@ gives the option to integrate with one of the more popular Go frameworks (and th
 
 ### Install
 
+- **Brew install :**
+
+```sh
+brew install go-blueprint
 ```
+
+- **Go install :**
+
+```sh
 go install github.com/melkeydev/go-blueprint@latest
 ```
 
