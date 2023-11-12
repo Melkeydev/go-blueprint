@@ -2,7 +2,7 @@
 // each step of the CLI
 package steps
 
-import textinput "github.com/melkeydev/go-blueprint/cmd/ui/textinput"
+import "github.com/melkeydev/go-blueprint/cmd/ui/textinput"
 
 // A StepSchema contains the data that is used
 // for an individual step of the CLI
@@ -61,8 +61,9 @@ func InitSteps(options *Options) *Steps {
 						Title: "HttpRouter",
 						Desc:  "HttpRouter is a lightweight high performance HTTP request router for Go",
 					},
-					{Title: "Echo",
-						Desc: "High performance, extensible, minimalist Go web framework",
+					{
+						Title: "Echo",
+						Desc:  "High performance, extensible, minimalist Go web framework",
 					},
 				},
 				Headers: "What framework do you want to use in your Go project?",

@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"strings"
+
 	tea "github.com/charmbracelet/bubbletea"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
@@ -65,7 +66,7 @@ func (p *Project) ExitCLI(tprogram *tea.Program) {
 
 // createFrameWorkMap adds the current supported
 // Frameworks into a Project's FrameworkMap
-func (p *Project) createFrameworkMap() {
+func (p *Project) CreateFrameworkMap() {
 	p.FrameworkMap["chi"] = Framework{
 		packageName: chiPackage,
 		templater:   tpl.ChiTemplates{},
@@ -128,7 +129,7 @@ func (p *Project) CreateMainFile() error {
 	projectPath := fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName)
 
 	// Create the map for our program
-	p.createFrameworkMap()
+	p.CreateFrameworkMap()
 
 	// Create go.mod
 	err := utils.InitGoMod(p.ProjectName, projectPath)

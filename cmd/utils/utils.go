@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os/exec"
 
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -35,6 +36,21 @@ func HasChangedFlag(flagSet *pflag.FlagSet) bool {
 		hasChangedFlag = true
 	})
 	return hasChangedFlag
+}
+
+func FlagValue(cmd *cobra.Command, flagName string) string {
+	return cmd.Flag(flagName).Value.String()
+}
+
+// isValidProjectType checks if the inputted project type matches
+// the currently supported list of project types
+func IsValidProjectType(input string, allowedTypes []string) bool {
+	for _, t := range allowedTypes {
+		if input == t {
+			return true
+		}
+	}
+	return false
 }
 
 // ExecuteCmd provides a shorthand way to run a shell command
