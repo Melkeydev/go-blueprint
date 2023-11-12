@@ -90,7 +90,10 @@ var createCmd = &cobra.Command{
 			project.ExitCLI(tprogram)
 
 			project.ProjectName = options.ProjectName.Output
-			cmd.Flag("name").Value.Set(project.ProjectName)
+			err := cmd.Flag("name").Value.Set(project.ProjectName)
+			if err != nil {
+				log.Fatal("failed to set the name flag value", err)
+			}
 		}
 
 		if flagPath == "" {
@@ -116,7 +119,10 @@ var createCmd = &cobra.Command{
 			}
 
 			project.ProjectType = strings.ToLower(options.ProjectType)
-			cmd.Flag("framework").Value.Set(project.ProjectType)
+			err := cmd.Flag("framework").Value.Set(project.ProjectType)
+			if err != nil {
+				log.Fatal("failed to set the framework flag value", err)
+			}
 		}
 
 		currentWorkingDir, err := os.Getwd()
