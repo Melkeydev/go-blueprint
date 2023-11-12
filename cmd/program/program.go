@@ -37,6 +37,7 @@ type Templater interface {
 	Main() []byte
 	Server() []byte
 	Routes() []byte
+    TestHandler() []byte
 }
 
 var (
@@ -49,6 +50,7 @@ var (
 
 	cmdApiPath         = "cmd/api"
 	internalServerPath = "internal/server"
+    testHandlerPath    = "tests"
 )
 
 // ExitCLI checks if the Project has been exited, and closes
@@ -159,6 +161,20 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
+    err = p.CreatePath(testHandlerPath, projectPath)
+    if err != nil {
+        log.Printf("Error creating path: %s", projectPath)
+        cobra.CheckErr(err)
+        return err
+    }
+
+    // inject testhandler.go file into tests directory
+    err = p.CreateFileWithInjection(testHandlerPath, projectPath, "handler_test.go", "tests")
+    if err != nil {
+        cobra.CheckErr(err)
+        return err
+    }
+
 	makeFile, err := os.Create(fmt.Sprintf("%s/Makefile", projectPath))
 	if err != nil {
 		cobra.CheckErr(err)
@@ -209,7 +225,6 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 		return err
 	}
-
 	// Initialize git repo
 	err = utils.ExecuteCmd("git", []string{"init"}, projectPath)
 	if err != nil {
@@ -290,6 +305,9 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 	case "routes":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Routes())))
 		err = createdTemplate.Execute(createdFile, p)
+    case "tests":
+        createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.TestHandler())))
+        err = createdTemplate.Execute(createdFile, p)
 	}
 
 	if err != nil {

@@ -16,7 +16,11 @@ func (s StandardLibTemplate) Routes() []byte {
 	return MakeHTTPRoutes()
 }
 
-// MakeHTTPServer returns a byte slice that represents 
+func (s StandardLibTemplate) TestHandler() []byte {
+    return MakeTestHandler()
+}
+
+// MakeHTTPServer returns a byte slice that represents
 // the default internal/server/server.go file.
 func MakeHTTPServer() []byte {
 	return []byte(`package server
@@ -53,7 +57,7 @@ func NewServer() *http.Server {
 `)
 }
 
-// MakeHTTPRoutes returns a byte slice that represents 
+// MakeHTTPRoutes returns a byte slice that represents
 // the internal/server/routes.go file when using net/http
 func MakeHTTPRoutes() []byte {
 	return []byte(`package server
@@ -67,12 +71,12 @@ import (
 func (s *Server) RegisterRoutes() http.Handler {
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", s.handler)
+	mux.HandleFunc("/", s.HelloWorldHandler)
 
 	return mux
 }
 
-func (s *Server) handler(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HelloWorldHandler(w http.ResponseWriter, r *http.Request) {
 	resp := make(map[string]string)
 	resp["message"] = "Hello World"
 

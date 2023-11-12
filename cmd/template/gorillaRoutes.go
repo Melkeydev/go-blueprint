@@ -14,7 +14,10 @@ func (g GorillaTemplates) Routes() []byte {
 	return MakeGorillaRoutes()
 }
 
-// MakeGorillaRoutes returns a byte slice that represents 
+func (g GorillaTemplates) TestHandler() []byte {
+    return MakeTestHandler()
+}
+// MakeGorillaRoutes returns a byte slice that represents
 // the internal/server/routes.go file when using gorilla/mux.
 func MakeGorillaRoutes() []byte {
 	return []byte(`package server
@@ -30,12 +33,12 @@ import (
 func (s *Server) RegisterRoutes() http.Handler {
 	r := mux.NewRouter()
 
-	r.HandleFunc("/", s.helloWorldHandler)
+	r.HandleFunc("/", s.HelloWorldHandler)
 
 	return r
 }
 
-func (s *Server) helloWorldHandler(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HelloWorldHandler(w http.ResponseWriter, r *http.Request) {
 	resp := make(map[string]string)
 	resp["message"] = "Hello World"
 

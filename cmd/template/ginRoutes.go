@@ -16,7 +16,11 @@ func (g GinTemplates) Routes() []byte {
 	return MakeGinRoutes()
 }
 
-// MakeGinRoutes returns a byte slice that represents 
+func (g GinTemplates) TestHandler() []byte {
+    return MakeGinTestHandler()
+}
+
+// MakeGinRoutes returns a byte slice that represents
 // the internal/server/routes.go file when using Gin.
 func MakeGinRoutes() []byte {
 	return []byte(`package server
@@ -30,12 +34,12 @@ import (
 func (s *Server) RegisterRoutes() http.Handler {
 	r := gin.Default()
 
-	r.GET("/", s.helloWorldHandler)
+	r.GET("/", s.HelloWorldHandler)
 
 	return r
 }
 
-func (s *Server) helloWorldHandler(c *gin.Context) {
+func (s *Server) HelloWorldHandler(c *gin.Context) {
 	resp := make(map[string]string)
 	resp["message"] = "Hello World"
 
@@ -43,4 +47,48 @@ func (s *Server) helloWorldHandler(c *gin.Context) {
 }
 
 `)
+}
+
+func MakeGinTestHandler() []byte {
+	return []byte(`
+package tests
+
+import (
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/gin-gonic/gin"
+	"{{.ProjectName}}/internal/server"
+)
+
+func TestHelloWorldHandler(t *testing.T) {
+	s := &server.Server{}
+	r := gin.New()
+	r.GET("/", s.HelloWorldHandler)
+
+	// Create a test HTTP request
+	req, err := http.NewRequest("GET", "/", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Create a ResponseRecorder to record the response
+	rr := httptest.NewRecorder()
+
+	// Serve the HTTP request
+	r.ServeHTTP(rr, req)
+
+	// Check the status code
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("Handler returned wrong status code: got %v want %v", status, http.StatusOK)
+	}
+
+    // Check the response body
+    expected := "{\"message\":\"Hello World\"}"
+    if rr.Body.String() != expected {
+        t.Errorf("Handler returned unexpected body: got %v want %v", rr.Body.String(), expected)
+    }
+}
+    `)
 }

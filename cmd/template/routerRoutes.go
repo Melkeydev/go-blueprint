@@ -14,7 +14,10 @@ func (r RouterTemplates) Routes() []byte {
 	return MakeRouterRoutes()
 }
 
-// MakeRouterRoutes returns a byte slice that represents 
+func (r RouterTemplates) TestHandler() []byte {
+    return MakeTestHandler()
+}
+// MakeRouterRoutes returns a byte slice that represents
 // the internal/server/routes.go file when using HttpRouter
 func MakeRouterRoutes() []byte {
 	return []byte(`package server
@@ -29,12 +32,12 @@ import (
 
 func (s *Server) RegisterRoutes() http.Handler {
 	r := httprouter.New()
-	r.HandlerFunc(http.MethodGet, "/", s.helloWorldHandler)
+	r.HandlerFunc(http.MethodGet, "/", s.HelloWorldHandler)
 
 	return r
 }
 
-func (s *Server) helloWorldHandler(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HelloWorldHandler(w http.ResponseWriter, r *http.Request) {
 	resp := make(map[string]string)
 	resp["message"] = "Hello World"
 
