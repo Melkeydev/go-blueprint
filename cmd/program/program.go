@@ -120,12 +120,12 @@ func (p *Project) CreateMainFile() error {
 
 	// Create a new directory with the project name
 	file_info, err := os.Stat(fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName))
-    if file_info != nil {
-        already_exists_error := errors.New("Root project directory already exists")
-        log.Printf("Error creating root project directory %v\n", already_exists_error)
-        return already_exists_error
-    }
-    if os.IsNotExist(err) {
+	if file_info != nil {
+		already_exists_error := errors.New("Root project directory already exists")
+		log.Printf("Error creating root project directory %v\n", already_exists_error)
+		return already_exists_error
+	}
+	if os.IsNotExist(err) {
 		err := os.MkdirAll(fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName), 0751)
 		if err != nil {
 			log.Printf("Error creating root project directory %v\n", err)
