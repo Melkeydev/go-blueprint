@@ -28,7 +28,7 @@ type Item struct {
 type Options struct {
 	ProjectName *textinput.Output
 	ProjectType string
-    ProjectPath *textinput.Output
+	ProjectPath *textinput.Output
 }
 
 // InitSteps initializes and returns the *Steps to be used in the CLI program
