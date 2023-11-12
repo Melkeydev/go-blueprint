@@ -19,14 +19,18 @@ func NonInteractiveCommand(cmd *cobra.Command) string {
 	nonInteractiveCommand := fmt.Sprintf("%s %s", ProgramName, cmd.Name())
 
 	visitFn := func(flag *pflag.Flag) {
-		if flag.Name != "help" {
+		if flag.Name != "help" && flag.Name != "name" {
 			nonInteractiveCommand = fmt.Sprintf("%s --%s %s", nonInteractiveCommand, flag.Name, flag.Value.String())
 		}
 	}
 
 	flagSet := cmd.Flags()
 	flagSet.SortFlags = false
+
 	flagSet.VisitAll(visitFn)
+
+	flag := cmd.Flag("name")
+	nonInteractiveCommand = fmt.Sprintf("%s --%s %s", nonInteractiveCommand, flag.Name, flag.Value.String())
 
 	return nonInteractiveCommand
 }
