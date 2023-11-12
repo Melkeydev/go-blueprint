@@ -36,11 +36,49 @@ var (
 	allowedProjectTypes = []string{"chi", "gin", "fiber", "gorilla/mux", "httprouter", "standard-library", "echo"}
 )
 
+type framework string
+
+const (
+	Chi             framework = "chi"
+	Gin             framework = "gin"
+	fiber           framework = "fiber"
+	GorillaMux      framework = "gorilla/mux"
+	HttpRouter      framework = "httprouter"
+	StandardLibrary framework = "standard-library"
+	Echo            framework = "echo"
+)
+
+func (f *framework) String() string {
+	return string(*f)
+}
+
+func (f *framework) Type() string {
+	return "framework"
+}
+
+func (f *framework) Set(value string) error {
+	switch value {
+	case "chi", "gin", "fiber", "gorilla/mux", "httprouter", "standard-library", "echo":
+		*f = framework(value)
+		return nil
+	default:
+		return fmt.Errorf("Framework to use. Allowed values: %s", strings.Join(allowedProjectTypes, ", "))
+	}
+}
+
 func init() {
+	var frameworkFlag = Chi
 	rootCmd.AddCommand(createCmd)
 
 	createCmd.Flags().StringP("name", "n", "", "Name of project to create")
-	createCmd.Flags().StringP("framework", "f", "", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(allowedProjectTypes, ", ")))
+	// createCmd.Flags().StringP("framework", "f", "", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(allowedProjectTypes, ", ")))
+	createCmd.Flags().Var(&frameworkFlag, "framework", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(allowedProjectTypes, ", ")))
+
+	createCmd.RegisterFlagCompletionFunc("framework", myFrameworkCompletion)
+}
+
+func myFrameworkCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+    return allowedProjectTypes, cobra.ShellCompDirectiveDefault
 }
 
 // createCmd defines the "create" command for the CLI
