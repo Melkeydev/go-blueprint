@@ -86,11 +86,9 @@ var createCmd = &cobra.Command{
 			project.ExitCLI(tprogram)
 
 			project.ProjectName = options.ProjectName.Output
-
 			err := cmd.Flag("name").Value.Set(project.ProjectName)
 			if err != nil {
-				log.Printf("Set name flag contains an error: %v", err)
-				cobra.CheckErr(err)
+				log.Fatal("failed to set the name flag value", err)
 			}
 		}
 
@@ -107,12 +105,9 @@ var createCmd = &cobra.Command{
 			}
 
 			project.ProjectType = strings.ToLower(options.ProjectType)
-			project.ProjectType = strings.ReplaceAll(project.ProjectType, " ", "-")
-
 			err := cmd.Flag("framework").Value.Set(project.ProjectType)
 			if err != nil {
-				log.Printf("Set framework flag contains an error: %v", err)
-				cobra.CheckErr(err)
+				log.Fatal("failed to set the framework flag value", err)
 			}
 		}
 
