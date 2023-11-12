@@ -88,7 +88,7 @@ var createCmd = &cobra.Command{
 			project.ProjectName = options.ProjectName.Output
 			err := cmd.Flag("name").Value.Set(project.ProjectName)
 			if err != nil {
-				log.Fatal("failed to set flag value", err)
+				log.Fatal("failed to set the name flag value", err)
 			}
 		}
 
@@ -107,7 +107,7 @@ var createCmd = &cobra.Command{
 			project.ProjectType = strings.ToLower(options.ProjectType)
 			err := cmd.Flag("framework").Value.Set(project.ProjectType)
 			if err != nil {
-				log.Fatal("failed to set flag value", err)
+				log.Fatal("failed to set the framework flag value", err)
 			}
 		}
 
