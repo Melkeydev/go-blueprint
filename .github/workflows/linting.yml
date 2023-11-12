@@ -8,7 +8,8 @@ on:
       - go.mod
     branches-ignore:
       - main
-
+  pull_request:
+  
 jobs:
   lint:
     runs-on: ubuntu-latest
