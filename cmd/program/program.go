@@ -22,7 +22,7 @@ type Project struct {
 	ProjectName  string
 	Exit         bool
 	AbsolutePath string
-	ProjectType  string
+	ProjectType  frameworks.Framework
 	FrameworkMap map[string]Framework
 }
 
@@ -140,8 +140,8 @@ func (p *Project) CreateMainFile() error {
 	}
 
 	// Install the correct package for the selected framework
-	if p.ProjectType != frameworks.StandardLibrary.String() {
-		err = utils.GoGetPackage(projectPath, p.FrameworkMap[p.ProjectType].packageName)
+	if p.ProjectType != frameworks.StandardLibrary {
+		err = utils.GoGetPackage(projectPath, p.FrameworkMap[p.ProjectType.String()].packageName)
 		if err != nil {
 			log.Printf("Could not install go dependency for the chosen framework %v\n", err)
 			cobra.CheckErr(err)
@@ -284,13 +284,13 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 
 	switch methodName {
 	case "main":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Main())))
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType.String()].templater.Main())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "server":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Server())))
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType.String()].templater.Server())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "routes":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Routes())))
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType.String()].templater.Routes())))
 		err = createdTemplate.Execute(createdFile, p)
 	}
 

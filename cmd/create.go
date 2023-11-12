@@ -31,9 +31,9 @@ const logo = `
 `
 
 var (
-	logoStyle           = lipgloss.NewStyle().Foreground(lipgloss.Color("#01FAC6")).Bold(true)
-	tipMsgStyle         = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("190")).Italic(true)
-	endingMsgStyle      = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("170")).Bold(true)
+	logoStyle      = lipgloss.NewStyle().Foreground(lipgloss.Color("#01FAC6")).Bold(true)
+	tipMsgStyle    = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("190")).Italic(true)
+	endingMsgStyle = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("170")).Bold(true)
 )
 
 func init() {
@@ -65,14 +65,17 @@ var createCmd = &cobra.Command{
 		isInteractive := !utils.HasChangedFlag(cmd.Flags())
 
 		flagName := cmd.Flag("name").Value.String()
-		flagFramework := cmd.Flag("framework").Value.String()
 
-		if flagFramework != "" {
-			isValid := isValidProjectType(flagFramework, frameworks.AllowedProjectTypes)
+		_flagFramework := cmd.Flag("framework").Value.String()
+
+		if _flagFramework != "" {
+			isValid := isValidProjectType(_flagFramework, frameworks.AllowedProjectTypes)
 			if !isValid {
-				cobra.CheckErr(fmt.Errorf("Project type '%s' is not valid. Valid types are: %s", flagFramework, strings.Join(frameworks.AllowedProjectTypes, ", ")))
+				cobra.CheckErr(fmt.Errorf("Project type '%s' is not valid. Valid types are: %s", _flagFramework, strings.Join(frameworks.AllowedProjectTypes, ", ")))
 			}
 		}
+
+		flagFramework := frameworks.Framework(_flagFramework)
 
 		project := &program.Project{
 			FrameworkMap: make(map[string]program.Framework),
@@ -107,8 +110,8 @@ var createCmd = &cobra.Command{
 				*step.Field = s.Choice
 			}
 
-			project.ProjectType = strings.ToLower(options.ProjectType)
-			_ = cmd.Flag("framework").Value.Set(project.ProjectType)
+			project.ProjectType = options.ProjectType
+			_ = cmd.Flag("framework").Value.Set(project.ProjectType.String())
 		}
 
 		currentWorkingDir, err := os.Getwd()
