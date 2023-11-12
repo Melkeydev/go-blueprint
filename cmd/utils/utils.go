@@ -29,8 +29,10 @@ func NonInteractiveCommand(cmd *cobra.Command) string {
 
 	flagSet.VisitAll(visitFn)
 
-	flag := cmd.Flag("name")
-	nonInteractiveCommand = fmt.Sprintf("%s --%s %s", nonInteractiveCommand, flag.Name, flag.Value.String())
+	nameFlag := cmd.Flag("name")
+	if nameFlag != nil {
+		nonInteractiveCommand = fmt.Sprintf("%s --%s %s", nonInteractiveCommand, nameFlag.Name, nameFlag.Value.String())
+	}
 
 	return nonInteractiveCommand
 }
