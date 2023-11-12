@@ -86,7 +86,7 @@ var createCmd = &cobra.Command{
 			project.ExitCLI(tprogram)
 
 			project.ProjectName = options.ProjectName.Output
-			_ = cmd.Flag("name").Value.Set(project.ProjectName)
+			cmd.Flag("name").Value.Set(project.ProjectName)
 		}
 
 		if project.ProjectType == "" {
@@ -102,7 +102,7 @@ var createCmd = &cobra.Command{
 			}
 
 			project.ProjectType = strings.ToLower(options.ProjectType)
-			_ = cmd.Flag("framework").Value.Set(project.ProjectType)
+			cmd.Flag("framework").Value.Set(project.ProjectType)
 		}
 
 		currentWorkingDir, err := os.Getwd()
