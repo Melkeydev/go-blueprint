@@ -18,14 +18,14 @@ import (
 
 const logo = `
 
- ____  _                       _       _   
-|  _ \| |                     (_)     | |  
-| |_) | |_   _  ___ _ __  _ __ _ _ __ | |_ 
+ ____  _                       _       _
+|  _ \| |                     (_)     | |
+| |_) | |_   _  ___ _ __  _ __ _ _ __ | |_
 |  _ <| | | | |/ _ \ '_ \| '__| | '_ \| __|
-| |_) | | |_| |  __/ |_) | |  | | | | | |_ 
+| |_) | | |_| |  __/ |_) | |  | | | | | |_
 |____/|_|\__,_|\___| .__/|_|  |_|_| |_|\__|
-				   | |                     
-				   |_|                     
+				   | |
+				   |_|
 
 `
 
@@ -86,7 +86,7 @@ var createCmd = &cobra.Command{
 			project.ExitCLI(tprogram)
 
 			project.ProjectName = options.ProjectName.Output
-			cmd.Flag("name").Value.Set(project.ProjectName)
+			_ = cmd.Flag("name").Value.Set(project.ProjectName)
 		}
 
 		if project.ProjectType == "" {
@@ -102,7 +102,7 @@ var createCmd = &cobra.Command{
 			}
 
 			project.ProjectType = strings.ToLower(options.ProjectType)
-			cmd.Flag("framework").Value.Set(project.ProjectType)
+			_ = cmd.Flag("framework").Value.Set(project.ProjectType)
 		}
 
 		currentWorkingDir, err := os.Getwd()
