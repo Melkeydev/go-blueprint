@@ -3,11 +3,13 @@
 package program
 
 import (
+	"errors"
 	"fmt"
 	"html/template"
 	"log"
 	"os"
 	"strings"
+
 	tea "github.com/charmbracelet/bubbletea"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
@@ -117,7 +119,13 @@ func (p *Project) CreateMainFile() error {
 	p.ProjectName = strings.TrimSpace(p.ProjectName)
 
 	// Create a new directory with the project name
-	if _, err := os.Stat(fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName)); os.IsNotExist(err) {
+	file_info, err := os.Stat(fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName))
+    if file_info != nil {
+        already_exists_error := errors.New("Root project directory already exists")
+        log.Printf("Error creating root project directory %v\n", already_exists_error)
+        return already_exists_error
+    }
+    if os.IsNotExist(err) {
 		err := os.MkdirAll(fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName), 0751)
 		if err != nil {
 			log.Printf("Error creating root project directory %v\n", err)
@@ -131,7 +139,7 @@ func (p *Project) CreateMainFile() error {
 	p.createFrameworkMap()
 
 	// Create go.mod
-	err := utils.InitGoMod(p.ProjectName, projectPath)
+	err = utils.InitGoMod(p.ProjectName, projectPath)
 	if err != nil {
 		log.Printf("Could not initialize go.mod in new project %v\n", err)
 		cobra.CheckErr(err)
