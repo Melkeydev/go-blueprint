@@ -98,7 +98,11 @@ func createNamePrompt(cmd *cobra.Command, project *program.Project, options *ste
 	project.ExitCLI(tprogram)
 
 	project.ProjectName = options.ProjectName.Output
-	cmd.Flag("name").Value.Set(project.ProjectName)
+	err := cmd.Flag("name").Value.Set(project.ProjectName)
+	if err != nil {
+		log.Printf("Problem setting project name: %v", err)
+		cobra.CheckErr(err)
+	}
 }
 
 func createFrameworkPrompt(cmd *cobra.Command, project *program.Project, options *steps.Options) {
@@ -117,5 +121,9 @@ func createFrameworkPrompt(cmd *cobra.Command, project *program.Project, options
 	}
 
 	project.ProjectType = strings.ToLower(options.ProjectType)
-	cmd.Flag("framework").Value.Set(project.ProjectType)
+	err := cmd.Flag("framework").Value.Set(project.ProjectType)
+	if err != nil {
+		log.Printf("Problem setting project framework: %v", err)
+		cobra.CheckErr(err)
+	}
 }
