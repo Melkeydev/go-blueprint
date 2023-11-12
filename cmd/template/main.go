@@ -88,6 +88,36 @@ watch:
 		`)
 }
 
+func MakeCobraTemplate() []byte {
+	return []byte(
+		`
+# Simple Makefile for a Go project (cobra version)
+
+# Build the application
+all: build
+
+build:
+	@echo "Building..."
+	@go build -o main main.go
+
+# Run the application
+run:
+	@go run main.go
+
+# Test the application
+test:
+	@echo "Testing..."
+	@go test ./...
+
+# Clean the binary
+clean:
+	@echo "Cleaning..."
+	@rm -f main
+
+.PHONY: all build run test clean
+		`)
+}
+
 func GitIgnoreTemplate() []byte {
 	return []byte(
 		`

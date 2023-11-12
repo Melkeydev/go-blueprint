@@ -161,13 +161,6 @@ func (p *Project) CreateMainFile() error {
 
 	defer makeFile.Close()
 
-	// inject makefile template
-	makeFileTemplate := template.Must(template.New("makefile").Parse(string(tpl.MakeTemplate())))
-	err = makeFileTemplate.Execute(makeFile, p)
-	if err != nil {
-		return err
-	}
-
 	readmeFile, err := os.Create(fmt.Sprintf("%s/README.md", projectPath))
 	if err != nil {
 		cobra.CheckErr(err)
@@ -186,6 +179,14 @@ func (p *Project) CreateMainFile() error {
 	// We only want a server.go and routes.go file if the user is not using cobra
 	// We also want to create a cmd/api/main.go file if the user is not using cobra
 	if p.ProjectType != "cobra" {
+
+		// inject makefile template
+		makeFileTemplate := template.Must(template.New("makefile").Parse(string(tpl.MakeTemplate())))
+		err = makeFileTemplate.Execute(makeFile, p)
+		if err != nil {
+			return err
+		}
+
 		err = p.CreatePath(cmdApiPath, projectPath)
 		if err != nil {
 			log.Printf("Error creating path: %s", projectPath)
@@ -220,7 +221,14 @@ func (p *Project) CreateMainFile() error {
 			return err
 		}
 	} else {
-		// we want to create a cmd/root.go file if the user is using cobra
+		// we want to run the cobra specific templates here
+
+		makeFileTemplate := template.Must(template.New("makefile").Parse(string(tpl.MakeCobraTemplate())))
+		err = makeFileTemplate.Execute(makeFile, p)
+		if err != nil {
+			return err
+		}
+
 		err = p.CreatePath(cmdRootPath, projectPath)
 		if err != nil {
 			log.Printf("Error creating path: %s", projectPath)
