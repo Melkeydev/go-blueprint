@@ -56,7 +56,6 @@ var createCmd = &cobra.Command{
 
 		options := steps.Options{
 			ProjectName: &textinput.Output{},
-			ProjectPath: &textinput.Output{},
 		}
 
 		isInteractive := !utils.HasChangedFlag(cmd.Flags())

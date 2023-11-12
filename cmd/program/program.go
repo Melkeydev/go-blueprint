@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"strings"
+
 	tea "github.com/charmbracelet/bubbletea"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
@@ -22,7 +23,6 @@ type Project struct {
 	AbsolutePath string
 	ProjectType  string
 	FrameworkMap map[string]Framework
-    ProjectPath string
 }
 
 // A Framework contains the name and templater for a
