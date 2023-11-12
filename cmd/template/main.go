@@ -53,19 +53,19 @@ clean:
 
 # Live Reload
 watch:
-	@if [ -x "$(GOPATH)/bin/air" ]; then \
-	    "$(GOPATH)/bin/air"; \
-		@echo "Watching...";\
+	@if command -v air > /dev/null; then \
+		air; \
+		echo "Watching...";\
 	else \
-	    read -p "air is not installed. Do you want to install it now? (y/n) " choice; \
-	    if [ "$$choice" = "y" ]; then \
+		read -p "Go's 'air' is not installed on your machine. Do you want to install it? [Y/n] " choice; \
+		if [ "$$choice" != "n" ] && [ "$$choice" != "N" ]; then \
 			go install github.com/cosmtrek/air@latest; \
-	        "$(GOPATH)/bin/air"; \
-				@echo "Watching...";\
-	    else \
-	        echo "You chose not to install air. Exiting..."; \
-	        exit 1; \
-	    fi; \
+			air; \
+			echo "Watching...";\
+		else \
+			echo "You chose not to install air. Exiting..."; \
+			exit 1; \
+		fi; \
 	fi
 
 .PHONY: all build run test clean
