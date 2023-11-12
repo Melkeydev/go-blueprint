@@ -66,16 +66,9 @@ var createCmd = &cobra.Command{
 
 		flagName := cmd.Flag("name").Value.String()
 
-		_flagFramework := cmd.Flag("framework").Value.String()
-
-		if _flagFramework != "" {
-			isValid := isValidProjectType(_flagFramework, frameworks.AllowedProjectTypes)
-			if !isValid {
-				cobra.CheckErr(fmt.Errorf("Project type '%s' is not valid. Valid types are: %s", _flagFramework, strings.Join(frameworks.AllowedProjectTypes, ", ")))
-			}
-		}
-
-		flagFramework := frameworks.Framework(_flagFramework)
+		// VarP always returns a valid option, if the option is not
+		// valid the program errors out
+		flagFramework := frameworks.Framework(cmd.Flag("framework").Value.String())
 
 		project := &program.Project{
 			FrameworkMap: make(map[string]program.Framework),
