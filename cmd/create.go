@@ -71,7 +71,7 @@ var createCmd = &cobra.Command{
 		flagFramework := frameworks.Framework(cmd.Flag("framework").Value.String())
 
 		project := &program.Project{
-			FrameworkMap: make(map[string]program.Framework),
+			FrameworkMap: make(map[frameworks.Framework]program.Framework),
 			ProjectName:  flagName,
 			ProjectType:  flagFramework,
 		}

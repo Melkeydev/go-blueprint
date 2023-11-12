@@ -23,7 +23,7 @@ type Project struct {
 	Exit         bool
 	AbsolutePath string
 	ProjectType  frameworks.Framework
-	FrameworkMap map[string]Framework
+	FrameworkMap map[frameworks.Framework]Framework
 }
 
 // A Framework contains the name and templater for a
@@ -68,37 +68,37 @@ func (p *Project) ExitCLI(tprogram *tea.Program) {
 // createFrameWorkMap adds the current supported
 // Frameworks into a Project's FrameworkMap
 func (p *Project) createFrameworkMap() {
-	p.FrameworkMap[frameworks.Chi.String()] = Framework{
+	p.FrameworkMap[frameworks.Chi] = Framework{
 		packageName: chiPackage,
 		templater:   tpl.ChiTemplates{},
 	}
 
-	p.FrameworkMap[frameworks.StandardLibrary.String()] = Framework{
+	p.FrameworkMap[frameworks.StandardLibrary] = Framework{
 		packageName: []string{},
 		templater:   tpl.StandardLibTemplate{},
 	}
 
-	p.FrameworkMap[frameworks.Gin.String()] = Framework{
+	p.FrameworkMap[frameworks.Gin] = Framework{
 		packageName: ginPackage,
 		templater:   tpl.GinTemplates{},
 	}
 
-	p.FrameworkMap[frameworks.Fiber.String()] = Framework{
+	p.FrameworkMap[frameworks.Fiber] = Framework{
 		packageName: fiberPackage,
 		templater:   tpl.FiberTemplates{},
 	}
 
-	p.FrameworkMap[frameworks.GorillaMux.String()] = Framework{
+	p.FrameworkMap[frameworks.GorillaMux] = Framework{
 		packageName: gorillaPackage,
 		templater:   tpl.GorillaTemplates{},
 	}
 
-	p.FrameworkMap[frameworks.HttpRouter.String()] = Framework{
+	p.FrameworkMap[frameworks.HttpRouter] = Framework{
 		packageName: routerPackage,
 		templater:   tpl.RouterTemplates{},
 	}
 
-	p.FrameworkMap[frameworks.Echo.String()] = Framework{
+	p.FrameworkMap[frameworks.Echo] = Framework{
 		packageName: echoPackage,
 		templater:   tpl.EchoTemplates{},
 	}
@@ -141,7 +141,7 @@ func (p *Project) CreateMainFile() error {
 
 	// Install the correct package for the selected framework
 	if p.ProjectType != frameworks.StandardLibrary {
-		err = utils.GoGetPackage(projectPath, p.FrameworkMap[p.ProjectType.String()].packageName)
+		err = utils.GoGetPackage(projectPath, p.FrameworkMap[p.ProjectType].packageName)
 		if err != nil {
 			log.Printf("Could not install go dependency for the chosen framework %v\n", err)
 			cobra.CheckErr(err)
@@ -284,13 +284,13 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 
 	switch methodName {
 	case "main":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType.String()].templater.Main())))
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Main())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "server":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType.String()].templater.Server())))
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Server())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "routes":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType.String()].templater.Routes())))
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Routes())))
 		err = createdTemplate.Execute(createdFile, p)
 	}
 
