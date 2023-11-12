@@ -7,9 +7,15 @@ type GorillaTemplates struct{}
 func (g GorillaTemplates) Main() []byte {
 	return MainTemplate()
 }
+
 func (g GorillaTemplates) Server() []byte {
 	return MakeHTTPServer()
 }
+
+func (g GorillaTemplates) ServerWithDB() []byte {
+	return MakeHTTPServerWithDB()
+}
+
 func (g GorillaTemplates) Routes() []byte {
 	return MakeGorillaRoutes()
 }
@@ -61,21 +67,17 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"{{.ProjectName}}/internal/database"
 
 	"github.com/gorilla/mux"
 )
 
-type healthHandler struct {
-	s database.Service
-}
+
 
 func (s *Server) RegisterRoutes() http.Handler {
 	r := mux.NewRouter()
-	h := NewHealthHandler()
 
 	r.HandleFunc("/", s.helloWorldHandler)
-	r.HandleFunc("/health", h.healthHandler)
+	r.HandleFunc("/health", s.healthHandler)
 
 	return r
 }
@@ -92,14 +94,9 @@ func (s *Server) helloWorldHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonResp)
 }
 
-func NewHealthHandler() *healthHandler {
-	return &healthHandler{
-		s: database.New(),
-	}
-}
 
-func (h *healthHandler) healthHandler(w http.ResponseWriter, r *http.Request) {
-	jsonResp, err := json.Marshal(h.s.Health())
+func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
+	jsonResp, err := json.Marshal(s.db.Health())
 
 	if err != nil {
 		log.Fatalf("error handling JSON marshal. Err: %v", err)

@@ -10,6 +10,11 @@ func (r RouterTemplates) Main() []byte {
 func (r RouterTemplates) Server() []byte {
 	return MakeHTTPServer()
 }
+
+func (r RouterTemplates) ServerWithDB() []byte {
+	return MakeHTTPServerWithDB()
+}
+
 func (r RouterTemplates) Routes() []byte {
 	return MakeRouterRoutes()
 }
@@ -59,23 +64,16 @@ func MakeRouterRoutesWithDB() []byte {
 
 import (
 	"encoding/json"
+	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
-	"{{.ProjectName}}/internal/database"
-
-	"github.com/julienschmidt/httprouter"
 )
-
-type healthHandler struct {
-	s database.Service
-}
 
 func (s *Server) RegisterRoutes() http.Handler {
 	r := httprouter.New()
-	h := NewHealthHandler()
 
 	r.HandlerFunc(http.MethodGet, "/", s.helloWorldHandler)
-	r.HandlerFunc(http.MethodGet, "/health", h.healthHandler)
+	r.HandlerFunc(http.MethodGet, "/health", s.healthHandler)
 
 	return r
 }
@@ -92,14 +90,9 @@ func (s *Server) helloWorldHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonResp)
 }
 
-func NewHealthHandler() *healthHandler {
-	return &healthHandler{
-		s: database.New(),
-	}
-}
 
-func (h *healthHandler) healthHandler(w http.ResponseWriter, r *http.Request) {
-	jsonResp, err := json.Marshal(h.s.Health())
+func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
+	jsonResp, err := json.Marshal(s.db.Health())
 
 	if err != nil {
 		log.Fatalf("error handling JSON marshal. Err: %v", err)
@@ -107,6 +100,5 @@ func (h *healthHandler) healthHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Write(jsonResp)
 }
-
 `)
 }

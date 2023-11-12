@@ -57,12 +57,6 @@ var createCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var tprogram *tea.Program
 
-		options := Options{
-			ProjectName: &textinput.Output{},
-			ProjectType: &multiInput.Selection{},
-			DBDriver:    &multiInput.Selection{},
-		}
-
 		flagName := cmd.Flag("name").Value.String()
 		flagFramework := cmd.Flag("framework").Value.String()
 		flagDBDriver := cmd.Flag("driver").Value.String()
@@ -79,6 +73,12 @@ var createCmd = &cobra.Command{
 			if !isValid {
 				cobra.CheckErr(fmt.Errorf("Database driver '%s' is not valid. Valid types are: %s", flagDBDriver, strings.Join(allowedDBDrivers, ", ")))
 			}
+		}
+
+		options := Options{
+			ProjectName: &textinput.Output{},
+			ProjectType: &multiInput.Selection{},
+			DBDriver:    &multiInput.Selection{},
 		}
 
 		project := &program.Project{

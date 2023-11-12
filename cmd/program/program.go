@@ -48,6 +48,7 @@ type Templater interface {
 	Server() []byte
 	Routes() []byte
 	RoutesWithDB() []byte
+	ServerWithDB() []byte
 }
 
 type DBDriverTemplater interface {
@@ -72,10 +73,10 @@ var (
 )
 
 const (
-	cmdApiPath          = "cmd/api"
-	internalServerPath  = "internal/server"
-	internalServicePath = "internal/database"
-	root                = "/"
+	root                 = "/"
+	cmdApiPath           = "cmd/api"
+	internalServerPath   = "internal/server"
+	internalDatabasePath = "internal/database"
 )
 
 // ExitCLI checks if the Project has been exited, and closes
@@ -143,10 +144,6 @@ func (p *Project) createDBDriverMap() {
 		packageName: mongoDriver,
 		templater:   dbdriver.MongoTemplate{},
 	}
-	p.DBDriverMap["none"] = Driver{
-		packageName: []string{},
-		templater:   dbdriver.MongoTemplate{},
-	}
 }
 
 // CreateMainFile creates the project folders and files,
@@ -193,6 +190,7 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
+	// Install the correct package for the selected driver
 	if p.DBDriver != "none" {
 		p.createDBDriverMap()
 		err = utils.GoGetPackage(projectPath, p.DBDriverMap[p.DBDriver].packageName)
@@ -201,14 +199,14 @@ func (p *Project) CreateMainFile() error {
 			cobra.CheckErr(err)
 		}
 
-		err = p.CreatePath(internalServicePath, projectPath)
+		err = p.CreatePath(internalDatabasePath, projectPath)
 		if err != nil {
-			log.Printf("Error creating path: %s", internalServicePath)
+			log.Printf("Error creating path: %s", internalDatabasePath)
 			cobra.CheckErr(err)
 			return err
 		}
 
-		err = p.CreateFileWithInjection(internalServicePath, projectPath, "database.go", "database")
+		err = p.CreateFileWithInjection(internalDatabasePath, projectPath, "database.go", "database")
 		if err != nil {
 			log.Printf("Error injecting server.go file: %v", err)
 			cobra.CheckErr(err)
@@ -216,6 +214,7 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
+	// Install the godotenv package
 	err = utils.GoGetPackage(projectPath, godotenvPackage)
 	if err != nil {
 		log.Printf("Could not install go dependency %v\n", err)
@@ -240,7 +239,6 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 		return err
 	}
-
 	defer makeFile.Close()
 
 	// inject makefile template
@@ -255,7 +253,6 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 		return err
 	}
-
 	defer readmeFile.Close()
 
 	// inject readme template
@@ -272,17 +269,12 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	err = p.CreateFileWithInjection(internalServerPath, projectPath, "server.go", "server")
-	if err != nil {
-		log.Printf("Error injecting server.go file: %v", err)
-		cobra.CheckErr(err)
-		return err
-	}
-
 	if p.DBDriver != "none" {
 		err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routesWithDB")
+		err = p.CreateFileWithInjection(internalServerPath, projectPath, "server.go", "serverWithDB")
 	} else {
 		err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routes")
+		err = p.CreateFileWithInjection(internalServerPath, projectPath, "server.go", "server")
 	}
 	if err != nil {
 		log.Printf("Error injecting routes.go file: %v", err)
@@ -357,6 +349,9 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		err = createdTemplate.Execute(createdFile, p)
 	case "server":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Server())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "serverWithDB":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.ServerWithDB())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "routes":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Routes())))

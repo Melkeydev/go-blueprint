@@ -33,7 +33,7 @@ var (
 	host     = os.Getenv("DB_HOST")
 )
 
-func New() *service {
+func New() Service {
 	// Opening a driver typically will not attempt to connect to the database.
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", username, password, host, port, dbname))
 	if err != nil {
@@ -61,8 +61,7 @@ func (s *service) Health() map[string]string {
 	return map[string]string{
 		"message": "It's healthy",
 	}
-}
-`)
+}`)
 }
 
 func (m MysqlTemplate) Env() []byte {

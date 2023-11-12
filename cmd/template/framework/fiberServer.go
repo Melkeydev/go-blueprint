@@ -11,6 +11,10 @@ func (f FiberTemplates) Server() []byte {
 	return MakeFiberServer()
 }
 
+func (f FiberTemplates) ServerWithDB() []byte {
+	return MakeFiberServerWithDB()
+}
+
 func (f FiberTemplates) Routes() []byte {
 	return MakeFiberRoutes()
 }
@@ -36,6 +40,31 @@ type FiberServer struct {
 func New() *FiberServer {
 	server := &FiberServer{
 		App: fiber.New(),
+	}
+
+	return server
+}
+
+`)
+}
+
+func MakeFiberServerWithDB() []byte {
+	return []byte(`package server
+
+import (
+	"github.com/gofiber/fiber/v2"
+	"{{.ProjectName}}/internal/database"
+)
+
+type FiberServer struct {
+	*fiber.App
+	db database.Service
+}
+
+func New() *FiberServer {
+	server := &FiberServer{
+		App: fiber.New(),
+		db:  database.New(),
 	}
 
 	return server
@@ -72,17 +101,11 @@ func MakeFiberRoutesWithDB() []byte {
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"{{.ProjectName}}/internal/database"
 )
 
-type healthHandler struct {
-	s database.Service
-}
-
 func (s *FiberServer) RegisterFiberRoutes() {
-	h := NewHealthHandler()
 	s.App.Get("/", s.helloWorldHandler)
-	s.App.Get("/health", h.healthHandler)
+	s.App.Get("/health", s.healthHandler)
 }
 
 func (s *FiberServer) helloWorldHandler(c *fiber.Ctx) error {
@@ -92,14 +115,8 @@ func (s *FiberServer) helloWorldHandler(c *fiber.Ctx) error {
 	return c.JSON(resp)
 }
 
-func NewHealthHandler() *healthHandler {
-	return &healthHandler{
-		s: database.New(),
-	}
-}
-
-func (h *healthHandler) healthHandler(c *fiber.Ctx) error {
-	return c.JSON(h.s.Health())
+func (s *FiberServer) healthHandler(c *fiber.Ctx) error {
+	return c.JSON(s.db.Health())
 }
 `)
 }
@@ -110,7 +127,12 @@ func MakeFiberMain() []byte {
 	return []byte(`package main
 
 import (
+	"fmt"
+	"os"
+	"strconv"
 	"{{.ProjectName}}/internal/server"
+
+	_ "github.com/joho/godotenv/autoload"
 )
 
 func main() {
@@ -118,8 +140,8 @@ func main() {
 	server := server.New()
 
 	server.RegisterFiberRoutes()
-
-	err := server.Listen(":8080")
+	port, _ := strconv.Atoi(os.Getenv("PORT"))
+	err := server.Listen(fmt.Sprintf(":%d", port))
 	if err != nil {
 		panic("cannot start server")
 	}

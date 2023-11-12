@@ -12,6 +12,10 @@ func (g GinTemplates) Server() []byte {
 	return MakeHTTPServer()
 }
 
+func (g GinTemplates) ServerWithDB() []byte {
+	return MakeHTTPServerWithDB()
+}
+
 func (g GinTemplates) Routes() []byte {
 	return MakeGinRoutes()
 }
@@ -53,21 +57,14 @@ func MakeGinRoutesWithDB() []byte {
 	return []byte(`package server
 
 import (
-	"net/http"
-	"{{.ProjectName}}/internal/database"
-
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
-
-type healthHandler struct {
-	s database.Service
-}
 
 func (s *Server) RegisterRoutes() http.Handler {
 	r := gin.Default()
-	h := NewHealthHandler()
 	r.GET("/", s.helloWorldHandler)
-	r.GET("/health", h.healthHandler)
+	r.GET("/health", s.healthHandler)
 
 	return r
 }
@@ -79,14 +76,8 @@ func (s *Server) helloWorldHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
-func NewHealthHandler() *healthHandler {
-	return &healthHandler{
-		s: database.New(),
-	}
-}
-
-func (h *healthHandler) healthHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, h.s.Health())
+func (s *Server) healthHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, s.db.Health())
 }
 `)
 }

@@ -12,6 +12,10 @@ func (c ChiTemplates) Server() []byte {
 	return MakeHTTPServer()
 }
 
+func (c ChiTemplates) ServerWithDB() []byte {
+	return MakeHTTPServerWithDB()
+}
+
 func (c ChiTemplates) Routes() []byte {
 	return MakeChiRoutes()
 }
@@ -58,6 +62,8 @@ func (s *Server) helloWorldHandler(w http.ResponseWriter, r *http.Request) {
 `)
 }
 
+// MakeChiRoutesWithDB returns a byte slice that represents
+// the internal/server/routes.go file when using Chi with the database health route.
 func MakeChiRoutesWithDB() []byte {
 	return []byte(`package server
 
@@ -66,23 +72,17 @@ import (
 	"log"
 	"encoding/json"
 	"net/http"
-	"{{.ProjectName}}/internal/database"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-type healthHandler struct {
-	s database.Service
-}
-
 func (s *Server) RegisterRoutes() http.Handler {
 	r := chi.NewRouter()
-	d := NewHealthHandler()
 	r.Use(middleware.Logger)
 
 	r.Get("/", s.helloWorldHandler)
-	r.Get("/health", d.healthHandler)
+	r.Get("/health", s.healthHandler)
 
 	return r
 }
@@ -99,16 +99,9 @@ func (s *Server) helloWorldHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonResp)
 }
 
-func NewHealthHandler() *healthHandler {
-	return &healthHandler{
-		s: database.New(),
-	}
-}
-
-func (h *healthHandler) healthHandler(w http.ResponseWriter, r *http.Request) {
-	jsonResp, _ := json.Marshal(h.s.Health())
+func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
+	jsonResp, _ := json.Marshal(s.db.Health())
 	w.Write(jsonResp)
 }
-
 `)
 }
