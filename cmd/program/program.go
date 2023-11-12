@@ -223,7 +223,7 @@ func (p *Project) CreateMainFile() error {
 	} else {
 		// we want to run the cobra specific templates here
 
-		makeFileTemplate := template.Must(template.New("makefile").Parse(string(tpl.MakeCobraTemplate())))
+		makeFileTemplate := template.Must(template.New("makefile").Parse(string(tpl.CobraMakeTemplate())))
 		err = makeFileTemplate.Execute(makeFile, p)
 		if err != nil {
 			return err
