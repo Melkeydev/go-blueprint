@@ -8,6 +8,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/melkeydev/go-blueprint/cmd/frameworks"
 	"github.com/melkeydev/go-blueprint/cmd/program"
 	"github.com/melkeydev/go-blueprint/cmd/steps"
 	"github.com/melkeydev/go-blueprint/cmd/ui/multiInput"
@@ -33,18 +34,17 @@ var (
 	logoStyle           = lipgloss.NewStyle().Foreground(lipgloss.Color("#01FAC6")).Bold(true)
 	tipMsgStyle         = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("190")).Italic(true)
 	endingMsgStyle      = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("170")).Bold(true)
-	allowedProjectTypes = []string{"chi", "gin", "fiber", "gorilla/mux", "httprouter", "standard-library", "echo"}
 )
 
 func init() {
-	var frameworkFlag framework
+	var frameworkFlag frameworks.Framework
 
 	rootCmd.AddCommand(createCmd)
 
 	createCmd.Flags().StringP("name", "n", "", "Name of project to create")
-	createCmd.Flags().VarP(&frameworkFlag, "framework", "f", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(allowedProjectTypes, ", ")))
+	createCmd.Flags().VarP(&frameworkFlag, "framework", "f", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(frameworks.AllowedProjectTypes, ", ")))
 
-	if err := createCmd.RegisterFlagCompletionFunc("framework", frameworkCompletion); err != nil {
+	if err := createCmd.RegisterFlagCompletionFunc("framework", frameworks.FrameworkCompletion); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -68,16 +68,16 @@ var createCmd = &cobra.Command{
 		flagFramework := cmd.Flag("framework").Value.String()
 
 		if flagFramework != "" {
-			isValid := isValidProjectType(flagFramework, allowedProjectTypes)
+			isValid := isValidProjectType(flagFramework, frameworks.AllowedProjectTypes)
 			if !isValid {
-				cobra.CheckErr(fmt.Errorf("Project type '%s' is not valid. Valid types are: %s", flagFramework, strings.Join(allowedProjectTypes, ", ")))
+				cobra.CheckErr(fmt.Errorf("Project type '%s' is not valid. Valid types are: %s", flagFramework, strings.Join(frameworks.AllowedProjectTypes, ", ")))
 			}
 		}
 
 		project := &program.Project{
 			FrameworkMap: make(map[string]program.Framework),
 			ProjectName:  flagName,
-			ProjectType:  strings.ReplaceAll(flagFramework, "-", " "),
+			ProjectType:  flagFramework,
 		}
 
 		steps := steps.InitSteps(&options)
@@ -92,7 +92,7 @@ var createCmd = &cobra.Command{
 			project.ExitCLI(tprogram)
 
 			project.ProjectName = options.ProjectName.Output
-			cmd.Flag("name").Value.Set(project.ProjectName)
+			_ = cmd.Flag("name").Value.Set(project.ProjectName)
 		}
 
 		if project.ProjectType == "" {
@@ -108,7 +108,7 @@ var createCmd = &cobra.Command{
 			}
 
 			project.ProjectType = strings.ToLower(options.ProjectType)
-			cmd.Flag("framework").Value.Set(project.ProjectType)
+			_ = cmd.Flag("framework").Value.Set(project.ProjectType)
 		}
 
 		currentWorkingDir, err := os.Getwd()

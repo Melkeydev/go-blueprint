@@ -38,7 +38,7 @@ func InitSteps(options *Options) *Steps {
 				StepName: "Go Project Framework",
 				Options: []Item{
 					{
-						Title: "Standard library",
+						Title: "Standard-library",
 						Desc:  "The built-in Go standard library HTTP package",
 					},
 					{
@@ -61,8 +61,9 @@ func InitSteps(options *Options) *Steps {
 						Title: "HttpRouter",
 						Desc:  "HttpRouter is a lightweight high performance HTTP request router for Go",
 					},
-					{Title: "Echo",
-						Desc: "High performance, extensible, minimalist Go web framework",
+					{
+						Title: "Echo",
+						Desc:  "High performance, extensible, minimalist Go web framework",
 					},
 				},
 				Headers: "What framework do you want to use in your Go project?",
