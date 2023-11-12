@@ -135,11 +135,11 @@ var createCmd = &cobra.Command{
 
 // isValidProjectType checks if the inputted project type matches
 // the currently supported list of project types
-func isValidProjectType(input string, allowedTypes []string) bool {
-	for _, t := range allowedTypes {
-		if input == t {
-			return true
-		}
-	}
-	return false
-}
+// func isValidProjectType(input string, allowedTypes []string) bool {
+// 	for _, t := range allowedTypes {
+// 		if input == t {
+// 			return true
+// 		}
+// 	}
+// 	return false
+// }
