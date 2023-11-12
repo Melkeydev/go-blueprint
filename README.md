@@ -37,7 +37,7 @@ go-blueprint create
 You can also use the provided flags to set up a project without interacting with the UI.
 
 ```
-go-blueprint create --name my-project --framework gin
+go-blueprint create --name my-project --framework gin --path .
 ```
 
 See `go-blueprint create -h` for all the options and shorthands.
@@ -53,6 +53,13 @@ See `go-blueprint create -h` for all the options and shorthands.
 - [HttpRouter](https://github.com/julienschmidt/httprouter)
 - [Gorilla/mux](https://github.com/gorilla/mux)
 - [Echo](https://github.com/labstack/echo)
+
+### Paths
+- use '.' for current directory
+- use relative path to current directory e.g. './test-folder'
+- paths without `/`, `\` or `.` prefix will be treated as relative to current directory 
+- use absolute paths e.g. `/users/{username}/dev`
+- `~` is expanded to `$HOME` env variable so `~/dev` and `/Users/{username}/dev` are equivalent if `$HOME` is set to `/Users/{username}`
 
 ### License
 

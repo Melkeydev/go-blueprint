@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -41,6 +42,7 @@ func init() {
 
 	createCmd.Flags().StringP("name", "n", "", "Name of project to create")
 	createCmd.Flags().StringP("framework", "f", "", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(allowedProjectTypes, ", ")))
+    createCmd.Flags().StringP("path", "p", "", "Where the project should be created")
 }
 
 // createCmd defines the "create" command for the CLI
@@ -54,12 +56,14 @@ var createCmd = &cobra.Command{
 
 		options := steps.Options{
 			ProjectName: &textinput.Output{},
+            ProjectPath: &textinput.Output{},
 		}
 
 		isInteractive := !utils.HasChangedFlag(cmd.Flags())
 
 		flagName := cmd.Flag("name").Value.String()
 		flagFramework := cmd.Flag("framework").Value.String()
+        flagPath := cmd.Flag("path").Value.String()
 
 		if flagFramework != "" {
 			isValid := isValidProjectType(flagFramework, allowedProjectTypes)
@@ -89,6 +93,16 @@ var createCmd = &cobra.Command{
 			cmd.Flag("name").Value.Set(project.ProjectName)
 		}
 
+        if flagPath == "" {
+            tprogram = tea.NewProgram(textinput.InitialTextInputModel(options.ProjectPath, "Where should the project be created? (use '.' for current directory)", project))
+            if _, err := tprogram.Run(); err != nil {
+                cobra.CheckErr(err)
+            }
+            cmd.Flag("path").Value.Set(options.ProjectPath.Output)
+            flagPath = options.ProjectPath.Output
+            project.ExitCLI(tprogram)
+        }
+
 		if project.ProjectType == "" {
 			for _, step := range steps.Steps {
 				s := &multiInput.Selection{}
@@ -111,7 +125,25 @@ var createCmd = &cobra.Command{
 			cobra.CheckErr(err)
 		}
 
-		project.AbsolutePath = currentWorkingDir
+        var next_steps_cd_path string
+        
+        if flagPath == "." {
+            project.AbsolutePath = currentWorkingDir
+        } else if strings.HasPrefix(flagPath, ".") {
+            project.AbsolutePath = fmt.Sprintf("%s%s", currentWorkingDir, strings.TrimPrefix(flagPath, ".")) 
+        } else if strings.HasPrefix(flagPath, "~") {
+            project.AbsolutePath = strings.Replace(flagPath, "~", os.Getenv("HOME"), -1)
+        } else if strings.HasPrefix(flagPath, "/") || strings.HasPrefix(flagPath, "\\") {
+            project.AbsolutePath = flagPath 
+        } else {
+            project.AbsolutePath = path.Join(currentWorkingDir, flagPath)
+        }
+
+        if strings.Replace(project.AbsolutePath, os.Getenv("HOME"), "", -1) == "" {
+            next_steps_cd_path = project.ProjectName
+        } else {
+            next_steps_cd_path = path.Join(strings.Replace(flagPath, currentWorkingDir, ".", -1), project.ProjectName)
+        }
 
 		// This calls the templates
 		err = project.CreateMainFile()
@@ -121,7 +153,7 @@ var createCmd = &cobra.Command{
 		}
 
 		fmt.Println(endingMsgStyle.Render("\nNext steps cd into the newly created project with:"))
-		fmt.Println(endingMsgStyle.Render(fmt.Sprintf("• cd %s\n", project.ProjectName)))
+		fmt.Println(endingMsgStyle.Render(fmt.Sprintf("• cd %s\n", next_steps_cd_path)))
 
 		if isInteractive {
 			nonInteractiveCommand := utils.NonInteractiveCommand(cmd.Flags())

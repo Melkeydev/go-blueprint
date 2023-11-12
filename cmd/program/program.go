@@ -22,6 +22,7 @@ type Project struct {
 	AbsolutePath string
 	ProjectType  string
 	FrameworkMap map[string]Framework
+    ProjectPath string
 }
 
 // A Framework contains the name and templater for a
