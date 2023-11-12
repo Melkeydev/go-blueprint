@@ -2,6 +2,8 @@
 // help with the templating of created files.
 package template
 
+import "fmt"
+
 // MakeHTTPRoutes returns a byte slice that represents
 // the default cmd/api/main.go file template.
 func MainTemplate() []byte {
@@ -21,6 +23,20 @@ func main() {
 	}
 }
 `)
+}
+
+func CobraMain() []byte {
+
+	return []byte(fmt.Sprintf(`package main
+import (
+  "{{.ProjectName}}/cmd"
+)
+
+func main() {
+  cmd.Execute()
+}
+	
+	`))
 }
 
 // MakeHTTPRoutes returns a byte slice that represents
@@ -71,7 +87,6 @@ watch:
 .PHONY: all build run test clean
 		`)
 }
-
 
 func GitIgnoreTemplate() []byte {
 	return []byte(
@@ -153,7 +168,6 @@ tmp_dir = "tmp"
   keep_scroll = true
         `)
 }
-
 
 // ReadmeTemplate returns a byte slice that represents
 // the default README.md file template.

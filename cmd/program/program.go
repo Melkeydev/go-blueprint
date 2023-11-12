@@ -4,14 +4,14 @@ package program
 
 import (
 	"fmt"
-	"html/template"
-	"log"
-	"os"
-	"strings"
 	tea "github.com/charmbracelet/bubbletea"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
 	"github.com/spf13/cobra"
+	"html/template"
+	"log"
+	"os"
+	"strings"
 )
 
 // A Project contains the data for the project folder
@@ -46,8 +46,10 @@ var (
 	ginPackage     = []string{"github.com/gin-gonic/gin"}
 	fiberPackage   = []string{"github.com/gofiber/fiber/v2"}
 	echoPackage    = []string{"github.com/labstack/echo/v4", "github.com/labstack/echo/v4/middleware"}
+	cobraPackage   = []string{"github.com/spf13/cobra"}
 
 	cmdApiPath         = "cmd/api"
+	cmdRootPath        = "cmd"
 	internalServerPath = "internal/server"
 )
 
@@ -100,6 +102,11 @@ func (p *Project) createFrameworkMap() {
 		packageName: echoPackage,
 		templater:   tpl.EchoTemplates{},
 	}
+
+	p.FrameworkMap["cobra"] = Framework{
+		packageName: cobraPackage,
+		templater:   tpl.CobraTemplates{},
+	}
 }
 
 // CreateMainFile creates the project folders and files,
@@ -146,19 +153,6 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
-	err = p.CreatePath(cmdApiPath, projectPath)
-	if err != nil {
-		log.Printf("Error creating path: %s", projectPath)
-		cobra.CheckErr(err)
-		return err
-	}
-
-	err = p.CreateFileWithInjection(cmdApiPath, projectPath, "main.go", "main")
-	if err != nil {
-		cobra.CheckErr(err)
-		return err
-	}
-
 	makeFile, err := os.Create(fmt.Sprintf("%s/Makefile", projectPath))
 	if err != nil {
 		cobra.CheckErr(err)
@@ -189,25 +183,64 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	err = p.CreatePath(internalServerPath, projectPath)
-	if err != nil {
-		log.Printf("Error creating path: %s", internalServerPath)
-		cobra.CheckErr(err)
-		return err
-	}
+	// We only want a server.go and routes.go file if the user is not using cobra
+	// We also want to create a cmd/api/main.go file if the user is not using cobra
+	if p.ProjectType != "cobra" {
+		err = p.CreatePath(cmdApiPath, projectPath)
+		if err != nil {
+			log.Printf("Error creating path: %s", projectPath)
+			cobra.CheckErr(err)
+			return err
+		}
 
-	err = p.CreateFileWithInjection(internalServerPath, projectPath, "server.go", "server")
-	if err != nil {
-		log.Printf("Error injecting server.go file: %v", err)
-		cobra.CheckErr(err)
-		return err
-	}
+		err = p.CreateFileWithInjection(cmdApiPath, projectPath, "main.go", "main")
+		if err != nil {
+			cobra.CheckErr(err)
+			return err
+		}
 
-	err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routes")
-	if err != nil {
-		log.Printf("Error injecting routes.go file: %v", err)
-		cobra.CheckErr(err)
-		return err
+		err = p.CreatePath(internalServerPath, projectPath)
+		if err != nil {
+			log.Printf("Error creating path: %s", internalServerPath)
+			cobra.CheckErr(err)
+			return err
+		}
+
+		err = p.CreateFileWithInjection(internalServerPath, projectPath, "server.go", "server")
+		if err != nil {
+			log.Printf("Error injecting server.go file: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}
+
+		err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routes")
+		if err != nil {
+			log.Printf("Error injecting routes.go file: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}
+	} else {
+		// we want to create a cmd/root.go file if the user is using cobra
+		err = p.CreatePath(cmdRootPath, projectPath)
+		if err != nil {
+			log.Printf("Error creating path: %s", projectPath)
+			cobra.CheckErr(err)
+			return err
+		}
+
+		err = p.CreateFileWithInjection(cmdRootPath, projectPath, "root.go", "root")
+		if err != nil {
+			log.Printf("Error injecting root.go file: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}
+
+		err = p.CreateFileWithInjection("/", projectPath, "main.go", "main")
+		if err != nil {
+			log.Printf("Error injecting main.go file: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}
 	}
 
 	// Initialize git repo
@@ -289,6 +322,10 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		err = createdTemplate.Execute(createdFile, p)
 	case "routes":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Routes())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "root":
+		// Doing this directly because Cobra is the only framework that uses this template and the others shouldn't need to implement it
+		createdTemplate := template.Must(template.New(fileName).Parse(string(tpl.MakeCobraCMDRoot())))
 		err = createdTemplate.Execute(createdFile, p)
 	}
 
