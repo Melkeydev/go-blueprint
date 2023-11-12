@@ -2,7 +2,7 @@
 // help with the templating of created files.
 package template
 
-// MakeHTTPRoutes returns a byte slice that represents 
+// MakeHTTPRoutes returns a byte slice that represents
 // the default cmd/api/main.go file template.
 func MainTemplate() []byte {
 	return []byte(`package main
@@ -23,7 +23,7 @@ func main() {
 `)
 }
 
-// MakeHTTPRoutes returns a byte slice that represents 
+// MakeHTTPRoutes returns a byte slice that represents
 // the default Makefile.
 func MakeTemplate() []byte {
 	return []byte(
@@ -53,13 +53,54 @@ clean:
 
 # Live Reload
 watch:
-	@echo "Watching..."
-	@air
+	@if [ -x "$(GOPATH)/bin/air" ]; then \
+	    "$(GOPATH)/bin/air"; \
+		@echo "Watching...";\
+	else \
+	    read -p "air is not installed. Do you want to install it now? (y/n) " choice; \
+	    if [ "$$choice" = "y" ]; then \
+			go install github.com/cosmtrek/air@latest; \
+	        "$(GOPATH)/bin/air"; \
+				@echo "Watching...";\
+	    else \
+	        echo "You chose not to install air. Exiting..."; \
+	        exit 1; \
+	    fi; \
+	fi
 
 .PHONY: all build run test clean
 		`)
 }
 
+
+func GitIgnoreTemplate() []byte {
+	return []byte(
+		`
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with "go test -c"
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+# Go workspace file
+go.work
+tmp/
+
+# IDE specific files
+.vscode
+.idea
+		`)
+}
 
 func AirTomlTemplate() []byte {
 	return []byte(
@@ -114,7 +155,7 @@ tmp_dir = "tmp"
 }
 
 
-// ReadmeTemplate returns a byte slice that represents 
+// ReadmeTemplate returns a byte slice that represents
 // the default README.md file template.
 func ReadmeTemplate() []byte {
 	return []byte(
@@ -144,6 +185,11 @@ run the application
 make run
 ` + "```" + `
 
+live reload the application
+` + "```bash" + `
+make watch
+` + "```" + `
+
 run the test suite
 ` + "```bash" + `
 make test
@@ -154,4 +200,5 @@ clean up binary from the last build
 make clean
 ` + "```" + `
 	`)
+
 }
