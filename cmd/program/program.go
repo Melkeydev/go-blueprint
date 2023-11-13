@@ -278,6 +278,12 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 	}
 
+	err = utils.GoModTidy(projectPath)
+	if err != nil {
+		log.Printf("Could not tidy go.mod in new project %v\n", err)
+		cobra.CheckErr(err)
+	}
+
 	return nil
 }
 
