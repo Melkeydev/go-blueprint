@@ -26,7 +26,7 @@ var (
 	database = os.Getenv("DB_DATABASE")
 )
 
-func New() *service {
+func New() Service {
 	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:%s", host, port)))
 
 	if err != nil {

@@ -132,6 +132,10 @@ var createCmd = &cobra.Command{
 				project.ExitCLI(tprogram)
 			}
 			project.DBDriver = strings.ToLower(options.DBDriver.Choice)
+			err := cmd.Flag("driver").Value.Set(project.DBDriver)
+			if err != nil {
+				log.Fatal("failed to set the driver flag value", err)
+			}
 		}
 
 		currentWorkingDir, err := os.Getwd()

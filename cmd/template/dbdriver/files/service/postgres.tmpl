@@ -28,7 +28,7 @@ var (
 	host     = os.Getenv("DB_HOST")
 )
 
-func New() *service {
+func New() Service {
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", username, password, host, port, database)
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
