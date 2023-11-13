@@ -61,6 +61,18 @@ func InitGoMod(projectName string, appDir string) error {
 	return nil
 }
 
+// GoModTidy tidies up the go.mod
+// in the selected directory
+func GoModTidy(appDir string) error {
+	if err := ExecuteCmd("go",
+		[]string{"mod", "tidy"},
+		appDir); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // GoGetPackage runs "go get" for a given package in the
 // selected directory
 func GoGetPackage(appDir string, packages []string) error {
