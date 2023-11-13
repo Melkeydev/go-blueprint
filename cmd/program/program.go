@@ -46,6 +46,7 @@ var (
 	ginPackage     = []string{"github.com/gin-gonic/gin"}
 	fiberPackage   = []string{"github.com/gofiber/fiber/v2"}
 	echoPackage    = []string{"github.com/labstack/echo/v4", "github.com/labstack/echo/v4/middleware"}
+	caddyPackage   = []string{"github.com/caddyserver/caddy/v2", "github.com/caddyserver/caddy/v2/cmd"}
 
 	cmdApiPath         = "cmd/api"
 	internalServerPath = "internal/server"
@@ -99,6 +100,11 @@ func (p *Project) createFrameworkMap() {
 	p.FrameworkMap["echo"] = Framework{
 		packageName: echoPackage,
 		templater:   tpl.EchoTemplates{},
+	}
+
+	p.FrameworkMap["caddy"] = Framework{
+		packageName: caddyPackage,
+		templater:   tpl.CaddyTemplates{},
 	}
 }
 

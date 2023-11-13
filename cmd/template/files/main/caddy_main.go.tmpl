@@ -1,0 +1,12 @@
+package main
+
+import (
+	caddycmd "github.com/caddyserver/caddy/v2/cmd"
+
+	// plug in Caddy modules here
+	_ "{{.ProjectName}}/internal/plugin"
+)
+
+func main() {
+	caddycmd.Main()
+}
