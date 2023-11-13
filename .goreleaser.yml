@@ -15,7 +15,7 @@ builds:
   env:
   - CGO_ENABLED=0
   ldflags:
-  - -s -w -X cmd.GoBlueprintVersion={{.Version}}
+  - -s -w -X github.com/melkeydev/go-blueprint/cmd.GoBlueprintVersion={{.Version}}
 
 release:
   prerelease: auto
