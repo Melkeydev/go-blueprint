@@ -155,26 +155,26 @@ var createCmd = &cobra.Command{
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
 		project.AbsolutePath = currentWorkingDir
-		spinStatus := make(chan bool)
+		spinStatus := make(chan struct{})
 
 		go func() {
 			err = project.CreateMainFile()
+			close(spinStatus)
 			if err != nil {
 				log.Printf("Problem creating files for project. %v", err)
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
 		}()
 		go func() {
-			tprogram = tea.NewProgram(spinner.InitialModelNew())
-			if _, err := tprogram.Run(); err != nil {
-				cobra.CheckErr(err)
+			if isInteractive {
+				tprogram = tea.NewProgram(spinner.InitialModelNew())
+					if _, err := tprogram.Run(); err != nil {
+						cobra.CheckErr(err)
+					}
 			}
 		}()
 
-		if <-spinStatus {
-			close(spinStatus)
-			project.ExitCLI(tprogram)
-		}
+		<-spinStatus
 
 		fmt.Println(endingMsgStyle.Render("\nNext steps cd into the newly created project with:"))
 		fmt.Println(endingMsgStyle.Render(fmt.Sprintf("• cd %s\n", project.ProjectName)))
@@ -183,11 +183,11 @@ var createCmd = &cobra.Command{
 			nonInteractiveCommand := utils.NonInteractiveCommand(cmd.Use, cmd.Flags())
 			fmt.Println(tipMsgStyle.Render("Tip: Repeat the equivalent Blueprint with the following non-interactive command:"))
 			fmt.Println(tipMsgStyle.Italic(false).Render(fmt.Sprintf("• %s\n", nonInteractiveCommand)))
-		}
-		err = tprogram.ReleaseTerminal()
-		if err != nil {
-			log.Printf("Could not release terminal: %v", err)
-			cobra.CheckErr(err)
+			err = tprogram.ReleaseTerminal()
+			if err != nil {
+				log.Printf("Could not release terminal: %v", err)
+				cobra.CheckErr(err)
+			}
 		}
 	},
 }
