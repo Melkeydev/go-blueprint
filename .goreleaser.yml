@@ -1,3 +1,7 @@
+before:
+  hooks:
+  - go mod tidy
+  - ./scripts/completions.sh
 builds:
 - binary: go-blueprint
   main: ./
@@ -10,6 +14,8 @@ builds:
   - arm64
   env:
   - CGO_ENABLED=0
+  ldflags:
+  - -s -w -X cmd.GoBlueprintVersion={{.Version}}
 
 release:
   prerelease: auto
@@ -20,6 +26,9 @@ universal_binaries:
 brews:
 - name: go-blueprint
   homepage: "https://github.com/Melkeydev/homebrew-melkey"
+  taps:
+    owner: Melkeydev
+    name: homebrew-melkey
 
 checksum:
   name_template: 'checksums.txt'
