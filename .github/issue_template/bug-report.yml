@@ -1,0 +1,53 @@
+name: Bug Report
+description: Found a bug? Please let us know!
+title: "[Bug]"
+labels: ["Bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please provide as much information as possible. This will help us resolve the Bug quickly and accurately.
+  - type: markdown
+    attributes:
+      value: ---
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What is the problem?
+      description: |
+        Description of what needs to be fixed.
+      placeholder: Tell us what you see!
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating System
+      description: What is the affected operating system?
+    validations:
+      required: true
+  - type: input
+    id: arch
+    attributes:
+      label: Architecture Version (x86, x64, arm, etc)
+      description: (x86, x64, arm, etc)
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: |
+        This includes the steps for reproducing the problem, the expected result, and the actual result.
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
