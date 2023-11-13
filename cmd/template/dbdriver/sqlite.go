@@ -1,63 +1,21 @@
 package dbdriver
 
+import (
+	_ "embed"
+)
+
 type SqliteTemplate struct{}
 
+//go:embed files/service/mongo.tmpl
+var sqliteServiceTemplate []byte
+
+//go:embed files/env/mongo.tmpl
+var sqliteEnvTemplate []byte
+
 func (m SqliteTemplate) Service() []byte {
-	return []byte(`package database
-
-import (
-	"context"
-	"database/sql"
-	"fmt"
-	"log"
-	"os"
-	"time"
-
-	_ "github.com/mattn/go-sqlite3"
-	_ "github.com/joho/godotenv/autoload"
-)
-
-type Service interface {
-	Health() map[string]string
-}
-
-type service struct {
-	db *sql.DB
-}
-
-var (
-	dburl = os.Getenv("DB_URL")
-)
-
-func New() *service {
-	db, err := sql.Open("sqlite3", dburl)
-	if err != nil {
-		// This will not be a connection error, but a DSN parse error or
-		// another initialization error.
-		log.Fatal(err)
-	}
-	s := &service{db: db}
-	return s
-}
-
-func (s *service) Health() map[string]string {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-	defer cancel()
-
-	err := s.db.PingContext(ctx)
-	if err != nil {
-		log.Fatalf(fmt.Sprintf("db down: %v", err))
-	}
-
-	return map[string]string{
-		"message": "It's healthy",
-	}
-}
-`)
+	return sqliteServiceTemplate
 }
 
 func (m SqliteTemplate) Env() []byte {
-	return []byte(`
-DB_URL=
-`)
+	return sqliteEnvTemplate
 }
