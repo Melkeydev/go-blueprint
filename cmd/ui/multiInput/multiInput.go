@@ -12,10 +12,6 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-const (
-	bullet = "•"
-)
-
 // Change this
 var (
 	focusedStyle          = lipgloss.NewStyle().Foreground(lipgloss.Color("#01FAC6")).Bold(true)

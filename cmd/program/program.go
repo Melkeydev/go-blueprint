@@ -8,7 +8,6 @@ import (
 	"log"
 	"os"
 	"strings"
-
 	tea "github.com/charmbracelet/bubbletea"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
@@ -57,7 +56,9 @@ var (
 func (p *Project) ExitCLI(tprogram *tea.Program) {
 	if p.Exit {
 		// logo render here
-		tprogram.ReleaseTerminal()
+		if err := tprogram.ReleaseTerminal(); err != nil {
+			log.Fatal(err)
+		}
 		os.Exit(1)
 	}
 }
@@ -210,6 +211,28 @@ func (p *Project) CreateMainFile(spinStatus chan<- bool) error {
 		return err
 	}
 
+	// Initialize git repo
+	err = utils.ExecuteCmd("git", []string{"init"}, projectPath)
+	if err != nil {
+		log.Printf("Error initializing git repo: %v", err)
+		cobra.CheckErr(err)
+		return err
+	}
+	// Create gitignore
+	gitignoreFile, err := os.Create(fmt.Sprintf("%s/.gitignore", projectPath))
+	if err != nil {
+		cobra.CheckErr(err)
+		return err
+	}
+	defer gitignoreFile.Close()
+
+	// inject gitignore template
+	gitignoreTemplate := template.Must(template.New(".gitignore").Parse(string(tpl.GitIgnoreTemplate())))
+	err = gitignoreTemplate.Execute(gitignoreFile, p)
+	if err != nil {
+		return err
+	}
+
 	// Create .air.toml file
 	airTomlFile, err := os.Create(fmt.Sprintf("%s/.air.toml", projectPath))
 	if err != nil {
@@ -230,9 +253,11 @@ func (p *Project) CreateMainFile(spinStatus chan<- bool) error {
 	if err != nil {
 		log.Printf("Could not gofmt in new project %v\n", err)
 		cobra.CheckErr(err)
+		return err
 	}
-
+  
 	spinStatus <- true
+
 	return nil
 }
 
