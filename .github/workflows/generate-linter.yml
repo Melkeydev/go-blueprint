@@ -21,7 +21,7 @@ jobs:
     strategy:
       matrix:
         framework:
-          [chi, gin, fiber, gorilla/mux, httprouter, standard-library, echo]
+          [chi, gin, fiber, gorilla/mux, httprouter, standard-library, echo, caddy]
         goVersion: ["1.20"]
     runs-on: ubuntu-latest
     steps:
