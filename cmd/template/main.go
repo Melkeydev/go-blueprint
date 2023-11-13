@@ -21,6 +21,9 @@ var makeTemplate []byte
 //go:embed files/gitignore.tmpl
 var gitIgnoreTemplate []byte
 
+//go:embed files/env.tmpl
+var envFileTemplate []byte
+
 // MakeTemplate returns a byte slice that represents 
 // the default Makefile template.
 func MakeTemplate() []byte {
@@ -36,11 +39,7 @@ func AirTomlTemplate() []byte {
 }
 
 func EnvFileTemplate() []byte {
-  return []byte(`#Environment Variables
-  
-# Port to run the application on
-PORT="8080"
-  `)
+  return envFileTemplate
 }
 
 // ReadmeTemplate returns a byte slice that represents 
