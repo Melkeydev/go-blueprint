@@ -5,8 +5,10 @@ package program
 import (
 	"fmt"
 	"html/template"
+	"io"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -233,6 +235,7 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
+	p.RemoveEmptyDirs(projectPath, internalServerPath, internalPluginPath)
 	// Initialize git repo
 	err = utils.ExecuteCmd("git", []string{"init"}, projectPath)
 	if err != nil {
@@ -254,6 +257,8 @@ func (p *Project) CreateMainFile() error {
 	if err != nil {
 		return err
 	}
+
+	p.RemoveEmptyDirs(projectPath, internalServerPath, internalPluginPath)
 
 	// Create .air.toml file
 	airTomlFile, err := os.Create(fmt.Sprintf("%s/.air.toml", projectPath))
@@ -285,6 +290,22 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 	return nil
+}
+
+func (p *Project) RemoveEmptyDirs(projectPath string, dirs ...string) {
+	for _, d := range dirs {
+		path := filepath.Join(projectPath, d)
+		f, err := os.Open(path)
+		if err != nil {
+			continue
+		}
+		_, err = f.Readdirnames(1)
+		f.Close()
+		if err == io.EOF {
+			os.Remove(path)
+		}
+	}
+
 }
 
 // CreatePath creates the given directory in the projectPath
