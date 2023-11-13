@@ -183,6 +183,8 @@ var createCmd = &cobra.Command{
 			nonInteractiveCommand := utils.NonInteractiveCommand(cmd.Use, cmd.Flags())
 			fmt.Println(tipMsgStyle.Render("Tip: Repeat the equivalent Blueprint with the following non-interactive command:"))
 			fmt.Println(tipMsgStyle.Italic(false).Render(fmt.Sprintf("• %s\n", nonInteractiveCommand)))
+			project.Exit = true
+			project.ExitCLI(tprogram)
 		}
 	},
 }
