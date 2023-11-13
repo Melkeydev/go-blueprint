@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -60,6 +61,12 @@ var createCmd = &cobra.Command{
 
 		flagName := cmd.Flag("name").Value.String()
 		flagFramework := cmd.Flag("framework").Value.String()
+
+		isValidFlagName := isValidFlagName(flagName)
+
+		if flagName != "" && !isValidFlagName {
+			cobra.CheckErr(fmt.Errorf("project name '%s' is not valid. Project name must start with a letter", flagName))
+		}
 
 		if flagFramework != "" {
 			isValid := isValidProjectType(flagFramework, allowedProjectTypes)
@@ -146,4 +153,11 @@ func isValidProjectType(input string, allowedTypes []string) bool {
 		}
 	}
 	return false
+}
+
+// isValidFlagName checks if the inputted project name is valid
+// by checking if it starts with a letter
+func isValidFlagName(input string) bool {
+	v, _ := regexp.MatchString(`^[a-zA-Z]+`, input)
+	return v
 }
