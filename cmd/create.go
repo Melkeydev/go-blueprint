@@ -184,7 +184,11 @@ var createCmd = &cobra.Command{
 			fmt.Println(tipMsgStyle.Render("Tip: Repeat the equivalent Blueprint with the following non-interactive command:"))
 			fmt.Println(tipMsgStyle.Italic(false).Render(fmt.Sprintf("• %s\n", nonInteractiveCommand)))
 		}
-		tprogram.ReleaseTerminal()
+		err = tprogram.ReleaseTerminal()
+		if err != nil {
+			log.Printf("Could not release terminal: %v", err)
+			cobra.CheckErr(err)
+		}
 	},
 }
 
