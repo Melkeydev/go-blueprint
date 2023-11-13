@@ -4,10 +4,40 @@ package utils
 
 import (
 	"bytes"
+	"fmt"
 	"os/exec"
+
+	"github.com/spf13/pflag"
 )
 
-// ExecuteCmd provides a shorthand way to run a shell command 
+const ProgramName = "go-blueprint"
+
+// NonInteractiveCommand creates the command string from a flagSet
+// to be used for getting the equivalent non-interactive shell command
+func NonInteractiveCommand(flagSet *pflag.FlagSet) string {
+	nonInteractiveCommand := ProgramName
+
+	visitFn := func(flag *pflag.Flag) {
+		if flag.Name != "help" {
+			nonInteractiveCommand = fmt.Sprintf("%s --%s %s", nonInteractiveCommand, flag.Name, flag.Value.String())
+		}
+	}
+
+	flagSet.SortFlags = false
+	flagSet.VisitAll(visitFn)
+
+	return nonInteractiveCommand
+}
+
+func HasChangedFlag(flagSet *pflag.FlagSet) bool {
+	hasChangedFlag := false
+	flagSet.Visit(func(_ *pflag.Flag) {
+		hasChangedFlag = true
+	})
+	return hasChangedFlag
+}
+
+// ExecuteCmd provides a shorthand way to run a shell command
 func ExecuteCmd(name string, args []string, dir string) error {
 	command := exec.Command(name, args...)
 	command.Dir = dir
@@ -30,7 +60,6 @@ func InitGoMod(projectName string, appDir string) error {
 
 	return nil
 }
-
 
 // GoGetPackage runs "go get" for a given package in the
 // selected directory

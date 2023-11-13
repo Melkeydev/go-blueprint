@@ -1,15 +1,22 @@
 package framework
 
+import (
+	_ "embed"
+)
+
+//go:embed files/routes/gin.go.tmpl
+var ginRoutesTemplate []byte
+
 // GinTemplates contains the methods used for building
 // an app that uses [github.com/gin-gonic/gin]
 type GinTemplates struct{}
 
 func (g GinTemplates) Main() []byte {
-	return MainTemplate()
+	return mainTemplate
 }
 
 func (g GinTemplates) Server() []byte {
-	return MakeHTTPServer()
+	return standardServerTemplate
 }
 
 func (g GinTemplates) ServerWithDB() []byte {

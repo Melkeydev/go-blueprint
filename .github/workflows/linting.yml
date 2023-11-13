@@ -1,0 +1,46 @@
+name: Linting
+
+on:
+  push:
+    paths:
+      - '**.go'
+      - go.sum
+      - go.mod
+    branches-ignore:
+      - main
+  pull_request:
+  
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21.1'
+
+      - name: Deps cache
+        id: cache-go-deps
+        uses: actions/cache@v3
+        env:
+          cache-name: go-deps-cache
+        with:
+          path: ~/godeps
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+
+      - if: ${{ steps.cache-go-deps.outputs.cache-hit != 'true' }}
+        name: List the state of node modules
+        continue-on-error: true
+        run: go mod graph
+
+      - name: Install dependencies
+        run: |
+          go mod tidy
+          go mod download
+
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v3.7.0
