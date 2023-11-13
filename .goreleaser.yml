@@ -26,9 +26,14 @@ universal_binaries:
 brews:
 - name: go-blueprint
   homepage: "https://github.com/Melkeydev/homebrew-melkey"
-  taps:
+  repository:
     owner: Melkeydev
     name: homebrew-melkey
+  folder: Formula
+  extra_install: |-
+    bash_completion.install "completions/goreleaser.bash" => "goreleaser"
+    zsh_completion.install "completions/goreleaser.zsh" => "_goreleaser"
+    fish_completion.install "completions/goreleaser.fish"
 
 checksum:
   name_template: 'checksums.txt'
