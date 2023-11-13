@@ -5,15 +5,13 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	"github.com/gorilla/mux"
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
-	r := chi.NewRouter()
-	r.Use(middleware.Logger)
+	r := mux.NewRouter()
 
-	r.Get("/", s.helloWorldHandler)
+	r.HandleFunc("/", s.helloWorldHandler)
 
 	return r
 }
@@ -27,5 +25,5 @@ func (s *Server) helloWorldHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("error handling JSON marshal. Err: %v", err)
 	}
 
-	_, _ = w.Write(jsonResp)
+	w.Write(jsonResp)
 }

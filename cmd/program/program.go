@@ -4,15 +4,16 @@ package program
 
 import (
 	"fmt"
-	"html/template"
-	"log"
-	"os"
-	"strings"
 	tea "github.com/charmbracelet/bubbletea"
+	tpl "github.com/melkeydev/go-blueprint/cmd/template"
 	"github.com/melkeydev/go-blueprint/cmd/template/dbdriver"
 	"github.com/melkeydev/go-blueprint/cmd/template/framework"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
 	"github.com/spf13/cobra"
+	"html/template"
+	"log"
+	"os"
+	"strings"
 )
 
 // A Project contains the data for the project folder
@@ -307,7 +308,7 @@ func (p *Project) CreateMainFile() error {
 	defer gitignoreFile.Close()
 
 	// inject gitignore template
-	gitignoreTemplate := template.Must(template.New(".gitignore").Parse(string(tpl.GitIgnoreTemplate())))
+	gitignoreTemplate := template.Must(template.New(".gitignore").Parse(string(framework.GitIgnoreTemplate())))
 	err = gitignoreTemplate.Execute(gitignoreFile, p)
 	if err != nil {
 		return err

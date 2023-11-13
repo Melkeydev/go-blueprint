@@ -1,8 +1,12 @@
 package template
 
+import (
+	_ "embed"
+)
+
+//go:embed framework/files/globalenv.tmpl
+var globalEnvTemplate []byte
+
 func GlobalEnvTemplate() []byte {
-	return []byte(`
-PORT=8080
-APP_ENV=local
-`)
+	return globalEnvTemplate
 }

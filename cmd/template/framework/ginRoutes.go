@@ -7,6 +7,9 @@ import (
 //go:embed files/routes/gin.go.tmpl
 var ginRoutesTemplate []byte
 
+//go:embed files/dbRoutes/gin.go.tmpl
+var ginDBRoutesTemplate []byte
+
 // GinTemplates contains the methods used for building
 // an app that uses [github.com/gin-gonic/gin]
 type GinTemplates struct{}
@@ -20,71 +23,13 @@ func (g GinTemplates) Server() []byte {
 }
 
 func (g GinTemplates) ServerWithDB() []byte {
-	return MakeHTTPServerWithDB()
+	return standardDBServerTemplate
 }
 
 func (g GinTemplates) Routes() []byte {
-	return MakeGinRoutes()
+	return ginRoutesTemplate
 }
 
 func (g GinTemplates) RoutesWithDB() []byte {
-	return MakeGinRoutesWithDB()
-}
-
-// MakeGinRoutes returns a byte slice that represents
-// the internal/server/routes.go file when using Gin.
-func MakeGinRoutes() []byte {
-	return []byte(`package server
-
-import (
-	"net/http"
-
-	"github.com/gin-gonic/gin"
-)
-
-func (s *Server) RegisterRoutes() http.Handler {
-	r := gin.Default()
-
-	r.GET("/", s.helloWorldHandler)
-
-	return r
-}
-
-func (s *Server) helloWorldHandler(c *gin.Context) {
-	resp := make(map[string]string)
-	resp["message"] = "Hello World"
-
-	c.JSON(http.StatusOK, resp)
-}
-
-`)
-}
-
-func MakeGinRoutesWithDB() []byte {
-	return []byte(`package server
-
-import (
-	"github.com/gin-gonic/gin"
-	"net/http"
-)
-
-func (s *Server) RegisterRoutes() http.Handler {
-	r := gin.Default()
-	r.GET("/", s.helloWorldHandler)
-	r.GET("/health", s.healthHandler)
-
-	return r
-}
-
-func (s *Server) helloWorldHandler(c *gin.Context) {
-	resp := make(map[string]string)
-	resp["message"] = "Hello World"
-
-	c.JSON(http.StatusOK, resp)
-}
-
-func (s *Server) healthHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, s.db.Health())
-}
-`)
+	return ginDBRoutesTemplate
 }

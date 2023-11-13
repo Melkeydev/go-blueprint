@@ -10,6 +10,9 @@ import (
 	"github.com/melkeydev/go-blueprint/cmd/ui/textinput"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
 	"github.com/spf13/cobra"
+	"log"
+	"os"
+	"strings"
 )
 
 const logo = `
