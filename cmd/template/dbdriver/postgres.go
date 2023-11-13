@@ -6,10 +6,10 @@ import (
 
 type PostgresTemplate struct{}
 
-//go:embed files/service/mongo.tmpl
+//go:embed files/service/postgres.tmpl
 var postgresServiceTemplate []byte
 
-//go:embed files/env/mongo.tmpl
+//go:embed files/env/postgres.tmpl
 var postgresEnvTemplate []byte
 
 func (m PostgresTemplate) Service() []byte {

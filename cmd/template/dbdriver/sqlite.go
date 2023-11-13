@@ -6,10 +6,10 @@ import (
 
 type SqliteTemplate struct{}
 
-//go:embed files/service/mongo.tmpl
+//go:embed files/service/sqlite.tmpl
 var sqliteServiceTemplate []byte
 
-//go:embed files/env/mongo.tmpl
+//go:embed files/env/sqlite.tmpl
 var sqliteEnvTemplate []byte
 
 func (m SqliteTemplate) Service() []byte {
