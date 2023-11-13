@@ -22,3 +22,7 @@ func (c ChiTemplates) Server() []byte {
 func (c ChiTemplates) Routes() []byte {
 	return chiRoutesTemplate
 }
+
+func (c ChiTemplates) Plugin() []byte {
+	return nil
+}

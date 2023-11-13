@@ -22,3 +22,7 @@ func (g GinTemplates) Server() []byte {
 func (g GinTemplates) Routes() []byte {
 	return ginRoutesTemplate
 }
+
+func (g GinTemplates) Plugin() []byte {
+	return nil
+}

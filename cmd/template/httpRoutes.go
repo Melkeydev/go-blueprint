@@ -25,3 +25,7 @@ func (s StandardLibTemplate) Server() []byte {
 func (s StandardLibTemplate) Routes() []byte {
 	return standardRoutesTemplate
 }
+
+func (s StandardLibTemplate) Plugin() []byte {
+	return nil
+}

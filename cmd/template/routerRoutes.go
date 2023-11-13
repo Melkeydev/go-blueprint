@@ -20,3 +20,6 @@ func (r RouterTemplates) Server() []byte {
 func (r RouterTemplates) Routes() []byte {
 	return httpRouterRoutesTemplate
 }
+func (r RouterTemplates) Plugin() []byte {
+	return nil
+}

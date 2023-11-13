@@ -27,3 +27,7 @@ func (f FiberTemplates) Server() []byte {
 func (f FiberTemplates) Routes() []byte {
 	return fiberRoutesTemplate
 }
+
+func (f FiberTemplates) Plugin() []byte {
+	return nil
+}

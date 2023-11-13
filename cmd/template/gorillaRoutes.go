@@ -20,3 +20,7 @@ func (g GorillaTemplates) Server() []byte {
 func (g GorillaTemplates) Routes() []byte {
 	return gorillaRoutesTemplate
 }
+
+func (g GorillaTemplates) Plugin() []byte {
+	return nil
+}

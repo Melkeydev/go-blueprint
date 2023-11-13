@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"strings"
+
 	tea "github.com/charmbracelet/bubbletea"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
@@ -37,6 +38,7 @@ type Templater interface {
 	Main() []byte
 	Server() []byte
 	Routes() []byte
+	Plugin() []byte
 }
 
 var (
@@ -50,6 +52,7 @@ var (
 
 	cmdApiPath         = "cmd/api"
 	internalServerPath = "internal/server"
+	internalPluginPath = "internal/plugin"
 )
 
 // ExitCLI checks if the Project has been exited, and closes
@@ -202,6 +205,13 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
+	err = p.CreatePath(internalPluginPath, projectPath)
+	if err != nil {
+		log.Printf("Error creating path: %s", internalPluginPath)
+		cobra.CheckErr(err)
+		return err
+	}
+
 	err = p.CreateFileWithInjection(internalServerPath, projectPath, "server.go", "server")
 	if err != nil {
 		log.Printf("Error injecting server.go file: %v", err)
@@ -212,6 +222,13 @@ func (p *Project) CreateMainFile() error {
 	err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routes")
 	if err != nil {
 		log.Printf("Error injecting routes.go file: %v", err)
+		cobra.CheckErr(err)
+		return err
+	}
+
+	err = p.CreateFileWithInjection(internalPluginPath, projectPath, "pluging.go", "plugin")
+	if err != nil {
+		log.Printf("Error injecting plugin.go file: %v", err)
 		cobra.CheckErr(err)
 		return err
 	}
@@ -279,28 +296,32 @@ func (p *Project) CreatePath(pathToCreate string, projectPath string) error {
 // CreateFileWithInjection creates the given file at the
 // project path, and injects the appropriate template
 func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath string, fileName string, methodName string) error {
+	var templateData []byte
+
+	switch methodName {
+	case "main":
+		templateData = p.FrameworkMap[p.ProjectType].templater.Main()
+	case "server":
+		templateData = p.FrameworkMap[p.ProjectType].templater.Server()
+	case "routes":
+		templateData = p.FrameworkMap[p.ProjectType].templater.Routes()
+	case "plugin":
+		templateData = p.FrameworkMap[p.ProjectType].templater.Plugin()
+	default:
+		return nil
+	}
+
+	if len(templateData) == 0 {
+		// Skipping creation
+		return nil
+	}
+
 	createdFile, err := os.Create(fmt.Sprintf("%s/%s/%s", projectPath, pathToCreate, fileName))
 	if err != nil {
 		return err
 	}
-
 	defer createdFile.Close()
 
-	switch methodName {
-	case "main":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Main())))
-		err = createdTemplate.Execute(createdFile, p)
-	case "server":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Server())))
-		err = createdTemplate.Execute(createdFile, p)
-	case "routes":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Routes())))
-		err = createdTemplate.Execute(createdFile, p)
-	}
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	createdTemplate := template.Must(template.New(fileName).Parse(string(templateData)))
+	return createdTemplate.Execute(createdFile, p)
 }

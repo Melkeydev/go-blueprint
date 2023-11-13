@@ -21,3 +21,7 @@ func (e EchoTemplates) Server() []byte {
 func (e EchoTemplates) Routes() []byte {
 	return echoRoutesTemplate
 }
+
+func (e EchoTemplates) Plugin() []byte {
+	return nil
+}
