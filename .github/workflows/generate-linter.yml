@@ -1,27 +1,40 @@
 name: Linting Generated Blueprints
 
 on:
-    pull_request: {}
-    workflow_dispatch: {}
+  pull_request: {}
+  workflow_dispatch: {}
 
 jobs:
-    framework_matrix:
-        strategy:
-            matrix:
-                framework: [chi, gin, fiber, gorilla/mux, httprouter, standard-library, echo]
-                goVersion: ["1.20"]
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-            - name: Setup Go
-              uses: actions/setup-go@v4
-              with:
-                go-version: ${{ matrix.goVersion }}
-            - name: build templates
-              run: go run main.go create -n ${{ matrix.framework }} -f ${{ matrix.framework}}
-            - name: golangci-lint
-              uses: golangci/golangci-lint-action@v3
-              with:
-                version: v1.55.2     
-                working-directory: ${{ matrix.framework }}
-                args: --timeout=5m
+  install_dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.20"
+      - name: Install Dependencies
+        run: go mod download
+
+  framework_matrix:
+    needs: install_dependencies
+    strategy:
+      matrix:
+        framework:
+          [chi, gin, fiber, gorilla/mux, httprouter, standard-library, echo]
+        goVersion: ["1.20"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.goVersion }}
+      - name: build templates
+        run: go run main.go create -n ${{ matrix.framework }} -f ${{ matrix.framework}}
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: v1.55.2
+          working-directory: ${{ matrix.framework }}
+          args: --timeout=5m
