@@ -3,5 +3,5 @@ set -e
 rm -rf completions
 mkdir completions
 for sh in bash zsh fish; do
-  go run main.go completion "$sh" >"completions/goreleaser.$sh"
+  go run main.go completion "$sh" >"completions/go-blueprint.$sh"
 done

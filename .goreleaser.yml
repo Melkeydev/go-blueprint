@@ -31,9 +31,9 @@ brews:
     name: homebrew-melkey
   folder: Formula
   extra_install: |-
-    bash_completion.install "completions/goreleaser.bash" => "goreleaser"
-    zsh_completion.install "completions/goreleaser.zsh" => "_goreleaser"
-    fish_completion.install "completions/goreleaser.fish"
+    bash_completion.install "completions/go-blueprint.bash" => "go-blueprint"
+    zsh_completion.install "completions/go-blueprint.zsh" => "_go-blueprint"
+    fish_completion.install "completions/go-blueprint.fish"
 
 checksum:
   name_template: 'checksums.txt'
