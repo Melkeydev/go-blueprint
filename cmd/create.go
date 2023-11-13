@@ -65,7 +65,7 @@ var createCmd = &cobra.Command{
 		if flagFramework != "" {
 			isValid := isValidProjectType(flagFramework, allowedProjectTypes)
 			if !isValid {
-				cobra.CheckErr(fmt.Errorf("Project type '%s' is not valid. Valid types are: %s", flagFramework, strings.Join(allowedProjectTypes, ", ")))
+				cobra.CheckErr(fmt.Errorf("project type '%s' is not valid. Valid types are: %s", flagFramework, strings.Join(allowedProjectTypes, ", ")))
 			}
 		}
 
@@ -147,6 +147,8 @@ var createCmd = &cobra.Command{
 			nonInteractiveCommand := utils.NonInteractiveCommand(cmd.Flags())
 			fmt.Println(tipMsgStyle.Render("Tip: Repeat the equivalent Blueprint with the following non-interactive command:"))
 			fmt.Println(tipMsgStyle.Italic(false).Render(fmt.Sprintf("• %s\n", nonInteractiveCommand)))
+			project.Exit = true
+			project.ExitCLI(tprogram)
 		}
 	},
 }
