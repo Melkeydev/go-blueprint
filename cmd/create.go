@@ -155,7 +155,6 @@ var createCmd = &cobra.Command{
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
 		project.AbsolutePath = currentWorkingDir
-		spinStatus := make(chan struct{})
 
 		go func() {
 			if isInteractive {
@@ -163,16 +162,14 @@ var createCmd = &cobra.Command{
 					if _, err := tprogram.Run(); err != nil {
 						cobra.CheckErr(err)
 					}
+
 			}
 		}()
 		err = project.CreateMainFile()
-		close(spinStatus)
 		if err != nil {
 			log.Printf("Problem creating files for project. %v", err)
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
-
-		<-spinStatus
 
 		fmt.Println(endingMsgStyle.Render("\nNext steps cd into the newly created project with:"))
 		fmt.Println(endingMsgStyle.Render(fmt.Sprintf("• cd %s\n", project.ProjectName)))
