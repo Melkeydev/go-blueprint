@@ -51,6 +51,7 @@ var createCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		var tprogram *tea.Program
+		var err error
 
 		options := steps.Options{
 			ProjectName: &textinput.Output{},
@@ -59,12 +60,17 @@ var createCmd = &cobra.Command{
 		isInteractive := !utils.HasChangedFlag(cmd.Flags())
 
 		flagName := cmd.Flag("name").Value.String()
+		if flagName != "" && doesDirectoryExistAndIsNotEmpty(flagName) {
+			err = fmt.Errorf("Directory '%s' already exists and is not empty. Please choose a different name", flagName)
+			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
+		}
 		flagFramework := cmd.Flag("framework").Value.String()
 
 		if flagFramework != "" {
 			isValid := isValidProjectType(flagFramework, allowedProjectTypes)
 			if !isValid {
-				cobra.CheckErr(fmt.Errorf("Project type '%s' is not valid. Valid types are: %s", flagFramework, strings.Join(allowedProjectTypes, ", ")))
+				err = fmt.Errorf("Project type '%s' is not valid. Valid types are: %s", flagFramework, strings.Join(allowedProjectTypes, ", "))
+				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
 		}
 
@@ -81,7 +87,11 @@ var createCmd = &cobra.Command{
 			tprogram := tea.NewProgram(textinput.InitialTextInputModel(options.ProjectName, "What is the name of your project?", project))
 			if _, err := tprogram.Run(); err != nil {
 				log.Printf("Name of project contains an error: %v", err)
-				cobra.CheckErr(err)
+				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
+			}
+			if doesDirectoryExistAndIsNotEmpty(options.ProjectName.Output) {
+				err = fmt.Errorf("Directory '%s' already exists and is not empty. Please choose a different name", options.ProjectName.Output)
+				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
 			project.ExitCLI(tprogram)
 
@@ -97,7 +107,7 @@ var createCmd = &cobra.Command{
 				s := &multiInput.Selection{}
 				tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, s, step.Headers, project))
 				if _, err := tprogram.Run(); err != nil {
-					cobra.CheckErr(err)
+					cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 				}
 				project.ExitCLI(tprogram)
 
@@ -114,7 +124,7 @@ var createCmd = &cobra.Command{
 		currentWorkingDir, err := os.Getwd()
 		if err != nil {
 			log.Printf("could not get current working directory: %v", err)
-			cobra.CheckErr(err)
+			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
 
 		project.AbsolutePath = currentWorkingDir
@@ -123,7 +133,7 @@ var createCmd = &cobra.Command{
 		err = project.CreateMainFile()
 		if err != nil {
 			log.Printf("Problem creating files for project. %v", err)
-			cobra.CheckErr(err)
+			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
 
 		fmt.Println(endingMsgStyle.Render("\nNext steps cd into the newly created project with:"))
@@ -142,6 +152,21 @@ var createCmd = &cobra.Command{
 func isValidProjectType(input string, allowedTypes []string) bool {
 	for _, t := range allowedTypes {
 		if input == t {
+			return true
+		}
+	}
+	return false
+}
+
+// doesDirectoryExistAndIsNotEmpty checks if the directory exists and is not empty
+func doesDirectoryExistAndIsNotEmpty(name string) bool {
+	if _, err := os.Stat(name); err == nil {
+		dirEntries, err := os.ReadDir(name)	
+		if err != nil {
+			log.Printf("could not read directory: %v", err)
+			cobra.CheckErr(textinput.CreateErrorInputModel(err))
+		}
+		if len(dirEntries) > 0 {
 			return true
 		}
 	}
