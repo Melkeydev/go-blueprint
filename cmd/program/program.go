@@ -4,14 +4,14 @@ package program
 
 import (
 	"fmt"
-	"html/template"
-	"log"
-	"os"
-	"strings"
 	tea "github.com/charmbracelet/bubbletea"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
 	"github.com/spf13/cobra"
+	"html/template"
+	"log"
+	"os"
+	"strings"
 )
 
 // A Project contains the data for the project folder
@@ -101,7 +101,6 @@ func (p *Project) createFrameworkMap() {
 		templater:   tpl.EchoTemplates{},
 	}
 }
-
 
 // CreateMainFile creates the project folders and files,
 // and writes to them depending on the selected options
