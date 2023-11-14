@@ -40,14 +40,13 @@ type model struct {
 }
 
 // sanitizeInput verifies that an input text string gets validated
-func sanitizeInput (input string) error {
-    matched, err := regexp.Match("^[a-zA-Z0-9_-]+$", []byte(input))
-    if !matched{
-        return fmt.Errorf("string violates the input regex pattern, err: %v", err);
-    }
-    return nil
+func sanitizeInput(input string) error {
+	matched, err := regexp.Match("^[a-zA-Z0-9_-]+$", []byte(input))
+	if !matched {
+		return fmt.Errorf("string violates the input regex pattern, err: %v", err)
+	}
+	return nil
 }
-
 
 // InitialTextInputModel initializes a textinput step
 // with the given data
@@ -56,7 +55,7 @@ func InitialTextInputModel(output *Output, header string, program *program.Proje
 	ti.Focus()
 	ti.CharLimit = 156
 	ti.Width = 20
-    ti.Validate = sanitizeInput
+	ti.Validate = sanitizeInput
 
 	return model{
 		textInput: ti,
