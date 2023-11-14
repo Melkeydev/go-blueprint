@@ -4,6 +4,7 @@ package textinput
 
 import (
 	"fmt"
+	"regexp"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -38,6 +39,16 @@ type model struct {
 	exit      *bool
 }
 
+// sanitizeInput verifies that an input text string gets validated
+func sanitizeInput (input string) error {
+    matched, err := regexp.Match("^[a-zA-Z0-9_-]+$", []byte(input))
+    if !matched{
+        return fmt.Errorf("string violates the input regex pattern, err: %v", err);
+    }
+    return nil
+}
+
+
 // InitialTextInputModel initializes a textinput step
 // with the given data
 func InitialTextInputModel(output *Output, header string, program *program.Project) model {
@@ -45,6 +56,7 @@ func InitialTextInputModel(output *Output, header string, program *program.Proje
 	ti.Focus()
 	ti.CharLimit = 156
 	ti.Width = 20
+    ti.Validate = sanitizeInput
 
 	return model{
 		textInput: ti,
