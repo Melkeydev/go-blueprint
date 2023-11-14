@@ -24,7 +24,6 @@ type Project struct {
 	AbsolutePath string
 	ProjectType  string
 	DBDriver     string
-	TEst         string
 	FrameworkMap map[string]Framework
 	DBDriverMap  map[string]Driver
 }
