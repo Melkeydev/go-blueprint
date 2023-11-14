@@ -102,6 +102,7 @@ func (p *Project) createFrameworkMap() {
 	}
 }
 
+
 // CreateMainFile creates the project folders and files,
 // and writes to them depending on the selected options
 func (p *Project) CreateMainFile(spinStatus chan<- bool) error {
