@@ -7,7 +7,7 @@ import (
 
 type Framework string
 
-// These are all the current frameworks supported, if you want to add one you
+// These are all the current frameworks supported. If you want to add one, you
 // can simply copy and past a line here. Do not forget to also add it into the
 // AllowedProjectTypes slice too!
 const (

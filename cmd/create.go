@@ -69,8 +69,8 @@ var createCmd = &cobra.Command{
 		}
 		flagDBDriver := cmd.Flag("driver").Value.String()
 
-		// VarP already validates the contents of the framework flag if
-		// this flag is filled, it is always valid
+		// VarP already validates the contents of the framework flag.
+		// If this flag is filled, it is always valid
 		flagFramework := flags.Framework(cmd.Flag("framework").Value.String())
 
 		if flagDBDriver != "" {
