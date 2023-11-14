@@ -158,14 +158,6 @@ var createCmd = &cobra.Command{
 		spinStatus := make(chan struct{})
 
 		go func() {
-			err = project.CreateMainFile()
-			close(spinStatus)
-			if err != nil {
-				log.Printf("Problem creating files for project. %v", err)
-				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
-			}
-		}()
-		go func() {
 			if isInteractive {
 				tprogram = tea.NewProgram(spinner.InitialModelNew())
 					if _, err := tprogram.Run(); err != nil {
@@ -173,6 +165,12 @@ var createCmd = &cobra.Command{
 					}
 			}
 		}()
+		err = project.CreateMainFile()
+		close(spinStatus)
+		if err != nil {
+			log.Printf("Problem creating files for project. %v", err)
+			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
+		}
 
 		<-spinStatus
 
