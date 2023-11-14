@@ -20,6 +20,9 @@ universal_binaries:
 brews:
 - name: go-blueprint
   homepage: "https://github.com/Melkeydev/homebrew-melkey"
+  tap:
+    owner: Melkeydev
+    name: homebrew-melkey
 
 checksum:
   name_template: 'checksums.txt'
