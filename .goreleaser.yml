@@ -1,3 +1,7 @@
+before:
+  hooks:
+  - go mod tidy
+  - ./scripts/completions.sh
 builds:
 - binary: go-blueprint
   main: ./
@@ -10,19 +14,38 @@ builds:
   - arm64
   env:
   - CGO_ENABLED=0
+  ldflags:
+  - -s -w -X github.com/melkeydev/go-blueprint/cmd.GoBlueprintVersion={{.Version}}
 
 release:
   prerelease: auto
 
 universal_binaries:
 - replace: true
-
+archives:
+- name_template: >-
+    {{- .ProjectName }}_ {{- title .Os }}_ {{- if eq .Arch "amd64" }}x86_64 {{- else if eq .Arch "386" }}i386 {{- else }}{{ .Arch }}{{ end }} {{- if .Arm }}v{{ .Arm }}{{ end -}}
+  format_overrides:
+  - goos: windows
+    format: zip
+  builds_info:
+    group: root
+    owner: root
+  files:
+  - README.md
+  - LICENSE
+  - completions/*
 brews:
 - name: go-blueprint
   homepage: "https://github.com/Melkeydev/homebrew-melkey"
-  tap:
+  repository:
     owner: Melkeydev
     name: homebrew-melkey
+  folder: Formula
+  extra_install: |-
+    bash_completion.install "completions/go-blueprint.bash" => "go-blueprint"
+    zsh_completion.install "completions/go-blueprint.zsh" => "_go-blueprint"
+    fish_completion.install "completions/go-blueprint.fish"
 
 checksum:
   name_template: 'checksums.txt'
