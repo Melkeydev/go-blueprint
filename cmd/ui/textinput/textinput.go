@@ -3,6 +3,7 @@
 package textinput
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/charmbracelet/bubbles/textinput"
@@ -11,8 +12,10 @@ import (
 	"github.com/melkeydev/go-blueprint/cmd/program"
 )
 
-var titleStyle = lipgloss.NewStyle().Background(lipgloss.Color("#01FAC6")).Foreground(lipgloss.Color("#030303")).Bold(true).Padding(0, 1, 0)
-
+var (
+	titleStyle = lipgloss.NewStyle().Background(lipgloss.Color("#01FAC6")).Foreground(lipgloss.Color("#030303")).Bold(true).Padding(0, 1, 0)
+	errorStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#FF8700")).Bold(true).Padding(0, 0, 0)
+)
 type (
 	errMsg error
 )
@@ -52,6 +55,24 @@ func InitialTextInputModel(output *Output, header string, program *program.Proje
 		output:    output,
 		header:    titleStyle.Render(header),
 		exit:      &program.Exit,
+	}
+}
+
+// CreateErrorInputModel creates a textinput step
+// with the given error
+func CreateErrorInputModel(err error) model {
+	ti := textinput.New()
+	ti.Focus()
+	ti.CharLimit = 156
+	ti.Width = 20
+	exit := true
+
+	return model{
+		textInput: ti,
+		err:       errors.New(errorStyle.Render(err.Error())),
+		output:    nil,
+		header:    "",
+		exit:      &exit,
 	}
 }
 
@@ -96,4 +117,8 @@ func (m model) View() string {
 		m.header,
 		m.textInput.View(),
 	)
+}
+
+func (m model) Err() string {
+	return m.err.Error()
 }
