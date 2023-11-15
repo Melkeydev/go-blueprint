@@ -45,13 +45,12 @@ go-blueprint create
 You can also use the provided flags to set up a project without interacting with the UI.
 
 ```
-go-blueprint create --name my-project --framework gin
+go-blueprint create --name my-project --framework gin --workflow githubaction
 ```
 
 See `go-blueprint create -h` for all the options and shorthands.
 
 ![Starter Image](./public/blueprint_1.png)
-![Framework Image](./public/blueprint_2.png)
 
 ### Frameworks Supported
 
@@ -61,6 +60,10 @@ See `go-blueprint create -h` for all the options and shorthands.
 - [HttpRouter](https://github.com/julienschmidt/httprouter)
 - [Gorilla/mux](https://github.com/gorilla/mux)
 - [Echo](https://github.com/labstack/echo)
+
+### Workflows Supported
+
+- [GitHubAction](https://docs.github.com/en/actions)
 
 ### License
 
