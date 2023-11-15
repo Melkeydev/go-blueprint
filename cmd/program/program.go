@@ -3,6 +3,7 @@
 package program
 
 import (
+	"bytes"
 	"fmt"
 	tea "github.com/charmbracelet/bubbletea"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
@@ -405,7 +406,12 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		err = createdTemplate.Execute(createdFile, p)
 	case "env":
 		if p.DBDriver != "none" {
-			createdTemplate := template.Must(template.New(fileName).Parse(string(tpl.GlobalEnvTemplate()) + string(p.DBDriverMap[p.DBDriver].templater.Env())))
+
+			envBytes := [][]byte{
+				tpl.GlobalEnvTemplate(),
+				p.DBDriverMap[p.DBDriver].templater.Env(),
+			}
+			createdTemplate := template.Must(template.New(fileName).Parse(string(bytes.Join(envBytes, []byte("\n")))))
 			err = createdTemplate.Execute(createdFile, p)
 		} else {
 			createdTemplate := template.Must(template.New(fileName).Parse(string(tpl.GlobalEnvTemplate())))
