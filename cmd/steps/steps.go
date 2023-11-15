@@ -5,9 +5,9 @@ package steps
 // A StepSchema contains the data that is used
 // for an individual step of the CLI
 type StepSchema struct {
-	StepName string  // The name of a given step
-	Options  []Item  // The slice of each option for a given step
-	Headers  string  // The title displayed at the top of a given step
+	StepName string // The name of a given step
+	Options  []Item // The slice of each option for a given step
+	Headers  string // The title displayed at the top of a given step
 }
 
 // Steps contains a slice of steps
@@ -52,8 +52,9 @@ func InitSteps() *Steps {
 						Title: "HttpRouter",
 						Desc:  "HttpRouter is a lightweight high performance HTTP request router for Go",
 					},
-					{Title: "Echo",
-						Desc: "High performance, extensible, minimalist Go web framework",
+					{
+						Title: "Echo",
+						Desc:  "High performance, extensible, minimalist Go web framework",
 					},
 				},
 				Headers: "What framework do you want to use in your Go project?",

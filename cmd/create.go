@@ -126,6 +126,7 @@ var createCmd = &cobra.Command{
 			if _, err := tprogram.Run(); err != nil {
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
+			project.ExitCLI(tprogram)
 			project.ProjectType = strings.ToLower(options.ProjectType.Choice)
 			err := cmd.Flag("framework").Value.Set(project.ProjectType)
 			if err != nil {
@@ -137,9 +138,9 @@ var createCmd = &cobra.Command{
 			step := steps.Steps["driver"]
 			tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, options.DBDriver, step.Headers, project))
 			if _, err := tprogram.Run(); err != nil {
-				cobra.CheckErr(err)
-				project.ExitCLI(tprogram)
+				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
+			project.ExitCLI(tprogram)
 			project.DBDriver = strings.ToLower(options.DBDriver.Choice)
 			err := cmd.Flag("driver").Value.Set(project.DBDriver)
 			if err != nil {
@@ -148,12 +149,11 @@ var createCmd = &cobra.Command{
 		}
 
 		currentWorkingDir, err := os.Getwd()
-		project.AbsolutePath = currentWorkingDir
-
 		if err != nil {
 			log.Printf("could not get current working directory: %v", err)
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
+		project.AbsolutePath = currentWorkingDir
 
 		// This calls the templates
 		err = project.CreateMainFile()

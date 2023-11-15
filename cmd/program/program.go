@@ -281,7 +281,7 @@ func (p *Project) CreateMainFile() error {
 		}
 		err = p.CreateFileWithInjection(internalServerPath, projectPath, "server.go", "serverWithDB")
 		if err != nil {
-			log.Printf("Error injecting routes.go file: %v", err)
+			log.Printf("Error injecting server.go file: %v", err)
 			cobra.CheckErr(err)
 			return err
 		}
@@ -294,7 +294,7 @@ func (p *Project) CreateMainFile() error {
 		}
 		err = p.CreateFileWithInjection(internalServerPath, projectPath, "server.go", "server")
 		if err != nil {
-			log.Printf("Error injecting routes.go file: %v", err)
+			log.Printf("Error injecting server.go file: %v", err)
 			cobra.CheckErr(err)
 			return err
 		}
