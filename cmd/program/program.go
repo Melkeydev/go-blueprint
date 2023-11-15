@@ -21,9 +21,9 @@ type Project struct {
 	Exit         bool
 	AbsolutePath string
 	ProjectType  string
-	GitHub       string
+	Workfolow  	 string
 	FrameworkMap map[string]Framework
-	GitHubMap    map[string]GitHub
+	WorkflowMap  map[string]Workflow
 }
 
 // A Framework contains the name and templater for a
@@ -33,9 +33,9 @@ type Framework struct {
 	templater   Templater
 }
 
-type GitHub struct {
+type Workflow struct {
 	packageName []string
-	templater   GitHubTemplater
+	templater   WorkflowTemplater
 }
 
 // A Templater has the methods that help build the files
@@ -46,9 +46,9 @@ type Templater interface {
 	Routes() []byte
 }
 
-type GitHubTemplater interface {
-	Action1() []byte
-	Action2() []byte
+type WorkflowTemplater interface {
+	File_1() []byte
+	File_2() []byte
 }
 
 var (
@@ -115,8 +115,10 @@ func (p *Project) createFrameworkMap() {
 	}
 }
 
+// create WorkflowMap adds the current supported
+// Workflows into a Project's WorkflowMap
 func (p *Project) createGitHubMap() {
-	p.GitHubMap["github"] = GitHub{
+	p.WorkflowMap["githubaction"] = Workflow{
 		packageName: []string{},
 		templater:   tpl.GitHubActionTemplate{},
 	}
@@ -157,7 +159,8 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 	}
 
-	if p.GitHub != "none" {
+	// Create .github/workflows folder and inject release.yml and go-test.yml
+	if p.Workfolow != "none" {
 		p.createGitHubMap()
 
 		err = p.CreatePath(gitHubActionPath, projectPath)
@@ -335,10 +338,10 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Routes())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "action1":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.GitHubMap[p.GitHub].templater.Action1())))
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.WorkflowMap[p.Workfolow].templater.File_1())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "action2":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.GitHubMap[p.GitHub].templater.Action2())))
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.WorkflowMap[p.Workfolow].templater.File_2())))
 		err = createdTemplate.Execute(createdFile, p)
 	}
 

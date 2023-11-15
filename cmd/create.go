@@ -34,7 +34,7 @@ var (
 	tipMsgStyle         = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("190")).Italic(true)
 	endingMsgStyle      = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("170")).Bold(true)
 	allowedProjectTypes = []string{"chi", "gin", "fiber", "gorilla/mux", "httprouter", "standard-library", "echo"}
-	allowedGitHubTypes  = []string{"github", "none"}
+	allowedGitHubTypes  = []string{"githubaction", "none"}
 )
 
 func init() {
@@ -90,8 +90,8 @@ var createCmd = &cobra.Command{
 			FrameworkMap: make(map[string]program.Framework),
 			ProjectName:  flagName,
 			ProjectType:  strings.ReplaceAll(flagFramework, "-", " "),
-			GitHubMap:    make(map[string]program.GitHub),
-			GitHub:       strings.ReplaceAll(flagWorkflow, "-", " "),
+			WorkflowMap:  make(map[string]program.Workflow),
+			Workfolow:	  strings.ReplaceAll(flagWorkflow, "-", " "),
 		}
 
 		steps := steps.InitSteps(&options)
@@ -133,9 +133,9 @@ var createCmd = &cobra.Command{
 			if err != nil {
 				log.Fatal("failed to set the framework flag value", err)
 			} 	
-			if  project.GitHub != "none" {
-			project.GitHub = strings.ToLower(options.GitHub)
-			err := cmd.Flag("workflow").Value.Set(project.GitHub)
+			if  project.Workfolow != "none" {
+			project.Workfolow = strings.ToLower(options.Workflow)
+			err := cmd.Flag("workflow").Value.Set(project.Workfolow)
 				if err != nil {
 				log.Fatal("failed to set the workflow flag value", err)
 			}

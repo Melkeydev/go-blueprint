@@ -10,12 +10,13 @@ var gitHubActionBuildTemplate []byte
 //go:embed files/github/github_action_gotest.yml.tmpl
 var gitHubActionTestTemplate []byte
 
+// GitHubActionTemplates contains the methods used for building
 type GitHubActionTemplate struct{}
 
-func (a GitHubActionTemplate) Action1() []byte {
+func (a GitHubActionTemplate) File_1() []byte {
 	return gitHubActionBuildTemplate
 }
 
-func (a GitHubActionTemplate) Action2() []byte {
+func (a GitHubActionTemplate) File_2() []byte {
 	return gitHubActionTestTemplate
 }
