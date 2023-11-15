@@ -28,7 +28,7 @@ func (s *Server) helloWorldHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("error handling JSON marshal. Err: %v", err)
 	}
 
-	w.Write(jsonResp)
+	_, _ = w.Write(jsonResp)
 }
 
 
@@ -39,5 +39,5 @@ func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("error handling JSON marshal. Err: %v", err)
 	}
 
-	w.Write(jsonResp)
+	_, _ = w.Write(jsonResp)
 }

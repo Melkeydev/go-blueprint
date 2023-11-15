@@ -34,5 +34,5 @@ func (s *Server) helloWorldHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
 	jsonResp, _ := json.Marshal(s.db.Health())
-	w.Write(jsonResp)
+	_, _ = w.Write(jsonResp)
 }
