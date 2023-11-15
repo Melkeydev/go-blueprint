@@ -335,10 +335,10 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Routes())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "action1":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.GitHubMap[p.ProjectType].templater.Action1())))
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.GitHubMap[p.GitHub].templater.Action1())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "action2":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.GitHubMap[p.ProjectType].templater.Action2())))
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.GitHubMap[p.GitHub].templater.Action2())))
 		err = createdTemplate.Execute(createdFile, p)
 	}
 

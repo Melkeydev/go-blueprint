@@ -28,6 +28,7 @@ type Item struct {
 type Options struct {
 	ProjectName *textinput.Output
 	ProjectType string
+	GitHub  string
 }
 
 // InitSteps initializes and returns the *Steps to be used in the CLI program
@@ -61,12 +62,27 @@ func InitSteps(options *Options) *Steps {
 						Title: "HttpRouter",
 						Desc:  "HttpRouter is a lightweight high performance HTTP request router for Go",
 					},
-					{Title: "Echo",
+					{	Title: "Echo",
 						Desc: "High performance, extensible, minimalist Go web framework",
 					},
 				},
 				Headers: "What framework do you want to use in your Go project?",
 				Field:   &options.ProjectType,
+			},
+			{
+				StepName: "Go Project Workflow",
+				Options: []Item{
+					{
+						Title: "GitHub",
+						Desc:  "Workflow template for testing, cross-compiling and releasing Go projects",
+					},
+					
+					{	Title: "None",
+						Desc: "Continue without creating GitHub Action templates",
+					},
+				},
+				Headers: "Do you want to create Workflow templates?",
+				Field:   &options.GitHub,
 			},
 		},
 	}

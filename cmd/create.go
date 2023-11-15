@@ -34,6 +34,7 @@ var (
 	tipMsgStyle         = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("190")).Italic(true)
 	endingMsgStyle      = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("170")).Bold(true)
 	allowedProjectTypes = []string{"chi", "gin", "fiber", "gorilla/mux", "httprouter", "standard-library", "echo"}
+	allowedGitHubTypes = []string{"github", "none"}
 )
 
 func init() {
@@ -41,6 +42,7 @@ func init() {
 
 	createCmd.Flags().StringP("name", "n", "", "Name of project to create")
 	createCmd.Flags().StringP("framework", "f", "", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(allowedProjectTypes, ", ")))
+	createCmd.Flags().StringP("workflow", "g", "", fmt.Sprintf("Workflow to use. Allowed values: %s", strings.Join(allowedGitHubTypes, ", ")))
 }
 
 // createCmd defines the "create" command for the CLI
@@ -64,12 +66,22 @@ var createCmd = &cobra.Command{
 			err = fmt.Errorf("Directory '%s' already exists and is not empty. Please choose a different name", flagName)
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
+
 		flagFramework := cmd.Flag("framework").Value.String()
+		flagWorkflow := cmd.Flag("workflow").Value.String()
 
 		if flagFramework != "" {
 			isValid := isValidProjectType(flagFramework, allowedProjectTypes)
 			if !isValid {
 				err = fmt.Errorf("Project type '%s' is not valid. Valid types are: %s", flagFramework, strings.Join(allowedProjectTypes, ", "))
+				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
+			}
+		} 
+		
+		if  flagWorkflow != "" {
+			isValid := isValidGitHubType(flagWorkflow, allowedGitHubTypes)
+			if !isValid {
+				err = fmt.Errorf("Workflow type '%s' is not valid. Valid types are: %s", flagWorkflow, strings.Join(allowedGitHubTypes, ", "))
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
 		}
@@ -78,6 +90,8 @@ var createCmd = &cobra.Command{
 			FrameworkMap: make(map[string]program.Framework),
 			ProjectName:  flagName,
 			ProjectType:  strings.ReplaceAll(flagFramework, "-", " "),
+			GitHubMap: make(map[string]program.GitHub),
+			GitHub: strings.ReplaceAll(flagWorkflow, "-", " "),
 		}
 
 		steps := steps.InitSteps(&options)
@@ -118,8 +132,15 @@ var createCmd = &cobra.Command{
 			err := cmd.Flag("framework").Value.Set(project.ProjectType)
 			if err != nil {
 				log.Fatal("failed to set the framework flag value", err)
+			} 	
+			if  project.GitHub != "none" {
+			project.GitHub = strings.ToLower(options.GitHub)
+			err := cmd.Flag("workflow").Value.Set(project.GitHub)
+				if err != nil {
+				log.Fatal("failed to set the workflow flag value", err)
 			}
-		}
+			}
+		}	
 
 		currentWorkingDir, err := os.Getwd()
 		if err != nil {
@@ -150,6 +171,15 @@ var createCmd = &cobra.Command{
 // isValidProjectType checks if the inputted project type matches
 // the currently supported list of project types
 func isValidProjectType(input string, allowedTypes []string) bool {
+	for _, t := range allowedTypes {
+		if input == t {
+			return true
+		}
+	}
+	return false
+}
+
+func isValidGitHubType(input string, allowedTypes []string) bool {
 	for _, t := range allowedTypes {
 		if input == t {
 			return true
