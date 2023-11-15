@@ -2,6 +2,11 @@ package cmd
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"strings"
+	"sync"
+
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/melkeydev/go-blueprint/cmd/program"
@@ -65,6 +70,7 @@ var createCmd = &cobra.Command{
 		flagName := cmd.Flag("name").Value.String()
 		if flagName != "" && doesDirectoryExistAndIsNotEmpty(flagName) {
 			err = fmt.Errorf("directory '%s' already exists and is not empty. Please choose a different name", flagName)
+			err = fmt.Errorf("directory '%s' already exists and is not empty. Please choose a different name", flagName)
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
 		flagFramework := cmd.Flag("framework").Value.String()
@@ -73,6 +79,7 @@ var createCmd = &cobra.Command{
 		if flagFramework != "" {
 			isValid := isValidProjectType(flagFramework, allowedProjectTypes)
 			if !isValid {
+				err = fmt.Errorf("project type '%s' is not valid. Valid types are: %s", flagFramework, strings.Join(allowedProjectTypes, ", "))
 				err = fmt.Errorf("project type '%s' is not valid. Valid types are: %s", flagFramework, strings.Join(allowedProjectTypes, ", "))
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
@@ -155,17 +162,26 @@ var createCmd = &cobra.Command{
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
 		project.AbsolutePath = currentWorkingDir
-
+		spinner := tea.NewProgram(spinner.InitialModelNew())
+		// add synchronization to wait for spinner to finish
+		wg := sync.WaitGroup{}
+		wg.Add(1)
 		go func() {
+			defer wg.Done()
+			// only run the spinner if the command is interactive
 			if isInteractive {
-				tprogram = tea.NewProgram(spinner.InitialModelNew())
-					if _, err := tprogram.Run(); err != nil {
-						cobra.CheckErr(err)
-					}
-
+				if _, err := spinner.Run(); err != nil {
+					cobra.CheckErr(err)
+				}
 			}
 		}()
 		err = project.CreateMainFile()
+		// once the create is done, stop the spinner
+		if isInteractive {
+			spinner.Quit()
+		}
+		// wait for the spinner to finish
+		wg.Wait()
 		if err != nil {
 			log.Printf("Problem creating files for project. %v", err)
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
