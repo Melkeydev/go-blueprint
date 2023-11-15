@@ -274,6 +274,11 @@ func (p *Project) CreateMainFile() error {
 
 	if p.DBDriver != "none" {
 		err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routesWithDB")
+		if err != nil {
+			log.Printf("Error injecting routes.go file: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}
 		err = p.CreateFileWithInjection(internalServerPath, projectPath, "server.go", "serverWithDB")
 		if err != nil {
 			log.Printf("Error injecting routes.go file: %v", err)
@@ -282,6 +287,11 @@ func (p *Project) CreateMainFile() error {
 		}
 	} else {
 		err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routes")
+		if err != nil {
+			log.Printf("Error injecting routes.go file: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}
 		err = p.CreateFileWithInjection(internalServerPath, projectPath, "server.go", "server")
 		if err != nil {
 			log.Printf("Error injecting routes.go file: %v", err)

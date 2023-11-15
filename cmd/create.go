@@ -63,7 +63,7 @@ var createCmd = &cobra.Command{
 		isInteractive := !utils.HasChangedFlag(cmd.Flags())
 		flagName := cmd.Flag("name").Value.String()
 		if flagName != "" && doesDirectoryExistAndIsNotEmpty(flagName) {
-			err = fmt.Errorf("Directory '%s' already exists and is not empty. Please choose a different name", flagName)
+			err = fmt.Errorf("directory '%s' already exists and is not empty. Please choose a different name", flagName)
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
 		flagFramework := cmd.Flag("framework").Value.String()
@@ -72,7 +72,7 @@ var createCmd = &cobra.Command{
 		if flagFramework != "" {
 			isValid := isValidProjectType(flagFramework, allowedProjectTypes)
 			if !isValid {
-				err = fmt.Errorf("Project type '%s' is not valid. Valid types are: %s", flagFramework, strings.Join(allowedProjectTypes, ", "))
+				err = fmt.Errorf("project type '%s' is not valid. Valid types are: %s", flagFramework, strings.Join(allowedProjectTypes, ", "))
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
 		}
@@ -80,7 +80,7 @@ var createCmd = &cobra.Command{
 		if flagDBDriver != "" {
 			isValid := isValidDBDriver(flagDBDriver, allowedDBDrivers)
 			if !isValid {
-				cobra.CheckErr(fmt.Errorf("Database driver '%s' is not valid. Valid types are: %s", flagDBDriver, strings.Join(allowedDBDrivers, ", ")))
+				cobra.CheckErr(fmt.Errorf("database driver '%s' is not valid. Valid types are: %s", flagDBDriver, strings.Join(allowedDBDrivers, ", ")))
 			}
 		}
 
@@ -108,7 +108,7 @@ var createCmd = &cobra.Command{
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
 			if doesDirectoryExistAndIsNotEmpty(options.ProjectName.Output) {
-				err = fmt.Errorf("Directory '%s' already exists and is not empty. Please choose a different name", options.ProjectName.Output)
+				err = fmt.Errorf("directory '%s' already exists and is not empty. Please choose a different name", options.ProjectName.Output)
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
 			project.ExitCLI(tprogram)
