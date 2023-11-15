@@ -21,7 +21,9 @@ type Project struct {
 	Exit         bool
 	AbsolutePath string
 	ProjectType  string
+	GitHub string
 	FrameworkMap map[string]Framework
+	GitHubMap map[string]GitHub
 }
 
 // A Framework contains the name and templater for a
@@ -29,6 +31,11 @@ type Project struct {
 type Framework struct {
 	packageName []string
 	templater   Templater
+}
+
+type GitHub struct {
+	packageName []string
+	templater   GitHubTemplater
 }
 
 // A Templater has the methods that help build the files
@@ -39,6 +46,11 @@ type Templater interface {
 	Routes() []byte
 }
 
+type GitHubTemplater interface {
+	Action1() []byte
+	Action2() []byte
+}
+
 var (
 	chiPackage     = []string{"github.com/go-chi/chi/v5"}
 	gorillaPackage = []string{"github.com/gorilla/mux"}
@@ -47,6 +59,7 @@ var (
 	fiberPackage   = []string{"github.com/gofiber/fiber/v2"}
 	echoPackage    = []string{"github.com/labstack/echo/v4", "github.com/labstack/echo/v4/middleware"}
 
+	gitHubActionPath   = ".github/workflows"
 	cmdApiPath         = "cmd/api"
 	internalServerPath = "internal/server"
 )
@@ -102,6 +115,13 @@ func (p *Project) createFrameworkMap() {
 	}
 }
 
+func (p *Project) createGitHubMap() {
+	p.GitHubMap["github"] = GitHub{
+		packageName: []string{},
+		templater:   tpl.GitHubActionTemplate{},
+	}
+}
+
 // CreateMainFile creates the project folders and files,
 // and writes to them depending on the selected options
 func (p *Project) CreateMainFile() error {
@@ -137,6 +157,30 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 	}
 
+	if p.GitHub != "none" {
+		p.createGitHubMap()
+
+		err = p.CreatePath(gitHubActionPath, projectPath)
+		if err != nil {
+			log.Printf("Error creating path: %s", gitHubActionPath)
+			cobra.CheckErr(err)
+			return err
+		}
+
+		err = p.CreateFileWithInjection(gitHubActionPath, projectPath, "release.yml", "action1")
+		if err != nil {
+			log.Printf("Error injecting release.yml file: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}
+
+		err = p.CreateFileWithInjection(gitHubActionPath, projectPath, "go-test.yml", "action2")
+		if err != nil {
+			log.Printf("Error injecting go-test.yml file: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}	
+	}
 	// Install the correct package for the selected framework
 	if p.ProjectType != "standard library" {
 		err = utils.GoGetPackage(projectPath, p.FrameworkMap[p.ProjectType].packageName)
@@ -289,6 +333,12 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		err = createdTemplate.Execute(createdFile, p)
 	case "routes":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Routes())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "action1":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.GitHubMap[p.ProjectType].templater.Action1())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "action2":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.GitHubMap[p.ProjectType].templater.Action2())))
 		err = createdTemplate.Execute(createdFile, p)
 	}
 
