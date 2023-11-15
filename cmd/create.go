@@ -42,7 +42,7 @@ func init() {
 
 	createCmd.Flags().StringP("name", "n", "", "Name of project to create")
 	createCmd.Flags().StringP("framework", "f", "", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(allowedProjectTypes, ", ")))
-	createCmd.Flags().StringP("workflow", "g", "", fmt.Sprintf("Workflow to use. Allowed values: %s", strings.Join(allowedGitHubTypes, ", ")))
+	createCmd.Flags().StringP("workflow", "w", "", fmt.Sprintf("Workflow to use. Allowed values: %s", strings.Join(allowedGitHubTypes, ", ")))
 }
 
 // createCmd defines the "create" command for the CLI
@@ -91,7 +91,7 @@ var createCmd = &cobra.Command{
 			ProjectName:  flagName,
 			ProjectType:  strings.ReplaceAll(flagFramework, "-", " "),
 			WorkflowMap:  make(map[string]program.Workflow),
-			Workfolow:	  strings.ReplaceAll(flagWorkflow, "-", " "),
+			Workflow:	  strings.ReplaceAll(flagWorkflow, "-", " "),
 		}
 
 		steps := steps.InitSteps(&options)
@@ -133,9 +133,9 @@ var createCmd = &cobra.Command{
 			if err != nil {
 				log.Fatal("failed to set the framework flag value", err)
 			} 	
-			if  project.Workfolow != "none" {
-			project.Workfolow = strings.ToLower(options.Workflow)
-			err := cmd.Flag("workflow").Value.Set(project.Workfolow)
+			if  project.Workflow != "none" {
+			project.Workflow = strings.ToLower(options.Workflow)
+			err := cmd.Flag("workflow").Value.Set(project.Workflow)
 				if err != nil {
 				log.Fatal("failed to set the workflow flag value", err)
 			}

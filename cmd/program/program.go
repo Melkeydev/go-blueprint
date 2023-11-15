@@ -21,7 +21,7 @@ type Project struct {
 	Exit         bool
 	AbsolutePath string
 	ProjectType  string
-	Workfolow  	 string
+	Workflow  	 string
 	FrameworkMap map[string]Framework
 	WorkflowMap  map[string]Workflow
 }
@@ -160,7 +160,7 @@ func (p *Project) CreateMainFile() error {
 	}
 
 	// Create .github/workflows folder and inject release.yml and go-test.yml
-	if p.Workfolow != "none" {
+	if p.Workflow != "none" {
 		p.createGitHubMap()
 
 		err = p.CreatePath(gitHubActionPath, projectPath)
@@ -338,10 +338,10 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Routes())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "action1":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.WorkflowMap[p.Workfolow].templater.File_1())))
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.WorkflowMap[p.Workflow].templater.File_1())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "action2":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.WorkflowMap[p.Workfolow].templater.File_2())))
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.WorkflowMap[p.Workflow].templater.File_2())))
 		err = createdTemplate.Execute(createdFile, p)
 	}
 
