@@ -25,7 +25,7 @@ gives the option to integrate with one of the more popular Go frameworks (and th
 - **Brew install :**
 
 ```sh
-brew install go-blueprint
+brew install Melkeydev/melkey/go-blueprint
 ```
 
 - **Go install :**

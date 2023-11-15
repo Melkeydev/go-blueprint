@@ -3,7 +3,9 @@
 package textinput
 
 import (
+	"errors"
 	"fmt"
+	"regexp"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -11,8 +13,10 @@ import (
 	"github.com/melkeydev/go-blueprint/cmd/program"
 )
 
-var titleStyle = lipgloss.NewStyle().Background(lipgloss.Color("#01FAC6")).Foreground(lipgloss.Color("#030303")).Bold(true).Padding(0, 1, 0)
-
+var (
+	titleStyle = lipgloss.NewStyle().Background(lipgloss.Color("#01FAC6")).Foreground(lipgloss.Color("#030303")).Bold(true).Padding(0, 1, 0)
+	errorStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#FF8700")).Bold(true).Padding(0, 0, 0)
+)
 type (
 	errMsg error
 )
@@ -38,6 +42,15 @@ type model struct {
 	exit      *bool
 }
 
+// sanitizeInput verifies that an input text string gets validated
+func sanitizeInput(input string) error {
+	matched, err := regexp.Match("^[a-zA-Z0-9_-]+$", []byte(input))
+	if !matched {
+		return fmt.Errorf("string violates the input regex pattern, err: %v", err)
+	}
+	return nil
+}
+
 // InitialTextInputModel initializes a textinput step
 // with the given data
 func InitialTextInputModel(output *Output, header string, program *program.Project) model {
@@ -45,6 +58,7 @@ func InitialTextInputModel(output *Output, header string, program *program.Proje
 	ti.Focus()
 	ti.CharLimit = 156
 	ti.Width = 20
+	ti.Validate = sanitizeInput
 
 	return model{
 		textInput: ti,
@@ -52,6 +66,24 @@ func InitialTextInputModel(output *Output, header string, program *program.Proje
 		output:    output,
 		header:    titleStyle.Render(header),
 		exit:      &program.Exit,
+	}
+}
+
+// CreateErrorInputModel creates a textinput step
+// with the given error
+func CreateErrorInputModel(err error) model {
+	ti := textinput.New()
+	ti.Focus()
+	ti.CharLimit = 156
+	ti.Width = 20
+	exit := true
+
+	return model{
+		textInput: ti,
+		err:       errors.New(errorStyle.Render(err.Error())),
+		output:    nil,
+		header:    "",
+		exit:      &exit,
 	}
 }
 
@@ -96,4 +128,8 @@ func (m model) View() string {
 		m.header,
 		m.textInput.View(),
 	)
+}
+
+func (m model) Err() string {
+	return m.err.Error()
 }

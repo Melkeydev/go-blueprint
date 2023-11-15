@@ -1,0 +1,28 @@
+name: Feature Request
+description: Suggest a new idea for go-blueprint.
+title: "[Feature Request] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please provide as much information as possible by filling out form below.
+  - type: markdown
+    attributes:
+      value: ---
+  - type: textarea
+    id: idea
+    attributes:
+      label: Tell us about your feature request
+      description: |
+        Describe what you would like go-blueprint to be able to do.
+    validations:
+      required: true
+  - type: checkboxes
+    id: disclaimer
+    attributes:
+      label: Disclaimer
+      description: I have verified that this has not been suggested before.
+      options:
+        - label: I agree
+          required: true

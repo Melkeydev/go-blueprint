@@ -1,4 +1,4 @@
-name: Linting
+name: continuous integration
 
 on:
   push:
@@ -33,7 +33,7 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
 
       - if: ${{ steps.cache-go-deps.outputs.cache-hit != 'true' }}
-        name: List the state of node modules
+        name: List the state of go modules
         continue-on-error: true
         run: go mod graph
 
@@ -44,3 +44,8 @@ jobs:
 
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v3.7.0
+
+      - name: Run tests
+        run: |
+          go test ./...
+
