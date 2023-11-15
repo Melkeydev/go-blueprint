@@ -22,13 +22,6 @@ const (
 
 var AllowedProjectTypes = []string{string(Chi), string(Gin), string(Fiber), string(GorillaMux), string(HttpRouter), string(StandardLibrary), string(Echo)}
 
-// This interface is required on a type to make it useable as a flag
-//
-//	type Value interface {
-//		String() string
-//		Set(string) error
-//		Type() string
-//	}
 func (f Framework) String() string {
 	return string(f)
 }
