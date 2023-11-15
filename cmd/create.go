@@ -34,7 +34,7 @@ var (
 	tipMsgStyle         = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("190")).Italic(true)
 	endingMsgStyle      = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("170")).Bold(true)
 	allowedProjectTypes = []string{"chi", "gin", "fiber", "gorilla/mux", "httprouter", "standard-library", "echo"}
-	allowedGitHubTypes  = []string{"githubaction", "none"}
+	allowedWorkflowTypes= []string{"githubaction", "none"}
 )
 
 func init() {
@@ -42,7 +42,7 @@ func init() {
 
 	createCmd.Flags().StringP("name", "n", "", "Name of project to create")
 	createCmd.Flags().StringP("framework", "f", "", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(allowedProjectTypes, ", ")))
-	createCmd.Flags().StringP("workflow", "w", "", fmt.Sprintf("Workflow to use. Allowed values: %s", strings.Join(allowedGitHubTypes, ", ")))
+	createCmd.Flags().StringP("workflow", "w", "", fmt.Sprintf("Workflow to use. Allowed values: %s", strings.Join(allowedWorkflowTypes, ", ")))
 }
 
 // createCmd defines the "create" command for the CLI
@@ -79,9 +79,9 @@ var createCmd = &cobra.Command{
 		} 
 		
 		if  flagWorkflow != "" {
-			isValid := isValidGitHubType(flagWorkflow, allowedGitHubTypes)
+			isValid := isValidWorkflowType(flagWorkflow, allowedWorkflowTypes)
 			if !isValid {
-				err = fmt.Errorf("Workflow type '%s' is not valid. Valid types are: %s", flagWorkflow, strings.Join(allowedGitHubTypes, ", "))
+				err = fmt.Errorf("Workflow type '%s' is not valid. Valid types are: %s", flagWorkflow, strings.Join(allowedWorkflowTypes, ", "))
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
 		}
@@ -179,7 +179,7 @@ func isValidProjectType(input string, allowedTypes []string) bool {
 	return false
 }
 
-func isValidGitHubType(input string, allowedTypes []string) bool {
+func isValidWorkflowType(input string, allowedTypes []string) bool {
 	for _, t := range allowedTypes {
 		if input == t {
 			return true
