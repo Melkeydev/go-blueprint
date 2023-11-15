@@ -34,7 +34,7 @@ var (
 	tipMsgStyle         = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("190")).Italic(true)
 	endingMsgStyle      = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("170")).Bold(true)
 	allowedProjectTypes = []string{"chi", "gin", "fiber", "gorilla/mux", "httprouter", "standard-library", "echo"}
-	allowedGitHubTypes = []string{"github", "none"}
+	allowedGitHubTypes  = []string{"github", "none"}
 )
 
 func init() {
@@ -68,7 +68,7 @@ var createCmd = &cobra.Command{
 		}
 
 		flagFramework := cmd.Flag("framework").Value.String()
-		flagWorkflow := cmd.Flag("workflow").Value.String()
+		flagWorkflow  := cmd.Flag("workflow").Value.String()
 
 		if flagFramework != "" {
 			isValid := isValidProjectType(flagFramework, allowedProjectTypes)
@@ -90,8 +90,8 @@ var createCmd = &cobra.Command{
 			FrameworkMap: make(map[string]program.Framework),
 			ProjectName:  flagName,
 			ProjectType:  strings.ReplaceAll(flagFramework, "-", " "),
-			GitHubMap: make(map[string]program.GitHub),
-			GitHub: strings.ReplaceAll(flagWorkflow, "-", " "),
+			GitHubMap:    make(map[string]program.GitHub),
+			GitHub:       strings.ReplaceAll(flagWorkflow, "-", " "),
 		}
 
 		steps := steps.InitSteps(&options)

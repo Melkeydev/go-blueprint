@@ -21,9 +21,9 @@ type Project struct {
 	Exit         bool
 	AbsolutePath string
 	ProjectType  string
-	GitHub string
+	GitHub       string
 	FrameworkMap map[string]Framework
-	GitHubMap map[string]GitHub
+	GitHubMap    map[string]GitHub
 }
 
 // A Framework contains the name and templater for a
