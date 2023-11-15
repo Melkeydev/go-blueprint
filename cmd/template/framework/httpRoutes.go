@@ -29,7 +29,7 @@ func (s StandardLibTemplate) Server() []byte {
 }
 
 func (s StandardLibTemplate) ServerWithDB() []byte {
-	return standardRoutesTemplate
+	return standardDBServerTemplate
 }
 
 func (s StandardLibTemplate) Routes() []byte {
