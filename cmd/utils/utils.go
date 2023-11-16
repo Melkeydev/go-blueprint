@@ -86,3 +86,11 @@ func GoFmt(appDir string) error {
 
 	return nil
 }
+
+func GoTidy(appDir string) error {
+	err := ExecuteCmd("go", []string{"mod", "tidy"}, appDir)
+	if err != nil {
+		return err
+	}
+	return nil
+}

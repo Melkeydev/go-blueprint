@@ -62,6 +62,13 @@ See `go-blueprint create -h` for all the options and shorthands.
 - [Gorilla/mux](https://github.com/gorilla/mux)
 - [Echo](https://github.com/labstack/echo)
 
+### Database Drivers Supported
+
+- [Mysql](https://github.com/go-sql-driver/mysql)
+- [Postgres](https://github.com/lib/pq)
+- [Sqlite](https://github.com/mattn/go-sqlite3)
+- [Mongo](go.mongodb.org/mongo-driver)
+
 ### License
 
 Licensed under [MIT License](./LICENSE)
