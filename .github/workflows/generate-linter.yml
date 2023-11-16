@@ -28,10 +28,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: ${{ matrix.goVersion }}
       - name: build templates
         run: go run main.go create -n ${{ matrix.framework }} -f ${{ matrix.framework}} -d ${{ matrix.driver }}
       - name: golangci-lint
