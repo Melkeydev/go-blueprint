@@ -81,7 +81,7 @@ Here's an example of setting up a project with a specific database driver:
 
 ```bash
 go-blueprint create --name my-project --framework gin --driver postgres
-``
+```
 
 ### License
 
