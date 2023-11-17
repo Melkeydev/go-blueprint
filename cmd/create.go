@@ -4,6 +4,7 @@ import (
 	"fmt"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/melkeydev/go-blueprint/cmd/frameworks"
 	"github.com/melkeydev/go-blueprint/cmd/program"
 	"github.com/melkeydev/go-blueprint/cmd/steps"
 	"github.com/melkeydev/go-blueprint/cmd/ui/multiInput"
@@ -32,15 +33,15 @@ var (
 	logoStyle           = lipgloss.NewStyle().Foreground(lipgloss.Color("#01FAC6")).Bold(true)
 	tipMsgStyle         = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("190")).Italic(true)
 	endingMsgStyle      = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("170")).Bold(true)
-	allowedProjectTypes = []string{"chi", "gin", "fiber", "gorilla/mux", "httprouter", "standard-library", "echo"}
 	allowedDBDrivers    = []string{"mysql", "postgres", "sqlite", "mongo", "none"}
 )
 
 func init() {
+	var flagFramework frameworks.Framework
 	rootCmd.AddCommand(createCmd)
 
 	createCmd.Flags().StringP("name", "n", "", "Name of project to create")
-	createCmd.Flags().StringP("framework", "f", "", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(allowedProjectTypes, ", ")))
+	createCmd.Flags().VarP(&flagFramework, "framework", "f", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(frameworks.AllowedProjectTypes, ", ")))
 	createCmd.Flags().StringP("driver", "d", "", fmt.Sprintf("database drivers to use. Allowed values: %s", strings.Join(allowedDBDrivers, ", ")))
 }
 
@@ -66,16 +67,11 @@ var createCmd = &cobra.Command{
 			err = fmt.Errorf("directory '%s' already exists and is not empty. Please choose a different name", flagName)
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
-		flagFramework := cmd.Flag("framework").Value.String()
 		flagDBDriver := cmd.Flag("driver").Value.String()
 
-		if flagFramework != "" {
-			isValid := isValidProjectType(flagFramework, allowedProjectTypes)
-			if !isValid {
-				err = fmt.Errorf("project type '%s' is not valid. Valid types are: %s", flagFramework, strings.Join(allowedProjectTypes, ", "))
-				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
-			}
-		}
+		// VarP already validates the contents of the framework flag if
+		// this flag is filled, it is always valid
+		flagFramework := frameworks.Framework(cmd.Flag("framework").Value.String())
 
 		if flagDBDriver != "" {
 			isValid := isValidDBDriver(flagDBDriver, allowedDBDrivers)
@@ -92,9 +88,9 @@ var createCmd = &cobra.Command{
 
 		project := &program.Project{
 			ProjectName:  flagName,
-			ProjectType:  strings.ReplaceAll(flagFramework, "-", " "),
+			ProjectType:  flagFramework,
 			DBDriver:     flagDBDriver,
-			FrameworkMap: make(map[string]program.Framework),
+			FrameworkMap: make(map[frameworks.Framework]program.Framework),
 			DBDriverMap:  make(map[string]program.Driver),
 		}
 
@@ -127,8 +123,8 @@ var createCmd = &cobra.Command{
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
 			project.ExitCLI(tprogram)
-			project.ProjectType = strings.ToLower(options.ProjectType.Choice)
-			err := cmd.Flag("framework").Value.Set(project.ProjectType)
+			project.ProjectType = options.ProjectType
+			err := cmd.Flag("framework").Value.Set(project.ProjectType.String())
 			if err != nil {
 				log.Fatal("failed to set the framework flag value", err)
 			}
@@ -173,17 +169,6 @@ var createCmd = &cobra.Command{
 	},
 }
 
-// isValidProjectType checks if the inputted project type matches
-// the currently supported list of project types
-func isValidProjectType(input string, allowedTypes []string) bool {
-	for _, t := range allowedTypes {
-		if input == t {
-			return true
-		}
-	}
-	return false
-}
-
 // isValidDBDriver checks if the inputted database driver
 // the currently supported list of drivers
 func isValidDBDriver(input string, allowedDBDrivers []string) bool {
@@ -195,7 +180,7 @@ func isValidDBDriver(input string, allowedDBDrivers []string) bool {
 	return false
 }
 
-// doesDirectoryExistAndIsNotEmpty checks if the directory exists and is not empty
+// 
 func doesDirectoryExistAndIsNotEmpty(name string) bool {
 	if _, err := os.Stat(name); err == nil {
 		dirEntries, err := os.ReadDir(name)

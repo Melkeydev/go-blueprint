@@ -2,6 +2,11 @@
 // each step of the CLI
 package steps
 
+import (
+	"github.com/melkeydev/go-blueprint/cmd/frameworks"
+	textinput "github.com/melkeydev/go-blueprint/cmd/ui/textinput"
+)
+
 // A StepSchema contains the data that is used
 // for an individual step of the CLI
 type StepSchema struct {
@@ -19,6 +24,12 @@ type Steps struct {
 // in a StepSchema.Options
 type Item struct {
 	Title, Desc string
+}
+
+// Options contains the name and type of the created project
+type Options struct {
+	ProjectName *textinput.Output
+	ProjectType frameworks.Framework
 }
 
 // InitSteps initializes and returns the *Steps to be used in the CLI program

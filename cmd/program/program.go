@@ -5,7 +5,13 @@ package program
 import (
 	"bytes"
 	"fmt"
+	"html/template"
+	"log"
+	"os"
+	"strings"
+
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/melkeydev/go-blueprint/cmd/frameworks"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
 	"github.com/melkeydev/go-blueprint/cmd/template/dbdriver"
 	"github.com/melkeydev/go-blueprint/cmd/template/framework"
@@ -23,9 +29,9 @@ type Project struct {
 	ProjectName  string
 	Exit         bool
 	AbsolutePath string
-	ProjectType  string
+	ProjectType  frameworks.Framework
+	FrameworkMap map[frameworks.Framework]Framework
 	DBDriver     string
-	FrameworkMap map[string]Framework
 	DBDriverMap  map[string]Driver
 }
 
@@ -96,37 +102,37 @@ func (p *Project) ExitCLI(tprogram *tea.Program) {
 // createFrameWorkMap adds the current supported
 // Frameworks into a Project's FrameworkMap
 func (p *Project) createFrameworkMap() {
-	p.FrameworkMap["chi"] = Framework{
+	p.FrameworkMap[frameworks.Chi] = Framework{
 		packageName: chiPackage,
 		templater:   framework.ChiTemplates{},
 	}
 
-	p.FrameworkMap["standard library"] = Framework{
+	p.FrameworkMap[frameworks.StandardLibrary] = Framework{
 		packageName: []string{},
 		templater:   framework.StandardLibTemplate{},
 	}
 
-	p.FrameworkMap["gin"] = Framework{
+	p.FrameworkMap[frameworks.Gin] = Framework{
 		packageName: ginPackage,
 		templater:   framework.GinTemplates{},
 	}
 
-	p.FrameworkMap["fiber"] = Framework{
+	p.FrameworkMap[frameworks.Fiber] = Framework{
 		packageName: fiberPackage,
 		templater:   framework.FiberTemplates{},
 	}
 
-	p.FrameworkMap["gorilla/mux"] = Framework{
+	p.FrameworkMap[frameworks.GorillaMux] = Framework{
 		packageName: gorillaPackage,
 		templater:   framework.GorillaTemplates{},
 	}
 
-	p.FrameworkMap["httprouter"] = Framework{
+	p.FrameworkMap[frameworks.HttpRouter] = Framework{
 		packageName: routerPackage,
 		templater:   framework.RouterTemplates{},
 	}
 
-	p.FrameworkMap["echo"] = Framework{
+	p.FrameworkMap[frameworks.Echo] = Framework{
 		packageName: echoPackage,
 		templater:   framework.EchoTemplates{},
 	}
@@ -187,7 +193,7 @@ func (p *Project) CreateMainFile() error {
 	}
 
 	// Install the correct package for the selected framework
-	if p.ProjectType != "standard library" {
+	if p.ProjectType != frameworks.StandardLibrary {
 		err = utils.GoGetPackage(projectPath, p.FrameworkMap[p.ProjectType].packageName)
 		if err != nil {
 			log.Printf("Could not install go dependency for the chosen framework %v\n", err)
