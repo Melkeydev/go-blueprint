@@ -17,10 +17,6 @@ import (
 	"github.com/melkeydev/go-blueprint/cmd/template/framework"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
 	"github.com/spf13/cobra"
-	"html/template"
-	"log"
-	"os"
-	"strings"
 )
 
 // A Project contains the data for the project folder
