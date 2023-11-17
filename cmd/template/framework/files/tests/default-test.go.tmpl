@@ -15,6 +15,7 @@ func TestHandler(t *testing.T) {
         t.Fatalf("error making request to server. Err: %v", err)
     }
     defer resp.Body.Close()
+	// Assertions
     if resp.StatusCode != http.StatusOK {
         t.Errorf("expected status OK; got %v", resp.Status)
     }
