@@ -67,6 +67,7 @@ type DBDriverTemplater interface {
 type WorkflowTemplater interface {
 	File_1() []byte
 	File_2() []byte
+	File_3() []byte
 }
 
 var (
@@ -228,6 +229,13 @@ func (p *Project) CreateMainFile() error {
 		err = p.CreateFileWithInjection(gitHubActionPath, projectPath, "go-test.yml", "file2")
 		if err != nil {
 			log.Printf("Error injecting go-test.yml file: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}
+
+		err = p.CreateFileWithInjection(root, projectPath, ".goreleaser.yml", "file3")
+		if err != nil {
+			log.Printf("Error injecting .goreleaser.yml file: %v", err)
 			cobra.CheckErr(err)
 			return err
 		}	
@@ -451,6 +459,9 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		err = createdTemplate.Execute(createdFile, p)
 	case "file2":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.WorkflowMap[p.Workflow].templater.File_2())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "file3":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.WorkflowMap[p.Workflow].templater.File_3())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "routesWithDB":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.RoutesWithDB())))

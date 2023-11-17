@@ -1,0 +1,39 @@
+before:
+  hooks:
+  - go mod tidy
+  
+builds:
+- binary: "{{"{{"}} .ProjectName {{"}}"}}"
+  main: ./
+  goos:
+  - darwin
+  - linux
+  - windows
+  goarch:
+  - amd64
+  - arm64
+  env:
+  - CGO_ENABLED=0
+  ldflags:
+  - -s -w -X main.Version={{"{{"}}.Version{{"}}"}} 
+
+release:
+  prerelease: auto
+
+universal_binaries:
+- replace: true
+
+archives: >-
+    {{"{{-"}} .ProjectName {{"}}"}}_ {{"{{-"}} title .Os {{"}}"}}_ {{"{{-"}} if eq .Arch "amd64" {{"}}"}}x86_64 {{"{{-"}} else if eq .Arch "386" {{"}}"}}i386 {{"{{-"}} else {{"}}"}}{{"{{"}} .Arch {{"}}"}}{{"{{"}} end {{"}}"}} {{"{{-"}} if .Arm {{"}}"}}v{{"{{"}} .Arm {{"}}"}}{{"{{"}} end {{"-}}"}}
+  format_overrides:
+  - goos: windows
+    format: zip
+  builds_info:
+    group: root
+    owner: root
+  files:
+  - README.md
+  - LICENSE
+
+checksum:
+  name_template: 'checksums.txt'
