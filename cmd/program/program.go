@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/melkeydev/go-blueprint/cmd/frameworks"
+	"github.com/melkeydev/go-blueprint/cmd/flags"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
 	"github.com/melkeydev/go-blueprint/cmd/template/dbdriver"
 	"github.com/melkeydev/go-blueprint/cmd/template/framework"
@@ -102,37 +102,37 @@ func (p *Project) ExitCLI(tprogram *tea.Program) {
 // createFrameWorkMap adds the current supported
 // Frameworks into a Project's FrameworkMap
 func (p *Project) createFrameworkMap() {
-	p.FrameworkMap[frameworks.Chi] = Framework{
+	p.FrameworkMap[flags.Chi] = Framework{
 		packageName: chiPackage,
 		templater:   framework.ChiTemplates{},
 	}
 
-	p.FrameworkMap[frameworks.StandardLibrary] = Framework{
+	p.FrameworkMap[flags.StandardLibrary] = Framework{
 		packageName: []string{},
 		templater:   framework.StandardLibTemplate{},
 	}
 
-	p.FrameworkMap[frameworks.Gin] = Framework{
+	p.FrameworkMap[flags.Gin] = Framework{
 		packageName: ginPackage,
 		templater:   framework.GinTemplates{},
 	}
 
-	p.FrameworkMap[frameworks.Fiber] = Framework{
+	p.FrameworkMap[flags.Fiber] = Framework{
 		packageName: fiberPackage,
 		templater:   framework.FiberTemplates{},
 	}
 
-	p.FrameworkMap[frameworks.GorillaMux] = Framework{
+	p.FrameworkMap[flags.GorillaMux] = Framework{
 		packageName: gorillaPackage,
 		templater:   framework.GorillaTemplates{},
 	}
 
-	p.FrameworkMap[frameworks.HttpRouter] = Framework{
+	p.FrameworkMap[flags.HttpRouter] = Framework{
 		packageName: routerPackage,
 		templater:   framework.RouterTemplates{},
 	}
 
-	p.FrameworkMap[frameworks.Echo] = Framework{
+	p.FrameworkMap[flags.Echo] = Framework{
 		packageName: echoPackage,
 		templater:   framework.EchoTemplates{},
 	}
@@ -193,7 +193,7 @@ func (p *Project) CreateMainFile() error {
 	}
 
 	// Install the correct package for the selected framework
-	if p.ProjectType != frameworks.StandardLibrary {
+	if p.ProjectType != flags.StandardLibrary {
 		err = utils.GoGetPackage(projectPath, p.FrameworkMap[p.ProjectType].packageName)
 		if err != nil {
 			log.Printf("Could not install go dependency for the chosen framework %v\n", err)

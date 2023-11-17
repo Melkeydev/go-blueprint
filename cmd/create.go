@@ -4,7 +4,7 @@ import (
 	"fmt"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/melkeydev/go-blueprint/cmd/frameworks"
+	"github.com/melkeydev/go-blueprint/cmd/flags"
 	"github.com/melkeydev/go-blueprint/cmd/program"
 	"github.com/melkeydev/go-blueprint/cmd/steps"
 	"github.com/melkeydev/go-blueprint/cmd/ui/multiInput"
@@ -37,7 +37,7 @@ var (
 )
 
 func init() {
-	var flagFramework frameworks.Framework
+	var flagFramework flags.Framework
 	rootCmd.AddCommand(createCmd)
 
 	createCmd.Flags().StringP("name", "n", "", "Name of project to create")
@@ -71,7 +71,7 @@ var createCmd = &cobra.Command{
 
 		// VarP already validates the contents of the framework flag if
 		// this flag is filled, it is always valid
-		flagFramework := frameworks.Framework(cmd.Flag("framework").Value.String())
+		flagFramework := flags.Framework(cmd.Flag("framework").Value.String())
 
 		if flagDBDriver != "" {
 			isValid := isValidDBDriver(flagDBDriver, allowedDBDrivers)

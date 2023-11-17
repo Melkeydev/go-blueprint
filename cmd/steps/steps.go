@@ -3,7 +3,7 @@
 package steps
 
 import (
-	"github.com/melkeydev/go-blueprint/cmd/frameworks"
+	"github.com/melkeydev/go-blueprint/cmd/flags"
 	textinput "github.com/melkeydev/go-blueprint/cmd/ui/textinput"
 )
 
@@ -29,7 +29,7 @@ type Item struct {
 // Options contains the name and type of the created project
 type Options struct {
 	ProjectName *textinput.Output
-	ProjectType frameworks.Framework
+	ProjectType flags.Framework
 }
 
 // InitSteps initializes and returns the *Steps to be used in the CLI program
