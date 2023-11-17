@@ -10,13 +10,13 @@ import (
 func (s *Server) RegisterRoutes() http.Handler {
 	r := httprouter.New()
 
-	r.HandlerFunc(http.MethodGet, "/", s.helloWorldHandler)
+	r.HandlerFunc(http.MethodGet, "/", s.HelloWorldHandler)
 	r.HandlerFunc(http.MethodGet, "/health", s.healthHandler)
 
 	return r
 }
 
-func (s *Server) helloWorldHandler(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HelloWorldHandler(w http.ResponseWriter, r *http.Request) {
 	resp := make(map[string]string)
 	resp["message"] = "Hello World"
 

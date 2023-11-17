@@ -13,13 +13,13 @@ func (s *Server) RegisterRoutes() http.Handler {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	e.GET("/", s.helloWorldHandler)
+	e.GET("/", s.HelloWorldHandler)
 	e.GET("/health", s.healthHandler)
 
 	return e
 }
 
-func (s *Server) helloWorldHandler(c echo.Context) error {
+func (s *Server) HelloWorldHandler(c echo.Context) error {
 	resp := map[string]string{
 		"message": "Hello World",
 	}
