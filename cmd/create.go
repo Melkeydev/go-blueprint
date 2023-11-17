@@ -67,7 +67,6 @@ var createCmd = &cobra.Command{
 		flagName := cmd.Flag("name").Value.String()
 		if flagName != "" && doesDirectoryExistAndIsNotEmpty(flagName) {
 			err = fmt.Errorf("directory '%s' already exists and is not empty. Please choose a different name", flagName)
-			err = fmt.Errorf("directory '%s' already exists and is not empty. Please choose a different name", flagName)
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
 		flagFramework := cmd.Flag("framework").Value.String()
@@ -76,7 +75,6 @@ var createCmd = &cobra.Command{
 		if flagFramework != "" {
 			isValid := isValidProjectType(flagFramework, allowedProjectTypes)
 			if !isValid {
-				err = fmt.Errorf("project type '%s' is not valid. Valid types are: %s", flagFramework, strings.Join(allowedProjectTypes, ", "))
 				err = fmt.Errorf("project type '%s' is not valid. Valid types are: %s", flagFramework, strings.Join(allowedProjectTypes, ", "))
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
