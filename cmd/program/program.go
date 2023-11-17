@@ -26,7 +26,7 @@ type Project struct {
 	AbsolutePath string
 	ProjectType  string
 	DBDriver     string
-	Workflow  	 string
+	Workflow     string
 	FrameworkMap map[string]Framework
 	DBDriverMap  map[string]Driver
 	WorkflowMap  map[string]Workflow

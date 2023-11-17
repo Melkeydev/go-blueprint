@@ -90,7 +90,7 @@ func InitSteps() *Steps {
 					},
 					
 					{	Title: "None",
-						Desc: "Continue without creating GitHub Action templates",
+						Desc: "Continue without creating Workflow templates",
 					},
 				},
 				Headers: "Do you want to create Workflow templates?",

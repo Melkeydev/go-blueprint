@@ -34,7 +34,7 @@ var (
 	endingMsgStyle      = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("170")).Bold(true)
 	allowedProjectTypes = []string{"chi", "gin", "fiber", "gorilla/mux", "httprouter", "standard-library", "echo"}
 	allowedDBDrivers    = []string{"mysql", "postgres", "sqlite", "mongo", "none"}
-	allowedWorkflows	= []string{"githubaction", "none"}
+	allowedWorkflows    = []string{"githubaction", "none"}
 )
 
 func init() {
@@ -69,7 +69,7 @@ var createCmd = &cobra.Command{
 			err = fmt.Errorf("directory '%s' already exists and is not empty. Please choose a different name", flagName)
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
-
+		
 		flagFramework := cmd.Flag("framework").Value.String()
 		flagWorkflow  := cmd.Flag("workflow").Value.String()
 		flagDBDriver := cmd.Flag("driver").Value.String()
@@ -80,8 +80,8 @@ var createCmd = &cobra.Command{
 				err = fmt.Errorf("project type '%s' is not valid. Valid types are: %s", flagFramework, strings.Join(allowedProjectTypes, ", "))
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
-		} 
-		
+		}
+
 		if flagDBDriver != "" {
 			isValid := isValidDBDriver(flagDBDriver, allowedDBDrivers)
 			if !isValid {
@@ -108,7 +108,7 @@ var createCmd = &cobra.Command{
 			ProjectName:  flagName,
 			ProjectType:  strings.ReplaceAll(flagFramework, "-", " "),
 			DBDriver:     flagDBDriver,
-			Workflow:	  flagWorkflow,
+			Workflow:     flagWorkflow,
 			FrameworkMap: make(map[string]program.Framework),
 			DBDriverMap:  make(map[string]program.Driver),
 			WorkflowMap:  make(map[string]program.Workflow),
@@ -147,8 +147,8 @@ var createCmd = &cobra.Command{
 			err := cmd.Flag("framework").Value.Set(project.ProjectType)
 			if err != nil {
 				log.Fatal("failed to set the framework flag value", err)
-			} 	
-		}	
+			}
+		}
 
 		if project.DBDriver == "" {
 			step := steps.Steps["driver"]
