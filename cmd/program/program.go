@@ -54,6 +54,7 @@ type Templater interface {
 type DBDriverTemplater interface {
 	Service() []byte
 	Env() []byte
+	DB()  []byte
 }
 
 var (
@@ -211,7 +212,14 @@ func (p *Project) CreateMainFile() error {
 
 		err = p.CreateFileWithInjection(internalDatabasePath, projectPath, "database.go", "database")
 		if err != nil {
-			log.Printf("Error injecting server.go file: %v", err)
+			log.Printf("Error injecting database.go file: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}
+
+		err = p.CreateFileWithInjection(root, projectPath, "docker-compose.yml", "db-docker")
+		if err != nil {
+			log.Printf("Error injecting docker-compose.yml file: %v", err)
 			cobra.CheckErr(err)
 			return err
 		}
@@ -403,6 +411,9 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		err = createdTemplate.Execute(createdFile, p)
 	case "database":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.Service())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "db-docker":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.DB())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "env":
 		if p.DBDriver != "none" {
