@@ -62,12 +62,25 @@ See `go-blueprint create -h` for all the options and shorthands.
 - [Gorilla/mux](https://github.com/gorilla/mux)
 - [Echo](https://github.com/labstack/echo)
 
-### Database Drivers Supported
+## Database Support
+
+Go Blueprint now offers enhanced database support, allowing you to choose your preferred database driver during project setup. Use the `--driver` or `-d` flag to specify the database driver you want to integrate into your project.
+
+### Supported Database Drivers
+
+Choose from a variety of supported database drivers:
 
 - [Mysql](https://github.com/go-sql-driver/mysql)
 - [Postgres](https://github.com/lib/pq)
 - [Sqlite](https://github.com/mattn/go-sqlite3)
 - [Mongo](go.mongodb.org/mongo-driver)
+
+### Usage Example
+
+Here's an example of setting up a project with a specific database driver:
+
+```bash
+go-blueprint create --name my-project --framework gin --driver postgres
 
 ### License
 
