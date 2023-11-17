@@ -49,7 +49,7 @@ type Templater interface {
 	Routes() []byte
 	RoutesWithDB() []byte
 	ServerWithDB() []byte
-    TestHandler() []byte
+        TestHandler() []byte
 }
 
 type DBDriverTemplater interface {
