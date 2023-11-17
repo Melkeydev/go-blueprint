@@ -123,7 +123,10 @@ var createCmd = &cobra.Command{
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
 			project.ExitCLI(tprogram)
-			project.ProjectType = options.ProjectType
+
+			// this type casting is always safe since the user interface can 
+			// only pass strings that can be cast to a flags.Framework instance
+			project.ProjectType = flags.Framework(options.ProjectType.Choice)
 			err := cmd.Flag("framework").Value.Set(project.ProjectType.String())
 			if err != nil {
 				log.Fatal("failed to set the framework flag value", err)
