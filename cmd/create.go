@@ -41,7 +41,7 @@ func init() {
 	rootCmd.AddCommand(createCmd)
 
 	createCmd.Flags().StringP("name", "n", "", "Name of project to create")
-	createCmd.Flags().VarP(&flagFramework, "framework", "f", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(frameworks.AllowedProjectTypes, ", ")))
+	createCmd.Flags().VarP(&flagFramework, "framework", "f", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(flags.AllowedProjectTypes, ", ")))
 	createCmd.Flags().StringP("driver", "d", "", fmt.Sprintf("database drivers to use. Allowed values: %s", strings.Join(allowedDBDrivers, ", ")))
 }
 
@@ -90,7 +90,7 @@ var createCmd = &cobra.Command{
 			ProjectName:  flagName,
 			ProjectType:  flagFramework,
 			DBDriver:     flagDBDriver,
-			FrameworkMap: make(map[frameworks.Framework]program.Framework),
+			FrameworkMap: make(map[flags.Framework]program.Framework),
 			DBDriverMap:  make(map[string]program.Driver),
 		}
 

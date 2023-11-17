@@ -25,8 +25,8 @@ type Project struct {
 	ProjectName  string
 	Exit         bool
 	AbsolutePath string
-	ProjectType  frameworks.Framework
-	FrameworkMap map[frameworks.Framework]Framework
+	ProjectType  flags.Framework
+	FrameworkMap map[flags.Framework]Framework
 	DBDriver     string
 	DBDriverMap  map[string]Driver
 }
