@@ -2,10 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"log"
-	"os"
-	"strings"
-
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/melkeydev/go-blueprint/cmd/program"
@@ -14,6 +10,9 @@ import (
 	"github.com/melkeydev/go-blueprint/cmd/ui/textinput"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
 	"github.com/spf13/cobra"
+	"log"
+	"os"
+	"strings"
 )
 
 const logo = `
@@ -34,7 +33,8 @@ var (
 	tipMsgStyle         = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("190")).Italic(true)
 	endingMsgStyle      = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("170")).Bold(true)
 	allowedProjectTypes = []string{"chi", "gin", "fiber", "gorilla/mux", "httprouter", "standard-library", "echo"}
-	allowedWorkflowTypes= []string{"githubaction", "none"}
+	allowedDBDrivers    = []string{"mysql", "postgres", "sqlite", "mongo", "none"}
+	allowedWorkflows	= []string{"githubaction", "none"}
 )
 
 func init() {
@@ -42,7 +42,15 @@ func init() {
 
 	createCmd.Flags().StringP("name", "n", "", "Name of project to create")
 	createCmd.Flags().StringP("framework", "f", "", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(allowedProjectTypes, ", ")))
-	createCmd.Flags().StringP("workflow", "w", "", fmt.Sprintf("Workflow to use. Allowed values: %s", strings.Join(allowedWorkflowTypes, ", ")))
+	createCmd.Flags().StringP("driver", "d", "", fmt.Sprintf("database drivers to use. Allowed values: %s", strings.Join(allowedDBDrivers, ", ")))
+	createCmd.Flags().StringP("workflow", "w", "", fmt.Sprintf("Workflow to use. Allowed values: %s", strings.Join(allowedWorkflows, ", ")))
+}
+
+type Options struct {
+	ProjectName *textinput.Output
+	ProjectType *multiInput.Selection
+	DBDriver    *multiInput.Selection
+	Workflow    *multiInput.Selection
 }
 
 // createCmd defines the "create" command for the CLI
@@ -55,46 +63,58 @@ var createCmd = &cobra.Command{
 		var tprogram *tea.Program
 		var err error
 
-		options := steps.Options{
-			ProjectName: &textinput.Output{},
-		}
-
 		isInteractive := !utils.HasChangedFlag(cmd.Flags())
-
 		flagName := cmd.Flag("name").Value.String()
 		if flagName != "" && doesDirectoryExistAndIsNotEmpty(flagName) {
-			err = fmt.Errorf("Directory '%s' already exists and is not empty. Please choose a different name", flagName)
+			err = fmt.Errorf("directory '%s' already exists and is not empty. Please choose a different name", flagName)
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
 
 		flagFramework := cmd.Flag("framework").Value.String()
 		flagWorkflow  := cmd.Flag("workflow").Value.String()
+		flagDBDriver := cmd.Flag("driver").Value.String()
 
 		if flagFramework != "" {
 			isValid := isValidProjectType(flagFramework, allowedProjectTypes)
 			if !isValid {
-				err = fmt.Errorf("Project type '%s' is not valid. Valid types are: %s", flagFramework, strings.Join(allowedProjectTypes, ", "))
+				err = fmt.Errorf("project type '%s' is not valid. Valid types are: %s", flagFramework, strings.Join(allowedProjectTypes, ", "))
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
 		} 
 		
-		if  flagWorkflow != "" {
-			isValid := isValidWorkflowType(flagWorkflow, allowedWorkflowTypes)
+		if flagDBDriver != "" {
+			isValid := isValidDBDriver(flagDBDriver, allowedDBDrivers)
 			if !isValid {
-				err = fmt.Errorf("Workflow type '%s' is not valid. Valid types are: %s", flagWorkflow, strings.Join(allowedWorkflowTypes, ", "))
+				cobra.CheckErr(fmt.Errorf("database driver '%s' is not valid. Valid types are: %s", flagDBDriver, strings.Join(allowedDBDrivers, ", ")))
+			}
+		}
+
+		if  flagWorkflow != "" {
+			isValid := isValidWorkflow(flagWorkflow, allowedWorkflows)
+			if !isValid {
+				err = fmt.Errorf("Workflow type '%s' is not valid. Valid types are: %s", flagWorkflow, strings.Join(allowedWorkflows, ", "))
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
 		}
 
-		project := &program.Project{
-			FrameworkMap: make(map[string]program.Framework),
-			ProjectName:  flagName,
-			ProjectType:  strings.ReplaceAll(flagFramework, "-", " "),
-			WorkflowMap:  make(map[string]program.Workflow),
-			Workflow:	  strings.ReplaceAll(flagWorkflow, "-", " "),
+		options := Options{
+			ProjectName: &textinput.Output{},
+			ProjectType: &multiInput.Selection{},
+			DBDriver:    &multiInput.Selection{},
+			Workflow:	 &multiInput.Selection{},
 		}
 
-		steps := steps.InitSteps(&options)
+		project := &program.Project{
+			ProjectName:  flagName,
+			ProjectType:  strings.ReplaceAll(flagFramework, "-", " "),
+			DBDriver:     flagDBDriver,
+			Workflow:	  flagWorkflow,
+			FrameworkMap: make(map[string]program.Framework),
+			DBDriverMap:  make(map[string]program.Driver),
+			WorkflowMap:  make(map[string]program.Workflow),
+		}
+
+		steps := steps.InitSteps()
 		fmt.Printf("%s\n", logoStyle.Render(logo))
 
 		if project.ProjectName == "" {
@@ -104,7 +124,7 @@ var createCmd = &cobra.Command{
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
 			if doesDirectoryExistAndIsNotEmpty(options.ProjectName.Output) {
-				err = fmt.Errorf("Directory '%s' already exists and is not empty. Please choose a different name", options.ProjectName.Output)
+				err = fmt.Errorf("directory '%s' already exists and is not empty. Please choose a different name", options.ProjectName.Output)
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
 			project.ExitCLI(tprogram)
@@ -117,37 +137,52 @@ var createCmd = &cobra.Command{
 		}
 
 		if project.ProjectType == "" {
-			for _, step := range steps.Steps {
-				s := &multiInput.Selection{}
-				tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, s, step.Headers, project))
-				if _, err := tprogram.Run(); err != nil {
-					cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
-				}
-				project.ExitCLI(tprogram)
-
-				*step.Field = s.Choice
+			step := steps.Steps["framework"]
+			tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, options.ProjectType, step.Headers, project))
+			if _, err := tprogram.Run(); err != nil {
+				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
-
-			project.ProjectType = strings.ToLower(options.ProjectType)
+			project.ExitCLI(tprogram)
+			project.ProjectType = strings.ToLower(options.ProjectType.Choice)
 			err := cmd.Flag("framework").Value.Set(project.ProjectType)
 			if err != nil {
 				log.Fatal("failed to set the framework flag value", err)
 			} 	
-			if  project.Workflow != "none" {
-			project.Workflow = strings.ToLower(options.Workflow)
+		}	
+
+		if project.DBDriver == "" {
+			step := steps.Steps["driver"]
+			tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, options.DBDriver, step.Headers, project))
+			if _, err := tprogram.Run(); err != nil {
+				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
+			}
+			project.ExitCLI(tprogram)
+			project.DBDriver = strings.ToLower(options.DBDriver.Choice)
+			err := cmd.Flag("driver").Value.Set(project.DBDriver)
+			if err != nil {
+				log.Fatal("failed to set the driver flag value", err)
+			}
+		}
+
+		if project.Workflow == "" {
+			step := steps.Steps["workflow"]
+			tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, options.Workflow, step.Headers, project))
+			if _, err := tprogram.Run(); err != nil {
+				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
+			}
+			project.ExitCLI(tprogram)
+			project.Workflow = strings.ToLower(options.Workflow.Choice)
 			err := cmd.Flag("workflow").Value.Set(project.Workflow)
-				if err != nil {
+			if err != nil {
 				log.Fatal("failed to set the workflow flag value", err)
 			}
-			}
-		}	
+		}
 
 		currentWorkingDir, err := os.Getwd()
 		if err != nil {
 			log.Printf("could not get current working directory: %v", err)
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
-
 		project.AbsolutePath = currentWorkingDir
 
 		// This calls the templates
@@ -179,9 +214,22 @@ func isValidProjectType(input string, allowedTypes []string) bool {
 	return false
 }
 
-func isValidWorkflowType(input string, allowedTypes []string) bool {
-	for _, t := range allowedTypes {
-		if input == t {
+// isValidDBDriver checks if the inputted database driver
+// the currently supported list of drivers
+func isValidDBDriver(input string, allowedDBDrivers []string) bool {
+	for _, d := range allowedDBDrivers {
+		if input == d {
+			return true
+		}
+	}
+	return false
+}
+
+// isValidDBDriver checks if the inputted database driver
+// the currently supported list of drivers
+func isValidWorkflow(input string, allowedWorkflows []string) bool {
+	for _, w := range allowedWorkflows {
+		if input == w {
 			return true
 		}
 	}
@@ -191,7 +239,7 @@ func isValidWorkflowType(input string, allowedTypes []string) bool {
 // doesDirectoryExistAndIsNotEmpty checks if the directory exists and is not empty
 func doesDirectoryExistAndIsNotEmpty(name string) bool {
 	if _, err := os.Stat(name); err == nil {
-		dirEntries, err := os.ReadDir(name)	
+		dirEntries, err := os.ReadDir(name)
 		if err != nil {
 			log.Printf("could not read directory: %v", err)
 			cobra.CheckErr(textinput.CreateErrorInputModel(err))

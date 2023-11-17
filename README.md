@@ -45,7 +45,7 @@ go-blueprint create
 You can also use the provided flags to set up a project without interacting with the UI.
 
 ```
-go-blueprint create --name my-project --framework gin --workflow githubaction
+go-blueprint create --name my-project --framework gin --driver postgres --workflow githubaction
 ```
 
 See `go-blueprint create -h` for all the options and shorthands.
@@ -60,6 +60,13 @@ See `go-blueprint create -h` for all the options and shorthands.
 - [HttpRouter](https://github.com/julienschmidt/httprouter)
 - [Gorilla/mux](https://github.com/gorilla/mux)
 - [Echo](https://github.com/labstack/echo)
+
+### Database Drivers Supported
+
+- [Mysql](https://github.com/go-sql-driver/mysql)
+- [Postgres](https://github.com/lib/pq)
+- [Sqlite](https://github.com/mattn/go-sqlite3)
+- [Mongo](go.mongodb.org/mongo-driver)
 
 ### Workflows Supported
 
