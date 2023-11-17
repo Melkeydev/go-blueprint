@@ -225,6 +225,15 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
+	if p.DBDriver == "sqlite" {
+		defer func() {
+			err := os.Remove(fmt.Sprintf("%s/docker-compose.yml", projectPath))
+    		if err != nil {
+				cobra.CheckErr(err)
+    		}
+		}()
+	}
+
 	// Install the godotenv package
 	err = utils.GoGetPackage(projectPath, godotenvPackage)
 	if err != nil {
