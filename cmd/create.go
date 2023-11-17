@@ -183,7 +183,7 @@ func isValidDBDriver(input string, allowedDBDrivers []string) bool {
 	return false
 }
 
-// 
+// doesDirectoryExistAndIsNotEmpty checks if the directory exists and is not empty 
 func doesDirectoryExistAndIsNotEmpty(name string) bool {
 	if _, err := os.Stat(name); err == nil {
 		dirEntries, err := os.ReadDir(name)
