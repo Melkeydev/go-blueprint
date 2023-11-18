@@ -18,7 +18,7 @@ const (
 	None     Database = "none"
 )
 
-var AllowedDBDrivers = []string{"mysql", "postgres", "sqlite", "mongo", "none"}
+var AllowedDBDrivers = []string{string(MySql), string(Postgres), string(Sqlite), string(Mongo), string(None)}
 
 func (f Database) String() string {
 	return string(f)
