@@ -89,7 +89,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		case "y":
 			if len(m.selected) == 1 {
-				m.choice.Update(m.choices[m.cursor].Title)
+				selectedKey := make([]int, 0, len(m.selected))
+                for k := range m.selected {
+                    selectedKey = append(selectedKey, k)
+                }
+				m.choice.Update(m.choices[selectedKey[0]].Title)
 				return m, tea.Quit
 			}
 		}
