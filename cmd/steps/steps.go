@@ -61,7 +61,7 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 					},
 				},
 				Headers: "What framework do you want to use in your Go project?",
-				Field: projectType.String(),
+				Field:   projectType.String(),
 			},
 			"driver": {
 				StepName: "Go Project Database Driver",
@@ -84,7 +84,7 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 						Desc:  "Choose this option if you don't wish to install a specific database driver."},
 				},
 				Headers: "What database driver do you want to use in your Go project?",
-				Field: databaseType.String(),
+				Field:   databaseType.String(),
 			},
 		},
 	}
