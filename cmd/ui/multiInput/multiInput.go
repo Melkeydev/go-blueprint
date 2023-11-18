@@ -89,16 +89,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		case "y":
 			if len(m.selected) == 1 {
-				selectedKey := make([]int, 0, len(m.selected))
-                for k := range m.selected {
-                    selectedKey = append(selectedKey, k)
-                }
-				m.choice.Update(m.choices[selectedKey[0]].Title)
+				for selectedKey := range m.selected {
+					m.choice.Update(m.choices[selectedKey].Title)
+					m.cursor = selectedKey
+				}
 				return m, tea.Quit
 			}
 		}
 	}
-	return m, nil
+    return m, nil
 }
 
 // View is called to draw the multiInput step
