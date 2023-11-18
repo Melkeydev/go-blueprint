@@ -162,7 +162,7 @@ func (p *Project) createDBDriverMap() {
 }
 
 func (p *Project) createDockerMap() {
-	 p.DockerMap = make(map[string]Docker)
+	p.DockerMap = make(map[string]Docker)
 
 	p.DockerMap["mysql"] = Docker{
 		packageName: []string{},

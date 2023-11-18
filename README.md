@@ -45,13 +45,13 @@ go-blueprint create
 You can also use the provided flags to set up a project without interacting with the UI.
 
 ```
-go-blueprint create --name my-project --framework gin
+go-blueprint create --name my-project --framework gin --driver postgres
 ```
 
 See `go-blueprint create -h` for all the options and shorthands.
 
 ![Starter Image](./public/blueprint_1.png)
-![Framework Image](./public/blueprint_2.png)
+
 
 ### Frameworks Supported
 
@@ -68,6 +68,8 @@ See `go-blueprint create -h` for all the options and shorthands.
 - [Postgres](https://github.com/lib/pq)
 - [Sqlite](https://github.com/mattn/go-sqlite3)
 - [Mongo](go.mongodb.org/mongo-driver)
+
+The driver step will also create a Docker Compose for quick database spin-up.
 
 ### License
 
