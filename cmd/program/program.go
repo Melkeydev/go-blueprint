@@ -26,8 +26,8 @@ type Project struct {
 	Exit         bool
 	AbsolutePath string
 	ProjectType  flags.Framework
-	FrameworkMap map[flags.Framework]Framework
 	DBDriver     flags.Database
+	FrameworkMap map[flags.Framework]Framework
 	DBDriverMap  map[flags.Database]Driver
 }
 
@@ -135,19 +135,19 @@ func (p *Project) createFrameworkMap() {
 }
 
 func (p *Project) createDBDriverMap() {
-	p.DBDriverMap["mysql"] = Driver{
+	p.DBDriverMap[flags.MySql] = Driver{
 		packageName: mysqlDriver,
 		templater:   dbdriver.MysqlTemplate{},
 	}
-	p.DBDriverMap["postgres"] = Driver{
+	p.DBDriverMap[flags.Postgres] = Driver{
 		packageName: postgresDriver,
 		templater:   dbdriver.PostgresTemplate{},
 	}
-	p.DBDriverMap["sqlite"] = Driver{
+	p.DBDriverMap[flags.Sqlite] = Driver{
 		packageName: sqliteDriver,
 		templater:   dbdriver.SqliteTemplate{},
 	}
-	p.DBDriverMap["mongo"] = Driver{
+	p.DBDriverMap[flags.Mongo] = Driver{
 		packageName: mongoDriver,
 		templater:   dbdriver.MongoTemplate{},
 	}

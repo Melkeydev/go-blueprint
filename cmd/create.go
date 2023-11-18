@@ -71,8 +71,8 @@ var createCmd = &cobra.Command{
 
 		// VarP already validates the contents of the framework flag.
 		// If this flag is filled, it is always valid
-		flagDBDriver := flags.Database(cmd.Flag("driver").Value.String())
 		flagFramework := flags.Framework(cmd.Flag("framework").Value.String())
+		flagDBDriver := flags.Database(cmd.Flag("driver").Value.String())
 
 		options := Options{
 			ProjectName: &textinput.Output{},
