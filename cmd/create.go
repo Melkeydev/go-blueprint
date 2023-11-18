@@ -2,6 +2,10 @@ package cmd
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"strings"
+
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/melkeydev/go-blueprint/cmd/flags"
@@ -11,9 +15,6 @@ import (
 	"github.com/melkeydev/go-blueprint/cmd/ui/textinput"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
 	"github.com/spf13/cobra"
-	"log"
-	"os"
-	"strings"
 )
 
 const logo = `
@@ -38,11 +39,12 @@ var (
 
 func init() {
 	var flagFramework flags.Framework
+	var flagDBDriver flags.Database
 	rootCmd.AddCommand(createCmd)
 
 	createCmd.Flags().StringP("name", "n", "", "Name of project to create")
 	createCmd.Flags().VarP(&flagFramework, "framework", "f", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(flags.AllowedProjectTypes, ", ")))
-	createCmd.Flags().StringP("driver", "d", "", fmt.Sprintf("database drivers to use. Allowed values: %s", strings.Join(allowedDBDrivers, ", ")))
+	createCmd.Flags().VarP(&flagDBDriver, "driver", "d", fmt.Sprintf("database drivers to use. Allowed values: %s", strings.Join(flags.AllowedDBDrivers, ", ")))
 }
 
 type Options struct {
@@ -67,18 +69,11 @@ var createCmd = &cobra.Command{
 			err = fmt.Errorf("directory '%s' already exists and is not empty. Please choose a different name", flagName)
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
-		flagDBDriver := cmd.Flag("driver").Value.String()
 
 		// VarP already validates the contents of the framework flag.
 		// If this flag is filled, it is always valid
+		flagDBDriver := flags.Database(cmd.Flag("driver").Value.String())
 		flagFramework := flags.Framework(cmd.Flag("framework").Value.String())
-
-		if flagDBDriver != "" {
-			isValid := isValidDBDriver(flagDBDriver, allowedDBDrivers)
-			if !isValid {
-				cobra.CheckErr(fmt.Errorf("database driver '%s' is not valid. Valid types are: %s", flagDBDriver, strings.Join(allowedDBDrivers, ", ")))
-			}
-		}
 
 		options := Options{
 			ProjectName: &textinput.Output{},
@@ -91,10 +86,10 @@ var createCmd = &cobra.Command{
 			ProjectType:  flagFramework,
 			DBDriver:     flagDBDriver,
 			FrameworkMap: make(map[flags.Framework]program.Framework),
-			DBDriverMap:  make(map[string]program.Driver),
+			DBDriverMap:  make(map[flags.Database]program.Driver),
 		}
 
-		steps := steps.InitSteps()
+		steps := steps.InitSteps(flagFramework, flagDBDriver)
 		fmt.Printf("%s\n", logoStyle.Render(logo))
 
 		if project.ProjectName == "" {
@@ -124,9 +119,11 @@ var createCmd = &cobra.Command{
 			}
 			project.ExitCLI(tprogram)
 
-			// this type casting is always safe since the user interface can 
+			step.Field = options.ProjectType.Choice
+
+			// this type casting is always safe since the user interface can
 			// only pass strings that can be cast to a flags.Framework instance
-			project.ProjectType = flags.Framework(options.ProjectType.Choice)
+			project.ProjectType = flags.Framework(strings.ToLower(options.ProjectType.Choice))
 			err := cmd.Flag("framework").Value.Set(project.ProjectType.String())
 			if err != nil {
 				log.Fatal("failed to set the framework flag value", err)
@@ -140,8 +137,11 @@ var createCmd = &cobra.Command{
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
 			project.ExitCLI(tprogram)
-			project.DBDriver = strings.ToLower(options.DBDriver.Choice)
-			err := cmd.Flag("driver").Value.Set(project.DBDriver)
+
+			// this type casting is always safe since the user interface can
+			// only pass strings that can be cast to a flags.Database instance
+			project.DBDriver= flags.Database(strings.ToLower(options.DBDriver.Choice))
+			err := cmd.Flag("driver").Value.Set(project.DBDriver.String())
 			if err != nil {
 				log.Fatal("failed to set the driver flag value", err)
 			}
@@ -170,17 +170,6 @@ var createCmd = &cobra.Command{
 			fmt.Println(tipMsgStyle.Italic(false).Render(fmt.Sprintf("• %s\n", nonInteractiveCommand)))
 		}
 	},
-}
-
-// isValidDBDriver checks if the inputted database driver
-// the currently supported list of drivers
-func isValidDBDriver(input string, allowedDBDrivers []string) bool {
-	for _, d := range allowedDBDrivers {
-		if input == d {
-			return true
-		}
-	}
-	return false
 }
 
 // doesDirectoryExistAndIsNotEmpty checks if the directory exists and is not empty 

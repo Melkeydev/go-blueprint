@@ -27,8 +27,8 @@ type Project struct {
 	AbsolutePath string
 	ProjectType  flags.Framework
 	FrameworkMap map[flags.Framework]Framework
-	DBDriver     string
-	DBDriverMap  map[string]Driver
+	DBDriver     flags.Database
+	DBDriverMap  map[flags.Database]Driver
 }
 
 // A Framework contains the name and templater for a
