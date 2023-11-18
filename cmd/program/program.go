@@ -8,6 +8,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
 	"github.com/melkeydev/go-blueprint/cmd/template/dbdriver"
+	"github.com/melkeydev/go-blueprint/cmd/template/docker"
 	"github.com/melkeydev/go-blueprint/cmd/template/framework"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
 	"github.com/spf13/cobra"
@@ -25,8 +26,10 @@ type Project struct {
 	AbsolutePath string
 	ProjectType  string
 	DBDriver     string
+	Docker       string
 	FrameworkMap map[string]Framework
 	DBDriverMap  map[string]Driver
+	DockerMap    map[string]Docker
 }
 
 // A Framework contains the name and templater for a
@@ -39,6 +42,11 @@ type Framework struct {
 type Driver struct {
 	packageName []string
 	templater   DBDriverTemplater
+}
+
+type Docker struct {
+	packageName []string
+	templater   DockerTemplater
 }
 
 // A Templater has the methods that help build the files
@@ -54,7 +62,10 @@ type Templater interface {
 type DBDriverTemplater interface {
 	Service() []byte
 	Env() []byte
-	DB()  []byte
+}
+
+type DockerTemplater interface {
+	Docker() []byte
 }
 
 var (
@@ -150,6 +161,23 @@ func (p *Project) createDBDriverMap() {
 	}
 }
 
+func (p *Project) createDockerMap() {
+	 p.DockerMap = make(map[string]Docker)
+
+	p.DockerMap["mysql"] = Docker{
+		packageName: []string{},
+		templater:   docker.MysqlDockerTemplate{},
+	}
+	p.DockerMap["postgres"] = Docker{
+		packageName: []string{},
+		templater:   docker.PostgresDockerTemplate{},
+	}
+	p.DockerMap["mongo"] = Docker{
+		packageName: []string{},
+		templater:   docker.MongoDockerTemplate{},
+	}
+}
+
 // CreateMainFile creates the project folders and files,
 // and writes to them depending on the selected options
 func (p *Project) CreateMainFile() error {
@@ -177,7 +205,7 @@ func (p *Project) CreateMainFile() error {
 
 	// Create the map for our program
 	p.createFrameworkMap()
-
+	
 	// Create go.mod
 	err := utils.InitGoMod(p.ProjectName, projectPath)
 	if err != nil {
@@ -217,21 +245,20 @@ func (p *Project) CreateMainFile() error {
 			return err
 		}
 
-		err = p.CreateFileWithInjection(root, projectPath, "docker-compose.yml", "db-docker")
-		if err != nil {
-			log.Printf("Error injecting docker-compose.yml file: %v", err)
-			cobra.CheckErr(err)
-			return err
-		}
+		
 	}
 
-	if p.DBDriver == "sqlite" {
-		defer func() {
-			err := os.Remove(fmt.Sprintf("%s/docker-compose.yml", projectPath))
-    		if err != nil {
-				cobra.CheckErr(err)
-    		}
-		}()
+	// cretae correct docker compose for the selected driver
+	if p.DBDriver != "none" && p.DBDriver != "sqlite" {
+    	p.createDockerMap()
+    	p.Docker = p.DBDriver
+
+    	err = p.CreateFileWithInjection(root, projectPath, "docker-compose.yml", "db-docker")
+    	if err != nil {
+    	    log.Printf("Error injecting docker-compose.yml file: %v", err)
+    	    cobra.CheckErr(err)
+    	    return err
+    	}
 	}
 
 	// Install the godotenv package
@@ -422,7 +449,7 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.Service())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "db-docker":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.DB())))
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DockerMap[p.Docker].templater.Docker())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "env":
 		if p.DBDriver != "none" {
