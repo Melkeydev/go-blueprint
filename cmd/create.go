@@ -31,9 +31,9 @@ const logo = `
 `
 
 var (
-	logoStyle           = lipgloss.NewStyle().Foreground(lipgloss.Color("#01FAC6")).Bold(true)
-	tipMsgStyle         = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("190")).Italic(true)
-	endingMsgStyle      = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("170")).Bold(true)
+	logoStyle      = lipgloss.NewStyle().Foreground(lipgloss.Color("#01FAC6")).Bold(true)
+	tipMsgStyle    = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("190")).Italic(true)
+	endingMsgStyle = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("170")).Bold(true)
 )
 
 func init() {
@@ -139,7 +139,7 @@ var createCmd = &cobra.Command{
 
 			// this type casting is always safe since the user interface can
 			// only pass strings that can be cast to a flags.Database instance
-			project.DBDriver= flags.Database(strings.ToLower(options.DBDriver.Choice))
+			project.DBDriver = flags.Database(strings.ToLower(options.DBDriver.Choice))
 			err := cmd.Flag("driver").Value.Set(project.DBDriver.String())
 			if err != nil {
 				log.Fatal("failed to set the driver flag value", err)
@@ -171,7 +171,7 @@ var createCmd = &cobra.Command{
 	},
 }
 
-// doesDirectoryExistAndIsNotEmpty checks if the directory exists and is not empty 
+// doesDirectoryExistAndIsNotEmpty checks if the directory exists and is not empty
 func doesDirectoryExistAndIsNotEmpty(name string) bool {
 	if _, err := os.Stat(name); err == nil {
 		dirEntries, err := os.ReadDir(name)
