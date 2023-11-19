@@ -12,8 +12,8 @@ import (
 )
 
 type Server struct {
-	port int
 	db   database.Service
+	port int
 }
 
 func NewServer() *http.Server {
