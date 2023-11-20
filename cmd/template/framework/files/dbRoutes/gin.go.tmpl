@@ -7,13 +7,13 @@ import (
 
 func (s *Server) RegisterRoutes() http.Handler {
 	r := gin.Default()
-	r.GET("/", s.helloWorldHandler)
+	r.GET("/", s.HelloWorldHandler)
 	r.GET("/health", s.healthHandler)
 
 	return r
 }
 
-func (s *Server) helloWorldHandler(c *gin.Context) {
+func (s *Server) HelloWorldHandler(c *gin.Context) {
 	resp := make(map[string]string)
 	resp["message"] = "Hello World"
 

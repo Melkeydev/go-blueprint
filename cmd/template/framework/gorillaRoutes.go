@@ -9,6 +9,8 @@ var gorillaRoutesTemplate []byte
 
 //go:embed files/dbRoutes/gorilla.go.tmpl
 var gorillaDBRoutesTemplate []byte
+//go:embed files/tests/default-test.go.tmpl
+var gorillaTestHandlerTemplate []byte
 
 // GorillaTemplates contains the methods used for building
 // an app that uses [github.com/gorilla/mux]
@@ -32,4 +34,7 @@ func (g GorillaTemplates) Routes() []byte {
 
 func (g GorillaTemplates) RoutesWithDB() []byte {
 	return gorillaDBRoutesTemplate
+}
+func (g GorillaTemplates) TestHandler() []byte {
+    return gorillaTestHandlerTemplate
 }
