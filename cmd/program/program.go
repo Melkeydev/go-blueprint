@@ -57,7 +57,7 @@ type Templater interface {
 	Routes() []byte
 	RoutesWithDB() []byte
 	ServerWithDB() []byte
-    TestHandler() []byte
+    	TestHandler() []byte
 }
 
 type DBDriverTemplater interface {
@@ -90,7 +90,7 @@ const (
 	cmdApiPath           = "cmd/api"
 	internalServerPath   = "internal/server"
 	internalDatabasePath = "internal/database"
-    testHandlerPath      = "tests"
+    	testHandlerPath      = "tests"
 )
 
 // ExitCLI checks if the Project has been exited, and closes
