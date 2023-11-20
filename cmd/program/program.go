@@ -165,27 +165,23 @@ func (p *Project) CreateMainFile() error {
 	p.ProjectName = strings.TrimSpace(p.ProjectName)
 
 	// Create a new directory with the project name
-	if _, err := os.Stat(fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName)); os.IsNotExist(err) {
-		err := os.MkdirAll(fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName), 0751)
-		if err != nil {
-			log.Printf("Error creating root project directory %v\n", err)
-			return err
-		}
+	if err := utils.CreateDirectoryIfNotExist(fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName)); err != nil {
+		return err
 	}
 
-	// Create the map for our program
+	// Create the framework map for our program
 	p.createFrameworkMap()
 
-	// Create go.mod
-	err := utils.InitGoMod(p.ProjectName, projectPath)
-	if err != nil {
-		log.Printf("Could not initialize go.mod in new project %v\n", err)
+	if err := initializeProject(projectPath, p); err != nil {
 		cobra.CheckErr(err)
 	}
 
+	var err error
+	// stop here
+
 	// Install the correct package for the selected framework
 	if p.ProjectType != "standard library" {
-		err = utils.GoGetPackage(projectPath, p.FrameworkMap[p.ProjectType].packageName)
+		err := utils.GoGetPackage(projectPath, p.FrameworkMap[p.ProjectType].packageName)
 		if err != nil {
 			log.Printf("Could not install go dependency for the chosen framework %v\n", err)
 			cobra.CheckErr(err)
@@ -320,13 +316,6 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	// Initialize git repo
-	err = utils.ExecuteCmd("git", []string{"init"}, projectPath)
-	if err != nil {
-		log.Printf("Error initializing git repo: %v", err)
-		cobra.CheckErr(err)
-		return err
-	}
 	// Create gitignore
 	gitignoreFile, err := os.Create(fmt.Sprintf("%s/.gitignore", projectPath))
 	if err != nil {
@@ -435,6 +424,23 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 	}
 
 	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// initializeProject initializes go.mod and other initial setups
+func initializeProject(projectPath string, p *Project) error {
+	// Initialize go.mod
+	if err := utils.InitGoMod(p.ProjectName, projectPath); err != nil {
+		log.Printf("Could not initialize go.mod in new project %v\n", err)
+		return err
+	}
+
+	// Initialize git repository
+	if err := utils.ExecuteCmd("git", []string{"init"}, projectPath); err != nil {
+		log.Printf("Error initializing git repo: %v", err)
 		return err
 	}
 
