@@ -207,7 +207,7 @@ func (p *Project) CreateMainFile() error {
 
 	// Create the map for our program
 	p.createFrameworkMap()
-	
+
 	// Create go.mod
 	err := utils.InitGoMod(p.ProjectName, projectPath)
 	if err != nil {
@@ -471,7 +471,6 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 	case "tests":
     	createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.TestHandler())))
     	err = createdTemplate.Execute(createdFile, p)
-
 	case "env":
 		if p.DBDriver != "none" {
 
