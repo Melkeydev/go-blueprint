@@ -5,16 +5,17 @@ package program
 import (
 	"bytes"
 	"fmt"
+	"html/template"
+	"log"
+	"os"
+	"strings"
+
 	tea "github.com/charmbracelet/bubbletea"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
 	"github.com/melkeydev/go-blueprint/cmd/template/dbdriver"
 	"github.com/melkeydev/go-blueprint/cmd/template/framework"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
 	"github.com/spf13/cobra"
-	"html/template"
-	"log"
-	"os"
-	"strings"
 )
 
 // A Project contains the data for the project folder
@@ -49,7 +50,7 @@ type Templater interface {
 	Routes() []byte
 	RoutesWithDB() []byte
 	ServerWithDB() []byte
-        TestHandler() []byte
+	TestHandler() []byte
 }
 
 type DBDriverTemplater interface {
@@ -78,7 +79,7 @@ const (
 	cmdApiPath           = "cmd/api"
 	internalServerPath   = "internal/server"
 	internalDatabasePath = "internal/database"
-    	testHandlerPath    = "tests"
+	testHandlerPath      = "tests"
 )
 
 // ExitCLI checks if the Project has been exited, and closes
@@ -154,13 +155,11 @@ func (p *Project) createDBDriverMap() {
 // CreateMainFile creates the project folders and files,
 // and writes to them depending on the selected options
 func (p *Project) CreateMainFile() error {
+	projectPath := fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName)
+
 	// check if AbsolutePath exists
-	if _, err := os.Stat(p.AbsolutePath); os.IsNotExist(err) {
-		// create directory
-		if err := os.Mkdir(p.AbsolutePath, 0754); err != nil {
-			log.Printf("Could not create directory: %v", err)
-			return err
-		}
+	if err := utils.CreateDirectoryIfNotExist(p.AbsolutePath); err != nil {
+		return err
 	}
 
 	p.ProjectName = strings.TrimSpace(p.ProjectName)
@@ -173,8 +172,6 @@ func (p *Project) CreateMainFile() error {
 			return err
 		}
 	}
-
-	projectPath := fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName)
 
 	// Create the map for our program
 	p.createFrameworkMap()
@@ -239,18 +236,18 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-    	err = p.CreatePath(testHandlerPath, projectPath)
-    	if err != nil {
-        	log.Printf("Error creating path: %s", projectPath)
-        	cobra.CheckErr(err)
-        	return err
-    	}
-    	// inject testhandler template
-    	err = p.CreateFileWithInjection(testHandlerPath, projectPath, "handler_test.go", "tests")
-    	if err != nil {
-        	cobra.CheckErr(err)
-        	return err
-    	}
+	err = p.CreatePath(testHandlerPath, projectPath)
+	if err != nil {
+		log.Printf("Error creating path: %s", projectPath)
+		cobra.CheckErr(err)
+		return err
+	}
+	// inject testhandler template
+	err = p.CreateFileWithInjection(testHandlerPath, projectPath, "handler_test.go", "tests")
+	if err != nil {
+		cobra.CheckErr(err)
+		return err
+	}
 
 	makeFile, err := os.Create(fmt.Sprintf("%s/Makefile", projectPath))
 	if err != nil {
@@ -419,9 +416,9 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 	case "database":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.Service())))
 		err = createdTemplate.Execute(createdFile, p)
-    case "tests":
-        createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.TestHandler())))
-        err = createdTemplate.Execute(createdFile, p)
+	case "tests":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.TestHandler())))
+		err = createdTemplate.Execute(createdFile, p)
 	case "env":
 		if p.DBDriver != "none" {
 

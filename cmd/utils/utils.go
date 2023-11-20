@@ -5,6 +5,8 @@ package utils
 import (
 	"bytes"
 	"fmt"
+	"log"
+	"os"
 	"os/exec"
 
 	"github.com/spf13/pflag"
@@ -92,5 +94,17 @@ func GoTidy(appDir string) error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+// createDirectoryIfNotExist creates a directory if it does not exist
+func CreateDirectoryIfNotExist(path string) error {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		if err := os.MkdirAll(path, 0751); err != nil {
+			log.Printf("Error creating directory %v\n", err)
+			return err
+		}
+	}
+
 	return nil
 }
