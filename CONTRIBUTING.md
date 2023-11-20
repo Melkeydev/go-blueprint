@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping make the Twitch CLI better! 
+Thanks for helping make the go-blueprint better! 
 - [Contributing](#contributing)
   - [Design Principles](#design-principles)
   - [Report an Issue](#report-an-issue)
