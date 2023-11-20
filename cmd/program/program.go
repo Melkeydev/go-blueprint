@@ -159,6 +159,7 @@ func (p *Project) CreateMainFile() error {
 
 	// check if AbsolutePath exists
 	if err := utils.CreateDirectoryIfNotExist(p.AbsolutePath); err != nil {
+		cobra.CheckErr(err)
 		return err
 	}
 
@@ -166,7 +167,7 @@ func (p *Project) CreateMainFile() error {
 
 	// Create a new directory with the project name
 	if err := utils.CreateDirectoryIfNotExist(fmt.Sprintf("%s/%s", p.AbsolutePath, p.ProjectName)); err != nil {
-		return err
+		cobra.CheckErr(err)
 	}
 
 	// Create the framework map for our program
@@ -174,6 +175,10 @@ func (p *Project) CreateMainFile() error {
 
 	if err := initializeProject(projectPath, p); err != nil {
 		cobra.CheckErr(err)
+	}
+
+	if err := createCommonFiles(projectPath, p); err != nil {
+		return err
 	}
 
 	var err error
@@ -245,35 +250,6 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	makeFile, err := os.Create(fmt.Sprintf("%s/Makefile", projectPath))
-	if err != nil {
-		cobra.CheckErr(err)
-		return err
-	}
-
-	defer makeFile.Close()
-
-	// inject makefile template
-	makeFileTemplate := template.Must(template.New("makefile").Parse(string(framework.MakeTemplate())))
-	err = makeFileTemplate.Execute(makeFile, p)
-	if err != nil {
-		return err
-	}
-
-	readmeFile, err := os.Create(fmt.Sprintf("%s/README.md", projectPath))
-	if err != nil {
-		cobra.CheckErr(err)
-		return err
-	}
-	defer readmeFile.Close()
-
-	// inject readme template
-	readmeFileTemplate := template.Must(template.New("readme").Parse(string(framework.ReadmeTemplate())))
-	err = readmeFileTemplate.Execute(readmeFile, p)
-	if err != nil {
-		return err
-	}
-
 	err = p.CreatePath(internalServerPath, projectPath)
 	if err != nil {
 		log.Printf("Error creating path: %s", internalServerPath)
@@ -313,21 +289,6 @@ func (p *Project) CreateMainFile() error {
 	if err != nil {
 		log.Printf("Error injecting .env file: %v", err)
 		cobra.CheckErr(err)
-		return err
-	}
-
-	// Create gitignore
-	gitignoreFile, err := os.Create(fmt.Sprintf("%s/.gitignore", projectPath))
-	if err != nil {
-		cobra.CheckErr(err)
-		return err
-	}
-	defer gitignoreFile.Close()
-
-	// inject gitignore template
-	gitignoreTemplate := template.Must(template.New(".gitignore").Parse(string(framework.GitIgnoreTemplate())))
-	err = gitignoreTemplate.Execute(gitignoreFile, p)
-	if err != nil {
 		return err
 	}
 
@@ -387,6 +348,7 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 	defer createdFile.Close()
 
 	switch methodName {
+	// done
 	case "main":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Main())))
 		err = createdTemplate.Execute(createdFile, p)
@@ -441,6 +403,55 @@ func initializeProject(projectPath string, p *Project) error {
 	// Initialize git repository
 	if err := utils.ExecuteCmd("git", []string{"init"}, projectPath); err != nil {
 		log.Printf("Error initializing git repo: %v", err)
+		return err
+	}
+
+	return nil
+}
+
+// createCommonFiles creates files like Makefile, README, etc.
+func createCommonFiles(projectPath string, p *Project) error {
+	makeFile, err := os.Create(fmt.Sprintf("%s/Makefile", projectPath))
+	if err != nil {
+		cobra.CheckErr(err)
+		return err
+	}
+
+	defer makeFile.Close()
+
+	// inject makefile template
+	makeFileTemplate := template.Must(template.New("makefile").Parse(string(framework.MakeTemplate())))
+	err = makeFileTemplate.Execute(makeFile, p)
+	if err != nil {
+		return err
+	}
+
+	readmeFile, err := os.Create(fmt.Sprintf("%s/README.md", projectPath))
+	if err != nil {
+		cobra.CheckErr(err)
+		return err
+	}
+	defer readmeFile.Close()
+
+	// inject readme template
+	readmeFileTemplate := template.Must(template.New("readme").Parse(string(framework.ReadmeTemplate())))
+	err = readmeFileTemplate.Execute(readmeFile, p)
+	if err != nil {
+		return err
+	}
+
+	// Create gitignore
+	gitignoreFile, err := os.Create(fmt.Sprintf("%s/.gitignore", projectPath))
+	if err != nil {
+		cobra.CheckErr(err)
+		return err
+	}
+	defer gitignoreFile.Close()
+
+	// inject gitignore template
+	gitignoreTemplate := template.Must(template.New(".gitignore").Parse(string(framework.GitIgnoreTemplate())))
+	err = gitignoreTemplate.Execute(gitignoreFile, p)
+	if err != nil {
 		return err
 	}
 
