@@ -57,7 +57,7 @@ type Templater interface {
 	Routes() []byte
 	RoutesWithDB() []byte
 	ServerWithDB() []byte
-        TestHandler() []byte
+    TestHandler() []byte
 }
 
 type DBDriverTemplater interface {
@@ -90,7 +90,7 @@ const (
 	cmdApiPath           = "cmd/api"
 	internalServerPath   = "internal/server"
 	internalDatabasePath = "internal/database"
-    	testHandlerPath    = "tests"
+    testHandlerPath      = "tests"
 )
 
 // ExitCLI checks if the Project has been exited, and closes
@@ -468,9 +468,9 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 	case "db-docker":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DockerMap[p.Docker].templater.Docker())))
 		err = createdTemplate.Execute(createdFile, p)
-  case "tests":
-    createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.TestHandler())))
-    err = createdTemplate.Execute(createdFile, p)
+	case "tests":
+    	createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.TestHandler())))
+    	err = createdTemplate.Execute(createdFile, p)
 
 	case "env":
 		if p.DBDriver != "none" {
