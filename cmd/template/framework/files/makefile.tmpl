@@ -11,6 +11,14 @@ build:
 run:
 	@go run cmd/api/main.go
 
+# Create DB container
+docker-run:
+	@docker compose up -d
+
+# Showdown DB container
+docker-down:
+	@docker-compose down
+
 # Test the application
 test:
 	@echo "Testing..."

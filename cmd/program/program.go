@@ -244,21 +244,23 @@ func (p *Project) CreateMainFile() error {
 			cobra.CheckErr(err)
 			return err
 		}
-
-		
 	}
 
-	// cretae correct docker compose for the selected driver
-	if p.DBDriver != "none" && p.DBDriver != "sqlite" {
-    	p.createDockerMap()
-    	p.Docker = p.DBDriver
+	// Create correct docker compose for the selected driver
+	if p.DBDriver != "none" {
+		if p.DBDriver != "sqlite" {
+    		p.createDockerMap()
+    		p.Docker = p.DBDriver
 
-    	err = p.CreateFileWithInjection(root, projectPath, "docker-compose.yml", "db-docker")
-    	if err != nil {
-    	    log.Printf("Error injecting docker-compose.yml file: %v", err)
-    	    cobra.CheckErr(err)
-    	    return err
-    	}
+    		err = p.CreateFileWithInjection(root, projectPath, "docker-compose.yml", "db-docker")
+    		if err != nil {
+    		    log.Printf("Error injecting docker-compose.yml file: %v", err)
+    		    cobra.CheckErr(err)
+    		    return err
+    		}
+		} else {
+			fmt.Println("\nWe cannot create docker-copose.yml for sqlite DB")
+		}
 	}
 
 	// Install the godotenv package
