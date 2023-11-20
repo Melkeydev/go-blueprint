@@ -202,7 +202,7 @@ func (p *Project) CreateMainFile() error {
 			cobra.CheckErr(err)
 		}
 
-		err = p.CreatePath(internalDatabasePath, projectPath)
+		err = utils.CreateDirectoryIfNotExist(fmt.Sprintf("%s/%s", projectPath, internalDatabasePath))
 		if err != nil {
 			log.Printf("Error creating path: %s", internalDatabasePath)
 			cobra.CheckErr(err)
@@ -224,7 +224,7 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 	}
 
-	err = p.CreatePath(cmdApiPath, projectPath)
+	err = utils.CreateDirectoryIfNotExist(fmt.Sprintf("%s/%s", projectPath, cmdApiPath))
 	if err != nil {
 		log.Printf("Error creating path: %s", projectPath)
 		cobra.CheckErr(err)
@@ -237,7 +237,7 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	err = p.CreatePath(testHandlerPath, projectPath)
+	err = utils.CreateDirectoryIfNotExist(fmt.Sprintf("%s/%s", projectPath, testHandlerPath))
 	if err != nil {
 		log.Printf("Error creating path: %s", projectPath)
 		cobra.CheckErr(err)
@@ -250,7 +250,7 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	err = p.CreatePath(internalServerPath, projectPath)
+	err = utils.CreateDirectoryIfNotExist(fmt.Sprintf("%s/%s", projectPath, internalServerPath))
 	if err != nil {
 		log.Printf("Error creating path: %s", internalServerPath)
 		cobra.CheckErr(err)
@@ -319,19 +319,6 @@ func (p *Project) CreateMainFile() error {
 	if err != nil {
 		log.Printf("Could not go tidy in new project %v\n", err)
 		cobra.CheckErr(err)
-	}
-
-	return nil
-}
-
-// CreatePath creates the given directory in the projectPath
-func (p *Project) CreatePath(pathToCreate string, projectPath string) error {
-	if _, err := os.Stat(fmt.Sprintf("%s/%s", projectPath, pathToCreate)); os.IsNotExist(err) {
-		err := os.MkdirAll(fmt.Sprintf("%s/%s", projectPath, pathToCreate), 0751)
-		if err != nil {
-			log.Printf("Error creating directory %v\n", err)
-			return err
-		}
 	}
 
 	return nil
