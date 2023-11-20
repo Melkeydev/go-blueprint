@@ -9,6 +9,8 @@ var echoRoutesTemplate []byte
 
 //go:embed files/dbRoutes/echo.go.tmpl
 var echoDBRoutesTemplate []byte
+//go:embed files/tests/echo-test.go.tmpl
+var echoTestHandlerTemplate []byte
 
 // EchoTemplates contains the methods used for building
 // an app that uses [github.com/labstack/echo]
@@ -31,4 +33,7 @@ func (e EchoTemplates) Routes() []byte {
 
 func (e EchoTemplates) RoutesWithDB() []byte {
 	return echoDBRoutesTemplate
+}
+func (e EchoTemplates) TestHandler() []byte {
+    return echoTestHandlerTemplate
 }

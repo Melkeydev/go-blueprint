@@ -9,6 +9,8 @@ var ginRoutesTemplate []byte
 
 //go:embed files/dbRoutes/gin.go.tmpl
 var ginDBRoutesTemplate []byte
+//go:embed files/tests/gin-test.go.tmpl
+var ginTestHandlerTemplate []byte
 
 // GinTemplates contains the methods used for building
 // an app that uses [github.com/gin-gonic/gin]
@@ -32,4 +34,7 @@ func (g GinTemplates) Routes() []byte {
 
 func (g GinTemplates) RoutesWithDB() []byte {
 	return ginDBRoutesTemplate
+}
+func (g GinTemplates) TestHandler() []byte {
+    return ginTestHandlerTemplate
 }

@@ -5,11 +5,11 @@ import (
 )
 
 func (s *FiberServer) RegisterFiberRoutes() {
-	s.App.Get("/", s.helloWorldHandler)
+	s.App.Get("/", s.HelloWorldHandler)
 	s.App.Get("/health", s.healthHandler)
 }
 
-func (s *FiberServer) helloWorldHandler(c *fiber.Ctx) error {
+func (s *FiberServer) HelloWorldHandler(c *fiber.Ctx) error {
 	resp := map[string]string{
 		"message": "Hello World",
 	}

@@ -57,6 +57,7 @@ type Templater interface {
 	Routes() []byte
 	RoutesWithDB() []byte
 	ServerWithDB() []byte
+        TestHandler() []byte
 }
 
 type DBDriverTemplater interface {
@@ -89,6 +90,7 @@ const (
 	cmdApiPath           = "cmd/api"
 	internalServerPath   = "internal/server"
 	internalDatabasePath = "internal/database"
+    	testHandlerPath    = "tests"
 )
 
 // ExitCLI checks if the Project has been exited, and closes
@@ -283,6 +285,19 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
+    	err = p.CreatePath(testHandlerPath, projectPath)
+    	if err != nil {
+        	log.Printf("Error creating path: %s", projectPath)
+        	cobra.CheckErr(err)
+        	return err
+    	}
+    	// inject testhandler template
+    	err = p.CreateFileWithInjection(testHandlerPath, projectPath, "handler_test.go", "tests")
+    	if err != nil {
+        	cobra.CheckErr(err)
+        	return err
+    	}
+
 	makeFile, err := os.Create(fmt.Sprintf("%s/Makefile", projectPath))
 	if err != nil {
 		cobra.CheckErr(err)
@@ -453,6 +468,10 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 	case "db-docker":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DockerMap[p.Docker].templater.Docker())))
 		err = createdTemplate.Execute(createdFile, p)
+  case "tests":
+    createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.TestHandler())))
+    err = createdTemplate.Execute(createdFile, p)
+
 	case "env":
 		if p.DBDriver != "none" {
 

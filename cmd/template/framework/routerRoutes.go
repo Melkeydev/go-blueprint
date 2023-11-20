@@ -9,6 +9,8 @@ var httpRouterRoutesTemplate []byte
 
 //go:embed files/dbRoutes/http_router.go.tmpl
 var httpDBRouterRoutesTemplate []byte
+//go:embed files/tests/default-test.go.tmpl
+var httpRouterTestHandlerTemplate []byte
 
 // RouterTemplates contains the methods used for building
 // an app that uses [github.com/julienschmidt/httprouter]
@@ -31,4 +33,7 @@ func (r RouterTemplates) Routes() []byte {
 
 func (r RouterTemplates) RoutesWithDB() []byte {
 	return httpDBRouterRoutesTemplate
+}
+func (r RouterTemplates) TestHandler() []byte {
+    return httpRouterTestHandlerTemplate
 }
