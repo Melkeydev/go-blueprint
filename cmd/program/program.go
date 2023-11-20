@@ -178,7 +178,7 @@ func (p *Project) CreateMainFile() error {
 	}
 
 	if err := createCommonFiles(projectPath, p); err != nil {
-		return err
+		cobra.CheckErr(err)
 	}
 
 	var err error
@@ -411,47 +411,15 @@ func initializeProject(projectPath string, p *Project) error {
 
 // createCommonFiles creates files like Makefile, README, etc.
 func createCommonFiles(projectPath string, p *Project) error {
-	makeFile, err := os.Create(fmt.Sprintf("%s/Makefile", projectPath))
-	if err != nil {
-		cobra.CheckErr(err)
+	if err := utils.CreateFileFromTemplate(fmt.Sprintf("%s/Makefile", projectPath), framework.MakeTemplate(), p); err != nil {
 		return err
 	}
 
-	defer makeFile.Close()
-
-	// inject makefile template
-	makeFileTemplate := template.Must(template.New("makefile").Parse(string(framework.MakeTemplate())))
-	err = makeFileTemplate.Execute(makeFile, p)
-	if err != nil {
+	if err := utils.CreateFileFromTemplate(fmt.Sprintf("%s/README.md", projectPath), framework.ReadmeTemplate(), p); err != nil {
 		return err
 	}
 
-	readmeFile, err := os.Create(fmt.Sprintf("%s/README.md", projectPath))
-	if err != nil {
-		cobra.CheckErr(err)
-		return err
-	}
-	defer readmeFile.Close()
-
-	// inject readme template
-	readmeFileTemplate := template.Must(template.New("readme").Parse(string(framework.ReadmeTemplate())))
-	err = readmeFileTemplate.Execute(readmeFile, p)
-	if err != nil {
-		return err
-	}
-
-	// Create gitignore
-	gitignoreFile, err := os.Create(fmt.Sprintf("%s/.gitignore", projectPath))
-	if err != nil {
-		cobra.CheckErr(err)
-		return err
-	}
-	defer gitignoreFile.Close()
-
-	// inject gitignore template
-	gitignoreTemplate := template.Must(template.New(".gitignore").Parse(string(framework.GitIgnoreTemplate())))
-	err = gitignoreTemplate.Execute(gitignoreFile, p)
-	if err != nil {
+	if err := utils.CreateFileFromTemplate(fmt.Sprintf("%s/.gitignore", projectPath), framework.GitIgnoreTemplate(), p); err != nil {
 		return err
 	}
 

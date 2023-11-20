@@ -5,10 +5,12 @@ package utils
 import (
 	"bytes"
 	"fmt"
+	"html/template"
 	"log"
 	"os"
 	"os/exec"
 
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -104,6 +106,28 @@ func CreateDirectoryIfNotExist(path string) error {
 			log.Printf("Error creating directory %v\n", err)
 			return err
 		}
+	}
+
+	return nil
+}
+
+// CreateFileFromTemplate creates a file at the specified path and injects the provided template with the given data.
+func CreateFileFromTemplate(filePath string, templateContent []byte, data interface{}) error {
+	file, err := os.Create(filePath)
+	if err != nil {
+		cobra.CheckErr(err)
+		return err
+	}
+	defer file.Close()
+
+	tmpl, err := template.New("template").Parse(string(templateContent))
+	if err != nil {
+		return err
+	}
+
+	err = tmpl.Execute(file, data)
+	if err != nil {
+		return err
 	}
 
 	return nil
