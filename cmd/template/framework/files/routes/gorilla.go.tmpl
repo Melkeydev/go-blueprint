@@ -11,12 +11,12 @@ import (
 func (s *Server) RegisterRoutes() http.Handler {
 	r := mux.NewRouter()
 
-	r.HandleFunc("/", s.helloWorldHandler)
+	r.HandleFunc("/", s.HelloWorldHandler)
 
 	return r
 }
 
-func (s *Server) helloWorldHandler(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HelloWorldHandler(w http.ResponseWriter, r *http.Request) {
 	resp := make(map[string]string)
 	resp["message"] = "Hello World"
 

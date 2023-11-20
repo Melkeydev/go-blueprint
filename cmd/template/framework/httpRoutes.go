@@ -15,6 +15,8 @@ var standardServerTemplate []byte
 
 //go:embed files/dbServer/standard_library.go.tmpl
 var standardDBServerTemplate []byte
+//go:embed files/tests/default-test.go.tmpl
+var standardTestHandlerTemplate []byte
 
 // StandardLibTemplate contains the methods used for building
 // an app that uses [net/http]
@@ -38,4 +40,7 @@ func (s StandardLibTemplate) Routes() []byte {
 
 func (s StandardLibTemplate) RoutesWithDB() []byte {
 	return standardDBRoutesTemplate
+}
+func (s StandardLibTemplate) TestHandler() []byte {
+    return standardTestHandlerTemplate
 }
