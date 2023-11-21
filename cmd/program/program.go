@@ -58,6 +58,7 @@ type DBDriverTemplater interface {
 	Env() []byte
 }
 
+// Move these
 var (
 	chiPackage     = []string{"github.com/go-chi/chi/v5"}
 	gorillaPackage = []string{"github.com/gorilla/mux"}
@@ -80,6 +81,7 @@ const (
 	internalServerPath   = "internal/server"
 	internalDatabasePath = "internal/database"
 	testHandlerPath      = "tests"
+	standardLib          = "standard = library"
 )
 
 // ExitCLI checks if the Project has been exited, and closes
@@ -94,6 +96,7 @@ func (p *Project) ExitCLI(tprogram *tea.Program) {
 	}
 }
 
+// Move this
 // createFrameWorkMap adds the current supported
 // Frameworks into a Project's FrameworkMap
 func (p *Project) createFrameworkMap() {
@@ -177,21 +180,12 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 	}
 
-	if err := createCommonFiles(projectPath, p); err != nil {
+	if err := setUpFramework(projectPath, p); err != nil {
 		cobra.CheckErr(err)
 	}
 
 	var err error
 	// stop here
-
-	// Install the correct package for the selected framework
-	if p.ProjectType != "standard library" {
-		err := utils.GoGetPackage(projectPath, p.FrameworkMap[p.ProjectType].packageName)
-		if err != nil {
-			log.Printf("Could not install go dependency for the chosen framework %v\n", err)
-			cobra.CheckErr(err)
-		}
-	}
 
 	// Install the correct package for the selected driver
 	if p.DBDriver != "none" {
@@ -217,13 +211,7 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
-	// Install the godotenv package
-	err = utils.GoGetPackage(projectPath, godotenvPackage)
-	if err != nil {
-		log.Printf("Could not install go dependency %v\n", err)
-		cobra.CheckErr(err)
-	}
-
+	// One
 	err = utils.CreateDirectoryIfNotExist(fmt.Sprintf("%s/%s", projectPath, cmdApiPath))
 	if err != nil {
 		log.Printf("Error creating path: %s", projectPath)
@@ -237,19 +225,21 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
+	// Two
 	err = utils.CreateDirectoryIfNotExist(fmt.Sprintf("%s/%s", projectPath, testHandlerPath))
 	if err != nil {
 		log.Printf("Error creating path: %s", projectPath)
 		cobra.CheckErr(err)
 		return err
 	}
-	// inject testhandler template
+
 	err = p.CreateFileWithInjection(testHandlerPath, projectPath, "handler_test.go", "tests")
 	if err != nil {
 		cobra.CheckErr(err)
 		return err
 	}
 
+	// Three
 	err = utils.CreateDirectoryIfNotExist(fmt.Sprintf("%s/%s", projectPath, internalServerPath))
 	if err != nil {
 		log.Printf("Error creating path: %s", internalServerPath)
@@ -285,29 +275,11 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
-	err = p.CreateFileWithInjection(root, projectPath, ".env", "env")
-	if err != nil {
-		log.Printf("Error injecting .env file: %v", err)
+	if err := createCommonFiles(projectPath, p); err != nil {
 		cobra.CheckErr(err)
-		return err
 	}
 
-	// Create .air.toml file
-	airTomlFile, err := os.Create(fmt.Sprintf("%s/.air.toml", projectPath))
-	if err != nil {
-		cobra.CheckErr(err)
-		return err
-	}
-
-	defer airTomlFile.Close()
-
-	// inject air.toml template
-	airTomlTemplate := template.Must(template.New("airtoml").Parse(string(framework.AirTomlTemplate())))
-	err = airTomlTemplate.Execute(airTomlFile, p)
-	if err != nil {
-		return err
-	}
-
+	// These can be saved for the end
 	err = utils.GoFmt(projectPath)
 	if err != nil {
 		log.Printf("Could not gofmt in new project %v\n", err)
@@ -335,7 +307,6 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 	defer createdFile.Close()
 
 	switch methodName {
-	// done
 	case "main":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Main())))
 		err = createdTemplate.Execute(createdFile, p)
@@ -357,19 +328,6 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 	case "tests":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.TestHandler())))
 		err = createdTemplate.Execute(createdFile, p)
-	case "env":
-		if p.DBDriver != "none" {
-
-			envBytes := [][]byte{
-				tpl.GlobalEnvTemplate(),
-				p.DBDriverMap[p.DBDriver].templater.Env(),
-			}
-			createdTemplate := template.Must(template.New(fileName).Parse(string(bytes.Join(envBytes, []byte("\n")))))
-			err = createdTemplate.Execute(createdFile, p)
-		} else {
-			createdTemplate := template.Must(template.New(fileName).Parse(string(tpl.GlobalEnvTemplate())))
-			err = createdTemplate.Execute(createdFile, p)
-		}
 	}
 
 	if err != nil {
@@ -396,17 +354,61 @@ func initializeProject(projectPath string, p *Project) error {
 	return nil
 }
 
-// createCommonFiles creates files like Makefile, README, etc.
+// createCommonFiles creates files like Makefile, README, etc., and .env file.
 func createCommonFiles(projectPath string, p *Project) error {
-	if err := utils.CreateFileFromTemplate(fmt.Sprintf("%s/Makefile", projectPath), framework.MakeTemplate(), p); err != nil {
-		return err
+	commonFiles := map[string][]byte{
+		"Makefile":   framework.MakeTemplate(),
+		"README.md":  framework.ReadmeTemplate(),
+		".gitignore": framework.GitIgnoreTemplate(),
+		".air.toml":  framework.AirTomlTemplate(),
 	}
 
-	if err := utils.CreateFileFromTemplate(fmt.Sprintf("%s/README.md", projectPath), framework.ReadmeTemplate(), p); err != nil {
-		return err
+	for fileName, templateContent := range commonFiles {
+		if err := utils.CreateFileFromTemplate(fmt.Sprintf("%s/%s", projectPath, fileName), templateContent, p); err != nil {
+			return err
+		}
 	}
 
-	if err := utils.CreateFileFromTemplate(fmt.Sprintf("%s/.gitignore", projectPath), framework.GitIgnoreTemplate(), p); err != nil {
+	// Create .env file
+	return createEnvFile(projectPath, p)
+}
+
+// createEnvFile creates the .env file based on the project settings.
+func createEnvFile(projectPath string, p *Project) error {
+	envFilePath := fmt.Sprintf("%s/.env", projectPath)
+	createdFile, err := os.Create(envFilePath)
+	if err != nil {
+		return err
+	}
+	defer createdFile.Close()
+
+	var createdTemplate *template.Template
+	if p.DBDriver != "none" {
+		envBytes := [][]byte{
+			tpl.GlobalEnvTemplate(),
+			p.DBDriverMap[p.DBDriver].templater.Env(),
+		}
+		createdTemplate = template.Must(template.New(".env").Parse(string(bytes.Join(envBytes, []byte("\n")))))
+	} else {
+		createdTemplate = template.Must(template.New(".env").Parse(string(tpl.GlobalEnvTemplate())))
+	}
+
+	return createdTemplate.Execute(createdFile, p)
+}
+
+func setUpFramework(projectPath string, p *Project) error {
+	if p.ProjectType != standardLib {
+		err := utils.GoGetPackage(projectPath, p.FrameworkMap[p.ProjectType].packageName)
+		if err != nil {
+			log.Printf("Could not install go dependency for the chosen framework %v\n", err)
+			return err
+		}
+	}
+
+	// Install the godotenv package
+	err := utils.GoGetPackage(projectPath, godotenvPackage)
+	if err != nil {
+		log.Printf("Could not install go dependency %v\n", err)
 		return err
 	}
 
