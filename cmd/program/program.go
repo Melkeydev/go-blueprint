@@ -5,16 +5,18 @@ package program
 import (
 	"bytes"
 	"fmt"
+	"html/template"
+	"log"
+	"os"
+	"strings"
+
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/melkeydev/go-blueprint/cmd/flags"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
 	"github.com/melkeydev/go-blueprint/cmd/template/dbdriver"
 	"github.com/melkeydev/go-blueprint/cmd/template/framework"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
 	"github.com/spf13/cobra"
-	"html/template"
-	"log"
-	"os"
-	"strings"
 )
 
 // A Project contains the data for the project folder
@@ -23,10 +25,10 @@ type Project struct {
 	ProjectName  string
 	Exit         bool
 	AbsolutePath string
-	ProjectType  string
-	DBDriver     string
-	FrameworkMap map[string]Framework
-	DBDriverMap  map[string]Driver
+	ProjectType  flags.Framework
+	DBDriver     flags.Database
+	FrameworkMap map[flags.Framework]Framework
+	DBDriverMap  map[flags.Database]Driver
 }
 
 // A Framework contains the name and templater for a
@@ -96,56 +98,56 @@ func (p *Project) ExitCLI(tprogram *tea.Program) {
 // createFrameWorkMap adds the current supported
 // Frameworks into a Project's FrameworkMap
 func (p *Project) createFrameworkMap() {
-	p.FrameworkMap["chi"] = Framework{
+	p.FrameworkMap[flags.Chi] = Framework{
 		packageName: chiPackage,
 		templater:   framework.ChiTemplates{},
 	}
 
-	p.FrameworkMap["standard library"] = Framework{
+	p.FrameworkMap[flags.StandardLibrary] = Framework{
 		packageName: []string{},
 		templater:   framework.StandardLibTemplate{},
 	}
 
-	p.FrameworkMap["gin"] = Framework{
+	p.FrameworkMap[flags.Gin] = Framework{
 		packageName: ginPackage,
 		templater:   framework.GinTemplates{},
 	}
 
-	p.FrameworkMap["fiber"] = Framework{
+	p.FrameworkMap[flags.Fiber] = Framework{
 		packageName: fiberPackage,
 		templater:   framework.FiberTemplates{},
 	}
 
-	p.FrameworkMap["gorilla/mux"] = Framework{
+	p.FrameworkMap[flags.GorillaMux] = Framework{
 		packageName: gorillaPackage,
 		templater:   framework.GorillaTemplates{},
 	}
 
-	p.FrameworkMap["httprouter"] = Framework{
+	p.FrameworkMap[flags.HttpRouter] = Framework{
 		packageName: routerPackage,
 		templater:   framework.RouterTemplates{},
 	}
 
-	p.FrameworkMap["echo"] = Framework{
+	p.FrameworkMap[flags.Echo] = Framework{
 		packageName: echoPackage,
 		templater:   framework.EchoTemplates{},
 	}
 }
 
 func (p *Project) createDBDriverMap() {
-	p.DBDriverMap["mysql"] = Driver{
+	p.DBDriverMap[flags.MySql] = Driver{
 		packageName: mysqlDriver,
 		templater:   dbdriver.MysqlTemplate{},
 	}
-	p.DBDriverMap["postgres"] = Driver{
+	p.DBDriverMap[flags.Postgres] = Driver{
 		packageName: postgresDriver,
 		templater:   dbdriver.PostgresTemplate{},
 	}
-	p.DBDriverMap["sqlite"] = Driver{
+	p.DBDriverMap[flags.Sqlite] = Driver{
 		packageName: sqliteDriver,
 		templater:   dbdriver.SqliteTemplate{},
 	}
-	p.DBDriverMap["mongo"] = Driver{
+	p.DBDriverMap[flags.Mongo] = Driver{
 		packageName: mongoDriver,
 		templater:   dbdriver.MongoTemplate{},
 	}
@@ -187,7 +189,7 @@ func (p *Project) CreateMainFile() error {
 	}
 
 	// Install the correct package for the selected framework
-	if p.ProjectType != "standard library" {
+	if p.ProjectType != flags.StandardLibrary {
 		err = utils.GoGetPackage(projectPath, p.FrameworkMap[p.ProjectType].packageName)
 		if err != nil {
 			log.Printf("Could not install go dependency for the chosen framework %v\n", err)
