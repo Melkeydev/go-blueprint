@@ -30,7 +30,6 @@ func (p *Project) ExitCLI(tprogram *tea.Program) {
 	}
 }
 
-// Move this
 // createFrameWorkMap adds the current supported
 // Frameworks into a Project's FrameworkMap
 func (p *Project) createFrameworkMap() {
@@ -118,9 +117,6 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 	}
 
-	var err error
-	// stop here
-
 	// Install the correct package for the selected driver
 	if p.DBDriver != "none" {
 		p.createDBDriverMap()
@@ -145,7 +141,6 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
-	// One
 	err = utils.CreateDirectoryIfNotExist(fmt.Sprintf("%s/%s", projectPath, cmdApiPath))
 	if err != nil {
 		log.Printf("Error creating path: %s", projectPath)
@@ -159,7 +154,6 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	// Two
 	err = utils.CreateDirectoryIfNotExist(fmt.Sprintf("%s/%s", projectPath, testHandlerPath))
 	if err != nil {
 		log.Printf("Error creating path: %s", projectPath)
@@ -173,7 +167,6 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	// Three
 	err = utils.CreateDirectoryIfNotExist(fmt.Sprintf("%s/%s", projectPath, internalServerPath))
 	if err != nil {
 		log.Printf("Error creating path: %s", internalServerPath)

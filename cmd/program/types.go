@@ -54,6 +54,9 @@ var (
 	mongoDriver    = []string{"go.mongodb.org/mongo-driver"}
 
 	godotenvPackage = []string{"github.com/joho/godotenv"}
+
+	// TODO: remove in a future bigger refactor
+	err error
 )
 
 const (
