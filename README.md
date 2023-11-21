@@ -25,13 +25,13 @@ gives the option to integrate with one of the more popular Go frameworks (and th
 - **Brew install :**
 
 ```sh
-brew install Melkeydev/melkey/go-blueprint
+brew install Beginbot/begin/go-blueprint
 ```
 
 - **Go install :**
 
 ```sh
-go install github.com/melkeydev/go-blueprint@latest
+go install github.com/begindev/go-blueprint@latest
 ```
 
 This installs a go binary that will automatically bind to your $GOPATH

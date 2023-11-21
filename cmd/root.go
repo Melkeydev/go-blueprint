@@ -1,5 +1,5 @@
 /*
-Copyright © 2023 Melkey melkeydev@gmail.com
+Copyright © 2023 Beginbot beginbot@gmail.com
 */
 package cmd
 
