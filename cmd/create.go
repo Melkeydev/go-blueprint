@@ -2,17 +2,19 @@ package cmd
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"strings"
+
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/melkeydev/go-blueprint/cmd/flags"
 	"github.com/melkeydev/go-blueprint/cmd/program"
 	"github.com/melkeydev/go-blueprint/cmd/steps"
 	"github.com/melkeydev/go-blueprint/cmd/ui/multiInput"
 	"github.com/melkeydev/go-blueprint/cmd/ui/textinput"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
 	"github.com/spf13/cobra"
-	"log"
-	"os"
-	"strings"
 )
 
 const logo = `
@@ -29,21 +31,22 @@ const logo = `
 `
 
 var (
-	logoStyle           = lipgloss.NewStyle().Foreground(lipgloss.Color("#01FAC6")).Bold(true)
-	tipMsgStyle         = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("190")).Italic(true)
-	endingMsgStyle      = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("170")).Bold(true)
-	allowedProjectTypes = []string{"chi", "gin", "fiber", "gorilla/mux", "httprouter", "standard-library", "echo"}
-	allowedDBDrivers    = []string{"mysql", "postgres", "sqlite", "mongo", "none"}
-	allowedWorkflows    = []string{"githubaction", "none"}
+	logoStyle      = lipgloss.NewStyle().Foreground(lipgloss.Color("#01FAC6")).Bold(true)
+	tipMsgStyle    = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("190")).Italic(true)
+	endingMsgStyle = lipgloss.NewStyle().PaddingLeft(1).Foreground(lipgloss.Color("170")).Bold(true)
 )
 
 func init() {
+	var flagFramework flags.Framework
+	var flagDBDriver flags.Database
+	var flagWorkflow flags.Workflow
+
 	rootCmd.AddCommand(createCmd)
 
 	createCmd.Flags().StringP("name", "n", "", "Name of project to create")
-	createCmd.Flags().StringP("framework", "f", "", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(allowedProjectTypes, ", ")))
-	createCmd.Flags().StringP("driver", "d", "", fmt.Sprintf("database drivers to use. Allowed values: %s", strings.Join(allowedDBDrivers, ", ")))
-	createCmd.Flags().StringP("workflow", "w", "", fmt.Sprintf("Workflow to use. Allowed values: %s", strings.Join(allowedWorkflows, ", ")))
+	createCmd.Flags().VarP(&flagFramework, "framework", "f", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(flags.AllowedProjectTypes, ", ")))
+	createCmd.Flags().VarP(&flagDBDriver, "driver", "d", fmt.Sprintf("database drivers to use. Allowed values: %s", strings.Join(flags.AllowedDBDrivers, ", ")))
+	createCmd.Flags().VarP(&flagWorkflow, "workflow", "w", fmt.Sprintf("Workflow to use. Allowed values: %s", strings.Join(flags.AllowedWorkflows, ", ")))
 }
 
 type Options struct {
@@ -69,33 +72,13 @@ var createCmd = &cobra.Command{
 			err = fmt.Errorf("directory '%s' already exists and is not empty. Please choose a different name", flagName)
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
-		
-		flagFramework := cmd.Flag("framework").Value.String()
-		flagWorkflow  := cmd.Flag("workflow").Value.String()
-		flagDBDriver := cmd.Flag("driver").Value.String()
 
-		if flagFramework != "" {
-			isValid := isValidProjectType(flagFramework, allowedProjectTypes)
-			if !isValid {
-				err = fmt.Errorf("project type '%s' is not valid. Valid types are: %s", flagFramework, strings.Join(allowedProjectTypes, ", "))
-				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
-			}
-		}
+		// VarP already validates the contents of the framework flag.
+		// If this flag is filled, it is always valid
+		flagFramework := flags.Framework(cmd.Flag("framework").Value.String())
+		flagDBDriver := flags.Database(cmd.Flag("driver").Value.String())
+		flagWorkflow := flags.Workflow(cmd.Flag("workflow").Value.String())
 
-		if flagDBDriver != "" {
-			isValid := isValidDBDriver(flagDBDriver, allowedDBDrivers)
-			if !isValid {
-				cobra.CheckErr(fmt.Errorf("database driver '%s' is not valid. Valid types are: %s", flagDBDriver, strings.Join(allowedDBDrivers, ", ")))
-			}
-		}
-
-		if  flagWorkflow != "" {
-			isValid := isValidWorkflow(flagWorkflow, allowedWorkflows)
-			if !isValid {
-				err = fmt.Errorf("Workflow type '%s' is not valid. Valid types are: %s", flagWorkflow, strings.Join(allowedWorkflows, ", "))
-				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
-			}
-		}
 
 		options := Options{
 			ProjectName: &textinput.Output{},
@@ -106,15 +89,15 @@ var createCmd = &cobra.Command{
 
 		project := &program.Project{
 			ProjectName:  flagName,
-			ProjectType:  strings.ReplaceAll(flagFramework, "-", " "),
+			ProjectType:  flagFramework,
 			DBDriver:     flagDBDriver,
 			Workflow:     flagWorkflow,
-			FrameworkMap: make(map[string]program.Framework),
-			DBDriverMap:  make(map[string]program.Driver),
-			WorkflowMap:  make(map[string]program.Workflow),
+			FrameworkMap: make(map[flags.Framework]program.Framework),
+			DBDriverMap:  make(map[flags.Database]program.Driver),
+			WorkflowMap:  make(map[flags.Workflow]program.Workflow),
 		}
 
-		steps := steps.InitSteps()
+		steps := steps.InitSteps(flagFramework, flagDBDriver, flagWorkflow)
 		fmt.Printf("%s\n", logoStyle.Render(logo))
 
 		if project.ProjectName == "" {
@@ -143,8 +126,13 @@ var createCmd = &cobra.Command{
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
 			project.ExitCLI(tprogram)
-			project.ProjectType = strings.ToLower(options.ProjectType.Choice)
-			err := cmd.Flag("framework").Value.Set(project.ProjectType)
+
+			step.Field = options.ProjectType.Choice
+
+			// this type casting is always safe since the user interface can
+			// only pass strings that can be cast to a flags.Framework instance
+			project.ProjectType = flags.Framework(strings.ToLower(options.ProjectType.Choice))
+			err := cmd.Flag("framework").Value.Set(project.ProjectType.String())
 			if err != nil {
 				log.Fatal("failed to set the framework flag value", err)
 			}
@@ -157,8 +145,11 @@ var createCmd = &cobra.Command{
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
 			project.ExitCLI(tprogram)
-			project.DBDriver = strings.ToLower(options.DBDriver.Choice)
-			err := cmd.Flag("driver").Value.Set(project.DBDriver)
+
+			// this type casting is always safe since the user interface can
+			// only pass strings that can be cast to a flags.Database instance
+			project.DBDriver = flags.Database(strings.ToLower(options.DBDriver.Choice))
+			err := cmd.Flag("driver").Value.Set(project.DBDriver.String())
 			if err != nil {
 				log.Fatal("failed to set the driver flag value", err)
 			}
@@ -171,8 +162,8 @@ var createCmd = &cobra.Command{
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
 			project.ExitCLI(tprogram)
-			project.Workflow = strings.ToLower(options.Workflow.Choice)
-			err := cmd.Flag("workflow").Value.Set(project.Workflow)
+			project.Workflow = flags.Workflow(strings.ToLower(options.Workflow.Choice))
+			err := cmd.Flag("workflow").Value.Set(project.Workflow.String())
 			if err != nil {
 				log.Fatal("failed to set the workflow flag value", err)
 			}
@@ -201,39 +192,6 @@ var createCmd = &cobra.Command{
 			fmt.Println(tipMsgStyle.Italic(false).Render(fmt.Sprintf("• %s\n", nonInteractiveCommand)))
 		}
 	},
-}
-
-// isValidProjectType checks if the inputted project type matches
-// the currently supported list of project types
-func isValidProjectType(input string, allowedTypes []string) bool {
-	for _, t := range allowedTypes {
-		if input == t {
-			return true
-		}
-	}
-	return false
-}
-
-// isValidDBDriver checks if the inputted database driver
-// the currently supported list of drivers
-func isValidDBDriver(input string, allowedDBDrivers []string) bool {
-	for _, d := range allowedDBDrivers {
-		if input == d {
-			return true
-		}
-	}
-	return false
-}
-
-// isValidDBDriver checks if the inputted database driver
-// the currently supported list of drivers
-func isValidWorkflow(input string, allowedWorkflows []string) bool {
-	for _, w := range allowedWorkflows {
-		if input == w {
-			return true
-		}
-	}
-	return false
 }
 
 // doesDirectoryExistAndIsNotEmpty checks if the directory exists and is not empty

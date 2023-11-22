@@ -2,12 +2,15 @@
 // each step of the CLI
 package steps
 
+import "github.com/melkeydev/go-blueprint/cmd/flags"
+
 // A StepSchema contains the data that is used
 // for an individual step of the CLI
 type StepSchema struct {
 	StepName string // The name of a given step
 	Options  []Item // The slice of each option for a given step
 	Headers  string // The title displayed at the top of a given step
+	Field    string
 }
 
 // Steps contains a slice of steps
@@ -22,14 +25,14 @@ type Item struct {
 }
 
 // InitSteps initializes and returns the *Steps to be used in the CLI program
-func InitSteps() *Steps {
+func InitSteps(projectType flags.Framework, databaseType flags.Database, workflowType flags.Workflow) *Steps {
 	steps := &Steps{
 		map[string]StepSchema{
 			"framework": {
 				StepName: "Go Project Framework",
 				Options: []Item{
 					{
-						Title: "Standard library",
+						Title: "Standard-library",
 						Desc:  "The built-in Go standard library HTTP package",
 					},
 					{
@@ -58,6 +61,7 @@ func InitSteps() *Steps {
 					},
 				},
 				Headers: "What framework do you want to use in your Go project?",
+				Field:   projectType.String(),
 			},
 			"driver": {
 				StepName: "Go Project Database Driver",
@@ -80,6 +84,7 @@ func InitSteps() *Steps {
 						Desc:  "Choose this option if you don't wish to install a specific database driver."},
 				},
 				Headers: "What database driver do you want to use in your Go project?",
+				Field:   databaseType.String(),
 			},
 			"workflow": {
 				StepName: "Go Project Workflow",
