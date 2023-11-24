@@ -24,5 +24,5 @@ func (m SqliteTemplate) Env() []byte {
 }
 
 func (m SqliteTemplate) EnvExample() []byte {
-	return sqliteEnvTemplate
+	return sqliteEnvExampleTemplate
 }
