@@ -24,7 +24,7 @@ gives the option to integrate with one of the more popular Go frameworks (and th
   - [Frameworks Supported](#frameworks-supported)
   - [Database Support](#database-support)
   - [Usage Example](#usage-example)
-  - [Licence](#license)
+  - [License](#license)
 
 
 
@@ -141,10 +141,10 @@ go-blueprint create --name my-project --framework gin --driver postgres
   <img src="./public/blueprint_1.png" alt="Starter Image" width="800"/>
 </p>
 
-<a id="licence"></a>
+<a id="license"></a>
 <h2>
   <picture>
-    <img src="./public/licence.gif?raw=true" width="50px" style="margin-right: 1px;">
+    <img src="./public/license.gif?raw=true" width="50px" style="margin-right: 1px;">
   </picture>
   Licence
 </h2>
