@@ -1,17 +1,17 @@
 <pre style="color: #01FAC6;">                                     
-                                         ____  _                       _       _
-                                        |  _ \| |                     (_)     | |
-                                        | |_) | |_   _  ___ _ __  _ __ _ _ __ | |_
-                                        |  _ <| | | | |/ _ \ '_ \| '__| | '_ \| __|
-                                        | |_) | | |_| |  __/ |_) | |  | | | | | |_
-                                        |____/|_|\__,_|\___| .__/|_|  |_|_| |_|\__|
-                                                            | |
-                                                            |_|
+                                    ____  _                       _       _
+                                   |  _ \| |                     (_)     | |
+                                   | |_) | |_   _  ___ _ __  _ __ _ _ __ | |_
+                                   |  _ <| | | | |/ _ \ '_ \| '__| | '_ \| __|
+                                   | |_) | | |_| |  __/ |_) | |  | | | | | |_
+                                   |____/|_|\__,_|\___| .__/|_|  |_|_| |_|\__|
+                                                       | |
+                                                       |_|
 </pre>          
 
 <div style="text-align: center;">
   <h1>
-    Introducing the Ultimate Golang Blueprint Library Github Stats
+    Introducing the Ultimate Golang Blueprint Library
   </h1>
 </div>
 
@@ -114,7 +114,7 @@ See `go-blueprint create -h` for all the options and shorthands.
 <a id="database-support"></a>
 <h2>
   <picture>
-    <img src="./public/database.gif?raw=true" width="45px" style="margin-right: 11px;">
+    <img src="./public/database.gif?raw=true" width="45px" style="margin-right: 15px;">
   </picture>
   Database Support
 </h2>
