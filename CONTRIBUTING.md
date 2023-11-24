@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping make the go-blueprint better! 
+Thanks for helping make go-blueprint better! 
 - [Contributing](#contributing)
   - [Design Principles](#design-principles)
   - [Report an Issue](#report-an-issue)
@@ -10,7 +10,7 @@ Thanks for helping make the go-blueprint better!
 
 ## Design Principles
 
-Contributions to the go-blueprint should align with the project’s design principles:
+Contributions to go-blueprint should align with the project’s design principles:
 
  * Maintain backwards compatibility whenever possible.
 
