@@ -14,6 +14,7 @@ import (
 	"github.com/melkeydev/go-blueprint/cmd/flags"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
 	"github.com/melkeydev/go-blueprint/cmd/template/dbdriver"
+	"github.com/melkeydev/go-blueprint/cmd/template/docker"
 	"github.com/melkeydev/go-blueprint/cmd/template/framework"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
 	"github.com/spf13/cobra"
@@ -27,8 +28,10 @@ type Project struct {
 	AbsolutePath string
 	ProjectType  flags.Framework
 	DBDriver     flags.Database
+	Docker       flags.Database
 	FrameworkMap map[flags.Framework]Framework
 	DBDriverMap  map[flags.Database]Driver
+	DockerMap    map[flags.Database]Docker
 }
 
 // A Framework contains the name and templater for a
@@ -43,6 +46,11 @@ type Driver struct {
 	templater   DBDriverTemplater
 }
 
+type Docker struct {
+	packageName []string
+	templater   DockerTemplater
+}
+
 // A Templater has the methods that help build the files
 // in the Project folder, and is specific to a Framework
 type Templater interface {
@@ -51,12 +59,17 @@ type Templater interface {
 	Routes() []byte
 	RoutesWithDB() []byte
 	ServerWithDB() []byte
-        TestHandler() []byte
+    	TestHandler() []byte
 }
 
 type DBDriverTemplater interface {
 	Service() []byte
 	Env() []byte
+	EnvExample() []byte
+}
+
+type DockerTemplater interface {
+	Docker() []byte
 }
 
 var (
@@ -80,7 +93,7 @@ const (
 	cmdApiPath           = "cmd/api"
 	internalServerPath   = "internal/server"
 	internalDatabasePath = "internal/database"
-    	testHandlerPath    = "tests"
+    	testHandlerPath      = "tests"
 )
 
 // ExitCLI checks if the Project has been exited, and closes
@@ -153,6 +166,23 @@ func (p *Project) createDBDriverMap() {
 	}
 }
 
+func (p *Project) createDockerMap() {
+	p.DockerMap = make(map[flags.Database]Docker)
+
+	p.DockerMap[flags.MySql] = Docker{
+		packageName: []string{},
+		templater:   docker.MysqlDockerTemplate{},
+	}
+	p.DockerMap[flags.Postgres] = Docker{
+		packageName: []string{},
+		templater:   docker.PostgresDockerTemplate{},
+	}
+	p.DockerMap[flags.Mongo] = Docker{
+		packageName: []string{},
+		templater:   docker.MongoDockerTemplate{},
+	}
+}
+
 // CreateMainFile creates the project folders and files,
 // and writes to them depending on the selected options
 func (p *Project) CreateMainFile() error {
@@ -215,9 +245,34 @@ func (p *Project) CreateMainFile() error {
 
 		err = p.CreateFileWithInjection(internalDatabasePath, projectPath, "database.go", "database")
 		if err != nil {
-			log.Printf("Error injecting server.go file: %v", err)
+			log.Printf("Error injecting database.go file: %v", err)
 			cobra.CheckErr(err)
 			return err
+		}
+	}
+
+	// Create correct docker compose for the selected driver
+	if p.DBDriver != "none" {
+
+		err = p.CreateFileWithInjection(root, projectPath, ".env.example", "env-example")
+    		if err != nil {
+    		    log.Printf("Error injecting .env.example file: %v", err)
+    		    cobra.CheckErr(err)
+    		    return err
+    		}
+
+		if p.DBDriver != "sqlite" {
+    		p.createDockerMap()
+    		p.Docker = p.DBDriver
+
+    		err = p.CreateFileWithInjection(root, projectPath, "docker-compose.yml", "db-docker")
+    		if err != nil {
+    		    log.Printf("Error injecting docker-compose.yml file: %v", err)
+    		    cobra.CheckErr(err)
+    		    return err
+    		}
+		} else {
+			fmt.Println("\nWe are unable to create docker-compose.yml file for an SQLite database")
 		}
 	}
 
@@ -421,9 +476,15 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 	case "database":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.Service())))
 		err = createdTemplate.Execute(createdFile, p)
-    case "tests":
-        createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.TestHandler())))
-        err = createdTemplate.Execute(createdFile, p)
+	case "db-docker":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DockerMap[p.Docker].templater.Docker())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "tests":
+    		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.TestHandler())))
+    		err = createdTemplate.Execute(createdFile, p)
+	case "env-example":
+    		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.EnvExample())))
+    		err = createdTemplate.Execute(createdFile, p)
 	case "env":
 		if p.DBDriver != "none" {
 
@@ -433,6 +494,7 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 			}
 			createdTemplate := template.Must(template.New(fileName).Parse(string(bytes.Join(envBytes, []byte("\n")))))
 			err = createdTemplate.Execute(createdFile, p)
+
 		} else {
 			createdTemplate := template.Must(template.New(fileName).Parse(string(tpl.GlobalEnvTemplate())))
 			err = createdTemplate.Execute(createdFile, p)

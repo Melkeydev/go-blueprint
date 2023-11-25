@@ -50,7 +50,7 @@ go-blueprint create
 You can also use the provided flags to set up a project without interacting with the UI.
 
 ```
-go-blueprint create --name my-project --framework gin
+go-blueprint create --name my-project --framework gin --driver postgres
 ```
 
 See `go-blueprint create -h` for all the options and shorthands.
