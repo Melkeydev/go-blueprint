@@ -40,17 +40,6 @@ gives the option to integrate with one of the more popular Go frameworks (and th
 </p>
 
 
-<div align="center">
-  <a href="https://star-history.com/#Melkeydev/go-blueprint&Date">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=Melkeydev/go-blueprint&type=Date&theme=dark" />
-      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=Melkeydev/go-blueprint&type=Date" />
-      <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=Melkeydev/go-blueprint&type=Date" />
-    </picture>
-  </a>
-</div>
-
-
 <a id="install"></a>
 <h2>
   <picture>
