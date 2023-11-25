@@ -59,13 +59,6 @@ gives the option to integrate with one of the more popular Go frameworks (and th
   Install
 </h2>
 
-- **Brew install :**
-
-```sh
-brew install Melkeydev/melkey/go-blueprint
-```
-
-- **Go install :**
 
 ```sh
 go install github.com/melkeydev/go-blueprint@latest
