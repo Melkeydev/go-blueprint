@@ -20,7 +20,7 @@ docker-run:
 		docker-compose up; \
 	fi
 
-# Showdown DB container
+# Shutdown DB container
 docker-down:
 	@if docker compose down 2>/dev/null; then \
 		: ; \
