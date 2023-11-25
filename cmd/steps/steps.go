@@ -86,6 +86,10 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 				Headers: "What database driver do you want to use in your Go project?",
 				Field:   databaseType.String(),
 			},
+			"advanced": {
+				StepName: "Advanced Features",
+				Headers:  "Do you want to choose from the advanced features?",
+			},
 		},
 	}
 

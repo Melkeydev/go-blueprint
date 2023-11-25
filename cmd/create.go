@@ -43,7 +43,8 @@ func init() {
 
 	createCmd.Flags().StringP("name", "n", "", "Name of project to create")
 	createCmd.Flags().VarP(&flagFramework, "framework", "f", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(flags.AllowedProjectTypes, ", ")))
-	createCmd.Flags().VarP(&flagDBDriver, "driver", "d", fmt.Sprintf("database drivers to use. Allowed values: %s", strings.Join(flags.AllowedDBDrivers, ", ")))
+	createCmd.Flags().VarP(&flagDBDriver, "driver", "d", fmt.Sprintf("Database drivers to use. Allowed values: %s", strings.Join(flags.AllowedDBDrivers, ", ")))
+	createCmd.Flags().BoolP("advanced", "a", false, "Get prompts for advanced features")
 }
 
 type Options struct {
@@ -144,6 +145,15 @@ var createCmd = &cobra.Command{
 			if err != nil {
 				log.Fatal("failed to set the driver flag value", err)
 			}
+		}
+
+		flagAdvanced, err := cmd.Flags().GetBool("advanced")
+		if err != nil {
+			log.Fatal("failed to retrieve advanced flag")
+		}
+		if flagAdvanced {
+			fmt.Println("unimplemented")
+			// TODO: Add advanced input options. (HTMX/Templ etc.)
 		}
 
 		currentWorkingDir, err := os.Getwd()
