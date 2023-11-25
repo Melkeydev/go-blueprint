@@ -1,4 +1,4 @@
-![logo](./public/logo.png)       
+![logo](./public/logo.png)
 
 <div style="text-align: center;">
   <h1>
@@ -17,25 +17,23 @@ gives the option to integrate with one of the more popular Go frameworks (and th
 - Integrate with a popular frameworks
 - Focus on the actual code of your application
 
-
 ## Table of Contents
 
-  - [Install](#install)
-  - [Frameworks Supported](#frameworks-supported)
-  - [Database Support](#database-support)
-  - [Usage Example](#usage-example)
-  - [GitHub Stats](#github-stats)
-  - [License](#license)
-
+- [Install](#install)
+- [Frameworks Supported](#frameworks-supported)
+- [Database Support](#database-support)
+- [Usage Example](#usage-example)
+- [GitHub Stats](#github-stats)
+- [License](#license)
 
 <a id="install"></a>
+
 <h2>
   <picture>
     <img src="./public/install.gif?raw=true" width="60px" style="margin-right: 1px;">
   </picture>
   Install
 </h2>
-
 
 ```sh
 go install github.com/melkeydev/go-blueprint@latest
@@ -58,6 +56,7 @@ go-blueprint create --name my-project --framework gin
 See `go-blueprint create -h` for all the options and shorthands.
 
 <a id="frameworks-supported"></a>
+
 <h2>
   <picture>
     <img src="./public/frameworks.gif?raw=true" width="60px" style="margin-right: 1px;">
@@ -73,13 +72,13 @@ See `go-blueprint create -h` for all the options and shorthands.
 - [Echo](https://github.com/labstack/echo)
 
 <a id="database-support"></a>
+
 <h2>
   <picture>
     <img src="./public/database.gif?raw=true" width="45px" style="margin-right: 15px;">
   </picture>
   Database Support
 </h2>
-
 
 Go Blueprint now offers enhanced database support, allowing you to choose your preferred database driver during project setup. Use the `--driver` or `-d` flag to specify the database driver you want to integrate into your project.
 
@@ -92,8 +91,8 @@ Choose from a variety of supported database drivers:
 - [Sqlite](https://github.com/mattn/go-sqlite3)
 - [Mongo](go.mongodb.org/mongo-driver)
 
-
 <a id="usage-example"></a>
+
 <h2>
   <picture>
     <img src="./public/example.gif?raw=true" width="60px" style="margin-right: 1px;">
@@ -112,6 +111,7 @@ go-blueprint create --name my-project --framework gin --driver postgres
 </p>
 
 <a id="github-stats"></a>
+
 <h2>
   <picture>
     <img src="./public/stats.gif?raw=true" width="45px" style="margin-right: 10px;">
@@ -120,10 +120,11 @@ go-blueprint create --name my-project --framework gin --driver postgres
 </h2>
 
 <p align="center">
-  <img alt="Alt" src="https://repobeats.axiom.co/api/embed/3557480bb28f59e25233fc0458e681e4424b57a9.svg" title="Repobeats analytics image"/>
+  <img alt="Alt" src="https://repobeats.axiom.co/api/embed/7c4be18864d441f961be61186ce49b5471a9e7bf.svg" title="Repobeats analytics image"/>
 </p>
 
 <a id="license"></a>
+
 <h2>
   <picture>
     <img src="./public/license.gif?raw=true" width="50px" style="margin-right: 1px;">
