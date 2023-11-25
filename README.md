@@ -24,20 +24,8 @@ gives the option to integrate with one of the more popular Go frameworks (and th
   - [Frameworks Supported](#frameworks-supported)
   - [Database Support](#database-support)
   - [Usage Example](#usage-example)
+  - [GitHub Stats](#github-stats)
   - [License](#license)
-
-
-
-<h2>
-  <picture>
-    <img src="./public/stats.gif?raw=true" width="45px" style="margin-right: 10px;">
-  </picture>
-  Github Stats
-</h2>
-
-<p align="center">
-  <img alt="Alt" src="https://repobeats.axiom.co/api/embed/3557480bb28f59e25233fc0458e681e4424b57a9.svg" title="Repobeats analytics image"/>
-</p>
 
 
 <a id="install"></a>
@@ -121,6 +109,18 @@ go-blueprint create --name my-project --framework gin --driver postgres
 
 <p align="center">
   <img src="./public/blueprint_1.png" alt="Starter Image" width="800"/>
+</p>
+
+<a id="github-stats"></a>
+<h2>
+  <picture>
+    <img src="./public/stats.gif?raw=true" width="45px" style="margin-right: 10px;">
+  </picture>
+  Github Stats
+</h2>
+
+<p align="center">
+  <img alt="Alt" src="https://repobeats.axiom.co/api/embed/3557480bb28f59e25233fc0458e681e4424b57a9.svg" title="Repobeats analytics image"/>
 </p>
 
 <a id="license"></a>
