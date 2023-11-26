@@ -1,0 +1,17 @@
+package web
+
+templ Base() {
+	<!DOCTYPE html>
+	<html class="h-full bg-white" lang="en">
+		<head>
+			<meta charset="utf-8"/>
+			<title>Go Blueprint Hello</title>
+			<script src="/js/htmx.min.js"></script>
+		</head>
+		<body class="h-full">
+			<main>
+				{ children... }
+			</main>
+		</body>
+	</html>
+}

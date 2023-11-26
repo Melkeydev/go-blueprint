@@ -29,6 +29,7 @@ type Project struct {
 	DBDriver     flags.Database
 	FrameworkMap map[flags.Framework]Framework
 	DBDriverMap  map[flags.Database]Driver
+	AddHTMXTempl bool
 }
 
 // A Framework contains the name and templater for a
@@ -51,7 +52,7 @@ type Templater interface {
 	Routes() []byte
 	RoutesWithDB() []byte
 	ServerWithDB() []byte
-        TestHandler() []byte
+	TestHandler() []byte
 }
 
 type DBDriverTemplater interface {
@@ -73,14 +74,16 @@ var (
 	mongoDriver    = []string{"go.mongodb.org/mongo-driver"}
 
 	godotenvPackage = []string{"github.com/joho/godotenv"}
+	templPackage    = []string{"github.com/a-h/templ"}
 )
 
 const (
 	root                 = "/"
 	cmdApiPath           = "cmd/api"
+	cmdWebPath           = "cmd/web"
 	internalServerPath   = "internal/server"
 	internalDatabasePath = "internal/database"
-    	testHandlerPath    = "tests"
+	testHandlerPath      = "tests"
 )
 
 // ExitCLI checks if the Project has been exited, and closes
@@ -241,18 +244,18 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-    	err = p.CreatePath(testHandlerPath, projectPath)
-    	if err != nil {
-        	log.Printf("Error creating path: %s", projectPath)
-        	cobra.CheckErr(err)
-        	return err
-    	}
-    	// inject testhandler template
-    	err = p.CreateFileWithInjection(testHandlerPath, projectPath, "handler_test.go", "tests")
-    	if err != nil {
-        	cobra.CheckErr(err)
-        	return err
-    	}
+	err = p.CreatePath(testHandlerPath, projectPath)
+	if err != nil {
+		log.Printf("Error creating path: %s", projectPath)
+		cobra.CheckErr(err)
+		return err
+	}
+	// inject testhandler template
+	err = p.CreateFileWithInjection(testHandlerPath, projectPath, "handler_test.go", "tests")
+	if err != nil {
+		cobra.CheckErr(err)
+		return err
+	}
 
 	makeFile, err := os.Create(fmt.Sprintf("%s/Makefile", projectPath))
 	if err != nil {
@@ -288,6 +291,89 @@ func (p *Project) CreateMainFile() error {
 		log.Printf("Error creating path: %s", internalServerPath)
 		cobra.CheckErr(err)
 		return err
+	}
+
+	if p.AddHTMXTempl {
+		// create folders and hello world file
+		err = p.CreatePath(cmdWebPath, projectPath)
+		if err != nil {
+			cobra.CheckErr(err)
+			return err
+		}
+		helloTemplFile, err := os.Create(fmt.Sprintf("%s/%s/hello.templ", projectPath, cmdWebPath))
+		if err != nil {
+			cobra.CheckErr(err)
+		}
+		defer helloTemplFile.Close()
+
+		//inject hello.templ template
+		helloTemplTemplate := template.Must(template.New("hellotempl").Parse((string(framework.HelloTemplTemplate()))))
+		err = helloTemplTemplate.Execute(helloTemplFile, p)
+		if err != nil {
+			return err
+		}
+
+		baseTemplFile, err := os.Create(fmt.Sprintf("%s/%s/base.templ", projectPath, cmdWebPath))
+		if err != nil {
+			cobra.CheckErr(err)
+		}
+		defer baseTemplFile.Close()
+
+		baseTemplTemplate := template.Must(template.New("basetempl").Parse((string(framework.BaseTemplTemplate()))))
+		err = baseTemplTemplate.Execute(baseTemplFile, p)
+		if err != nil {
+			return err
+		}
+
+		err = os.Mkdir(fmt.Sprintf("%s/%s/js", projectPath, cmdWebPath), 0755)
+		if err != nil {
+			cobra.CheckErr(err)
+		}
+
+		htmxMinJsFile, err := os.Create(fmt.Sprintf("%s/%s/js/htmx.min.js", projectPath, cmdWebPath))
+		if err != nil {
+			cobra.CheckErr(err)
+		}
+		defer htmxMinJsFile.Close()
+
+		htmxMinJsTemplate := framework.HtmxJSTemplate()
+		err = os.WriteFile(fmt.Sprintf("%s/%s/js/htmx.min.js", projectPath, cmdWebPath), htmxMinJsTemplate, 0644)
+		if err != nil {
+			return err
+		}
+
+		efsFile, err := os.Create(fmt.Sprintf("%s/%s/efs.go", projectPath, cmdWebPath))
+		if err != nil {
+			cobra.CheckErr(err)
+		}
+		defer efsFile.Close()
+
+		efsTemplate := template.Must(template.New("efs").Parse((string(framework.EfsTemplate()))))
+		err = efsTemplate.Execute(efsFile, p)
+		if err != nil {
+			return err
+		}
+
+		err = utils.GoGetPackage(projectPath, templPackage)
+		if err != nil {
+			log.Printf("Could not install go dependency %v\n", err)
+			cobra.CheckErr(err)
+		}
+
+		helloGoFile, err := os.Create(fmt.Sprintf("%s/%s/hello.go", projectPath, cmdWebPath))
+		if err != nil {
+			cobra.CheckErr(err)
+		}
+		defer efsFile.Close()
+
+		helloGoTemplate := template.Must(template.New("efs").Parse((string(framework.HelloGoTemplate()))))
+		err = helloGoTemplate.Execute(helloGoFile, p)
+		if err != nil {
+			return err
+		}
+
+		// update routes with htmx/web paths
+		// utils.AddHTMXImports(p.ProjectType.String(), p.ProjectName)
 	}
 
 	if p.DBDriver != "none" {
@@ -413,7 +499,11 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.ServerWithDB())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "routes":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Routes())))
+		routeFileBytes := p.FrameworkMap[p.ProjectType].templater.Routes()
+		if p.AddHTMXTempl {
+			routeFileBytes = utils.AddHTMXImports(p.ProjectType.String(), routeFileBytes, p.ProjectName)
+		}
+		createdTemplate := template.Must(template.New(fileName).Parse(string(routeFileBytes)))
 		err = createdTemplate.Execute(createdFile, p)
 	case "routesWithDB":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.RoutesWithDB())))
@@ -421,9 +511,9 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 	case "database":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.Service())))
 		err = createdTemplate.Execute(createdFile, p)
-    case "tests":
-        createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.TestHandler())))
-        err = createdTemplate.Execute(createdFile, p)
+	case "tests":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.TestHandler())))
+		err = createdTemplate.Execute(createdFile, p)
 	case "env":
 		if p.DBDriver != "none" {
 
