@@ -431,6 +431,20 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 	}
 
+    // Git add files
+    err = utils.ExecuteCmd("git", []string{"add", "."}, projectPath)
+    if err != nil {
+        log.Printf("Error adding files to git repo: %v", err)
+        cobra.CheckErr(err)
+        return err
+    }
+    // Git commit files
+    err = utils.ExecuteCmd("git", []string{"commit", "-m", "Initial commit"}, projectPath)
+    if err != nil {
+        log.Printf("Error committing files to git repo: %v", err)
+        cobra.CheckErr(err)
+        return err
+    }
 	return nil
 }
 
