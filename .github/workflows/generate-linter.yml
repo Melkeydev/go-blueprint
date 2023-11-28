@@ -22,14 +22,13 @@ jobs:
       matrix:
         framework:
           [chi, gin, fiber, gorilla/mux, httprouter, standard-library, echo]
-        driver:
-          [mysql, postgres, sqlite, mongo, none]
+        driver: [mysql, postgres, sqlite, mongo, none]
         goVersion: ["1.20"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: build templates
-        run: go run main.go create -n ${{ matrix.framework }} -f ${{ matrix.framework}} -d ${{ matrix.driver }}
+        run: script -q /dev/null -c "go run main.go create -n ${{ matrix.framework }} -f ${{ matrix.framework}} -d ${{matrix.driver}}" /dev/null
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
