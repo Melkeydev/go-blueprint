@@ -31,7 +31,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: build templates
-        run: script -q /dev/null -c "go run main.go create -n ${{ matrix.framework }} -f ${{ matrix.framework}} -d ${{matrix.driver}}" /dev/null
+        run: script -q /dev/null -c "go run main.go create -n ${{ matrix.framework }} -f ${{ matrix.framework}} -d ${{matrix.driver}} -w ${{matrix.workflow}}" /dev/null
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
