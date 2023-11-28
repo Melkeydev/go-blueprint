@@ -65,7 +65,6 @@ type Templater interface {
 type DBDriverTemplater interface {
 	Service() []byte
 	Env() []byte
-	EnvExample() []byte
 }
 
 type DockerTemplater interface {
@@ -253,13 +252,6 @@ func (p *Project) CreateMainFile() error {
 
 	// Create correct docker compose for the selected driver
 	if p.DBDriver != "none" {
-
-		err = p.CreateFileWithInjection(root, projectPath, ".env.example", "env-example")
-    		if err != nil {
-    		    log.Printf("Error injecting .env.example file: %v", err)
-    		    cobra.CheckErr(err)
-    		    return err
-    		}
 
 		if p.DBDriver != "sqlite" {
     		p.createDockerMap()
@@ -481,9 +473,6 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		err = createdTemplate.Execute(createdFile, p)
 	case "tests":
     		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.TestHandler())))
-    		err = createdTemplate.Execute(createdFile, p)
-	case "env-example":
-    		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.EnvExample())))
     		err = createdTemplate.Execute(createdFile, p)
 	case "env":
 		if p.DBDriver != "none" {
