@@ -18,6 +18,9 @@ var readmeTemplate []byte
 //go:embed files/makefile.tmpl
 var makeTemplate []byte
 
+//go:embed files/makeFileSqlite.tmpl
+var makeTemplateSqlite []byte
+
 //go:embed files/gitignore.tmpl
 var gitIgnoreTemplate []byte
 
@@ -25,6 +28,10 @@ var gitIgnoreTemplate []byte
 // the default Makefile template.
 func MakeTemplate() []byte {
 	return makeTemplate
+}
+
+func MakeTemplateSqlite() []byte {
+    return makeTemplateSqlite
 }
 
 func GitIgnoreTemplate() []byte {

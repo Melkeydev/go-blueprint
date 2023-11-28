@@ -309,12 +309,21 @@ func (p *Project) CreateMainFile() error {
 
 	defer makeFile.Close()
 
-	// inject makefile template
-	makeFileTemplate := template.Must(template.New("makefile").Parse(string(framework.MakeTemplate())))
-	err = makeFileTemplate.Execute(makeFile, p)
-	if err != nil {
-		return err
-	}
+    if p.DBDriver == "sqlite" || p.DBDriver == "none"{
+        // inject makefile template
+        makeFileTemplate := template.Must(template.New("makefile").Parse(string(framework.MakeTemplateSqlite())))
+        err = makeFileTemplate.Execute(makeFile, p)
+        if err != nil {
+            return err
+        }
+    } else {
+        // inject makefile template
+        makeFileTemplate := template.Must(template.New("makefile").Parse(string(framework.MakeTemplate())))
+        err = makeFileTemplate.Execute(makeFile, p)
+        if err != nil {
+            return err
+        }
+    }
 
 	readmeFile, err := os.Create(fmt.Sprintf("%s/README.md", projectPath))
 	if err != nil {
