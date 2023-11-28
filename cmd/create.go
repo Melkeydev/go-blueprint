@@ -161,7 +161,6 @@ var createCmd = &cobra.Command{
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			// only run the spinner if the command is interactive
 			if _, err := spinner.Run(); err != nil {
 				cobra.CheckErr(err)
 			}
