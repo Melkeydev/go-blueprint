@@ -123,6 +123,6 @@ func (m model) View() string {
 		s += fmt.Sprintf("%s [%s] %s\n%s\n\n", cursor, checked, title, description)
 	}
 
-	s += fmt.Sprintf("Press %s to confirm choice.\n", focusedStyle.Render("y"))
+	s += fmt.Sprintf("Press %s to confirm choice.\n\n", focusedStyle.Render("y"))
 	return s
 }
