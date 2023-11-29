@@ -41,17 +41,21 @@ var (
 func init() {
 	var flagFramework flags.Framework
 	var flagDBDriver flags.Database
+	var flagWorkflow flags.Workflow
+
 	rootCmd.AddCommand(createCmd)
 
 	createCmd.Flags().StringP("name", "n", "", "Name of project to create")
 	createCmd.Flags().VarP(&flagFramework, "framework", "f", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(flags.AllowedProjectTypes, ", ")))
 	createCmd.Flags().VarP(&flagDBDriver, "driver", "d", fmt.Sprintf("database drivers to use. Allowed values: %s", strings.Join(flags.AllowedDBDrivers, ", ")))
+	createCmd.Flags().VarP(&flagWorkflow, "workflow", "w", fmt.Sprintf("Workflow to use. Allowed values: %s", strings.Join(flags.AllowedWorkflows, ", ")))
 }
 
 type Options struct {
 	ProjectName *textinput.Output
 	ProjectType *multiInput.Selection
 	DBDriver    *multiInput.Selection
+	Workflow    *multiInput.Selection
 }
 
 // createCmd defines the "create" command for the CLI
@@ -75,22 +79,27 @@ var createCmd = &cobra.Command{
 		// If this flag is filled, it is always valid
 		flagFramework := flags.Framework(cmd.Flag("framework").Value.String())
 		flagDBDriver := flags.Database(cmd.Flag("driver").Value.String())
+		flagWorkflow := flags.Workflow(cmd.Flag("workflow").Value.String())
+
 
 		options := Options{
 			ProjectName: &textinput.Output{},
 			ProjectType: &multiInput.Selection{},
 			DBDriver:    &multiInput.Selection{},
+			Workflow:	 &multiInput.Selection{},
 		}
 
 		project := &program.Project{
 			ProjectName:  flagName,
 			ProjectType:  flagFramework,
 			DBDriver:     flagDBDriver,
+			Workflow:     flagWorkflow,
 			FrameworkMap: make(map[flags.Framework]program.Framework),
 			DBDriverMap:  make(map[flags.Database]program.Driver),
+			WorkflowMap:  make(map[flags.Workflow]program.Workflow),
 		}
 
-		steps := steps.InitSteps(flagFramework, flagDBDriver)
+		steps := steps.InitSteps(flagFramework, flagDBDriver, flagWorkflow)
 		fmt.Printf("%s\n", logoStyle.Render(logo))
 
 		if project.ProjectName == "" {
@@ -145,6 +154,20 @@ var createCmd = &cobra.Command{
 			err := cmd.Flag("driver").Value.Set(project.DBDriver.String())
 			if err != nil {
 				log.Fatal("failed to set the driver flag value", err)
+			}
+		}
+
+		if project.Workflow == "" {
+			step := steps.Steps["workflow"]
+			tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, options.Workflow, step.Headers, project))
+			if _, err := tprogram.Run(); err != nil {
+				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
+			}
+			project.ExitCLI(tprogram)
+			project.Workflow = flags.Workflow(strings.ToLower(options.Workflow.Choice))
+			err := cmd.Flag("workflow").Value.Set(project.Workflow.String())
+			if err != nil {
+				log.Fatal("failed to set the workflow flag value", err)
 			}
 		}
 

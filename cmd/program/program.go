@@ -16,6 +16,7 @@ import (
 	"github.com/melkeydev/go-blueprint/cmd/template/dbdriver"
 	"github.com/melkeydev/go-blueprint/cmd/template/docker"
 	"github.com/melkeydev/go-blueprint/cmd/template/framework"
+	"github.com/melkeydev/go-blueprint/cmd/template/workflow"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
 	"github.com/spf13/cobra"
 )
@@ -29,9 +30,11 @@ type Project struct {
 	ProjectType  flags.Framework
 	DBDriver     flags.Database
 	Docker       flags.Database
+	Workflow     flags.Workflow
 	FrameworkMap map[flags.Framework]Framework
 	DBDriverMap  map[flags.Database]Driver
 	DockerMap    map[flags.Database]Docker
+	WorkflowMap  map[flags.Workflow]Workflow
 }
 
 // A Framework contains the name and templater for a
@@ -44,6 +47,11 @@ type Framework struct {
 type Driver struct {
 	packageName []string
 	templater   DBDriverTemplater
+}
+
+type Workflow struct {
+	packageName []string
+	templater   WorkflowTemplater
 }
 
 type Docker struct {
@@ -72,6 +80,12 @@ type DockerTemplater interface {
 	Docker() []byte
 }
 
+type WorkflowTemplater interface {
+	File_1() []byte
+	File_2() []byte
+	File_3() []byte
+}
+
 var (
 	chiPackage     = []string{"github.com/go-chi/chi/v5"}
 	gorillaPackage = []string{"github.com/gorilla/mux"}
@@ -93,7 +107,8 @@ const (
 	cmdApiPath           = "cmd/api"
 	internalServerPath   = "internal/server"
 	internalDatabasePath = "internal/database"
-    	testHandlerPath      = "tests"
+	gitHubActionPath     = ".github/workflows"
+    	testHandlerPath  = "tests"
 )
 
 // ExitCLI checks if the Project has been exited, and closes
@@ -166,6 +181,15 @@ func (p *Project) createDBDriverMap() {
 	}
 }
 
+// create WorkflowMap adds the current supported
+// Workflows into a Project's WorkflowMap
+func (p *Project) createWorkflowMap() {
+	p.WorkflowMap[flags.GitHubAction] = Workflow{
+		packageName: []string{},
+		templater:   workflow.GitHubActionTemplate{},
+	}
+}
+
 func (p *Project) createDockerMap() {
 	p.DockerMap = make(map[flags.Database]Docker)
 
@@ -218,6 +242,38 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 	}
 
+	// Create .github/workflows folder and inject release.yml and go-test.yml
+	if p.Workflow != "none" {
+		p.createWorkflowMap()
+
+		err = p.CreatePath(gitHubActionPath, projectPath)
+		if err != nil {
+			log.Printf("Error creating path: %s", gitHubActionPath)
+			cobra.CheckErr(err)
+			return err
+		}
+
+		err = p.CreateFileWithInjection(gitHubActionPath, projectPath, "release.yml", "file1")
+		if err != nil {
+			log.Printf("Error injecting release.yml file: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}
+
+		err = p.CreateFileWithInjection(gitHubActionPath, projectPath, "go-test.yml", "file2")
+		if err != nil {
+			log.Printf("Error injecting go-test.yml file: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}
+
+		err = p.CreateFileWithInjection(root, projectPath, ".goreleaser.yml", "file3")
+		if err != nil {
+			log.Printf("Error injecting .goreleaser.yml file: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}	
+	}
 	// Install the correct package for the selected framework
 	if p.ProjectType != flags.StandardLibrary {
 		err = utils.GoGetPackage(projectPath, p.FrameworkMap[p.ProjectType].packageName)
@@ -469,6 +525,15 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		err = createdTemplate.Execute(createdFile, p)
 	case "routes":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Routes())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "file1":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.WorkflowMap[p.Workflow].templater.File_1())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "file2":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.WorkflowMap[p.Workflow].templater.File_2())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "file3":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.WorkflowMap[p.Workflow].templater.File_3())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "routesWithDB":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.RoutesWithDB())))
