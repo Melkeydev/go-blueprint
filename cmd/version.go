@@ -14,10 +14,12 @@ import (
 // GoBlueprintVersion is the version of the cli to be overwritten by goreleaser in the CI run with the version of the release in github
 var GoBlueprintVersion string
 
-// Go Blueprint needs to be built in a specific way to provide useful version information
-// First we try to get the version from ldflags embedded into GoBlueprintVersion
-// Secondly we try to get the version from from the embedded build info
-// Finally we try to get the version from other embedded VCS info
+// Go Blueprint needs to be built in a specific way to provide useful version information.
+// First we try to get the version from ldflags embedded into GoBlueprintVersion.
+// Then we try to get the version from from the go.mod build info. 
+// If Go Blueprint is installed with a specific version tag or using @latest then that version will be included in bi.Main.Version. 
+// This won't give any version info when running 'go install' on the binary locally.
+// Finally we try to get the version from other embedded VCS info.
 func getGoBlueprintVersion() string {
 	noVersionAvailable := "No version info available for this build, run 'go-blueprint help version' for additional info"
 	
@@ -61,9 +63,9 @@ var versionCmd = &cobra.Command{
 The version command provides information about the application's version.
 
 Go Blueprint requires version information to be embedded at compile time.
-For detailed version information, Go Blueprint needs to be built as specified in the installation instructions.
-If Go Blueprint is built within a version control repository, the Go command will
-embed the revision hash if available.
+For detailed version information, Go Blueprint needs to be built as specified in the README installation instructions.
+If Go Blueprint is built within a version control repository and other version info isn't available,
+the revision hash will be used instead.
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
 		version := getGoBlueprintVersion()
