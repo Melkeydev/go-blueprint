@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strconv"
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -50,11 +49,14 @@ func init() {
 }
 
 type Options struct {
-	ProjectName  *textinput.Output
-	ProjectType  *multiInput.Selection
-	DBDriver     *multiInput.Selection
+	ProjectName *textinput.Output
+	ProjectType *multiInput.Selection
+	DBDriver    *multiInput.Selection
+	Advanced    AdvancedOptions
+}
+
+type AdvancedOptions struct {
 	AddHTMXTempl *booleanInput.Selection
-	Advanced     *booleanInput.Selection
 }
 
 // createCmd defines the "create" command for the CLI
@@ -80,11 +82,12 @@ var createCmd = &cobra.Command{
 		flagDBDriver := flags.Database(cmd.Flag("driver").Value.String())
 
 		options := Options{
-			ProjectName:  &textinput.Output{},
-			ProjectType:  &multiInput.Selection{},
-			DBDriver:     &multiInput.Selection{},
-			AddHTMXTempl: &booleanInput.Selection{},
-			Advanced:     &booleanInput.Selection{},
+			ProjectName: &textinput.Output{},
+			ProjectType: &multiInput.Selection{},
+			DBDriver:    &multiInput.Selection{},
+			Advanced: AdvancedOptions{
+				AddHTMXTempl: &booleanInput.Selection{},
+			},
 		}
 
 		project := &program.Project{
@@ -159,31 +162,20 @@ var createCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal("failed to retrieve advanced flag")
 		}
-		if !flagAdvanced {
-			step := steps.Steps["advanced"]
-			tprogram = tea.NewProgram(booleanInput.InitialBoolInput(options.Advanced, step.Headers, project))
-			if _, err := tprogram.Run(); err != nil {
-				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
-			}
-			project.ExitCLI(tprogram)
-			flagAdvanced = options.Advanced.Choice
-			err := cmd.Flags().Set("advanced", strconv.FormatBool(flagAdvanced))
-			if err != nil {
-				log.Fatal("failed to set the driver flag value", err)
-			}
-		}
 
 		if flagAdvanced {
 			aStep := advancedSteps.Steps["htmxTempl"]
-			tprogram = tea.NewProgram((booleanInput.InitialBoolInput(options.AddHTMXTempl, aStep.Headers, project)))
+			tprogram = tea.NewProgram((booleanInput.InitialBoolInput(options.Advanced.AddHTMXTempl, aStep.Headers, project)))
 			if _, err := tprogram.Run(); err != nil {
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
 			project.ExitCLI(tprogram)
-			project.AddHTMXTempl = options.AddHTMXTempl.Choice
+			project.Advanced.AddHTMXTempl = options.Advanced.AddHTMXTempl.Choice
 			if err != nil {
 				log.Fatal("failed to set the htmx option", err)
 			}
+
+			// more advanced options to come
 		}
 
 		currentWorkingDir, err := os.Getwd()
@@ -203,7 +195,7 @@ var createCmd = &cobra.Command{
 		fmt.Println(endingMsgStyle.Render("\nNext steps:"))
 		fmt.Println(endingMsgStyle.Render(fmt.Sprintf("• cd into the newly created project with: `cd %s`\n", project.ProjectName)))
 
-		if options.AddHTMXTempl.Choice {
+		if options.Advanced.AddHTMXTempl.Choice {
 			fmt.Println(endingMsgStyle.Render("• Install the templ cli if you haven't already by running `go install github.com/a-h/templ/cmd/templ@latest`\n"))
 			fmt.Println(endingMsgStyle.Render("• Generate templ function files by running `templ generate`\n"))
 		}

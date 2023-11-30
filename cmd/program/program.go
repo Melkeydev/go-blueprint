@@ -13,6 +13,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/melkeydev/go-blueprint/cmd/flags"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
+	"github.com/melkeydev/go-blueprint/cmd/template/advanced"
 	"github.com/melkeydev/go-blueprint/cmd/template/dbdriver"
 	"github.com/melkeydev/go-blueprint/cmd/template/framework"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
@@ -29,7 +30,13 @@ type Project struct {
 	DBDriver     flags.Database
 	FrameworkMap map[flags.Framework]Framework
 	DBDriverMap  map[flags.Database]Driver
-	AddHTMXTempl bool
+	Advanced     Advanced
+}
+
+type Advanced struct {
+	AddHTMXTempl    bool
+	TemplateRoutes  template.HTML
+	TemplateImports template.HTML
 }
 
 // A Framework contains the name and templater for a
@@ -293,7 +300,7 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	if p.AddHTMXTempl {
+	if p.Advanced.AddHTMXTempl {
 		// create folders and hello world file
 		err = p.CreatePath(cmdWebPath, projectPath)
 		if err != nil {
@@ -307,7 +314,7 @@ func (p *Project) CreateMainFile() error {
 		defer helloTemplFile.Close()
 
 		//inject hello.templ template
-		helloTemplTemplate := template.Must(template.New("hellotempl").Parse((string(framework.HelloTemplTemplate()))))
+		helloTemplTemplate := template.Must(template.New("hellotempl").Parse((string(advanced.HelloTemplTemplate()))))
 		err = helloTemplTemplate.Execute(helloTemplFile, p)
 		if err != nil {
 			return err
@@ -319,7 +326,7 @@ func (p *Project) CreateMainFile() error {
 		}
 		defer baseTemplFile.Close()
 
-		baseTemplTemplate := template.Must(template.New("basetempl").Parse((string(framework.BaseTemplTemplate()))))
+		baseTemplTemplate := template.Must(template.New("basetempl").Parse((string(advanced.BaseTemplTemplate()))))
 		err = baseTemplTemplate.Execute(baseTemplFile, p)
 		if err != nil {
 			return err
@@ -336,7 +343,7 @@ func (p *Project) CreateMainFile() error {
 		}
 		defer htmxMinJsFile.Close()
 
-		htmxMinJsTemplate := framework.HtmxJSTemplate()
+		htmxMinJsTemplate := advanced.HtmxJSTemplate()
 		err = os.WriteFile(fmt.Sprintf("%s/%s/js/htmx.min.js", projectPath, cmdWebPath), htmxMinJsTemplate, 0644)
 		if err != nil {
 			return err
@@ -348,7 +355,7 @@ func (p *Project) CreateMainFile() error {
 		}
 		defer efsFile.Close()
 
-		efsTemplate := template.Must(template.New("efs").Parse((string(framework.EfsTemplate()))))
+		efsTemplate := template.Must(template.New("efs").Parse((string(advanced.EfsTemplate()))))
 		err = efsTemplate.Execute(efsFile, p)
 		if err != nil {
 			return err
@@ -366,15 +373,16 @@ func (p *Project) CreateMainFile() error {
 		}
 		defer efsFile.Close()
 
-		helloGoTemplate := template.Must(template.New("efs").Parse((string(framework.HelloGoTemplate()))))
+		helloGoTemplate := template.Must(template.New("efs").Parse((string(advanced.HelloGoTemplate()))))
 		err = helloGoTemplate.Execute(helloGoFile, p)
 		if err != nil {
 			return err
 		}
 
-		// update routes with htmx/web paths
-		// utils.AddHTMXImports(p.ProjectType.String(), p.ProjectName)
 	}
+
+	p.CreateTemplateRoutes()
+	p.CreateTemplateImports()
 
 	if p.DBDriver != "none" {
 		err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routesWithDB")
@@ -500,9 +508,6 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		err = createdTemplate.Execute(createdFile, p)
 	case "routes":
 		routeFileBytes := p.FrameworkMap[p.ProjectType].templater.Routes()
-		if p.AddHTMXTempl {
-			routeFileBytes = utils.AddHTMXImports(p.ProjectType.String(), routeFileBytes, p.ProjectName)
-		}
 		createdTemplate := template.Must(template.New(fileName).Parse(string(routeFileBytes)))
 		err = createdTemplate.Execute(createdFile, p)
 	case "routesWithDB":
@@ -534,4 +539,40 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 	}
 
 	return nil
+}
+
+func (p *Project) CreateTemplateRoutes() {
+	placeHolder := ""
+	if p.Advanced.AddHTMXTempl {
+		placeHolder += string(advanced.HttpRouterHtmxTemplRoutesTemplate())
+	}
+
+	phTmpl, err := template.New("imports").Parse(placeHolder)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var phBuffer bytes.Buffer
+	err = phTmpl.Execute(&phBuffer, p)
+	if err != nil {
+		log.Fatal(err)
+	}
+	p.Advanced.TemplateRoutes = template.HTML(phBuffer.String())
+}
+
+func (p *Project) CreateTemplateImports() {
+	placeHolder := ""
+	if p.Advanced.AddHTMXTempl {
+		placeHolder += string(advanced.HttpRouterHtmxTemplImportsTemplate())
+	}
+
+	phTmpl, err := template.New("imports").Parse(placeHolder)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var phBuffer bytes.Buffer
+	err = phTmpl.Execute(&phBuffer, p)
+	if err != nil {
+		log.Fatal(err)
+	}
+	p.Advanced.TemplateImports = template.HTML(phBuffer.String())
 }

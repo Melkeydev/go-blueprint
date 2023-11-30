@@ -6,7 +6,6 @@ import (
 	"bytes"
 	"fmt"
 	"os/exec"
-	"strings"
 
 	"github.com/spf13/pflag"
 )
@@ -94,45 +93,4 @@ func GoTidy(appDir string) error {
 		return err
 	}
 	return nil
-}
-
-type LineNumbers struct {
-	importLine int
-	route      int
-	fsRoute    int
-}
-
-func AddHTMXImports(framework string, fileBytes []byte, projectName string) []byte {
-	lineNumbers := make(map[string]LineNumbers)
-
-	lineNumbers["httprouter"] = LineNumbers{
-		importLine: 8,
-		route:      14,
-		fsRoute:    13,
-	}
-
-	// Open the file for reading.
-	file := string(fileBytes)
-	lines := strings.Split(file, "\n")
-
-	// Insert the new line at the desired index.
-	routeIndex := lineNumbers[framework].route - 1 // Change this to the line number where you want to insert - 1
-	newLine := `  r.Handler(http.MethodGet, "/web", templ.Handler(web.HelloForm()))
-	r.HandlerFunc(http.MethodPost, "/hello", web.HelloWebHandler)`
-	lines = append(lines[:routeIndex], append([]string{newLine}, lines[routeIndex:]...)...)
-
-	fsRouteIndex := lineNumbers[framework].fsRoute - 1
-	newLine = `fileServer := http.FileServer(http.FS(web.Files))
-	r.Handler(http.MethodGet, "/js/*filepath", fileServer)`
-	lines = append(lines[:fsRouteIndex], append([]string{newLine}, lines[routeIndex:]...)...)
-
-	importIndex := lineNumbers[framework].importLine - 1 // Change this to the line number where you want to insert - 1
-	newLine = fmt.Sprintf("  \"%s/cmd/web\"", projectName)
-	newLine += "\n  \"github.com/a-h/templ\""
-	lines = append(lines[:importIndex], append([]string{newLine}, lines[importIndex:]...)...)
-
-	// Join the lines back together.
-	output := strings.Join(lines, "\n")
-
-	return []byte(output)
 }
