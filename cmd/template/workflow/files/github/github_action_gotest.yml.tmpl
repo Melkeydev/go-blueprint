@@ -1,0 +1,17 @@
+name: Go-test
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21.x'
+      - name: Build
+        run: go build -v ./...
+      - name: Test with the Go CLI
+        run: go test ./... 

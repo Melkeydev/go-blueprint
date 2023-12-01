@@ -53,6 +53,7 @@ type Options struct {
 	ProjectType *multiInput.Selection
 	DBDriver    *multiInput.Selection
 	Advanced    *multiSelect.Selection
+	Workflow    *multiInput.Selection
 }
 
 // createCmd defines the "create" command for the CLI
@@ -76,6 +77,7 @@ var createCmd = &cobra.Command{
 		// If this flag is filled, it is always valid
 		flagFramework := flags.Framework(cmd.Flag("framework").Value.String())
 		flagDBDriver := flags.Database(cmd.Flag("driver").Value.String())
+		flagWorkflow := flags.Workflow(cmd.Flag("workflow").Value.String())
 
 		options := Options{
 			ProjectName: &textinput.Output{},
@@ -90,9 +92,11 @@ var createCmd = &cobra.Command{
 			ProjectName:     flagName,
 			ProjectType:     flagFramework,
 			DBDriver:        flagDBDriver,
+			Workflow:        flagWorkflow,
 			FrameworkMap:    make(map[flags.Framework]program.Framework),
 			DBDriverMap:     make(map[flags.Database]program.Driver),
 			AdvancedOptions: make(map[string]bool),
+			WorkflowMap:     make(map[flags.Workflow]program.Workflow),
 		}
 
 		steps := steps.InitSteps(flagFramework, flagDBDriver)
@@ -174,6 +178,20 @@ var createCmd = &cobra.Command{
 			}
 
 			// more advanced options to come
+		}
+
+		if project.Workflow == "" {
+			step := steps.Steps["workflow"]
+			tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, options.Workflow, step.Headers, project))
+			if _, err := tprogram.Run(); err != nil {
+				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
+			}
+			project.ExitCLI(tprogram)
+			project.Workflow = flags.Workflow(strings.ToLower(options.Workflow.Choice))
+			err := cmd.Flag("workflow").Value.Set(project.Workflow.String())
+			if err != nil {
+				log.Fatal("failed to set the workflow flag value", err)
+			}
 		}
 
 		currentWorkingDir, err := os.Getwd()
