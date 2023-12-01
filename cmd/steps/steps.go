@@ -25,7 +25,7 @@ type Item struct {
 }
 
 // InitSteps initializes and returns the *Steps to be used in the CLI program
-func InitSteps(projectType flags.Framework, databaseType flags.Database, workflowType flags.Workflow) *Steps {
+func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps {
 	steps := &Steps{
 		map[string]StepSchema{
 			"framework": {
@@ -86,20 +86,6 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database, workflo
 				Headers: "What database driver do you want to use in your Go project?",
 				Field:   databaseType.String(),
 			},
-			"workflow": {
-				StepName: "Go Project Workflow",
-				Options: []Item{
-					{
-						Title: "GitHubAction",
-						Desc:  "Workflow templates for testing, cross-compiling and releasing Go projects",
-					},
-
-					{Title: "None",
-						Desc: "Continue without creating Workflow templates",
-					},
-				},
-				Headers: "Do you want to create Workflow templates?",
-			},
 			"advanced": {
 				StepName: "Advanced Features",
 				Headers:  "Do you want to choose from the advanced features?",
@@ -108,6 +94,11 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database, workflo
 						Flag:  "AddHTMXTempl",
 						Title: "HTMX/Templ",
 						Desc:  "Add starter HTMX and Templ files.",
+					},
+					{
+						Flag:  "GitHubAction",
+						Title: "Go Project Workflow",
+						Desc:  "Workflow templates for testing, cross-compiling and releasing Go projects",
 					},
 				},
 			},
