@@ -23,18 +23,18 @@ import (
 // A Project contains the data for the project folder
 // being created, and methods that help with that process
 type Project struct {
-	ProjectName  string
-	Exit         bool
-	AbsolutePath string
-	ProjectType  flags.Framework
-	DBDriver     flags.Database
-	FrameworkMap map[flags.Framework]Framework
-	DBDriverMap  map[flags.Database]Driver
-	Advanced     Advanced
+	ProjectName       string
+	Exit              bool
+	AbsolutePath      string
+	ProjectType       flags.Framework
+	DBDriver          flags.Database
+	FrameworkMap      map[flags.Framework]Framework
+	DBDriverMap       map[flags.Database]Driver
+	AdvancedOptions   map[string]bool
+	AdvancedTemplates AdvancedTemplates
 }
 
-type Advanced struct {
-	AddHTMXTempl    bool
+type AdvancedTemplates struct {
 	TemplateRoutes  template.HTML
 	TemplateImports template.HTML
 }
@@ -300,7 +300,7 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	if p.Advanced.AddHTMXTempl {
+	if p.AdvancedOptions["AddHTMXTempl"] {
 		// create folders and hello world file
 		err = p.CreatePath(cmdWebPath, projectPath)
 		if err != nil {
@@ -543,7 +543,7 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 
 func (p *Project) CreateTemplateRoutes() {
 	placeHolder := ""
-	if p.Advanced.AddHTMXTempl {
+	if p.AdvancedOptions["AddHTMXTempl"] {
 		placeHolder += string(advanced.HttpRouterHtmxTemplRoutesTemplate())
 	}
 
@@ -556,12 +556,12 @@ func (p *Project) CreateTemplateRoutes() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	p.Advanced.TemplateRoutes = template.HTML(phBuffer.String())
+	p.AdvancedTemplates.TemplateRoutes = template.HTML(phBuffer.String())
 }
 
 func (p *Project) CreateTemplateImports() {
 	placeHolder := ""
-	if p.Advanced.AddHTMXTempl {
+	if p.AdvancedOptions["AddHTMXTempl"] {
 		placeHolder += string(advanced.HttpRouterHtmxTemplImportsTemplate())
 	}
 
@@ -574,5 +574,5 @@ func (p *Project) CreateTemplateImports() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	p.Advanced.TemplateImports = template.HTML(phBuffer.String())
+	p.AdvancedTemplates.TemplateImports = template.HTML(phBuffer.String())
 }

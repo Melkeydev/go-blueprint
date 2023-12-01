@@ -11,8 +11,8 @@ import (
 	"github.com/melkeydev/go-blueprint/cmd/flags"
 	"github.com/melkeydev/go-blueprint/cmd/program"
 	"github.com/melkeydev/go-blueprint/cmd/steps"
-	"github.com/melkeydev/go-blueprint/cmd/ui/booleanInput"
 	"github.com/melkeydev/go-blueprint/cmd/ui/multiInput"
+	"github.com/melkeydev/go-blueprint/cmd/ui/multiSelect"
 	"github.com/melkeydev/go-blueprint/cmd/ui/textinput"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
 	"github.com/spf13/cobra"
@@ -52,11 +52,7 @@ type Options struct {
 	ProjectName *textinput.Output
 	ProjectType *multiInput.Selection
 	DBDriver    *multiInput.Selection
-	Advanced    AdvancedOptions
-}
-
-type AdvancedOptions struct {
-	AddHTMXTempl *booleanInput.Selection
+	Advanced    *multiSelect.Selection
 }
 
 // createCmd defines the "create" command for the CLI
@@ -85,20 +81,20 @@ var createCmd = &cobra.Command{
 			ProjectName: &textinput.Output{},
 			ProjectType: &multiInput.Selection{},
 			DBDriver:    &multiInput.Selection{},
-			Advanced: AdvancedOptions{
-				AddHTMXTempl: &booleanInput.Selection{},
+			Advanced: &multiSelect.Selection{
+				Choices: make(map[string]bool),
 			},
 		}
 
 		project := &program.Project{
-			ProjectName:  flagName,
-			ProjectType:  flagFramework,
-			DBDriver:     flagDBDriver,
-			FrameworkMap: make(map[flags.Framework]program.Framework),
-			DBDriverMap:  make(map[flags.Database]program.Driver),
+			ProjectName:     flagName,
+			ProjectType:     flagFramework,
+			DBDriver:        flagDBDriver,
+			FrameworkMap:    make(map[flags.Framework]program.Framework),
+			DBDriverMap:     make(map[flags.Database]program.Driver),
+			AdvancedOptions: make(map[string]bool),
 		}
 
-		advancedSteps := steps.InitAdvancedSteps(flagFramework, flagDBDriver)
 		steps := steps.InitSteps(flagFramework, flagDBDriver)
 		fmt.Printf("%s\n", logoStyle.Render(logo))
 
@@ -164,13 +160,15 @@ var createCmd = &cobra.Command{
 		}
 
 		if flagAdvanced {
-			aStep := advancedSteps.Steps["htmxTempl"]
-			tprogram = tea.NewProgram((booleanInput.InitialBoolInput(options.Advanced.AddHTMXTempl, aStep.Headers, project)))
+			step := steps.Steps["advanced"]
+			tprogram = tea.NewProgram((multiSelect.InitialModelMultiSelect(step.Options, options.Advanced, step.Headers, project)))
 			if _, err := tprogram.Run(); err != nil {
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
 			project.ExitCLI(tprogram)
-			project.Advanced.AddHTMXTempl = options.Advanced.AddHTMXTempl.Choice
+			for key, opt := range options.Advanced.Choices {
+				project.AdvancedOptions[key] = opt
+			}
 			if err != nil {
 				log.Fatal("failed to set the htmx option", err)
 			}
@@ -195,7 +193,7 @@ var createCmd = &cobra.Command{
 		fmt.Println(endingMsgStyle.Render("\nNext steps:"))
 		fmt.Println(endingMsgStyle.Render(fmt.Sprintf("• cd into the newly created project with: `cd %s`\n", project.ProjectName)))
 
-		if options.Advanced.AddHTMXTempl.Choice {
+		if options.Advanced.Choices["AddHTMXTempl"] {
 			fmt.Println(endingMsgStyle.Render("• Install the templ cli if you haven't already by running `go install github.com/a-h/templ/cmd/templ@latest`\n"))
 			fmt.Println(endingMsgStyle.Render("• Generate templ function files by running `templ generate`\n"))
 		}

@@ -21,7 +21,7 @@ type Steps struct {
 // An Item contains the data for each option
 // in a StepSchema.Options
 type Item struct {
-	Title, Desc string
+	Flag, Title, Desc string
 }
 
 // InitSteps initializes and returns the *Steps to be used in the CLI program
@@ -89,6 +89,13 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 			"advanced": {
 				StepName: "Advanced Features",
 				Headers:  "Do you want to choose from the advanced features?",
+				Options: []Item{
+					{
+						Flag:  "AddHTMXTempl",
+						Title: "HTMX/Templ",
+						Desc:  "Add starter HTMX and Templ files.",
+					},
+				},
 			},
 		},
 	}
