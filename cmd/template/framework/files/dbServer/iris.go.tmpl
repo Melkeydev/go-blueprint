@@ -1,0 +1,19 @@
+package server
+
+import (
+  "github.com/kataras/iris/v12"
+	"{{.ProjectName}}/internal/database"
+)
+type IrisServer struct {
+	*iris.Application
+	db database.Service
+}
+
+func NewIrisServer() *IrisServer {
+	server := &IrisServer{
+		Application: iris.New(),
+    db: database.New(),
+	}
+
+	return server
+}

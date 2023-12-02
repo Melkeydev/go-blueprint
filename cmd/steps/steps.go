@@ -59,6 +59,10 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 						Title: "Echo",
 						Desc:  "High performance, extensible, minimalist Go web framework",
 					},
+					{
+						Title: "Iris",
+						Desc:  "Iris is a fast, simple yet fully featured and very efficient web framework for Go.",
+					},
 				},
 				Headers: "What framework do you want to use in your Go project?",
 				Field:   projectType.String(),
@@ -72,16 +76,20 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 					},
 					{
 						Title: "Postgres",
-						Desc:  "Go postgres driver for Go's database/sql package"},
+						Desc:  "Go postgres driver for Go's database/sql package",
+					},
 					{
 						Title: "Sqlite",
-						Desc:  "sqlite3 driver conforming to the built-in database/sql interface"},
+						Desc:  "sqlite3 driver conforming to the built-in database/sql interface",
+					},
 					{
 						Title: "Mongo",
-						Desc:  "The MongoDB supported driver for Go."},
+						Desc:  "The MongoDB supported driver for Go.",
+					},
 					{
 						Title: "None",
-						Desc:  "Choose this option if you don't wish to install a specific database driver."},
+						Desc:  "Choose this option if you don't wish to install a specific database driver.",
+					},
 				},
 				Headers: "What database driver do you want to use in your Go project?",
 				Field:   databaseType.String(),

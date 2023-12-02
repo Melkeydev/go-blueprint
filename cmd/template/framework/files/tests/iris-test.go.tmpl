@@ -1,0 +1,29 @@
+package tests
+
+import (
+	"net/http"
+	"strings"
+	"testing"
+	"{{.ProjectName}}/internal/server"
+
+	"github.com/kataras/iris/v12/httptest"
+)
+
+func TestHandler(t *testing.T) {
+	irisServer := server.NewIrisServer()
+
+	irisServer.RegisterIrisRoutes()
+	// Perform the request using Iris httptest package
+	e := httptest.New(t, irisServer.Application)
+
+	// Make a GET request to "/"
+	resp := e.GET("/").Expect().Status(http.StatusOK)
+
+	// Your test assertions...
+	expected := "{\"message\":\"Hello World\"}"
+	body := resp.Body().Raw()
+
+	if strings.TrimSpace(expected) != strings.TrimSpace(body) {
+		t.Errorf("expected response body to be %v; got %v", expected, body)
+	}
+}

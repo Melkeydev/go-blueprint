@@ -59,7 +59,7 @@ type Templater interface {
 	Routes() []byte
 	RoutesWithDB() []byte
 	ServerWithDB() []byte
-    	TestHandler() []byte
+	TestHandler() []byte
 }
 
 type DBDriverTemplater interface {
@@ -79,6 +79,7 @@ var (
 	ginPackage     = []string{"github.com/gin-gonic/gin"}
 	fiberPackage   = []string{"github.com/gofiber/fiber/v2"}
 	echoPackage    = []string{"github.com/labstack/echo/v4", "github.com/labstack/echo/v4/middleware"}
+	irisPackage    = []string{"github.com/kataras/iris/v12"}
 
 	mysqlDriver    = []string{"github.com/go-sql-driver/mysql"}
 	postgresDriver = []string{"github.com/lib/pq"}
@@ -93,7 +94,7 @@ const (
 	cmdApiPath           = "cmd/api"
 	internalServerPath   = "internal/server"
 	internalDatabasePath = "internal/database"
-    	testHandlerPath      = "tests"
+	testHandlerPath      = "tests"
 )
 
 // ExitCLI checks if the Project has been exited, and closes
@@ -131,6 +132,10 @@ func (p *Project) createFrameworkMap() {
 		templater:   framework.FiberTemplates{},
 	}
 
+	p.FrameworkMap[flags.Iris] = Framework{
+		packageName: irisPackage,
+		templater:   framework.IrisTemplates{},
+	}
 	p.FrameworkMap[flags.GorillaMux] = Framework{
 		packageName: gorillaPackage,
 		templater:   framework.GorillaTemplates{},
@@ -255,22 +260,22 @@ func (p *Project) CreateMainFile() error {
 	if p.DBDriver != "none" {
 
 		err = p.CreateFileWithInjection(root, projectPath, ".env.example", "env-example")
-    		if err != nil {
-    		    log.Printf("Error injecting .env.example file: %v", err)
-    		    cobra.CheckErr(err)
-    		    return err
-    		}
+		if err != nil {
+			log.Printf("Error injecting .env.example file: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}
 
 		if p.DBDriver != "sqlite" {
-    		p.createDockerMap()
-    		p.Docker = p.DBDriver
+			p.createDockerMap()
+			p.Docker = p.DBDriver
 
-    		err = p.CreateFileWithInjection(root, projectPath, "docker-compose.yml", "db-docker")
-    		if err != nil {
-    		    log.Printf("Error injecting docker-compose.yml file: %v", err)
-    		    cobra.CheckErr(err)
-    		    return err
-    		}
+			err = p.CreateFileWithInjection(root, projectPath, "docker-compose.yml", "db-docker")
+			if err != nil {
+				log.Printf("Error injecting docker-compose.yml file: %v", err)
+				cobra.CheckErr(err)
+				return err
+			}
 		} else {
 			fmt.Println("\nWe are unable to create docker-compose.yml file for an SQLite database")
 		}
@@ -296,18 +301,18 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-    	err = p.CreatePath(testHandlerPath, projectPath)
-    	if err != nil {
-        	log.Printf("Error creating path: %s", projectPath)
-        	cobra.CheckErr(err)
-        	return err
-    	}
-    	// inject testhandler template
-    	err = p.CreateFileWithInjection(testHandlerPath, projectPath, "handler_test.go", "tests")
-    	if err != nil {
-        	cobra.CheckErr(err)
-        	return err
-    	}
+	err = p.CreatePath(testHandlerPath, projectPath)
+	if err != nil {
+		log.Printf("Error creating path: %s", projectPath)
+		cobra.CheckErr(err)
+		return err
+	}
+	// inject testhandler template
+	err = p.CreateFileWithInjection(testHandlerPath, projectPath, "handler_test.go", "tests")
+	if err != nil {
+		cobra.CheckErr(err)
+		return err
+	}
 
 	makeFile, err := os.Create(fmt.Sprintf("%s/Makefile", projectPath))
 	if err != nil {
@@ -480,11 +485,11 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DockerMap[p.Docker].templater.Docker())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "tests":
-    		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.TestHandler())))
-    		err = createdTemplate.Execute(createdFile, p)
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.TestHandler())))
+		err = createdTemplate.Execute(createdFile, p)
 	case "env-example":
-    		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.EnvExample())))
-    		err = createdTemplate.Execute(createdFile, p)
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.EnvExample())))
+		err = createdTemplate.Execute(createdFile, p)
 	case "env":
 		if p.DBDriver != "none" {
 

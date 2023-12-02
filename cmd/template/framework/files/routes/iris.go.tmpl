@@ -1,0 +1,15 @@
+package server
+
+import "github.com/kataras/iris/v12"
+
+func (s *IrisServer) RegisterIrisRoutes() {
+	s.Get("/", s.HelloWorldHandler)
+}
+
+func (s *IrisServer) HelloWorldHandler(ctx iris.Context) {
+	resp := map[string]string{
+		"message": "Hello World",
+	}
+
+	ctx.JSON(resp)
+}

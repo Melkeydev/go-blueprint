@@ -1,0 +1,23 @@
+package main
+
+import (
+	"fmt"
+	"os"
+	"strconv"
+	"{{.ProjectName}}/internal/server"
+
+	_ "github.com/joho/godotenv/autoload"
+	"github.com/kataras/iris/v12"
+)
+
+func main() {
+	irisServer := server.NewIrisServer()
+
+	irisServer.RegisterIrisRoutes()
+
+	port, _ := strconv.Atoi(os.Getenv("PORT"))
+	err := irisServer.Run(iris.Addr(fmt.Sprintf(":%d", port)))
+	if err != nil {
+		panic("cannot start server")
+	}
+}

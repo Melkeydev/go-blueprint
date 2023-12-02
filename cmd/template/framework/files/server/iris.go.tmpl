@@ -1,0 +1,15 @@
+package server
+
+import "github.com/kataras/iris/v12"
+
+type IrisServer struct {
+	*iris.Application
+}
+
+func NewIrisServer() *IrisServer {
+	server := &IrisServer{
+		Application: iris.New(),
+	}
+
+	return server
+}
