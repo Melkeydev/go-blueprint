@@ -45,5 +45,13 @@ func (f FiberTemplates) RoutesWithDB() []byte {
 	return fiberDBRoutesTemplate
 }
 func (f FiberTemplates) TestHandler() []byte {
-    return fiberTestHandlerTemplate
+	return fiberTestHandlerTemplate
+}
+
+func (f FiberTemplates) HtmxTemplImports() []byte {
+	return []byte{}
+}
+
+func (f FiberTemplates) HtmxTemplRoutes() []byte {
+	return []byte{}
 }

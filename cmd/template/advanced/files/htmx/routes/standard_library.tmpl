@@ -1,0 +1,4 @@
+  fileServer := http.FileServer(http.FS(web.Files))
+	mux.Handle("/js/", fileServer)
+	mux.Handle("/web", templ.Handler(web.HelloForm()))
+	mux.HandleFunc("/hello", web.HelloWebHandler)

@@ -2,6 +2,8 @@ package framework
 
 import (
 	_ "embed"
+
+	"github.com/melkeydev/go-blueprint/cmd/template/advanced"
 )
 
 //go:embed files/routes/standard_library.go.tmpl
@@ -15,6 +17,7 @@ var standardServerTemplate []byte
 
 //go:embed files/dbServer/standard_library.go.tmpl
 var standardDBServerTemplate []byte
+
 //go:embed files/tests/default-test.go.tmpl
 var standardTestHandlerTemplate []byte
 
@@ -41,6 +44,15 @@ func (s StandardLibTemplate) Routes() []byte {
 func (s StandardLibTemplate) RoutesWithDB() []byte {
 	return standardDBRoutesTemplate
 }
+
 func (s StandardLibTemplate) TestHandler() []byte {
-    return standardTestHandlerTemplate
+	return standardTestHandlerTemplate
+}
+
+func (s StandardLibTemplate) HtmxTemplImports() []byte {
+	return advanced.StdLibHtmxTemplImportsTemplate()
+}
+
+func (s StandardLibTemplate) HtmxTemplRoutes() []byte {
+	return advanced.StdLibHtmxTemplRoutesTemplate()
 }

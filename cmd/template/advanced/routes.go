@@ -25,12 +25,26 @@ var httpRouterHtmxTemplRoutes []byte
 //go:embed files/htmx/imports/http_router.tmpl
 var httpRouterHtmxTemplImports []byte
 
+//go:embed files/htmx/routes/standard_library.tmpl
+var stdLibHtmxTemplRoutes []byte
+
+//go:embed files/htmx/imports/standard_library.tmpl
+var stdLibHtmxTemplImports []byte
+
 func HttpRouterHtmxTemplImportsTemplate() []byte {
 	return httpRouterHtmxTemplImports
 }
 
 func HttpRouterHtmxTemplRoutesTemplate() []byte {
 	return httpRouterHtmxTemplRoutes
+}
+
+func StdLibHtmxTemplRoutesTemplate() []byte {
+	return stdLibHtmxTemplRoutes
+}
+
+func StdLibHtmxTemplImportsTemplate() []byte {
+	return stdLibHtmxTemplImports
 }
 
 func HelloTemplTemplate() []byte {

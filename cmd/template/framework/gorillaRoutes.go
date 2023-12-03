@@ -9,6 +9,7 @@ var gorillaRoutesTemplate []byte
 
 //go:embed files/dbRoutes/gorilla.go.tmpl
 var gorillaDBRoutesTemplate []byte
+
 //go:embed files/tests/default-test.go.tmpl
 var gorillaTestHandlerTemplate []byte
 
@@ -36,5 +37,13 @@ func (g GorillaTemplates) RoutesWithDB() []byte {
 	return gorillaDBRoutesTemplate
 }
 func (g GorillaTemplates) TestHandler() []byte {
-    return gorillaTestHandlerTemplate
+	return gorillaTestHandlerTemplate
+}
+
+func (g GorillaTemplates) HtmxTemplImports() []byte {
+	return []byte{}
+}
+
+func (g GorillaTemplates) HtmxTemplRoutes() []byte {
+	return []byte{}
 }

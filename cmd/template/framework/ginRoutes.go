@@ -9,6 +9,7 @@ var ginRoutesTemplate []byte
 
 //go:embed files/dbRoutes/gin.go.tmpl
 var ginDBRoutesTemplate []byte
+
 //go:embed files/tests/gin-test.go.tmpl
 var ginTestHandlerTemplate []byte
 
@@ -36,5 +37,13 @@ func (g GinTemplates) RoutesWithDB() []byte {
 	return ginDBRoutesTemplate
 }
 func (g GinTemplates) TestHandler() []byte {
-    return ginTestHandlerTemplate
+	return ginTestHandlerTemplate
+}
+
+func (g GinTemplates) HtmxTemplImports() []byte {
+	return []byte{}
+}
+
+func (g GinTemplates) HtmxTemplRoutes() []byte {
+	return []byte{}
 }

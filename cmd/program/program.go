@@ -73,6 +73,8 @@ type Templater interface {
 	RoutesWithDB() []byte
 	ServerWithDB() []byte
 	TestHandler() []byte
+	HtmxTemplRoutes() []byte
+	HtmxTemplImports() []byte
 }
 
 type DBDriverTemplater interface {
@@ -604,6 +606,10 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.ServerWithDB())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "routes":
+		if p.AdvancedOptions["AddHTMXTempl"] {
+			p.CreateTemplateImports()
+			p.CreateTemplateRoutes()
+		}
 		routeFileBytes := p.FrameworkMap[p.ProjectType].templater.Routes()
 		createdTemplate := template.Must(template.New(fileName).Parse(string(routeFileBytes)))
 		err = createdTemplate.Execute(createdFile, p)
@@ -655,10 +661,7 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 }
 
 func (p *Project) CreateTemplateRoutes() {
-	placeHolder := ""
-	if p.AdvancedOptions["AddHTMXTempl"] {
-		placeHolder += string(advanced.HttpRouterHtmxTemplRoutesTemplate())
-	}
+	placeHolder := string(p.FrameworkMap[p.ProjectType].templater.HtmxTemplRoutes())
 
 	phTmpl, err := template.New("imports").Parse(placeHolder)
 	if err != nil {
@@ -673,10 +676,7 @@ func (p *Project) CreateTemplateRoutes() {
 }
 
 func (p *Project) CreateTemplateImports() {
-	placeHolder := ""
-	if p.AdvancedOptions["AddHTMXTempl"] {
-		placeHolder += string(advanced.HttpRouterHtmxTemplImportsTemplate())
-	}
+	placeHolder := string(p.FrameworkMap[p.ProjectType].templater.HtmxTemplImports())
 
 	phTmpl, err := template.New("imports").Parse(placeHolder)
 	if err != nil {

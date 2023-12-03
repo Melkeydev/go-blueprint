@@ -9,6 +9,7 @@ var echoRoutesTemplate []byte
 
 //go:embed files/dbRoutes/echo.go.tmpl
 var echoDBRoutesTemplate []byte
+
 //go:embed files/tests/echo-test.go.tmpl
 var echoTestHandlerTemplate []byte
 
@@ -35,5 +36,13 @@ func (e EchoTemplates) RoutesWithDB() []byte {
 	return echoDBRoutesTemplate
 }
 func (e EchoTemplates) TestHandler() []byte {
-    return echoTestHandlerTemplate
+	return echoTestHandlerTemplate
+}
+
+func (e EchoTemplates) HtmxTemplImports() []byte {
+	return []byte{}
+}
+
+func (e EchoTemplates) HtmxTemplRoutes() []byte {
+	return []byte{}
 }

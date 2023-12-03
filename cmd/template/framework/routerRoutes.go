@@ -2,6 +2,8 @@ package framework
 
 import (
 	_ "embed"
+
+	"github.com/melkeydev/go-blueprint/cmd/template/advanced"
 )
 
 //go:embed files/routes/http_router.go.tmpl
@@ -9,6 +11,7 @@ var httpRouterRoutesTemplate []byte
 
 //go:embed files/dbRoutes/http_router.go.tmpl
 var httpDBRouterRoutesTemplate []byte
+
 //go:embed files/tests/default-test.go.tmpl
 var httpRouterTestHandlerTemplate []byte
 
@@ -35,5 +38,13 @@ func (r RouterTemplates) RoutesWithDB() []byte {
 	return httpDBRouterRoutesTemplate
 }
 func (r RouterTemplates) TestHandler() []byte {
-    return httpRouterTestHandlerTemplate
+	return httpRouterTestHandlerTemplate
+}
+
+func (r RouterTemplates) HtmxTemplImports() []byte {
+	return advanced.HttpRouterHtmxTemplImportsTemplate()
+}
+
+func (r RouterTemplates) HtmxTemplRoutes() []byte {
+	return advanced.HttpRouterHtmxTemplRoutesTemplate()
 }
