@@ -19,6 +19,9 @@ var efsTemplate []byte
 //go:embed files/htmx/hello.go.tmpl
 var helloGoTemplate []byte
 
+//go:embed files/htmx/hello_fiber.go.tmpl
+var helloFiberGoTemplate []byte
+
 //go:embed files/htmx/routes/http_router.tmpl
 var httpRouterHtmxTemplRoutes []byte
 
@@ -39,6 +42,12 @@ var gorillaHtmxTemplRoutes []byte
 
 //go:embed files/htmx/routes/echo.tmpl
 var echoHtmxTemplRoutes []byte
+
+//go:embed files/htmx/routes/fiber.tmpl
+var fiberHtmxTemplRoutes []byte
+
+//go:embed files/htmx/imports/fiber.tmpl
+var fiberHtmxTemplImports []byte
 
 func EchoHtmxTemplRoutesTemplate() []byte {
 	return echoHtmxTemplRoutes
@@ -86,4 +95,16 @@ func EfsTemplate() []byte {
 
 func HelloGoTemplate() []byte {
 	return helloGoTemplate
+}
+
+func HelloFiberGoTemplate() []byte {
+	return helloFiberGoTemplate
+}
+
+func FiberHtmxTemplRoutesTemplate() []byte {
+	return fiberHtmxTemplRoutes
+}
+
+func FiberHtmxTemplImportsTemplate() []byte {
+	return fiberHtmxTemplImports
 }

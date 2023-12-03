@@ -2,11 +2,14 @@ package server
 
 import (
 	"github.com/gofiber/fiber/v2"
+  {{.AdvancedTemplates.TemplateImports}}
 )
 
 func (s *FiberServer) RegisterFiberRoutes() {
 	s.App.Get("/", s.HelloWorldHandler)
 	s.App.Get("/health", s.healthHandler)
+
+  {{.AdvancedTemplates.TemplateRoutes}}
 }
 
 func (s *FiberServer) HelloWorldHandler(c *fiber.Ctx) error {

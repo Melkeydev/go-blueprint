@@ -441,11 +441,29 @@ func (p *Project) CreateMainFile() error {
 		}
 		defer efsFile.Close()
 
-		helloGoTemplate := template.Must(template.New("efs").Parse((string(advanced.HelloGoTemplate()))))
-		err = helloGoTemplate.Execute(helloGoFile, p)
-		if err != nil {
-			return err
+		if p.ProjectType == "fiber" {
+			helloGoTemplate := template.Must(template.New("efs").Parse((string(advanced.HelloFiberGoTemplate()))))
+			err = helloGoTemplate.Execute(helloGoFile, p)
+			if err != nil {
+				return err
+			}
+			err = utils.GoGetPackage(projectPath, []string{"github.com/gofiber/fiber/v2/middleware/adaptor"})
+			if err != nil {
+				log.Printf("Could not install go dependency %v\n", err)
+				cobra.CheckErr(err)
+			}
+			if err != nil {
+				log.Printf("Could not install go dependency %v\n", err)
+				cobra.CheckErr(err)
+			}
+		} else {
+			helloGoTemplate := template.Must(template.New("efs").Parse((string(advanced.HelloGoTemplate()))))
+			err = helloGoTemplate.Execute(helloGoFile, p)
+			if err != nil {
+				return err
+			}
 		}
+
 	}
 
 	// Create .github/workflows folder and inject release.yml and go-test.yml
