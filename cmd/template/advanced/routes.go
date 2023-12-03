@@ -34,6 +34,20 @@ var chiHtmxTemplRoutes []byte
 //go:embed files/htmx/routes/gin.tmpl
 var ginHtmxTemplRoutes []byte
 
+//go:embed files/htmx/routes/gorilla.tmpl
+var gorillaHtmxTemplRoutes []byte
+
+//go:embed files/htmx/routes/echo.tmpl
+var echoHtmxTemplRoutes []byte
+
+func EchoHtmxTemplRoutesTemplate() []byte {
+	return echoHtmxTemplRoutes
+}
+
+func GorillaHtmxTemplRoutesTemplate() []byte {
+	return gorillaHtmxTemplRoutes
+}
+
 func ChiHtmxTemplRoutesTemplate() []byte {
 	return chiHtmxTemplRoutes
 }

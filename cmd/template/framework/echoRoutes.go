@@ -2,6 +2,8 @@ package framework
 
 import (
 	_ "embed"
+
+	"github.com/melkeydev/go-blueprint/cmd/template/advanced"
 )
 
 //go:embed files/routes/echo.go.tmpl
@@ -40,9 +42,9 @@ func (e EchoTemplates) TestHandler() []byte {
 }
 
 func (e EchoTemplates) HtmxTemplImports() []byte {
-	return []byte{}
+	return advanced.StdLibHtmxTemplImportsTemplate()
 }
 
 func (e EchoTemplates) HtmxTemplRoutes() []byte {
-	return []byte{}
+	return advanced.EchoHtmxTemplRoutesTemplate()
 }

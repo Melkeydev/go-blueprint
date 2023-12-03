@@ -1,0 +1,5 @@
+fileServer := http.FileServer(http.FS(web.Files))
+e.GET("/js/*", echo.WrapHandler(fileServer))
+
+e.GET("/web", echo.WrapHandler(templ.Handler(web.HelloForm())))
+e.POST("/hello", echo.WrapHandler(http.HandlerFunc(web.HelloWebHandler)))
