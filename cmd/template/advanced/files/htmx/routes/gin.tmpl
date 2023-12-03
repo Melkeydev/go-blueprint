@@ -1,0 +1,9 @@
+r.Static("/js", "./cmd/web/js")
+
+r.GET("/web", func(c *gin.Context) {
+  templ.Handler(web.HelloForm()).ServeHTTP(c.Writer, c.Request)
+})
+
+r.POST("/hello", func(c *gin.Context) {
+  web.HelloWebHandler(c.Writer, c.Request)
+})

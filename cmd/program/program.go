@@ -429,7 +429,6 @@ func (p *Project) CreateMainFile() error {
 		if err != nil {
 			return err
 		}
-
 		err = utils.GoGetPackage(projectPath, templPackage)
 		if err != nil {
 			log.Printf("Could not install go dependency %v\n", err)

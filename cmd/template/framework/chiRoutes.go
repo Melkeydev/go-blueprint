@@ -2,6 +2,8 @@ package framework
 
 import (
 	_ "embed"
+
+	"github.com/melkeydev/go-blueprint/cmd/template/advanced"
 )
 
 //go:embed files/routes/chi.go.tmpl
@@ -42,9 +44,9 @@ func (c ChiTemplates) TestHandler() []byte {
 }
 
 func (c ChiTemplates) HtmxTemplImports() []byte {
-	return []byte{}
+	return advanced.StdLibHtmxTemplImportsTemplate()
 }
 
 func (c ChiTemplates) HtmxTemplRoutes() []byte {
-	return []byte{}
+	return advanced.ChiHtmxTemplRoutesTemplate()
 }

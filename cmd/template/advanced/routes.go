@@ -22,17 +22,24 @@ var helloGoTemplate []byte
 //go:embed files/htmx/routes/http_router.tmpl
 var httpRouterHtmxTemplRoutes []byte
 
-//go:embed files/htmx/imports/http_router.tmpl
-var httpRouterHtmxTemplImports []byte
-
 //go:embed files/htmx/routes/standard_library.tmpl
 var stdLibHtmxTemplRoutes []byte
 
 //go:embed files/htmx/imports/standard_library.tmpl
 var stdLibHtmxTemplImports []byte
 
-func HttpRouterHtmxTemplImportsTemplate() []byte {
-	return httpRouterHtmxTemplImports
+//go:embed files/htmx/routes/chi.tmpl
+var chiHtmxTemplRoutes []byte
+
+//go:embed files/htmx/routes/gin.tmpl
+var ginHtmxTemplRoutes []byte
+
+func ChiHtmxTemplRoutesTemplate() []byte {
+	return chiHtmxTemplRoutes
+}
+
+func GinHtmxTemplRoutesTemplate() []byte {
+	return ginHtmxTemplRoutes
 }
 
 func HttpRouterHtmxTemplRoutesTemplate() []byte {

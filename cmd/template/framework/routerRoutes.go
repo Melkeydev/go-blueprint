@@ -42,7 +42,7 @@ func (r RouterTemplates) TestHandler() []byte {
 }
 
 func (r RouterTemplates) HtmxTemplImports() []byte {
-	return advanced.HttpRouterHtmxTemplImportsTemplate()
+	return advanced.StdLibHtmxTemplImportsTemplate()
 }
 
 func (r RouterTemplates) HtmxTemplRoutes() []byte {
