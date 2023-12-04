@@ -132,4 +132,13 @@ go-blueprint create --name my-project --framework gin --driver postgres
   Licence
 </h2>
 
+### Advanced Features
+
+Blueprint is focused on being as minimalistic as possible. That being said, we wanted to offer the ability to add other features people may want without bloating the overall experience.
+
+You can now use the `--advanced` flag when running the `create` command to get access to the following features:
+
+- [HTMX](https://htmx.org/) support using [Templ](https://templ.guide/)
+- CI/CD workflow setup using Github Actions
+
 Licensed under [MIT License](./LICENSE)
