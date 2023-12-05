@@ -54,11 +54,6 @@ type Driver struct {
 	templater   DBDriverTemplater
 }
 
-type Workflow struct {
-	packageName []string
-	templater   WorkflowTemplater
-}
-
 type Docker struct {
 	packageName []string
 	templater   DockerTemplater
