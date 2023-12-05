@@ -78,9 +78,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.cursor++
 			}
 		case "enter", " ":
-			// if len(m.selected) == 0 {
-			// 	m.selected = make(map[int]struct{})
-			// }
 			_, ok := m.selected[m.cursor]
 			if ok {
 				delete(m.selected, m.cursor)
@@ -88,12 +85,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.selected[m.cursor] = struct{}{}
 			}
 		case "y":
-			// if len(m.selected) == 1 {
 			for selectedKey := range m.selected {
 				m.choices.Update(m.options[selectedKey].Flag, true)
 				m.cursor = selectedKey
 			}
-			// }
 			return m, tea.Quit
 		}
 	}

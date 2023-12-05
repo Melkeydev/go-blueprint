@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"sync"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -13,6 +14,7 @@ import (
 	"github.com/melkeydev/go-blueprint/cmd/steps"
 	"github.com/melkeydev/go-blueprint/cmd/ui/multiInput"
 	"github.com/melkeydev/go-blueprint/cmd/ui/multiSelect"
+	"github.com/melkeydev/go-blueprint/cmd/ui/spinner"
 	"github.com/melkeydev/go-blueprint/cmd/ui/textinput"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
 	"github.com/spf13/cobra"
@@ -183,6 +185,18 @@ var createCmd = &cobra.Command{
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
 		project.AbsolutePath = currentWorkingDir
+
+		spinner := tea.NewProgram(spinner.InitialModelNew())
+
+		// add synchronization to wait for spinner to finish
+		wg := sync.WaitGroup{}
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			if _, err := spinner.Run(); err != nil {
+				cobra.CheckErr(err)
+			}
+		}()
 
 		// This calls the templates
 		err = project.CreateMainFile()

@@ -88,7 +88,7 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 			},
 			"advanced": {
 				StepName: "Advanced Features",
-				Headers:  "Do you want to choose from the advanced features?",
+				Headers:  "Which advanced features do you want?",
 				Options: []Item{
 					{
 						Flag:  "AddHTMXTempl",
