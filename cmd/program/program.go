@@ -678,9 +678,12 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 }
 
 func (p *Project) CreateTemplateRoutes() {
-	placeHolder := string(p.FrameworkMap[p.ProjectType].templater.HtmxTemplRoutes())
+	placeHolder := ""
+	if p.AdvancedOptions["AddHTMXTempl"] {
+		placeHolder += string(p.FrameworkMap[p.ProjectType].templater.HtmxTemplRoutes())
+	}
 
-	phTmpl, err := template.New("imports").Parse(placeHolder)
+	phTmpl, err := template.New("routes").Parse(placeHolder)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -693,7 +696,10 @@ func (p *Project) CreateTemplateRoutes() {
 }
 
 func (p *Project) CreateTemplateImports() {
-	placeHolder := string(p.FrameworkMap[p.ProjectType].templater.HtmxTemplImports())
+	placeHolder := ""
+	if p.AdvancedOptions["AddHTMXTempl"] {
+		placeHolder += string(p.FrameworkMap[p.ProjectType].templater.HtmxTemplImports())
+	}
 
 	phTmpl, err := template.New("imports").Parse(placeHolder)
 	if err != nil {
