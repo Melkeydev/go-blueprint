@@ -492,9 +492,6 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
-	p.CreateTemplateRoutes()
-	p.CreateTemplateImports()
-
 	if p.DBDriver != "none" {
 		err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routesWithDB")
 		if err != nil {
@@ -618,8 +615,7 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		err = createdTemplate.Execute(createdFile, p)
 	case "routes":
 		if p.AdvancedOptions["AddHTMXTempl"] {
-			p.CreateTemplateImports()
-			p.CreateTemplateRoutes()
+			p.CreateHtmxTemplates()
 		}
 		routeFileBytes := p.FrameworkMap[p.ProjectType].templater.Routes()
 		createdTemplate := template.Must(template.New(fileName).Parse(string(routeFileBytes)))
@@ -671,38 +667,32 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 	return nil
 }
 
-func (p *Project) CreateTemplateRoutes() {
-	placeHolder := ""
+func (p *Project) CreateHtmxTemplates() {
+	routesPlaceHolder := ""
+	importsPlaceHolder := ""
 	if p.AdvancedOptions["AddHTMXTempl"] {
-		placeHolder += string(p.FrameworkMap[p.ProjectType].templater.HtmxTemplRoutes())
+		routesPlaceHolder += string(p.FrameworkMap[p.ProjectType].templater.HtmxTemplRoutes())
+		importsPlaceHolder += string(p.FrameworkMap[p.ProjectType].templater.HtmxTemplImports())
 	}
 
-	phTmpl, err := template.New("routes").Parse(placeHolder)
+	routeTmpl, err := template.New("routes").Parse(routesPlaceHolder)
 	if err != nil {
 		log.Fatal(err)
 	}
-	var phBuffer bytes.Buffer
-	err = phTmpl.Execute(&phBuffer, p)
+	importTmpl, err := template.New("imports").Parse(importsPlaceHolder)
 	if err != nil {
 		log.Fatal(err)
 	}
-	p.AdvancedTemplates.TemplateRoutes = template.HTML(phBuffer.String())
-}
-
-func (p *Project) CreateTemplateImports() {
-	placeHolder := ""
-	if p.AdvancedOptions["AddHTMXTempl"] {
-		placeHolder += string(p.FrameworkMap[p.ProjectType].templater.HtmxTemplImports())
-	}
-
-	phTmpl, err := template.New("imports").Parse(placeHolder)
+	var routeBuffer bytes.Buffer
+	var importBuffer bytes.Buffer
+	err = routeTmpl.Execute(&routeBuffer, p)
 	if err != nil {
 		log.Fatal(err)
 	}
-	var phBuffer bytes.Buffer
-	err = phTmpl.Execute(&phBuffer, p)
+	err = importTmpl.Execute(&importBuffer, p)
 	if err != nil {
 		log.Fatal(err)
 	}
-	p.AdvancedTemplates.TemplateImports = template.HTML(phBuffer.String())
+	p.AdvancedTemplates.TemplateRoutes = template.HTML(routeBuffer.String())
+	p.AdvancedTemplates.TemplateImports = template.HTML(importBuffer.String())
 }

@@ -101,6 +101,16 @@ var createCmd = &cobra.Command{
 		steps := steps.InitSteps(flagFramework, flagDBDriver)
 		fmt.Printf("%s\n", logoStyle.Render(logo))
 
+		// Advanced option steps:
+		flagAdvanced, err := cmd.Flags().GetBool("advanced")
+		if err != nil {
+			log.Fatal("failed to retrieve advanced flag")
+		}
+
+		if flagAdvanced {
+			fmt.Println(tipMsgStyle.Render("*** You are in advanced mode ***\n\n"))
+		}
+
 		if project.ProjectName == "" {
 			tprogram := tea.NewProgram(textinput.InitialTextInputModel(options.ProjectName, "What is the name of your project?", project))
 			if _, err := tprogram.Run(); err != nil {
@@ -154,12 +164,6 @@ var createCmd = &cobra.Command{
 			if err != nil {
 				log.Fatal("failed to set the driver flag value", err)
 			}
-		}
-
-		// Advanced option steps:
-		flagAdvanced, err := cmd.Flags().GetBool("advanced")
-		if err != nil {
-			log.Fatal("failed to retrieve advanced flag")
 		}
 
 		if flagAdvanced {
