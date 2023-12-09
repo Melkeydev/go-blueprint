@@ -459,6 +459,7 @@ func (p *Project) CreateMainFile() error {
 			}
 		}
 
+		p.CreateHtmxTemplates()
 	}
 
 	// Create .github/workflows folder and inject release.yml and go-test.yml
@@ -614,9 +615,6 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.ServerWithDB())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "routes":
-		if p.AdvancedOptions["AddHTMXTempl"] {
-			p.CreateHtmxTemplates()
-		}
 		routeFileBytes := p.FrameworkMap[p.ProjectType].templater.Routes()
 		createdTemplate := template.Must(template.New(fileName).Parse(string(routeFileBytes)))
 		err = createdTemplate.Execute(createdFile, p)
