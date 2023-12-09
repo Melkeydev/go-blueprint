@@ -99,8 +99,6 @@ Choose from a variety of supported database drivers:
 </h2>
 Blueprint is focused on being as minimalistic as possible. That being said, we wanted to offer the ability to add other features people may want without bloating the overall experience. 
 
-<br>
-
 You can now use the `--advanced` flag when running the `create` command to get access to the following features. This is a multi-option prompt; one or more features can be used at the same time:
 
 - [HTMX](https://htmx.org/) support using [Templ](https://templ.guide/)
