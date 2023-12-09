@@ -83,9 +83,9 @@ type DockerTemplater interface {
 }
 
 type WorkflowTemplater interface {
-	File_1() []byte
-	File_2() []byte
-	File_3() []byte
+	Releaser() []byte
+	Test() []byte
+	ReleaserConfig() []byte
 }
 
 var (
@@ -470,21 +470,21 @@ func (p *Project) CreateMainFile() error {
 			return err
 		}
 
-		err = p.CreateFileWithInjection(gitHubActionPath, projectPath, "release.yml", "file1")
+		err = p.CreateFileWithInjection(gitHubActionPath, projectPath, "release.yml", "releaser")
 		if err != nil {
 			log.Printf("Error injecting release.yml file: %v", err)
 			cobra.CheckErr(err)
 			return err
 		}
 
-		err = p.CreateFileWithInjection(gitHubActionPath, projectPath, "go-test.yml", "file2")
+		err = p.CreateFileWithInjection(gitHubActionPath, projectPath, "go-test.yml", "go-test")
 		if err != nil {
 			log.Printf("Error injecting go-test.yml file: %v", err)
 			cobra.CheckErr(err)
 			return err
 		}
 
-		err = p.CreateFileWithInjection(root, projectPath, ".goreleaser.yml", "file3")
+		err = p.CreateFileWithInjection(root, projectPath, ".goreleaser.yml", "releaser-config")
 		if err != nil {
 			log.Printf("Error injecting .goreleaser.yml file: %v", err)
 			cobra.CheckErr(err)
@@ -624,14 +624,14 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		routeFileBytes := p.FrameworkMap[p.ProjectType].templater.Routes()
 		createdTemplate := template.Must(template.New(fileName).Parse(string(routeFileBytes)))
 		err = createdTemplate.Execute(createdFile, p)
-	case "file1":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(advanced.File_1())))
+	case "releaser":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(advanced.Releaser())))
 		err = createdTemplate.Execute(createdFile, p)
-	case "file2":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(advanced.File_2())))
+	case "go-test":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(advanced.Test())))
 		err = createdTemplate.Execute(createdFile, p)
-	case "file3":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(advanced.File_3())))
+	case "releaser-config":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(advanced.ReleaserConfig())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "routesWithDB":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.RoutesWithDB())))

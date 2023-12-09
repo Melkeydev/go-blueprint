@@ -4,23 +4,23 @@ import (
 	_ "embed"
 )
 
-//go:embed files/workflow/github/github_action_goreliser.yml.tmpl
+//go:embed files/workflow/github/github_action_goreleaser.yml.tmpl
 var gitHubActionBuildTemplate []byte
 
 //go:embed files/workflow/github/github_action_gotest.yml.tmpl
 var gitHubActionTestTemplate []byte
 
-//go:embed files/workflow/github/github_action_reliser_config.yml.tmpl
+//go:embed files/workflow/github/github_action_releaser_config.yml.tmpl
 var gitHubActionConfigTemplate []byte
 
-func File_1() []byte {
+func Releaser() []byte {
 	return gitHubActionBuildTemplate
 }
 
-func File_2() []byte {
+func Test() []byte {
 	return gitHubActionTestTemplate
 }
 
-func File_3() []byte {
+func ReleaserConfig() []byte {
 	return gitHubActionConfigTemplate
 }
