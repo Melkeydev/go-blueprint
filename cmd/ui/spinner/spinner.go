@@ -54,7 +54,7 @@ func (m model) View() string {
 	if m.err != nil {
 		return m.err.Error()
 	}
-	str := fmt.Sprintf("\n\n   %s Preparing...\n\n", m.spinner.View())
+	str := fmt.Sprintf("%s Preparing...", m.spinner.View())
 	if m.quitting {
 		return str + "\n"
 	}

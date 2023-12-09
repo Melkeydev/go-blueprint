@@ -155,23 +155,22 @@ var createCmd = &cobra.Command{
 		}
 		project.AbsolutePath = currentWorkingDir
 		spinner := tea.NewProgram(spinner.InitialModelNew())
+
 		// add synchronization to wait for spinner to finish
 		wg := sync.WaitGroup{}
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			// only run the spinner if the command is interactive
-			if isInteractive {
-				if _, err := spinner.Run(); err != nil {
-					cobra.CheckErr(err)
-				}
+			if _, err := spinner.Run(); err != nil {
+				cobra.CheckErr(err)
 			}
 		}()
+
 		err = project.CreateMainFile()
+
 		// once the create is done, stop the spinner
-		if isInteractive {
-			spinner.Quit()
-		}
+		spinner.Quit()
+
 		// wait for the spinner to finish
 		wg.Wait()
 		if err != nil {
