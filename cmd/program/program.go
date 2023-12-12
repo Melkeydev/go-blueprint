@@ -76,7 +76,6 @@ type Templater interface {
 type DBDriverTemplater interface {
 	Service() []byte
 	Env() []byte
-	EnvExample() []byte
 }
 
 type DockerTemplater interface {
@@ -336,6 +335,21 @@ func (p *Project) CreateMainFile() error {
 
 	defer makeFile.Close()
 
+	if p.DBDriver == "sqlite" || p.DBDriver == "none" {
+		// inject makefile template
+		makeFileTemplate := template.Must(template.New("makefile").Parse(string(framework.NonDbMakeFileTemplate())))
+		err = makeFileTemplate.Execute(makeFile, p)
+		if err != nil {
+			return err
+		}
+	} else {
+		// inject makefile template
+		makeFileTemplate := template.Must(template.New("makefile").Parse(string(framework.MakeTemplate())))
+		err = makeFileTemplate.Execute(makeFile, p)
+		if err != nil {
+			return err
+		}
+	}
 	// inject makefile template
 	makeFileTemplate := template.Must(template.New("makefile").Parse(string(framework.MakeTemplate())))
 	err = makeFileTemplate.Execute(makeFile, p)
@@ -653,9 +667,6 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		err = createdTemplate.Execute(createdFile, p)
 	case "tests":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.TestHandler())))
-		err = createdTemplate.Execute(createdFile, p)
-	case "env-example":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.EnvExample())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "env":
 		if p.DBDriver != "none" {

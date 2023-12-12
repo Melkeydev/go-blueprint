@@ -9,6 +9,9 @@ import (
 //go:embed files/main/main.go.tmpl
 var mainTemplate []byte
 
+//go:embed files/nondbMakeFile.tmpl
+var nondbMakeFileTemplate []byte
+
 //go:embed files/air.toml.tmpl
 var airTomlTemplate []byte
 
@@ -39,4 +42,8 @@ func AirTomlTemplate() []byte {
 // the default README.md file template.
 func ReadmeTemplate() []byte {
 	return readmeTemplate
+}
+
+func NonDbMakeFileTemplate() []byte {
+    return nondbMakeFileTemplate
 }
