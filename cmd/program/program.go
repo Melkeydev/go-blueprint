@@ -343,12 +343,6 @@ func (p *Project) CreateMainFile() error {
 			return err
 		}
 	}
-	// inject makefile template
-	makeFileTemplate := template.Must(template.New("makefile").Parse(string(framework.MakeTemplate())))
-	err = makeFileTemplate.Execute(makeFile, p)
-	if err != nil {
-		return err
-	}
 
 	readmeFile, err := os.Create(filepath.Join(projectPath, "README.md"))
 	if err != nil {
