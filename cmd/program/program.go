@@ -272,13 +272,6 @@ func (p *Project) CreateMainFile() error {
 	// Create correct docker compose for the selected driver
 	if p.DBDriver != "none" {
 
-		err = p.CreateFileWithInjection(root, projectPath, ".env.example", "env-example")
-		if err != nil {
-			log.Printf("Error injecting .env.example file: %v", err)
-			cobra.CheckErr(err)
-			return err
-		}
-
 		if p.DBDriver != "sqlite" {
 			p.createDockerMap()
 			p.Docker = p.DBDriver
