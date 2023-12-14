@@ -10,6 +10,6 @@ func main() {
 
 	err := server.ListenAndServe()
 	if err != nil {
-		panic("cannot start server")
+		panic(fmt.Sprintf("cannot start server: %s", err))
 	}
 }
