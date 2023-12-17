@@ -74,6 +74,9 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 						Title: "Postgres",
 						Desc:  "Go postgres driver for Go's database/sql package"},
 					{
+						Title: "SqlServer",
+						Desc:  "Microsoft mssql driver for Go's database/sql package"},
+					{
 						Title: "Sqlite",
 						Desc:  "sqlite3 driver conforming to the built-in database/sql interface"},
 					{

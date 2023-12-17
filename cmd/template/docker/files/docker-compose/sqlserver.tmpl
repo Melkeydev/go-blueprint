@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:latest
+    user: root
+    environment:
+      SA_PASSWORD: ${DB_PASSWORD}
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Express
+    ports:
+      - "${DB_PORT}:1433"
+    volumes:
+      - sqlserver_volume:/var/opt/mssql/data
+
+volumes:
+  sqlserver_volume:
