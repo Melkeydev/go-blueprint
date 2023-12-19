@@ -336,7 +336,7 @@ func (p *Project) CreateMainFile() error {
 			return err
 		}
 	} else {
-		// inject makefile template
+		// inject makefile template for database excluding sqlite
 		makeFileTemplate := template.Must(template.New("makefile").Parse(string(framework.MakeTemplate())))
 		err = makeFileTemplate.Execute(makeFile, p)
 		if err != nil {
