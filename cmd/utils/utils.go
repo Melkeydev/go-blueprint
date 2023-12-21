@@ -29,14 +29,6 @@ func NonInteractiveCommand(use string, flagSet *pflag.FlagSet) string {
 	return nonInteractiveCommand
 }
 
-func HasChangedFlag(flagSet *pflag.FlagSet) bool {
-	hasChangedFlag := false
-	flagSet.Visit(func(_ *pflag.Flag) {
-		hasChangedFlag = true
-	})
-	return hasChangedFlag
-}
-
 func AllFlagsUsed(flagSet *pflag.FlagSet) bool {
 	allUsed := true
 	pflag.VisitAll(func(flag *pflag.Flag) {
