@@ -37,6 +37,16 @@ func HasChangedFlag(flagSet *pflag.FlagSet) bool {
 	return hasChangedFlag
 }
 
+func AllFlagsUsed(flagSet *pflag.FlagSet) bool {
+	allUsed := true
+	pflag.VisitAll(func(flag *pflag.Flag) {
+		if !flag.Changed {
+			allUsed = false
+		}
+	})
+	return allUsed
+}
+
 // ExecuteCmd provides a shorthand way to run a shell command
 func ExecuteCmd(name string, args []string, dir string) error {
 	command := exec.Command(name, args...)

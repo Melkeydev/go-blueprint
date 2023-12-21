@@ -68,7 +68,7 @@ var createCmd = &cobra.Command{
 		var tprogram *tea.Program
 		var err error
 
-		isInteractive := !utils.HasChangedFlag(cmd.Flags())
+		isInteractive := !utils.AllFlagsUsed(cmd.Flags())
 		flagName := cmd.Flag("name").Value.String()
 		if flagName != "" && doesDirectoryExistAndIsNotEmpty(flagName) {
 			err = fmt.Errorf("directory '%s' already exists and is not empty. Please choose a different name", flagName)
@@ -180,7 +180,6 @@ var createCmd = &cobra.Command{
 				log.Fatal("failed to set the htmx option", err)
 			}
 
-			// more advanced options to come
 		}
 
 		currentWorkingDir, err := os.Getwd()
