@@ -15,28 +15,28 @@ jobs:
           go-version: "1.20"
       - name: Install Dependencies
         run: go mod download
-
   framework_matrix:
     needs: install_dependencies
     strategy:
       matrix:
         framework:
           [chi, gin, fiber, gorilla/mux, httprouter, standard-library, echo]
-        driver:
-          [mysql, postgres, sqlite, mongo, none]
+        driver: [mysql, postgres, sqlite, mongo, none]
         goVersion: ["1.20"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: ${{ matrix.goVersion }}
+      - name: Commit report
+        run: |
+          git config --global user.name 'testname'
+          git config --global user.email 'testemail@users.noreply.github.com'
       - name: build templates
-        run: go run main.go create -n ${{ matrix.framework }} -f ${{ matrix.framework}} -d ${{ matrix.driver }}
+        run: script -q /dev/null -c "go run main.go create -n ${{ matrix.framework }} -f ${{ matrix.framework}} -d ${{matrix.driver}}" /dev/null
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
           version: v1.55.2
           working-directory: ${{ matrix.framework }}
           args: --timeout=5m
+      - name: remove templates
+        run: rm -rf ${{ matrix.framework }}

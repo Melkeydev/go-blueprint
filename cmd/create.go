@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"sync"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -12,6 +13,7 @@ import (
 	"github.com/melkeydev/go-blueprint/cmd/program"
 	"github.com/melkeydev/go-blueprint/cmd/steps"
 	"github.com/melkeydev/go-blueprint/cmd/ui/multiInput"
+	"github.com/melkeydev/go-blueprint/cmd/ui/spinner"
 	"github.com/melkeydev/go-blueprint/cmd/ui/textinput"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
 	"github.com/spf13/cobra"
@@ -152,9 +154,25 @@ var createCmd = &cobra.Command{
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
 		project.AbsolutePath = currentWorkingDir
+		spinner := tea.NewProgram(spinner.InitialModelNew())
 
-		// This calls the templates
+		// add synchronization to wait for spinner to finish
+		wg := sync.WaitGroup{}
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			if _, err := spinner.Run(); err != nil {
+				cobra.CheckErr(err)
+			}
+		}()
+
 		err = project.CreateMainFile()
+
+		// once the create is done, stop the spinner
+		spinner.Quit()
+
+		// wait for the spinner to finish
+		wg.Wait()
 		if err != nil {
 			log.Printf("Problem creating files for project. %v", err)
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
@@ -167,6 +185,11 @@ var createCmd = &cobra.Command{
 			nonInteractiveCommand := utils.NonInteractiveCommand(cmd.Use, cmd.Flags())
 			fmt.Println(tipMsgStyle.Render("Tip: Repeat the equivalent Blueprint with the following non-interactive command:"))
 			fmt.Println(tipMsgStyle.Italic(false).Render(fmt.Sprintf("• %s\n", nonInteractiveCommand)))
+			err = tprogram.ReleaseTerminal()
+			if err != nil {
+				log.Printf("Could not release terminal: %v", err)
+				cobra.CheckErr(err)
+			}
 		}
 	},
 }
