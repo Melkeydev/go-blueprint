@@ -68,7 +68,7 @@ var createCmd = &cobra.Command{
 		var tprogram *tea.Program
 		var err error
 
-		isInteractive := !utils.AllFlagsUsed(cmd.Flags())
+		isInteractive := false
 		flagName := cmd.Flag("name").Value.String()
 		if flagName != "" && doesDirectoryExistAndIsNotEmpty(flagName) {
 			err = fmt.Errorf("directory '%s' already exists and is not empty. Please choose a different name", flagName)
@@ -112,6 +112,7 @@ var createCmd = &cobra.Command{
 		}
 
 		if project.ProjectName == "" {
+			isInteractive = true
 			tprogram := tea.NewProgram(textinput.InitialTextInputModel(options.ProjectName, "What is the name of your project?", project))
 			if _, err := tprogram.Run(); err != nil {
 				log.Printf("Name of project contains an error: %v", err)
@@ -131,6 +132,7 @@ var createCmd = &cobra.Command{
 		}
 
 		if project.ProjectType == "" {
+			isInteractive = true
 			step := steps.Steps["framework"]
 			tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, options.ProjectType, step.Headers, project))
 			if _, err := tprogram.Run(); err != nil {
@@ -150,6 +152,7 @@ var createCmd = &cobra.Command{
 		}
 
 		if project.DBDriver == "" {
+			isInteractive = true
 			step := steps.Steps["driver"]
 			tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, options.DBDriver, step.Headers, project))
 			if _, err := tprogram.Run(); err != nil {
@@ -167,6 +170,7 @@ var createCmd = &cobra.Command{
 		}
 
 		if flagAdvanced {
+			isInteractive = true
 			step := steps.Steps["advanced"]
 			tprogram = tea.NewProgram((multiSelect.InitialModelMultiSelect(step.Options, options.Advanced, step.Headers, project)))
 			if _, err := tprogram.Run(); err != nil {
@@ -220,11 +224,11 @@ var createCmd = &cobra.Command{
 			nonInteractiveCommand := utils.NonInteractiveCommand(cmd.Use, cmd.Flags())
 			fmt.Println(tipMsgStyle.Render("Tip: Repeat the equivalent Blueprint with the following non-interactive command:"))
 			fmt.Println(tipMsgStyle.Italic(false).Render(fmt.Sprintf("• %s\n", nonInteractiveCommand)))
-			err = tprogram.ReleaseTerminal()
-			if err != nil {
-				log.Printf("Could not release terminal: %v", err)
-				cobra.CheckErr(err)
-			}
+		}
+		err = spinner.ReleaseTerminal()
+		if err != nil {
+			log.Printf("Could not release terminal: %v", err)
+			cobra.CheckErr(err)
 		}
 	},
 }
