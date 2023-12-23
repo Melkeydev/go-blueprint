@@ -29,8 +29,8 @@ jobs:
 
       - name: Install dependencies
         working-directory: docs
-        run: make install
+        run: pip install -r requirements.txt
 
       - name: Build and deploy to GitHub Pages
         working-directory: docs
-        run: make deploy
+        run: mkdocs gh-deploy --strict --force
