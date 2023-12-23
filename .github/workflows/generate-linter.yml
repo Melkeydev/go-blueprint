@@ -15,7 +15,6 @@ jobs:
           go-version: "1.20"
       - name: Install Dependencies
         run: go mod download
-
   framework_matrix:
     needs: install_dependencies
     strategy:
@@ -28,6 +27,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Commit report
+        run: |
+          git config --global user.name 'testname'
+          git config --global user.email 'testemail@users.noreply.github.com'
       - name: build templates
         run: script -q /dev/null -c "go run main.go create -n ${{ matrix.framework }} -f ${{ matrix.framework}} -d ${{matrix.driver}}" /dev/null
       - name: golangci-lint

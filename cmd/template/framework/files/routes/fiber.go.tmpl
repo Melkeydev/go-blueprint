@@ -12,7 +12,7 @@ func (s *FiberServer) RegisterFiberRoutes() {
 }
 
 func (s *FiberServer) HelloWorldHandler(c *fiber.Ctx) error {
-	resp := map[string]string{
+	resp := fiber.Map{
 		"message": "Hello World",
 	}
 
