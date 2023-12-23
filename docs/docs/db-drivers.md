@@ -11,7 +11,7 @@ To extend the project with database functionality, users can choose from a varie
 - **[Sqlite](https://github.com/mattn/go-sqlite3):**
   Suitable for projects requiring a lightweight, self-contained database.
 
-- **[Mongo](go.mongodb.org/mongo-driver):**
+- **[Mongo](https://go.mongodb.org/mongo-driver):**
   Provides necessary tools for connecting and interacting with MongoDB databases.
 
 ## Updated Project Structure

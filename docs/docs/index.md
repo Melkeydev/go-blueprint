@@ -11,9 +11,7 @@ Powerful CLI tool designed to streamline the process of creating Go projects wit
 
 - **Pre-established Go Project Structure**: Save time and effort by having the entire Go project structure set up automatically. No need to worry about directory layouts or configuration files.
 
-- **HTTP Server Configuration Made Easy**: Whether you prefer Go's standard library HTTP package, Fasthttp with Fiber, or other frameworks, Go Blueprint caters to your server setup needs.
-
-- **Integrate with Popular Frameworks**: Choose from a variety of popular Go frameworks, including Chi, Gin, Fiber, HttpRouter, Gorilla/mux, and Echo.
+- **HTTP Server Configuration Made Easy**: Whether you prefer Go's standard library HTTP package, Chi, Gin, Fiber, HttpRouter, Gorilla/mux or Echo, Go Blueprint caters to your server setup needs.
 
 - **Focus on Your Application Code**: With Go Blueprint handling the project scaffolding, you can dedicate more time and energy to developing your application logic.
 
@@ -55,9 +53,6 @@ Here's an overview of the project structure created by Go Blueprint when all opt
 ├── Makefile
 └── README.md
 ```
-
-
-Here's a brief description of each directory and file:
 
 - **`cmd/`**: Contains the entry points for your application.
 
