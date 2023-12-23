@@ -129,7 +129,7 @@ go-blueprint create --name my-project --framework gin --driver postgres
   <picture>
     <img src="./public/license.gif?raw=true" width="50px" style="margin-right: 1px;">
   </picture>
-  Licence
+  License
 </h2>
 
 Licensed under [MIT License](./LICENSE)
