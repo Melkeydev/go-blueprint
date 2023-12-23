@@ -4,8 +4,8 @@ site_name: Go-Blueprint Docs
 site_description: Official docuemtation for Go-Blueprint project
 site_url: https://go-blueprint.com/
 
-repo_url: https://github.com/Melkeydev/go-blueprint
-edit_uri: edit/main/docs
+repo_url: https://github.com/Ujstor/go-blueprint
+edit_uri: edit/main/docs/docs
 
 ### Build settings ###
 

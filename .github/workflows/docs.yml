@@ -3,6 +3,7 @@ name: Deploy Docs
 on:
   push:
     branches:
+      - main
       - docs
 
 jobs:
@@ -22,15 +23,15 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('docs/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
             ${{ runner.os }}-
 
       - name: Install dependencies
-        #working-directory: docs
-        run: pip install -r requirements.txt
+        working-directory: docs
+        run: make install
 
       - name: Build and deploy to GitHub Pages
-        #working-directory: docs
-        run: mkdocs gh-deploy --strict --force
+        working-directory: docs
+        run: make deploy
