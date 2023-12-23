@@ -1,0 +1,20 @@
+### Site metadata ###
+
+site_name: Go-Blueprint Docs
+site_description: Official docuemtation for Go-Blueprint project
+site_url: https://go-blueprint.com/
+
+repo_url: https://github.com/Melkeydev/go-blueprint
+edit_uri: edit/main/docs/docs
+
+### Build settings ###
+
+theme: readthedocs
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Creating Project: creating-project.md
+  - Frameworks: frameworks.md
+  - DB Drivers: db-drivers.md
+  - Advanced Flag: advanced-flag.md
+  
