@@ -11,14 +11,15 @@ type Database string
 // can simply copy and past a line here. Do not forget to also add it into the
 // AllowedDBDrivers slice too!
 const (
-	MySql    Database = "mysql"
-	Postgres Database = "postgres"
-	Sqlite   Database = "sqlite"
-	Mongo    Database = "mongo"
-	None     Database = "none"
+	MySql     Database = "mysql"
+	Postgres  Database = "postgres"
+	SqlServer Database = "sqlserver"
+	Sqlite    Database = "sqlite"
+	Mongo     Database = "mongo"
+	None      Database = "none"
 )
 
-var AllowedDBDrivers = []string{string(MySql), string(Postgres), string(Sqlite), string(Mongo), string(None)}
+var AllowedDBDrivers = []string{string(MySql), string(Postgres), string(SqlServer), string(Sqlite), string(Mongo), string(None)}
 
 func (f Database) String() string {
 	return string(f)

@@ -81,10 +81,11 @@ var (
 	fiberPackage   = []string{"github.com/gofiber/fiber/v2"}
 	echoPackage    = []string{"github.com/labstack/echo/v4", "github.com/labstack/echo/v4/middleware"}
 
-	mysqlDriver    = []string{"github.com/go-sql-driver/mysql"}
-	postgresDriver = []string{"github.com/lib/pq"}
-	sqliteDriver   = []string{"github.com/mattn/go-sqlite3"}
-	mongoDriver    = []string{"go.mongodb.org/mongo-driver"}
+	mysqlDriver     = []string{"github.com/go-sql-driver/mysql"}
+	postgresDriver  = []string{"github.com/lib/pq"}
+	sqlServerDriver = []string{"github.com/microsoft/go-mssqldb"}
+	sqliteDriver    = []string{"github.com/mattn/go-sqlite3"}
+	mongoDriver     = []string{"go.mongodb.org/mongo-driver"}
 
 	godotenvPackage = []string{"github.com/joho/godotenv"}
 )
@@ -157,6 +158,10 @@ func (p *Project) createDBDriverMap() {
 		packageName: postgresDriver,
 		templater:   dbdriver.PostgresTemplate{},
 	}
+	p.DBDriverMap[flags.SqlServer] = Driver{
+		packageName: sqlServerDriver,
+		templater:   dbdriver.SqlServerTemplate{},
+	}
 	p.DBDriverMap[flags.Sqlite] = Driver{
 		packageName: sqliteDriver,
 		templater:   dbdriver.SqliteTemplate{},
@@ -177,6 +182,10 @@ func (p *Project) createDockerMap() {
 	p.DockerMap[flags.Postgres] = Docker{
 		packageName: []string{},
 		templater:   docker.PostgresDockerTemplate{},
+	}
+	p.DockerMap[flags.SqlServer] = Docker{
+		packageName: []string{},
+		templater:   docker.SqlServerDockerTemplate{},
 	}
 	p.DockerMap[flags.Mongo] = Docker{
 		packageName: []string{},
@@ -431,20 +440,20 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 	}
 
-    // Git add files
-    err = utils.ExecuteCmd("git", []string{"add", "."}, projectPath)
-    if err != nil {
-        log.Printf("Error adding files to git repo: %v", err)
-        cobra.CheckErr(err)
-        return err
-    }
-    // Git commit files
-    err = utils.ExecuteCmd("git", []string{"commit", "-m", "Initial commit"}, projectPath)
-    if err != nil {
-        log.Printf("Error committing files to git repo: %v", err)
-        cobra.CheckErr(err)
-        return err
-    }
+	// Git add files
+	err = utils.ExecuteCmd("git", []string{"add", "."}, projectPath)
+	if err != nil {
+		log.Printf("Error adding files to git repo: %v", err)
+		cobra.CheckErr(err)
+		return err
+	}
+	// Git commit files
+	err = utils.ExecuteCmd("git", []string{"commit", "-m", "Initial commit"}, projectPath)
+	if err != nil {
+		log.Printf("Error committing files to git repo: %v", err)
+		cobra.CheckErr(err)
+		return err
+	}
 	return nil
 }
 
