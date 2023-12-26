@@ -97,6 +97,7 @@ Choose from a variety of supported database drivers:
   </picture>
   Advanced Features
 </h2>
+
 Blueprint is focused on being as minimalistic as possible. That being said, we wanted to offer the ability to add other features people may want without bloating the overall experience. 
 
 You can now use the `--advanced` flag when running the `create` command to get access to the following features. This is a multi-option prompt; one or more features can be used at the same time:
@@ -152,7 +153,5 @@ go-blueprint create --advanced
   </picture>
   License
 </h2>
-
-### Advanced Features
 
 Licensed under [MIT License](./LICENSE)
