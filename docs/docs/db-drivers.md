@@ -2,17 +2,10 @@
 
 To extend the project with database functionality, users can choose from a variety of Go database drivers. Each driver is tailored to work with specific database systems, providing flexibility based on project requirements:
 
-- **[Mysql](https://github.com/go-sql-driver/mysql):**
-  Enables seamless integration with MySQL databases.
-
-- **[Postgres](https://github.com/jackc/pgx/):**
-  Facilitates connectivity to PostgreSQL databases.
-
-- **[Sqlite](https://github.com/mattn/go-sqlite3):**
-  Suitable for projects requiring a lightweight, self-contained database.
-
-- **[Mongo](https://go.mongodb.org/mongo-driver):**
-  Provides necessary tools for connecting and interacting with MongoDB databases.
+1. [Mysql](https://github.com/go-sql-driver/mysql): Enables seamless integration with MySQL databases.
+2. [Postgres](https://github.com/jackc/pgx/): Facilitates connectivity to PostgreSQL databases.
+3. [Sqlite](https://github.com/mattn/go-sqlite3): Suitable for projects requiring a lightweight, self-contained database.
+4. [Mongo](https://go.mongodb.org/mongo-driver): Provides necessary tools for connecting and interacting with MongoDB databases.
 
 ## Updated Project Structure
 

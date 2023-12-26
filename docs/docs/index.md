@@ -72,7 +72,7 @@ Here's an overview of the project structure created by Go Blueprint when all opt
 
 - **`.air.toml`**: Configuration file for [Air](https://github.com/cosmtrek/air), a live-reload utility for Go.
 
-- **`docker-compose.yml`**: Configuration file for Docker Compose, defining services, networks, and volumes.
+- **`docker-compose.yml`**: Configuration file for Docker Compose, defining DB config.
 
 - **`.env`**: Environment configuration file.
 
