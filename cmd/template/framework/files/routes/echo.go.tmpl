@@ -5,11 +5,13 @@ package server
 
 		"github.com/labstack/echo/v4"
 		"github.com/labstack/echo/v4/middleware"
+    {{.AdvancedTemplates.TemplateImports}}
 	)
 func (s *Server) RegisterRoutes() http.Handler {
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+  {{.AdvancedTemplates.TemplateRoutes}}
 
 	e.GET("/", s.HelloWorldHandler)
 

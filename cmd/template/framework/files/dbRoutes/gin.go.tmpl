@@ -3,12 +3,14 @@ package server
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+  {{.AdvancedTemplates.TemplateImports}}
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
 	r := gin.Default()
 	r.GET("/", s.HelloWorldHandler)
 	r.GET("/health", s.healthHandler)
+  {{.AdvancedTemplates.TemplateRoutes}}
 
 	return r
 }

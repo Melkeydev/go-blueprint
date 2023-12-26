@@ -4,12 +4,14 @@ import (
 	"net/http"
 	"encoding/json"
 	"log"
+  {{.AdvancedTemplates.TemplateImports}}
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", s.HelloWorldHandler)
+  {{.AdvancedTemplates.TemplateRoutes}}
 
 	return mux
 }
