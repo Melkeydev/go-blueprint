@@ -208,8 +208,10 @@ var createCmd = &cobra.Command{
 		// This calls the templates
 		err = project.CreateMainFile()
 		if err != nil {
+			if releaseErr := spinner.ReleaseTerminal(); releaseErr != nil {
+				log.Printf("Problem releasing terminal: %v", releaseErr)
+			}
 			log.Printf("Problem creating files for project. %v", err)
-			spinner.ReleaseTerminal()
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
 
