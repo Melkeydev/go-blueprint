@@ -209,6 +209,7 @@ var createCmd = &cobra.Command{
 		err = project.CreateMainFile()
 		if err != nil {
 			log.Printf("Problem creating files for project. %v", err)
+			spinner.ReleaseTerminal()
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
 
