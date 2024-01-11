@@ -5,6 +5,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+  {{.AdvancedTemplates.TemplateImports}}
 )
 
 
@@ -15,6 +16,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	e.GET("/", s.HelloWorldHandler)
 	e.GET("/health", s.healthHandler)
+  {{.AdvancedTemplates.TemplateRoutes}}
 
 	return e
 }

@@ -21,7 +21,8 @@ jobs:
       matrix:
         framework:
           [chi, gin, fiber, gorilla/mux, httprouter, standard-library, echo]
-        driver: [mysql, postgres, sqlite, mongo, none]
+        driver:
+          [mysql, postgres, sqlite, mongo, none]
         goVersion: ["1.20"]
     runs-on: ubuntu-latest
     steps:

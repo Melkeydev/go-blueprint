@@ -4,12 +4,16 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
+  {{.AdvancedTemplates.TemplateImports}}
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
 	r := gin.Default()
 
 	r.GET("/", s.HelloWorldHandler)
+
+  {{.AdvancedTemplates.TemplateRoutes}}
 
 	return r
 }

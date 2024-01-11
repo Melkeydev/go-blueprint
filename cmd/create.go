@@ -13,6 +13,7 @@ import (
 	"github.com/melkeydev/go-blueprint/cmd/program"
 	"github.com/melkeydev/go-blueprint/cmd/steps"
 	"github.com/melkeydev/go-blueprint/cmd/ui/multiInput"
+	"github.com/melkeydev/go-blueprint/cmd/ui/multiSelect"
 	"github.com/melkeydev/go-blueprint/cmd/ui/spinner"
 	"github.com/melkeydev/go-blueprint/cmd/ui/textinput"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
@@ -45,13 +46,16 @@ func init() {
 
 	createCmd.Flags().StringP("name", "n", "", "Name of project to create")
 	createCmd.Flags().VarP(&flagFramework, "framework", "f", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(flags.AllowedProjectTypes, ", ")))
-	createCmd.Flags().VarP(&flagDBDriver, "driver", "d", fmt.Sprintf("database drivers to use. Allowed values: %s", strings.Join(flags.AllowedDBDrivers, ", ")))
+	createCmd.Flags().VarP(&flagDBDriver, "driver", "d", fmt.Sprintf("Database drivers to use. Allowed values: %s", strings.Join(flags.AllowedDBDrivers, ", ")))
+	createCmd.Flags().BoolP("advanced", "a", false, "Get prompts for advanced features")
 }
 
 type Options struct {
 	ProjectName *textinput.Output
 	ProjectType *multiInput.Selection
 	DBDriver    *multiInput.Selection
+	Advanced    *multiSelect.Selection
+	Workflow    *multiInput.Selection
 }
 
 // createCmd defines the "create" command for the CLI
@@ -64,7 +68,7 @@ var createCmd = &cobra.Command{
 		var tprogram *tea.Program
 		var err error
 
-		isInteractive := !utils.HasChangedFlag(cmd.Flags())
+		isInteractive := false
 		flagName := cmd.Flag("name").Value.String()
 		if flagName != "" && doesDirectoryExistAndIsNotEmpty(flagName) {
 			err = fmt.Errorf("directory '%s' already exists and is not empty. Please choose a different name", flagName)
@@ -80,20 +84,35 @@ var createCmd = &cobra.Command{
 			ProjectName: &textinput.Output{},
 			ProjectType: &multiInput.Selection{},
 			DBDriver:    &multiInput.Selection{},
+			Advanced: &multiSelect.Selection{
+				Choices: make(map[string]bool),
+			},
 		}
 
 		project := &program.Project{
-			ProjectName:  flagName,
-			ProjectType:  flagFramework,
-			DBDriver:     flagDBDriver,
-			FrameworkMap: make(map[flags.Framework]program.Framework),
-			DBDriverMap:  make(map[flags.Database]program.Driver),
+			ProjectName:     flagName,
+			ProjectType:     flagFramework,
+			DBDriver:        flagDBDriver,
+			FrameworkMap:    make(map[flags.Framework]program.Framework),
+			DBDriverMap:     make(map[flags.Database]program.Driver),
+			AdvancedOptions: make(map[string]bool),
 		}
 
 		steps := steps.InitSteps(flagFramework, flagDBDriver)
 		fmt.Printf("%s\n", logoStyle.Render(logo))
 
+		// Advanced option steps:
+		flagAdvanced, err := cmd.Flags().GetBool("advanced")
+		if err != nil {
+			log.Fatal("failed to retrieve advanced flag")
+		}
+
+		if flagAdvanced {
+			fmt.Println(tipMsgStyle.Render("*** You are in advanced mode ***\n\n"))
+		}
+
 		if project.ProjectName == "" {
+			isInteractive = true
 			tprogram := tea.NewProgram(textinput.InitialTextInputModel(options.ProjectName, "What is the name of your project?", project))
 			if _, err := tprogram.Run(); err != nil {
 				log.Printf("Name of project contains an error: %v", err)
@@ -113,6 +132,7 @@ var createCmd = &cobra.Command{
 		}
 
 		if project.ProjectType == "" {
+			isInteractive = true
 			step := steps.Steps["framework"]
 			tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, options.ProjectType, step.Headers, project))
 			if _, err := tprogram.Run(); err != nil {
@@ -132,6 +152,7 @@ var createCmd = &cobra.Command{
 		}
 
 		if project.DBDriver == "" {
+			isInteractive = true
 			step := steps.Steps["driver"]
 			tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, options.DBDriver, step.Headers, project))
 			if _, err := tprogram.Run(); err != nil {
@@ -148,12 +169,30 @@ var createCmd = &cobra.Command{
 			}
 		}
 
+		if flagAdvanced {
+			isInteractive = true
+			step := steps.Steps["advanced"]
+			tprogram = tea.NewProgram((multiSelect.InitialModelMultiSelect(step.Options, options.Advanced, step.Headers, project)))
+			if _, err := tprogram.Run(); err != nil {
+				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
+			}
+			project.ExitCLI(tprogram)
+			for key, opt := range options.Advanced.Choices {
+				project.AdvancedOptions[key] = opt
+			}
+			if err != nil {
+				log.Fatal("failed to set the htmx option", err)
+			}
+
+		}
+
 		currentWorkingDir, err := os.Getwd()
 		if err != nil {
 			log.Printf("could not get current working directory: %v", err)
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
 		project.AbsolutePath = currentWorkingDir
+
 		spinner := tea.NewProgram(spinner.InitialModelNew())
 
 		// add synchronization to wait for spinner to finish
@@ -166,30 +205,33 @@ var createCmd = &cobra.Command{
 			}
 		}()
 
+		// This calls the templates
 		err = project.CreateMainFile()
-
-		// once the create is done, stop the spinner
-		spinner.Quit()
-
-		// wait for the spinner to finish
-		wg.Wait()
 		if err != nil {
+			if releaseErr := spinner.ReleaseTerminal(); releaseErr != nil {
+				log.Printf("Problem releasing terminal: %v", releaseErr)
+			}
 			log.Printf("Problem creating files for project. %v", err)
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
 
-		fmt.Println(endingMsgStyle.Render("\nNext steps cd into the newly created project with:"))
-		fmt.Println(endingMsgStyle.Render(fmt.Sprintf("• cd %s\n", project.ProjectName)))
+		fmt.Println(endingMsgStyle.Render("\nNext steps:"))
+		fmt.Println(endingMsgStyle.Render(fmt.Sprintf("• cd into the newly created project with: `cd %s`\n", project.ProjectName)))
+
+		if options.Advanced.Choices["AddHTMXTempl"] {
+			fmt.Println(endingMsgStyle.Render("• Install the templ cli if you haven't already by running `go install github.com/a-h/templ/cmd/templ@latest`\n"))
+			fmt.Println(endingMsgStyle.Render("• Generate templ function files by running `templ generate`\n"))
+		}
 
 		if isInteractive {
 			nonInteractiveCommand := utils.NonInteractiveCommand(cmd.Use, cmd.Flags())
 			fmt.Println(tipMsgStyle.Render("Tip: Repeat the equivalent Blueprint with the following non-interactive command:"))
 			fmt.Println(tipMsgStyle.Italic(false).Render(fmt.Sprintf("• %s\n", nonInteractiveCommand)))
-			err = tprogram.ReleaseTerminal()
-			if err != nil {
-				log.Printf("Could not release terminal: %v", err)
-				cobra.CheckErr(err)
-			}
+		}
+		err = spinner.ReleaseTerminal()
+		if err != nil {
+			log.Printf("Could not release terminal: %v", err)
+			cobra.CheckErr(err)
 		}
 	},
 }

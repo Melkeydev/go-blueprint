@@ -1,0 +1,7 @@
+s.App.Static("/js", "./cmd/web/js")
+
+s.App.Get("/web", adaptor.HTTPHandler(templ.Handler(web.HelloForm())))
+
+s.App.Post("/hello", func(c *fiber.Ctx) error {
+  return web.HelloWebHandler(c)
+})

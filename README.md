@@ -22,12 +22,12 @@ gives the option to integrate with one of the more popular Go frameworks (and th
 - [Install](#install)
 - [Frameworks Supported](#frameworks-supported)
 - [Database Support](#database-support)
+- [Advanced Features](#advanced-features)
 - [Usage Example](#usage-example)
 - [GitHub Stats](#github-stats)
 - [License](#license)
 
 <a id="install"></a>
-
 <h2>
   <picture>
     <img src="./public/install.gif?raw=true" width="60px" style="margin-right: 1px;">
@@ -56,7 +56,6 @@ go-blueprint create --name my-project --framework gin --driver postgres
 See `go-blueprint create -h` for all the options and shorthands.
 
 <a id="frameworks-supported"></a>
-
 <h2>
   <picture>
     <img src="./public/frameworks.gif?raw=true" width="60px" style="margin-right: 1px;">
@@ -92,8 +91,23 @@ Choose from a variety of supported database drivers:
 - [Sqlite](https://github.com/mattn/go-sqlite3)
 - [Mongo](go.mongodb.org/mongo-driver)
 
-<a id="usage-example"></a>
+<a id="advanced-features"></a>
+<h2>
+  <picture>
+    <img src="./public/advanced.gif?raw=true" width="70px" style="margin-right: 1px;">
+  </picture>
+  Advanced Features
+</h2>
 
+Blueprint is focused on being as minimalistic as possible. That being said, we wanted to offer the ability to add other features people may want without bloating the overall experience. 
+
+You can now use the `--advanced` flag when running the `create` command to get access to the following features. This is a multi-option prompt; one or more features can be used at the same time:
+
+- [HTMX](https://htmx.org/) support using [Templ](https://templ.guide/)
+- CI/CD workflow setup using [Github Actions](https://docs.github.com/en/actions)
+
+
+<a id="usage-example"></a>
 <h2>
   <picture>
     <img src="./public/example.gif?raw=true" width="60px" style="margin-right: 1px;">
@@ -111,8 +125,17 @@ go-blueprint create --name my-project --framework gin --driver postgres
   <img src="./public/blueprint_1.png" alt="Starter Image" width="800"/>
 </p>
 
-<a id="github-stats"></a>
+Advanced features are accessible with the --advanced flag
 
+```bash
+go-blueprint create --advanced
+```
+
+<p align="center">
+  <img src="./public/blueprint_2.png" alt="Starter Image" width="800"/>
+</p>
+
+<a id="github-stats"></a>
 <h2>
   <picture>
     <img src="./public/stats.gif?raw=true" width="45px" style="margin-right: 10px;">
@@ -125,12 +148,11 @@ go-blueprint create --name my-project --framework gin --driver postgres
 </p>
 
 <a id="license"></a>
-
 <h2>
   <picture>
     <img src="./public/license.gif?raw=true" width="50px" style="margin-right: 1px;">
   </picture>
-  Licence
+  License
 </h2>
 
 Licensed under [MIT License](./LICENSE)

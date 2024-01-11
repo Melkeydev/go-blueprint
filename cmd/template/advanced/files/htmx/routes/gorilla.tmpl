@@ -1,0 +1,8 @@
+fileServer := http.FileServer(http.FS(web.Files))
+r.PathPrefix("/js/").Handler(fileServer)
+
+r.HandleFunc("/web", func(w http.ResponseWriter, r *http.Request) {
+  templ.Handler(web.HelloForm()).ServeHTTP(w, r)
+})
+
+r.HandleFunc("/hello", web.HelloWebHandler)

@@ -2,6 +2,8 @@ package framework
 
 import (
 	_ "embed"
+
+	"github.com/melkeydev/go-blueprint/cmd/template/advanced"
 )
 
 //go:embed files/routes/fiber.go.tmpl
@@ -45,5 +47,13 @@ func (f FiberTemplates) RoutesWithDB() []byte {
 	return fiberDBRoutesTemplate
 }
 func (f FiberTemplates) TestHandler() []byte {
-    return fiberTestHandlerTemplate
+	return fiberTestHandlerTemplate
+}
+
+func (f FiberTemplates) HtmxTemplImports() []byte {
+	return advanced.FiberHtmxTemplImportsTemplate()
+}
+
+func (f FiberTemplates) HtmxTemplRoutes() []byte {
+	return advanced.FiberHtmxTemplRoutesTemplate()
 }

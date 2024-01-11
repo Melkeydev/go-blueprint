@@ -14,6 +14,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/melkeydev/go-blueprint/cmd/flags"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
+	"github.com/melkeydev/go-blueprint/cmd/template/advanced"
 	"github.com/melkeydev/go-blueprint/cmd/template/dbdriver"
 	"github.com/melkeydev/go-blueprint/cmd/template/docker"
 	"github.com/melkeydev/go-blueprint/cmd/template/framework"
@@ -24,15 +25,22 @@ import (
 // A Project contains the data for the project folder
 // being created, and methods that help with that process
 type Project struct {
-	ProjectName  string
-	Exit         bool
-	AbsolutePath string
-	ProjectType  flags.Framework
-	DBDriver     flags.Database
-	Docker       flags.Database
-	FrameworkMap map[flags.Framework]Framework
-	DBDriverMap  map[flags.Database]Driver
-	DockerMap    map[flags.Database]Docker
+	ProjectName       string
+	Exit              bool
+	AbsolutePath      string
+	ProjectType       flags.Framework
+	DBDriver          flags.Database
+	Docker            flags.Database
+	FrameworkMap      map[flags.Framework]Framework
+	DBDriverMap       map[flags.Database]Driver
+	DockerMap         map[flags.Database]Docker
+	AdvancedOptions   map[string]bool
+	AdvancedTemplates AdvancedTemplates
+}
+
+type AdvancedTemplates struct {
+	TemplateRoutes  template.HTML
+	TemplateImports template.HTML
 }
 
 // A Framework contains the name and templater for a
@@ -61,16 +69,23 @@ type Templater interface {
 	RoutesWithDB() []byte
 	ServerWithDB() []byte
 	TestHandler() []byte
+	HtmxTemplRoutes() []byte
+	HtmxTemplImports() []byte
 }
 
 type DBDriverTemplater interface {
 	Service() []byte
 	Env() []byte
-	EnvExample() []byte
 }
 
 type DockerTemplater interface {
 	Docker() []byte
+}
+
+type WorkflowTemplater interface {
+	Releaser() []byte
+	Test() []byte
+	ReleaserConfig() []byte
 }
 
 var (
@@ -88,13 +103,16 @@ var (
 	mongoDriver     = []string{"go.mongodb.org/mongo-driver"}
 
 	godotenvPackage = []string{"github.com/joho/godotenv"}
+	templPackage    = []string{"github.com/a-h/templ"}
 )
 
 const (
 	root                 = "/"
 	cmdApiPath           = "cmd/api"
+	cmdWebPath           = "cmd/web"
 	internalServerPath   = "internal/server"
 	internalDatabasePath = "internal/database"
+	gitHubActionPath     = ".github/workflows"
 	testHandlerPath      = "tests"
 )
 
@@ -263,13 +281,6 @@ func (p *Project) CreateMainFile() error {
 	// Create correct docker compose for the selected driver
 	if p.DBDriver != "none" {
 
-		err = p.CreateFileWithInjection(root, projectPath, ".env.example", "env-example")
-		if err != nil {
-			log.Printf("Error injecting .env.example file: %v", err)
-			cobra.CheckErr(err)
-			return err
-		}
-
 		if p.DBDriver != "sqlite" {
 			p.createDockerMap()
 			p.Docker = p.DBDriver
@@ -326,11 +337,20 @@ func (p *Project) CreateMainFile() error {
 
 	defer makeFile.Close()
 
-	// inject makefile template
-	makeFileTemplate := template.Must(template.New("makefile").Parse(string(framework.MakeTemplate())))
-	err = makeFileTemplate.Execute(makeFile, p)
-	if err != nil {
-		return err
+	if p.DBDriver == "sqlite" || p.DBDriver == "none" {
+		// inject makefile template
+		makeFileTemplate := template.Must(template.New("makefile").Parse(string(framework.NonDbMakeFileTemplate())))
+		err = makeFileTemplate.Execute(makeFile, p)
+		if err != nil {
+			return err
+		}
+	} else {
+		// inject makefile template for database excluding sqlite
+		makeFileTemplate := template.Must(template.New("makefile").Parse(string(framework.MakeTemplate())))
+		err = makeFileTemplate.Execute(makeFile, p)
+		if err != nil {
+			return err
+		}
 	}
 
 	readmeFile, err := os.Create(filepath.Join(projectPath, "README.md"))
@@ -352,6 +372,135 @@ func (p *Project) CreateMainFile() error {
 		log.Printf("Error creating path: %s", internalServerPath)
 		cobra.CheckErr(err)
 		return err
+	}
+
+	if p.AdvancedOptions["AddHTMXTempl"] {
+		// create folders and hello world file
+		err = p.CreatePath(cmdWebPath, projectPath)
+		if err != nil {
+			cobra.CheckErr(err)
+			return err
+		}
+		helloTemplFile, err := os.Create(fmt.Sprintf("%s/%s/hello.templ", projectPath, cmdWebPath))
+		if err != nil {
+			cobra.CheckErr(err)
+		}
+		defer helloTemplFile.Close()
+
+		//inject hello.templ template
+		helloTemplTemplate := template.Must(template.New("hellotempl").Parse((string(advanced.HelloTemplTemplate()))))
+		err = helloTemplTemplate.Execute(helloTemplFile, p)
+		if err != nil {
+			return err
+		}
+
+		baseTemplFile, err := os.Create(fmt.Sprintf("%s/%s/base.templ", projectPath, cmdWebPath))
+		if err != nil {
+			cobra.CheckErr(err)
+		}
+		defer baseTemplFile.Close()
+
+		baseTemplTemplate := template.Must(template.New("basetempl").Parse((string(advanced.BaseTemplTemplate()))))
+		err = baseTemplTemplate.Execute(baseTemplFile, p)
+		if err != nil {
+			return err
+		}
+
+		err = os.Mkdir(fmt.Sprintf("%s/%s/js", projectPath, cmdWebPath), 0755)
+		if err != nil {
+			cobra.CheckErr(err)
+		}
+
+		htmxMinJsFile, err := os.Create(fmt.Sprintf("%s/%s/js/htmx.min.js", projectPath, cmdWebPath))
+		if err != nil {
+			cobra.CheckErr(err)
+		}
+		defer htmxMinJsFile.Close()
+
+		htmxMinJsTemplate := advanced.HtmxJSTemplate()
+		err = os.WriteFile(fmt.Sprintf("%s/%s/js/htmx.min.js", projectPath, cmdWebPath), htmxMinJsTemplate, 0644)
+		if err != nil {
+			return err
+		}
+
+		efsFile, err := os.Create(fmt.Sprintf("%s/%s/efs.go", projectPath, cmdWebPath))
+		if err != nil {
+			cobra.CheckErr(err)
+		}
+		defer efsFile.Close()
+
+		efsTemplate := template.Must(template.New("efs").Parse((string(advanced.EfsTemplate()))))
+		err = efsTemplate.Execute(efsFile, p)
+		if err != nil {
+			return err
+		}
+		err = utils.GoGetPackage(projectPath, templPackage)
+		if err != nil {
+			log.Printf("Could not install go dependency %v\n", err)
+			cobra.CheckErr(err)
+		}
+
+		helloGoFile, err := os.Create(fmt.Sprintf("%s/%s/hello.go", projectPath, cmdWebPath))
+		if err != nil {
+			cobra.CheckErr(err)
+		}
+		defer efsFile.Close()
+
+		if p.ProjectType == "fiber" {
+			helloGoTemplate := template.Must(template.New("efs").Parse((string(advanced.HelloFiberGoTemplate()))))
+			err = helloGoTemplate.Execute(helloGoFile, p)
+			if err != nil {
+				return err
+			}
+			err = utils.GoGetPackage(projectPath, []string{"github.com/gofiber/fiber/v2/middleware/adaptor"})
+			if err != nil {
+				log.Printf("Could not install go dependency %v\n", err)
+				cobra.CheckErr(err)
+			}
+			if err != nil {
+				log.Printf("Could not install go dependency %v\n", err)
+				cobra.CheckErr(err)
+			}
+		} else {
+			helloGoTemplate := template.Must(template.New("efs").Parse((string(advanced.HelloGoTemplate()))))
+			err = helloGoTemplate.Execute(helloGoFile, p)
+			if err != nil {
+				return err
+			}
+		}
+
+		p.CreateHtmxTemplates()
+	}
+
+	// Create .github/workflows folder and inject release.yml and go-test.yml
+	if p.AdvancedOptions["GitHubAction"] {
+		err = p.CreatePath(gitHubActionPath, projectPath)
+		if err != nil {
+			log.Printf("Error creating path: %s", gitHubActionPath)
+			cobra.CheckErr(err)
+			return err
+		}
+
+		err = p.CreateFileWithInjection(gitHubActionPath, projectPath, "release.yml", "releaser")
+		if err != nil {
+			log.Printf("Error injecting release.yml file: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}
+
+		err = p.CreateFileWithInjection(gitHubActionPath, projectPath, "go-test.yml", "go-test")
+		if err != nil {
+			log.Printf("Error injecting go-test.yml file: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}
+
+		err = p.CreateFileWithInjection(root, projectPath, ".goreleaser.yml", "releaser-config")
+		if err != nil {
+			log.Printf("Error injecting .goreleaser.yml file: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}
 	}
 
 	if p.DBDriver != "none" {
@@ -427,19 +576,18 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	err = utils.GoFmt(projectPath)
-	if err != nil {
-		log.Printf("Could not gofmt in new project %v\n", err)
-		cobra.CheckErr(err)
-		return err
-	}
-
 	err = utils.GoTidy(projectPath)
 	if err != nil {
 		log.Printf("Could not go tidy in new project %v\n", err)
 		cobra.CheckErr(err)
 	}
 
+	err = utils.GoFmt(projectPath)
+	if err != nil {
+		log.Printf("Could not gofmt in new project %v\n", err)
+		cobra.CheckErr(err)
+		return err
+	}
 	// Git add files
 	err = utils.ExecuteCmd("git", []string{"add", "."}, projectPath)
 	if err != nil {
@@ -454,6 +602,7 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 		return err
 	}
+
 	return nil
 }
 
@@ -492,7 +641,17 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.ServerWithDB())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "routes":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Routes())))
+		routeFileBytes := p.FrameworkMap[p.ProjectType].templater.Routes()
+		createdTemplate := template.Must(template.New(fileName).Parse(string(routeFileBytes)))
+		err = createdTemplate.Execute(createdFile, p)
+	case "releaser":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(advanced.Releaser())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "go-test":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(advanced.Test())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "releaser-config":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(advanced.ReleaserConfig())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "routesWithDB":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.RoutesWithDB())))
@@ -505,9 +664,6 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		err = createdTemplate.Execute(createdFile, p)
 	case "tests":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.TestHandler())))
-		err = createdTemplate.Execute(createdFile, p)
-	case "env-example":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.EnvExample())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "env":
 		if p.DBDriver != "none" {
@@ -530,4 +686,34 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 	}
 
 	return nil
+}
+
+func (p *Project) CreateHtmxTemplates() {
+	routesPlaceHolder := ""
+	importsPlaceHolder := ""
+	if p.AdvancedOptions["AddHTMXTempl"] {
+		routesPlaceHolder += string(p.FrameworkMap[p.ProjectType].templater.HtmxTemplRoutes())
+		importsPlaceHolder += string(p.FrameworkMap[p.ProjectType].templater.HtmxTemplImports())
+	}
+
+	routeTmpl, err := template.New("routes").Parse(routesPlaceHolder)
+	if err != nil {
+		log.Fatal(err)
+	}
+	importTmpl, err := template.New("imports").Parse(importsPlaceHolder)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var routeBuffer bytes.Buffer
+	var importBuffer bytes.Buffer
+	err = routeTmpl.Execute(&routeBuffer, p)
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = importTmpl.Execute(&importBuffer, p)
+	if err != nil {
+		log.Fatal(err)
+	}
+	p.AdvancedTemplates.TemplateRoutes = template.HTML(routeBuffer.String())
+	p.AdvancedTemplates.TemplateImports = template.HTML(importBuffer.String())
 }

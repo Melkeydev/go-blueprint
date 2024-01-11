@@ -29,14 +29,6 @@ func NonInteractiveCommand(use string, flagSet *pflag.FlagSet) string {
 	return nonInteractiveCommand
 }
 
-func HasChangedFlag(flagSet *pflag.FlagSet) bool {
-	hasChangedFlag := false
-	flagSet.Visit(func(_ *pflag.Flag) {
-		hasChangedFlag = true
-	})
-	return hasChangedFlag
-}
-
 // ExecuteCmd provides a shorthand way to run a shell command
 func ExecuteCmd(name string, args []string, dir string) error {
 	command := exec.Command(name, args...)

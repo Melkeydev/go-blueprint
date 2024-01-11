@@ -6,11 +6,13 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
+  {{.AdvancedTemplates.TemplateImports}}
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
 	r := httprouter.New()
 	r.HandlerFunc(http.MethodGet, "/", s.HelloWorldHandler)
+  {{.AdvancedTemplates.TemplateRoutes}}
 
 	return r
 }

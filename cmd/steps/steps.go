@@ -21,7 +21,7 @@ type Steps struct {
 // An Item contains the data for each option
 // in a StepSchema.Options
 type Item struct {
-	Title, Desc string
+	Flag, Title, Desc string
 }
 
 // InitSteps initializes and returns the *Steps to be used in the CLI program
@@ -88,6 +88,22 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 				},
 				Headers: "What database driver do you want to use in your Go project?",
 				Field:   databaseType.String(),
+			},
+			"advanced": {
+				StepName: "Advanced Features",
+				Headers:  "Which advanced features do you want?",
+				Options: []Item{
+					{
+						Flag:  "AddHTMXTempl",
+						Title: "HTMX/Templ",
+						Desc:  "Add starter HTMX and Templ files.",
+					},
+					{
+						Flag:  "GitHubAction",
+						Title: "Go Project Workflow",
+						Desc:  "Workflow templates for testing, cross-compiling and releasing Go projects",
+					},
+				},
 			},
 		},
 	}
