@@ -4,17 +4,17 @@ tmp_dir = "tmp"
 
 [build]
   args_bin = []
-  bin = "./tmp/main"
-  cmd = "go build -o ./tmp/main ./cmd/api"
+  bin = "./main"
+  cmd = "make build"
   delay = 1000
   exclude_dir = ["assets", "tmp", "vendor", "testdata"]
   exclude_file = []
-  exclude_regex = ["_test.go"]
+  exclude_regex = ["_test.go"{{if .AdvancedOptions.AddHTMXTempl}}, ".*_templ.go"{{end}}]
   exclude_unchanged = false
   follow_symlink = false
   full_bin = ""
   include_dir = []
-  include_ext = ["go", "tpl", "tmpl", "html"]
+  include_ext = ["go", "tpl", "tmpl", "html"{{if .AdvancedOptions.AddHTMXTempl}}, "templ"{{end}}]
   include_file = []
   kill_delay = "0s"
   log = "build-errors.log"
