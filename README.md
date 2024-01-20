@@ -88,7 +88,7 @@ Choose from a variety of supported database drivers:
 - [Mysql](https://github.com/go-sql-driver/mysql)
 - [Postgres](https://github.com/jackc/pgx/)
 - [Sqlite](https://github.com/mattn/go-sqlite3)
-- [Mongo](go.mongodb.org/mongo-driver)
+- [Mongo](https://go.mongodb.org/mongo-driver)
 
 <a id="advanced-features"></a>
 <h2>
