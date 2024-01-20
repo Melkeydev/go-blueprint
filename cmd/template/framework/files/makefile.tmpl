@@ -5,6 +5,7 @@ all: build
 
 build:
 	@echo "Building..."
+	{{if .AdvancedOptions.AddHTMXTempl}}@templ generate{{end}}
 	@go build -o main cmd/api/main.go
 
 # Run the application
