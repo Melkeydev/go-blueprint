@@ -214,6 +214,23 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
+	nameSet, err := utils.CheckGitConfig("user.name")
+	if err != nil {
+		cobra.CheckErr(err)
+	}
+	if !nameSet {
+		log.Fatal("user.name is not set in git config")
+	}
+
+	// Check if user.email is set.
+	emailSet, err := utils.CheckGitConfig("user.email")
+	if err != nil {
+		cobra.CheckErr(err)
+	}
+	if !emailSet {
+		log.Fatal("user.email is not set in git config")
+	}
+
 	p.ProjectName = strings.TrimSpace(p.ProjectName)
 
 	// Create a new directory with the project name
@@ -230,7 +247,7 @@ func (p *Project) CreateMainFile() error {
 	p.createFrameworkMap()
 
 	// Create go.mod
-	err := utils.InitGoMod(p.ProjectName, projectPath)
+	err = utils.InitGoMod(p.ProjectName, projectPath)
 	if err != nil {
 		log.Printf("Could not initialize go.mod in new project %v\n", err)
 		cobra.CheckErr(err)
