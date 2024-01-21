@@ -17,6 +17,8 @@ gives the option to integrate with one of the more popular Go frameworks (and th
 - Integrate with a popular frameworks
 - Focus on the actual code of your application
 
+Check the official [docs](https://go-blueprint.net) for Go-blueprint.
+
 ## Table of Contents
 
 - [Install](#install)

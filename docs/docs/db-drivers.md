@@ -12,7 +12,7 @@ To extend the project with database functionality, users can choose from a varie
 Integrating a database adds a new layer to the project structure, primarily in the `internal/database` directory:
 
 ```
-/test3
+/(Root)
 ├── /cmd
 │   └── /api
 │       └── main.go
