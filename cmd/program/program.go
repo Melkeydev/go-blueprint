@@ -99,6 +99,7 @@ var (
 	mysqlDriver    = []string{"github.com/go-sql-driver/mysql"}
 	postgresDriver = []string{"github.com/lib/pq"}
 	sqliteDriver   = []string{"github.com/mattn/go-sqlite3"}
+	redisDriver    = []string{"github.com/redis/go-redis/v9"}
 	mongoDriver    = []string{"go.mongodb.org/mongo-driver"}
 
 	godotenvPackage = []string{"github.com/joho/godotenv"}
@@ -183,6 +184,10 @@ func (p *Project) createDBDriverMap() {
 		packageName: mongoDriver,
 		templater:   dbdriver.MongoTemplate{},
 	}
+	p.DBDriverMap[flags.Redis] = Driver{
+		packageName: redisDriver,
+		templater:   dbdriver.RedisTemplate{},
+	}
 }
 
 func (p *Project) createDockerMap() {
@@ -199,6 +204,10 @@ func (p *Project) createDockerMap() {
 	p.DockerMap[flags.Mongo] = Docker{
 		packageName: []string{},
 		templater:   docker.MongoDockerTemplate{},
+	}
+	p.DockerMap[flags.Redis] = Docker{
+		packageName: []string{},
+		templater:   docker.RedisDockerTemplate{},
 	}
 }
 

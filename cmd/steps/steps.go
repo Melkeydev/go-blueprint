@@ -80,6 +80,9 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 						Title: "Mongo",
 						Desc:  "The MongoDB supported driver for Go."},
 					{
+						Title: "Redis",
+						Desc:  "Redis driver for Go."},
+					{
 						Title: "None",
 						Desc:  "Choose this option if you don't wish to install a specific database driver."},
 				},
