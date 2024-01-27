@@ -207,7 +207,8 @@ var createCmd = &cobra.Command{
 
 		defer func() {
 			if r := recover(); r != nil {
-				fmt.Println("Recovered from panic:", r)
+				fmt.Println("The program encountered an unexpected issue and had to exit. The error was:", r)
+				fmt.Println("If you continue to experience this issue, please post a message on our GitHub page or join our Discord server for support.")
 				if releaseErr := spinner.ReleaseTerminal(); releaseErr != nil {
 					log.Printf("Problem releasing terminal: %v", releaseErr)
 				}
