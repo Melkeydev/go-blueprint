@@ -205,6 +205,15 @@ var createCmd = &cobra.Command{
 			}
 		}()
 
+		defer func() {
+			if r := recover(); r != nil {
+				fmt.Println("Recovered from panic:", r)
+				if releaseErr := spinner.ReleaseTerminal(); releaseErr != nil {
+					log.Printf("Problem releasing terminal: %v", releaseErr)
+				}
+			}
+		}()
+
 		// This calls the templates
 		err = project.CreateMainFile()
 		if err != nil {
