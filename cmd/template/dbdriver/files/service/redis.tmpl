@@ -33,8 +33,10 @@ func New() Service {
 		log.Fatal(fmt.Sprintf("database incorrect %v", err))
 	}
 
+	fullAddress := fmt.Sprintf("%s:%s", address, port)
+
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     `${address}:{port}`,
+		Addr:     fullAddress,
 		Password: password,
 		DB:       num,
 	})
