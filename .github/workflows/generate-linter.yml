@@ -22,7 +22,7 @@ jobs:
         framework:
           [chi, gin, fiber, gorilla/mux, httprouter, standard-library, echo]
         driver:
-          [mysql, postgres, sqlite, mongo, none]
+          [mysql, postgres, sqlite, mongo, redis, none]
         goVersion: ["1.20"]
     runs-on: ubuntu-latest
     steps:
