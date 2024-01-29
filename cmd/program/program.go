@@ -95,6 +95,7 @@ var (
 	ginPackage     = []string{"github.com/gin-gonic/gin"}
 	fiberPackage   = []string{"github.com/gofiber/fiber/v2"}
 	echoPackage    = []string{"github.com/labstack/echo/v4", "github.com/labstack/echo/v4/middleware"}
+	bonePackage    = []string{"github.com/go-zoo/bone", "github.com/go-zoo/claw", "github.com/go-zoo/claw/middleware"}
 
 	mysqlDriver    = []string{"github.com/go-sql-driver/mysql"}
 	postgresDriver = []string{"github.com/lib/pq"}
@@ -163,6 +164,11 @@ func (p *Project) createFrameworkMap() {
 	p.FrameworkMap[flags.Echo] = Framework{
 		packageName: echoPackage,
 		templater:   framework.EchoTemplates{},
+	}
+
+	p.FrameworkMap[flags.Bone] = Framework{
+		packageName: bonePackage,
+		templater:   framework.BoneTemplates{},
 	}
 }
 

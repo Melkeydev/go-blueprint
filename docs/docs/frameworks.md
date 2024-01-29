@@ -9,6 +9,7 @@ Created project can utilizes several Go web frameworks to handle HTTP routing an
 4. [**HttpRouter**](https://github.com/julienschmidt/httprouter): A high-performance HTTP request router that scales well.
 5. [**Gorilla/mux**](https://github.com/gorilla/mux): A powerful URL router and dispatcher for golang.
 6. [**Echo**](https://github.com/labstack/echo): High-performance, extensible, minimalist Go web framework.
+7. [**Bone**](https://github.com/go-zoo/bone): Lightning Fast HTTP Multiplexer.
 
 ## Project Structure
 

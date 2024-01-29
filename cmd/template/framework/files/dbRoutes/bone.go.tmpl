@@ -1,0 +1,50 @@
+package server
+
+import (
+	"encoding/json"
+	"log"
+	"net/http"
+	"os"
+
+	"github.com/go-zoo/bone"
+	"github.com/go-zoo/claw"
+	"github.com/go-zoo/claw/middleware"
+  {{.AdvancedTemplates.TemplateImports}}
+)
+
+
+func (s *Server) RegisterRoutes() http.Handler {
+	claw := claw.New(
+		middleware.NewLogger(os.Stdout, "[bone]", log.Ltime),
+		middleware.Recovery,
+	)
+
+	mux := bone.New()
+	mux.GetFunc("/", s.HelloWorldHandler)
+	mux.GetFunc("/health", s.healthHandler)
+  {{.AdvancedTemplates.TemplateRoutes}}
+
+	return claw.Merge(mux)
+}
+
+func (s *Server) HelloWorldHandler(w http.ResponseWriter, r *http.Request) {
+	resp := make(map[string]string)
+	resp["message"] = "Hello World"
+
+	jsonResp, err := json.Marshal(resp)
+	if err != nil {
+		log.Fatalf("error handling JSON marshal. Err: %v", err)
+	}
+
+	_, _ = w.Write(jsonResp)
+}
+
+func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
+	jsonResp, err := json.Marshal(s.db.Health())
+
+	if err != nil {
+		log.Fatalf("error handling JSON marshal. Err: %v", err)
+	}
+
+	_, _ = w.Write(jsonResp)
+}

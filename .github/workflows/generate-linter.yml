@@ -20,7 +20,7 @@ jobs:
     strategy:
       matrix:
         framework:
-          [chi, gin, fiber, gorilla/mux, httprouter, standard-library, echo]
+          [chi, gin, fiber, gorilla/mux, httprouter, standard-library, echo, bone]
         driver:
           [mysql, postgres, sqlite, mongo, none]
         goVersion: ["1.20"]

@@ -59,6 +59,10 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 						Title: "Echo",
 						Desc:  "High performance, extensible, minimalist Go web framework",
 					},
+					{
+						Title: "Bone",
+						Desc:  "Lightning Fast HTTP Multiplexer",
+					},
 				},
 				Headers: "What framework do you want to use in your Go project?",
 				Field:   projectType.String(),

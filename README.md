@@ -69,6 +69,7 @@ See `go-blueprint create -h` for all the options and shorthands.
 - [HttpRouter](https://github.com/julienschmidt/httprouter)
 - [Gorilla/mux](https://github.com/gorilla/mux)
 - [Echo](https://github.com/labstack/echo)
+- [Bone](https://github.com/go-zoo/bone)
 
 <a id="database-support"></a>
 
