@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - docs
 
 jobs:
   build-deploy:
@@ -42,7 +41,7 @@ jobs:
           git config --local user.name "GitHub Actions"
           git checkout gh-pages
 
-          echo "go-blueprint.com" > CNAME
+          echo "go-blueprint.net" > CNAME
 
           git add CNAME
           git commit -m "Add CNAME file"

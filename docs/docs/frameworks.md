@@ -15,7 +15,7 @@ Created project can utilizes several Go web frameworks to handle HTTP routing an
 The project is structured with a simple layout, focusing on the cmd, internal, and tests directories:
 
 ```
-/test3
+/(Root)
 ├── /cmd
 │   └── /api
 │       └── main.go
