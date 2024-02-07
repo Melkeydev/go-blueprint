@@ -1,0 +1,8 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - "${DB_PORT}:6379"

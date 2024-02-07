@@ -91,6 +91,7 @@ Choose from a variety of supported database drivers:
 - [Postgres](https://github.com/jackc/pgx/)
 - [Sqlite](https://github.com/mattn/go-sqlite3)
 - [Mongo](https://go.mongodb.org/mongo-driver)
+- [Redis](https://github.com/redis/go-redis)
 
 <a id="advanced-features"></a>
 <h2>
