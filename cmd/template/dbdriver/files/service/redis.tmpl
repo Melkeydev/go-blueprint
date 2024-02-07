@@ -57,7 +57,7 @@ func (s *service) Health() map[string]string {
 	}
 
   if result != "PONG" {
-        log.Fatalf(fmt.Sprintf("Unexpected ping response: %s", result))
+    log.Fatalf(fmt.Sprintf("Unexpected ping response: %s", result))
   }
 
 	return map[string]string{
