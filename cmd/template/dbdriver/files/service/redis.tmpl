@@ -50,11 +50,15 @@ func (s *service) Health() map[string]string {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
-	err := s.db.Ping(ctx)
+	result, err := s.db.Ping(ctx).Result()
 
 	if err != nil {
 		log.Fatalf(fmt.Sprintf("db down: %v", err))
 	}
+
+  if result != "PONG" {
+        log.Fatalf(fmt.Sprintf("Unexpected ping response: %s", result))
+  }
 
 	return map[string]string{
 		"message": "It's healthy",
