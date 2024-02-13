@@ -42,12 +42,14 @@ var (
 func init() {
 	var flagFramework flags.Framework
 	var flagDBDriver flags.Database
+	var advancedFeatures flags.AdvancedFeatures
 	rootCmd.AddCommand(createCmd)
 
 	createCmd.Flags().StringP("name", "n", "", "Name of project to create")
 	createCmd.Flags().VarP(&flagFramework, "framework", "f", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(flags.AllowedProjectTypes, ", ")))
 	createCmd.Flags().VarP(&flagDBDriver, "driver", "d", fmt.Sprintf("Database drivers to use. Allowed values: %s", strings.Join(flags.AllowedDBDrivers, ", ")))
 	createCmd.Flags().BoolP("advanced", "a", false, "Get prompts for advanced features")
+	createCmd.Flags().Var(&advancedFeatures, "feature", fmt.Sprintf("Advanced feature to use. Allowed values: %s", strings.Join(flags.AllowedAdvancedFeatures, ", ")))
 }
 
 type Options struct {
@@ -170,6 +172,20 @@ var createCmd = &cobra.Command{
 		}
 
 		if flagAdvanced {
+
+			featureFlags := cmd.Flag("feature").Value.String()
+			hasFeatureFlags := featureFlags != ""
+
+			if hasFeatureFlags {
+				featuresFlagValues := strings.Split(featureFlags, ",")
+				fmt.Println(len(featuresFlagValues))
+				for _, key := range featuresFlagValues {
+					project.AdvancedOptions[key] = true
+				}
+
+				fmt.Println(project.AdvancedOptions)
+
+			} else {
 			isInteractive = true
 			step := steps.Steps["advanced"]
 			tprogram = tea.NewProgram((multiSelect.InitialModelMultiSelect(step.Options, options.Advanced, step.Headers, project)))
@@ -178,10 +194,13 @@ var createCmd = &cobra.Command{
 			}
 			project.ExitCLI(tprogram)
 			for key, opt := range options.Advanced.Choices {
-				project.AdvancedOptions[key] = opt
+					fmt.Println(key)
+					fmt.Println(opt)
+					project.AdvancedOptions[strings.ToLower(key)] = opt
 			}
 			if err != nil {
 				log.Fatal("failed to set the htmx option", err)
+				}
 			}
 
 		}
