@@ -94,7 +94,7 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 				Headers:  "Which advanced features do you want?",
 				Options: []Item{
 					{
-						Flag:  "AddHTMXTempl",
+						Flag:  "Htmx",
 						Title: "HTMX/Templ",
 						Desc:  "Add starter HTMX and Templ files.",
 					},
