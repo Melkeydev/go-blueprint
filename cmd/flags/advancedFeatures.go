@@ -7,9 +7,11 @@ import (
 
 type AdvancedFeature string
 
+type AdvancedFeatures []string
+
 const (
 	Htmx              AdvancedFeature = "htmx"
-	GoProjectWorkflow AdvancedFeature = "go-project-workflow"
+	GoProjectWorkflow AdvancedFeature = "githubaction"
 )
 
 var AllowedAdvancedFeatures = []string{string(Htmx), string(GoProjectWorkflow)}
@@ -18,16 +20,20 @@ func (f AdvancedFeature) String() string {
 	return string(f)
 }
 
-func (f *AdvancedFeature) Type() string {
+func (f AdvancedFeatures) String() string {
+	return strings.Join(f, ",")
+}
+
+func (f *AdvancedFeatures) Type() string {
 	return "AdvancedFeature"
 }
 
-func (f *AdvancedFeature) Set(value string) error {
+func (f *AdvancedFeatures) Set(value string) error {
 	// Contains isn't available in 1.20 yet
 	// if AllowedProjectTypes.Contains(value) {
 	for _, advancedFeature := range AllowedAdvancedFeatures {
 		if advancedFeature == value {
-			*f = AdvancedFeature(value)
+			*f = append(*f, AdvancedFeature(value).String())
 			return nil
 		}
 	}
