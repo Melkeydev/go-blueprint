@@ -186,20 +186,20 @@ var createCmd = &cobra.Command{
 				fmt.Println(project.AdvancedOptions)
 
 			} else {
-			isInteractive = true
-			step := steps.Steps["advanced"]
-			tprogram = tea.NewProgram((multiSelect.InitialModelMultiSelect(step.Options, options.Advanced, step.Headers, project)))
-			if _, err := tprogram.Run(); err != nil {
-				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
-			}
-			project.ExitCLI(tprogram)
-			for key, opt := range options.Advanced.Choices {
+				isInteractive = true
+				step := steps.Steps["advanced"]
+				tprogram = tea.NewProgram((multiSelect.InitialModelMultiSelect(step.Options, options.Advanced, step.Headers, project)))
+				if _, err := tprogram.Run(); err != nil {
+					cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
+				}
+				project.ExitCLI(tprogram)
+				for key, opt := range options.Advanced.Choices {
 					fmt.Println(key)
 					fmt.Println(opt)
 					project.AdvancedOptions[strings.ToLower(key)] = opt
-			}
-			if err != nil {
-				log.Fatal("failed to set the htmx option", err)
+				}
+				if err != nil {
+					log.Fatal("failed to set the htmx option", err)
 				}
 			}
 
