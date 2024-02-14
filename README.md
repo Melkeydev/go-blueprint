@@ -133,6 +133,23 @@ Advanced features are accessible with the --advanced flag
 go-blueprint create --advanced
 ```
 
+Both advanced features can be enabled using the `--feature` flag along with the `--advanced` flag.
+
+For HTMX:
+```bash
+go-blueprint create --advanced --feature htmx
+```
+
+For the CI/CD workflow:
+```bash
+go-blueprint create --advanced --feature githubaction
+```
+
+Or for both:
+```bash
+go-blueprint create --advanced --feature htmx --feature githubaction
+```
+
 <p align="center">
   <img src="./public/blueprint_2.png" alt="Starter Image" width="800"/>
 </p>
