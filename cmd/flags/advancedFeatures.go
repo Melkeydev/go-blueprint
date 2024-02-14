@@ -25,7 +25,7 @@ func (f AdvancedFeatures) String() string {
 }
 
 func (f *AdvancedFeatures) Type() string {
-	return "AdvancedFeature"
+	return "AdvancedFeatures"
 }
 
 func (f *AdvancedFeatures) Set(value string) error {
