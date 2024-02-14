@@ -33,7 +33,7 @@ func (f *AdvancedFeatures) Set(value string) error {
 	// if AllowedProjectTypes.Contains(value) {
 	for _, advancedFeature := range AllowedAdvancedFeatures {
 		if advancedFeature == value {
-			*f = append(*f, AdvancedFeature(value).String())
+			*f = append(*f, advancedFeature)
 			return nil
 		}
 	}
