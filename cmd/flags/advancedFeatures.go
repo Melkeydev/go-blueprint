@@ -5,20 +5,14 @@ import (
 	"strings"
 )
 
-type AdvancedFeature string
-
 type AdvancedFeatures []string
 
 const (
-	Htmx              AdvancedFeature = "htmx"
-	GoProjectWorkflow AdvancedFeature = "githubaction"
+	Htmx              string = "htmx"
+	GoProjectWorkflow string = "githubaction"
 )
 
 var AllowedAdvancedFeatures = []string{string(Htmx), string(GoProjectWorkflow)}
-
-func (f AdvancedFeature) String() string {
-	return string(f)
-}
 
 func (f AdvancedFeatures) String() string {
 	return strings.Join(f, ",")
