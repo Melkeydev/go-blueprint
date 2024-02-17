@@ -9,9 +9,6 @@ import (
 //go:embed files/routes/fiber.go.tmpl
 var fiberRoutesTemplate []byte
 
-//go:embed files/dbRoutes/fiber.go.tmpl
-var fiberDBRoutesTemplate []byte
-
 //go:embed files/server/fiber.go.tmpl
 var fiberServerTemplate []byte
 
@@ -43,9 +40,6 @@ func (f FiberTemplates) Routes() []byte {
 	return fiberRoutesTemplate
 }
 
-func (f FiberTemplates) RoutesWithDB() []byte {
-	return fiberDBRoutesTemplate
-}
 func (f FiberTemplates) TestHandler() []byte {
 	return fiberTestHandlerTemplate
 }

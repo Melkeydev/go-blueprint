@@ -9,9 +9,6 @@ import (
 //go:embed files/routes/standard_library.go.tmpl
 var standardRoutesTemplate []byte
 
-//go:embed files/dbRoutes/standard_library.go.tmpl
-var standardDBRoutesTemplate []byte
-
 //go:embed files/server/standard_library.go.tmpl
 var standardServerTemplate []byte
 
@@ -39,10 +36,6 @@ func (s StandardLibTemplate) ServerWithDB() []byte {
 
 func (s StandardLibTemplate) Routes() []byte {
 	return standardRoutesTemplate
-}
-
-func (s StandardLibTemplate) RoutesWithDB() []byte {
-	return standardDBRoutesTemplate
 }
 
 func (s StandardLibTemplate) TestHandler() []byte {

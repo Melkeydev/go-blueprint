@@ -66,7 +66,6 @@ type Templater interface {
 	Main() []byte
 	Server() []byte
 	Routes() []byte
-	RoutesWithDB() []byte
 	ServerWithDB() []byte
 	TestHandler() []byte
 	HtmxTemplRoutes() []byte
@@ -524,32 +523,17 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
-	if p.DBDriver != "none" {
-		err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routesWithDB")
-		if err != nil {
-			log.Printf("Error injecting routes.go file: %v", err)
-			cobra.CheckErr(err)
-			return err
-		}
-		err = p.CreateFileWithInjection(internalServerPath, projectPath, "server.go", "serverWithDB")
-		if err != nil {
-			log.Printf("Error injecting server.go file: %v", err)
-			cobra.CheckErr(err)
-			return err
-		}
-	} else {
-		err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routes")
-		if err != nil {
-			log.Printf("Error injecting routes.go file: %v", err)
-			cobra.CheckErr(err)
-			return err
-		}
-		err = p.CreateFileWithInjection(internalServerPath, projectPath, "server.go", "server")
-		if err != nil {
-			log.Printf("Error injecting server.go file: %v", err)
-			cobra.CheckErr(err)
-			return err
-		}
+	err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routes")
+	if err != nil {
+		log.Printf("Error injecting routes.go file: %v", err)
+		cobra.CheckErr(err)
+		return err
+	}
+	err = p.CreateFileWithInjection(internalServerPath, projectPath, "server.go", "server")
+	if err != nil {
+		log.Printf("Error injecting server.go file: %v", err)
+		cobra.CheckErr(err)
+		return err
 	}
 
 	err = p.CreateFileWithInjection(root, projectPath, ".env", "env")
@@ -672,9 +656,6 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		err = createdTemplate.Execute(createdFile, p)
 	case "releaser-config":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(advanced.ReleaserConfig())))
-		err = createdTemplate.Execute(createdFile, p)
-	case "routesWithDB":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.RoutesWithDB())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "database":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.Service())))

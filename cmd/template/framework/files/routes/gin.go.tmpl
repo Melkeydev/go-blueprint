@@ -12,6 +12,9 @@ func (s *Server) RegisterRoutes() http.Handler {
 	r := gin.Default()
 
 	r.GET("/", s.HelloWorldHandler)
+  {{if ne .DBDriver "none"}}
+	r.GET("/health", s.healthHandler)
+  {{end}}
 
   {{.AdvancedTemplates.TemplateRoutes}}
 
@@ -24,3 +27,9 @@ func (s *Server) HelloWorldHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, resp)
 }
+
+{{if ne .DBDriver "none"}}
+func (s *Server) healthHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, s.db.Health())
+}
+{{end}}
