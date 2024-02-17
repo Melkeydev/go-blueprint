@@ -30,8 +30,7 @@ func (s *Server) HelloWorldHandler(c echo.Context) error {
 }
 
 {{if ne .DBDriver "none"}}
-func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
-	jsonResp, _ := json.Marshal(s.db.Health())
-	_, _ = w.Write(jsonResp)
+func (s *Server) healthHandler(c echo.Context) error {
+	return c.JSON(http.StatusOK, s.db.Health())
 }
 {{end}}

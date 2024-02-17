@@ -17,7 +17,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	r.Get("/", s.HelloWorldHandler)
   {{if ne .DBDriver "none"}}
-	e.GET("/health", s.healthHandler)
+	r.Get("/health", s.healthHandler)
   {{end}}
   {{.AdvancedTemplates.TemplateRoutes}}
 
