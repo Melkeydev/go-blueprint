@@ -24,10 +24,6 @@ func (g GinTemplates) Server() []byte {
 	return standardServerTemplate
 }
 
-func (g GinTemplates) ServerWithDB() []byte {
-	return standardDBServerTemplate
-}
-
 func (g GinTemplates) Routes() []byte {
 	return ginRoutesTemplate
 }

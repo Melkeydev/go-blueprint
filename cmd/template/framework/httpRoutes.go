@@ -12,9 +12,6 @@ var standardRoutesTemplate []byte
 //go:embed files/server/standard_library.go.tmpl
 var standardServerTemplate []byte
 
-//go:embed files/dbServer/standard_library.go.tmpl
-var standardDBServerTemplate []byte
-
 //go:embed files/tests/default-test.go.tmpl
 var standardTestHandlerTemplate []byte
 
@@ -28,10 +25,6 @@ func (s StandardLibTemplate) Main() []byte {
 
 func (s StandardLibTemplate) Server() []byte {
 	return standardServerTemplate
-}
-
-func (s StandardLibTemplate) ServerWithDB() []byte {
-	return standardDBServerTemplate
 }
 
 func (s StandardLibTemplate) Routes() []byte {

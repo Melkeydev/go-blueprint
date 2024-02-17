@@ -66,7 +66,6 @@ type Templater interface {
 	Main() []byte
 	Server() []byte
 	Routes() []byte
-	ServerWithDB() []byte
 	TestHandler() []byte
 	HtmxTemplRoutes() []byte
 	HtmxTemplImports() []byte
@@ -640,9 +639,6 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		err = createdTemplate.Execute(createdFile, p)
 	case "server":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Server())))
-		err = createdTemplate.Execute(createdFile, p)
-	case "serverWithDB":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.ServerWithDB())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "routes":
 		routeFileBytes := p.FrameworkMap[p.ProjectType].templater.Routes()

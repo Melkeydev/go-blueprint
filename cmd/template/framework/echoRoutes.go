@@ -23,10 +23,6 @@ func (e EchoTemplates) Server() []byte {
 	return standardServerTemplate
 }
 
-func (e EchoTemplates) ServerWithDB() []byte {
-	return standardDBServerTemplate
-}
-
 func (e EchoTemplates) Routes() []byte {
 	return echoRoutesTemplate
 }

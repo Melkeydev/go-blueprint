@@ -23,10 +23,6 @@ func (r RouterTemplates) Server() []byte {
 	return standardServerTemplate
 }
 
-func (r RouterTemplates) ServerWithDB() []byte {
-	return standardDBServerTemplate
-}
-
 func (r RouterTemplates) Routes() []byte {
 	return httpRouterRoutesTemplate
 }

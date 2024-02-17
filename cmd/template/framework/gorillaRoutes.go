@@ -24,10 +24,6 @@ func (g GorillaTemplates) Server() []byte {
 	return standardServerTemplate
 }
 
-func (g GorillaTemplates) ServerWithDB() []byte {
-	return standardDBServerTemplate
-}
-
 func (g GorillaTemplates) Routes() []byte {
 	return gorillaRoutesTemplate
 }

@@ -24,10 +24,6 @@ func (c ChiTemplates) Server() []byte {
 	return standardServerTemplate
 }
 
-func (c ChiTemplates) ServerWithDB() []byte {
-	return standardDBServerTemplate
-}
-
 func (c ChiTemplates) Routes() []byte {
 	return chiRoutesTemplate
 }
