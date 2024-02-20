@@ -14,6 +14,9 @@ func (s *Server) RegisterRoutes() http.Handler {
   {{.AdvancedTemplates.TemplateRoutes}}
 
 	e.GET("/", s.HelloWorldHandler)
+  {{if ne .DBDriver "none"}}
+	e.GET("/health", s.healthHandler)
+  {{end}}
 
 	return e
 }
@@ -25,3 +28,9 @@ func (s *Server) HelloWorldHandler(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, resp)
 }
+
+{{if ne .DBDriver "none"}}
+func (s *Server) healthHandler(c echo.Context) error {
+	return c.JSON(http.StatusOK, s.db.Health())
+}
+{{end}}

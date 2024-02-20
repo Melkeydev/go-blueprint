@@ -2,15 +2,24 @@ package server
 
 import (
 	"github.com/gofiber/fiber/v2"
+  {{if ne .DBDriver "none"}}
+	"{{.ProjectName}}/internal/database"
+  {{end}}
 )
 
 type FiberServer struct {
 	*fiber.App
+  {{if ne .DBDriver "none"}}
+	db database.Service
+  {{end}}
 }
 
 func New() *FiberServer {
 	server := &FiberServer{
 		App: fiber.New(),
+  {{if ne .DBDriver "none"}}
+		db:  database.New(),
+  {{end}}
 	}
 
 	return server

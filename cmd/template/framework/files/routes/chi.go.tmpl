@@ -16,6 +16,9 @@ func (s *Server) RegisterRoutes() http.Handler {
 	r.Use(middleware.Logger)
 
 	r.Get("/", s.HelloWorldHandler)
+  {{if ne .DBDriver "none"}}
+	r.Get("/health", s.healthHandler)
+  {{end}}
   {{.AdvancedTemplates.TemplateRoutes}}
 
 	return r
@@ -32,3 +35,10 @@ func (s *Server) HelloWorldHandler(w http.ResponseWriter, r *http.Request) {
 
 	_, _ = w.Write(jsonResp)
 }
+
+{{if ne .DBDriver "none"}}
+func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
+	jsonResp, _ := json.Marshal(s.db.Health())
+	_, _ = w.Write(jsonResp)
+}
+{{end}}

@@ -7,6 +7,9 @@ import (
 
 func (s *FiberServer) RegisterFiberRoutes() {
 	s.App.Get("/", s.HelloWorldHandler)
+  {{if ne .DBDriver "none"}}
+	s.App.Get("/health", s.healthHandler)
+  {{end}}
 
   {{.AdvancedTemplates.TemplateRoutes}}
 }
@@ -18,3 +21,9 @@ func (s *FiberServer) HelloWorldHandler(c *fiber.Ctx) error {
 
 	return c.JSON(resp)
 }
+
+{{if ne .DBDriver "none"}}
+func (s *FiberServer) healthHandler(c *fiber.Ctx) error {
+	return c.JSON(s.db.Health())
+}
+{{end}}
