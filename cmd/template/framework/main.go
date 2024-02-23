@@ -9,6 +9,9 @@ import (
 //go:embed files/main/main.go.tmpl
 var mainTemplate []byte
 
+//go:embed files/main/logger.go.tmpl
+var loggerTemplate []byte
+
 //go:embed files/nondbMakeFile.tmpl
 var nondbMakeFileTemplate []byte
 
@@ -45,5 +48,9 @@ func ReadmeTemplate() []byte {
 }
 
 func NonDbMakeFileTemplate() []byte {
-    return nondbMakeFileTemplate
+	return nondbMakeFileTemplate
+}
+
+func LoggerTemplate() []byte {
+	return loggerTemplate
 }
