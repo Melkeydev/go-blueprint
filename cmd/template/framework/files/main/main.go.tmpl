@@ -2,14 +2,26 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
+	"os"
 	"{{.ProjectName}}/internal/server"
 )
 
 func main() {
+	loggerConfig := server.LoggerConfig{
+		LoggerType: "text",
+		Level:      slog.LevelInfo,
+		AddSource:  true,
+	}
+
+	logger, err := server.NewLogger(loggerConfig)
+	if err != nil {
+		panic(fmt.Sprintf("cannot create logger: %s", err))
+	}
 
 	server := server.NewServer()
-
-	err := server.ListenAndServe()
+	logger.Info(fmt.Sprintf("server is starting on port %s", os.Getenv("PORT")))
+	err = server.ListenAndServe()
 	if err != nil {
 		panic(fmt.Sprintf("cannot start server: %s", err))
 	}
