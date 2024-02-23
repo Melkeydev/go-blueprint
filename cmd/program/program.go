@@ -534,6 +534,12 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 		return err
 	}
+	err = p.CreateFileWithInjection(internalServerPath, projectPath, "logger.go", "logger")
+	if err != nil {
+		log.Printf("Error injecting server.go file: %v", err)
+		cobra.CheckErr(err)
+		return err
+	}
 
 	err = p.CreateFileWithInjection(root, projectPath, ".env", "env")
 	if err != nil {
@@ -639,6 +645,9 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		err = createdTemplate.Execute(createdFile, p)
 	case "server":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Server())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "logger":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(framework.LoggerTemplate())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "routes":
 		routeFileBytes := p.FrameworkMap[p.ProjectType].templater.Routes()
