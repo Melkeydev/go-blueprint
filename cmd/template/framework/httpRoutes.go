@@ -42,3 +42,7 @@ func (s StandardLibTemplate) HtmxTemplImports() []byte {
 func (s StandardLibTemplate) HtmxTemplRoutes() []byte {
 	return advanced.StdLibHtmxTemplRoutesTemplate()
 }
+
+func (s StandardLibTemplate) WebsocketImports() []byte {
+	return advanced.StdLibWebsocketTemplImportsTemplate()
+}

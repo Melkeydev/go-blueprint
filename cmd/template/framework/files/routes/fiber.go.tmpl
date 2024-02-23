@@ -10,6 +10,9 @@ func (s *FiberServer) RegisterFiberRoutes() {
   {{if ne .DBDriver "none"}}
 	s.App.Get("/health", s.healthHandler)
   {{end}}
+  {{if .AdvancedOptions.Websocket}}
+	s.App.Get("/websocket", s.websocketHandler)
+  {{end}}
 
   {{.AdvancedTemplates.TemplateRoutes}}
 }
@@ -25,5 +28,30 @@ func (s *FiberServer) HelloWorldHandler(c *fiber.Ctx) error {
 {{if ne .DBDriver "none"}}
 func (s *FiberServer) healthHandler(c *fiber.Ctx) error {
 	return c.JSON(s.db.Health())
+}
+{{end}}
+
+{{if .AdvancedOptions.Websocket}}
+func (s *FiberServer) pingPongWebsocketHandler(c *fiber.Ctx) {
+	for {
+		messageType, socketBytes, err := con.ReadMessage()
+
+		if err != nil {
+			log.Print("could not read from websocket")
+			return
+		}
+
+		if string(socketBytes) == "PING" {
+			if err := con.WriteMessage(messageType, []byte("PONG")); err != nil {
+				log.Print("could not write to socket")
+				return
+			}
+		} else {
+			if err  := con.WriteMessage(messageType, []byte("HUH?")); err != nil {
+				log.Print("could not write to socket")
+				return
+			}
+		}
+	}
 }
 {{end}}

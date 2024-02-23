@@ -69,6 +69,7 @@ type Templater interface {
 	TestHandler() []byte
 	HtmxTemplRoutes() []byte
 	HtmxTemplImports() []byte
+	WebsocketImports() []byte
 }
 
 type DBDriverTemplater interface {
@@ -522,6 +523,14 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
+	// if the websocket option is checked, a websocket dependency needs to
+	// be added to the routes depending on the framework choosen.
+	// Only fiber uses a different websocket library, the other frameworks
+	// all work with the same one
+	if p.AdvancedOptions["Websocket"] {
+		p.CreateWebsocketImports()
+	}
+
 	err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routes")
 	if err != nil {
 		log.Printf("Error injecting routes.go file: %v", err)
@@ -713,4 +722,23 @@ func (p *Project) CreateHtmxTemplates() {
 	}
 	p.AdvancedTemplates.TemplateRoutes = template.HTML(routeBuffer.String())
 	p.AdvancedTemplates.TemplateImports = template.HTML(importBuffer.String())
+}
+
+func (p *Project) CreateWebsocketImports() {
+	importsPlaceHolder := ""
+	if p.AdvancedOptions["Websocket"] {
+		importsPlaceHolder += string(p.FrameworkMap[p.ProjectType].templater.WebsocketImports())
+	}
+
+	importTmpl, err := template.New("imports").Parse(importsPlaceHolder)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var importBuffer bytes.Buffer
+	err = importTmpl.Execute(&importBuffer, p)
+	if err != nil {
+		log.Fatal(err)
+	}
+	newImports := strings.Join([]string{string(p.AdvancedTemplates.TemplateImports), importBuffer.String()}, "\n")
+	p.AdvancedTemplates.TemplateImports = template.HTML(newImports)
 }

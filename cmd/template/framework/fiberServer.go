@@ -44,3 +44,7 @@ func (f FiberTemplates) HtmxTemplImports() []byte {
 func (f FiberTemplates) HtmxTemplRoutes() []byte {
 	return advanced.FiberHtmxTemplRoutesTemplate()
 }
+
+func (f FiberTemplates) WebsocketImports() []byte {
+	return advanced.FiberWebsocketTemplImportsTemplate()
+}

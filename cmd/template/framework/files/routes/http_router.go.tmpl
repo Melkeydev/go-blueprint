@@ -16,6 +16,9 @@ func (s *Server) RegisterRoutes() http.Handler {
   {{if ne .DBDriver "none"}}
 	r.HandlerFunc(http.MethodGet, "/health", s.healthHandler)
   {{end}}
+  {{if .AdvancedOptions.Websocket}}
+	r.HandleFunc(http.MethodGet, "/websocket", s.websocketHandler)
+  {{end}}
   {{.AdvancedTemplates.TemplateRoutes}}
 
 	return r
@@ -42,5 +45,44 @@ func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, _ = w.Write(jsonResp)
+}
+{{end}}
+
+{{if .AdvancedOptions.Websocket}}
+func (s *Server) pingPongWebsocketHandler(w http.ResponseWriter, r *http.Request) {
+	errorMessage := []byte("This is another message not PING")
+	socket, err := websocket.Accept(w, r, nil)
+
+	if err != nil {
+		log.Print("could not open websocket")
+		_, _ = w.Write([]byte("could not open websocket"))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	defer socket.Close(websocket.StatusGoingAway, "server closing websocket")
+
+	ctx := r.Context()
+	for {
+		msgType, socketBytes, err := socket.Read(ctx)
+
+		if err != nil {
+			log.Print("could not read from websocket")
+			return
+		}
+
+		if string(socketBytes) == "PING" {
+			if err := socket.Write(ctx, msgType, []byte("PONG")); err != nil {
+				log.Print("could not write to socket")
+				return
+			}
+			continue
+		}
+
+		if err := socket.Write(ctx, msgType, errorMessage); err != nil {
+			log.Print("could not write to socket")
+			return
+		}
+	}
 }
 {{end}}

@@ -31,6 +31,9 @@ var stdLibHtmxTemplRoutes []byte
 //go:embed files/htmx/imports/standard_library.tmpl
 var stdLibHtmxTemplImports []byte
 
+//go:embed files/websocket/imports/standard_library.tmpl
+var stdLibWebsocketImports []byte
+
 //go:embed files/htmx/routes/chi.tmpl
 var chiHtmxTemplRoutes []byte
 
@@ -48,6 +51,10 @@ var fiberHtmxTemplRoutes []byte
 
 //go:embed files/htmx/imports/fiber.tmpl
 var fiberHtmxTemplImports []byte
+
+//go:embed files/websocket/imports/fiber.tmpl
+var fiberWebsocketTemplImports []byte
+
 
 func EchoHtmxTemplRoutesTemplate() []byte {
 	return echoHtmxTemplRoutes
@@ -75,6 +82,10 @@ func StdLibHtmxTemplRoutesTemplate() []byte {
 
 func StdLibHtmxTemplImportsTemplate() []byte {
 	return stdLibHtmxTemplImports
+}
+
+func StdLibWebsocketTemplImportsTemplate() []byte {
+	return stdLibWebsocketImports
 }
 
 func HelloTemplTemplate() []byte {
@@ -108,3 +119,8 @@ func FiberHtmxTemplRoutesTemplate() []byte {
 func FiberHtmxTemplImportsTemplate() []byte {
 	return fiberHtmxTemplImports
 }
+
+func FiberWebsocketTemplImportsTemplate() []byte {
+	return fiberWebsocketTemplImports
+}
+

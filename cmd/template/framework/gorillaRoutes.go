@@ -39,3 +39,7 @@ func (g GorillaTemplates) HtmxTemplImports() []byte {
 func (g GorillaTemplates) HtmxTemplRoutes() []byte {
 	return advanced.GorillaHtmxTemplRoutesTemplate()
 }
+
+func (g GorillaTemplates) WebsocketImports() []byte {
+	return advanced.StdLibWebsocketTemplImportsTemplate()
+}

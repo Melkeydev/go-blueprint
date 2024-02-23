@@ -38,3 +38,7 @@ func (e EchoTemplates) HtmxTemplImports() []byte {
 func (e EchoTemplates) HtmxTemplRoutes() []byte {
 	return advanced.EchoHtmxTemplRoutesTemplate()
 }
+
+func (e EchoTemplates) WebsocketImports() []byte {
+	return advanced.StdLibWebsocketTemplImportsTemplate()
+}

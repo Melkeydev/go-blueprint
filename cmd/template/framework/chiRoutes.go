@@ -39,3 +39,7 @@ func (c ChiTemplates) HtmxTemplImports() []byte {
 func (c ChiTemplates) HtmxTemplRoutes() []byte {
 	return advanced.ChiHtmxTemplRoutesTemplate()
 }
+
+func (c ChiTemplates) WebsocketImports() []byte {
+	return advanced.StdLibWebsocketTemplImportsTemplate()
+}

@@ -38,3 +38,7 @@ func (r RouterTemplates) HtmxTemplImports() []byte {
 func (r RouterTemplates) HtmxTemplRoutes() []byte {
 	return advanced.HttpRouterHtmxTemplRoutesTemplate()
 }
+
+func (r RouterTemplates) WebsocketImports() []byte {
+	return advanced.StdLibWebsocketTemplImportsTemplate()
+}
