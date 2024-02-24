@@ -9,7 +9,7 @@ import (
 //go:embed files/main/main.go.tmpl
 var mainTemplate []byte
 
-//go:embed files/main/logger.go.tmpl
+//go:embed files/logger.go.tmpl
 var loggerTemplate []byte
 
 //go:embed files/nondbMakeFile.tmpl
