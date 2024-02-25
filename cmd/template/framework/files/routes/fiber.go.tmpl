@@ -1,6 +1,9 @@
 package server
 
 import (
+  {{if .AdvancedOptions.Websocket}}
+	"log"
+  {{end}}
 	"github.com/gofiber/fiber/v2"
   {{.AdvancedTemplates.TemplateImports}}
 )
@@ -11,7 +14,7 @@ func (s *FiberServer) RegisterFiberRoutes() {
 	s.App.Get("/health", s.healthHandler)
   {{end}}
   {{if .AdvancedOptions.Websocket}}
-	s.App.Get("/websocket", s.websocketHandler)
+	s.App.Get("/websocket", websocket.New(s.websocketHandler))
   {{end}}
 
   {{.AdvancedTemplates.TemplateRoutes}}
@@ -32,7 +35,7 @@ func (s *FiberServer) healthHandler(c *fiber.Ctx) error {
 {{end}}
 
 {{if .AdvancedOptions.Websocket}}
-func (s *FiberServer) pingPongWebsocketHandler(c *fiber.Ctx) {
+func (s *FiberServer) websocketHandler(con *websocket.Conn) {
 	for {
 		messageType, socketBytes, err := con.ReadMessage()
 

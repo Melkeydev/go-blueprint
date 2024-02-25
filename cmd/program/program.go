@@ -528,7 +528,7 @@ func (p *Project) CreateMainFile() error {
 	// Only fiber uses a different websocket library, the other frameworks
 	// all work with the same one
 	if p.AdvancedOptions["Websocket"] {
-		p.CreateWebsocketImports()
+		p.CreateWebsocketImports(projectPath)
 	}
 
 	err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routes")
@@ -724,7 +724,20 @@ func (p *Project) CreateHtmxTemplates() {
 	p.AdvancedTemplates.TemplateImports = template.HTML(importBuffer.String())
 }
 
-func (p *Project) CreateWebsocketImports() {
+func (p *Project) CreateWebsocketImports(appDir string) {
+	websocketDependency := []string{"nhooyr.io/websocket"}
+	if p.ProjectType == flags.Fiber {
+		websocketDependency = []string{"github.com/gofiber/contrib/websocket"}
+	}
+
+	// Websockets require a different package depending on what framework is
+	// choosen. The application calls go mod tidy at the end so we don't
+	// have to here
+	err := utils.GoGetPackage(appDir, websocketDependency)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	importsPlaceHolder := ""
 	if p.AdvancedOptions["Websocket"] {
 		importsPlaceHolder += string(p.FrameworkMap[p.ProjectType].templater.WebsocketImports())
