@@ -1,12 +1,17 @@
 package server
 
-	import (
-		"net/http"
+import (
+	"net/http"
+  {{if .AdvancedOptions.Websocket}}
+	"log"
+	"fmt"
+	"time"
+  {{end}}
 
-		"github.com/labstack/echo/v4"
-		"github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
     {{.AdvancedTemplates.TemplateImports}}
-	)
+)
 func (s *Server) RegisterRoutes() http.Handler {
 	e := echo.New()
 	e.Use(middleware.Logger())
@@ -39,42 +44,31 @@ func (s *Server) healthHandler(c echo.Context) error {
 {{end}}
 
 {{if .AdvancedOptions.Websocket}}
-func (s *Server) websocketHandler(c echo.Context) {
+func (s *Server) websocketHandler(c echo.Context) error {
 	w := c.Response().Writer
 	r := c.Request()
-	errorMessage := []byte("This is another message not PING")
 	socket, err := websocket.Accept(w, r, nil)
 
 	if err != nil {
 		log.Print("could not open websocket")
 		_, _ = w.Write([]byte("could not open websocket"))
 		w.WriteHeader(http.StatusInternalServerError)
-		return
+		return nil
 	}
 
 	defer socket.Close(websocket.StatusGoingAway, "server closing websocket")
 
 	ctx := r.Context()
+	socketCtx := socket.CloseRead(ctx)
+
 	for {
-		msgType, socketBytes, err := socket.Read(ctx)
-
+		payload := fmt.Sprintf("server timestamp: %d", time.Now().UnixNano())
+		err := socket.Write(socketCtx, websocket.MessageText, []byte(payload))
 		if err != nil {
-			log.Print("could not read from websocket")
-			return
+			break
 		}
-
-		if string(socketBytes) == "PING" {
-			if err := socket.Write(ctx, msgType, []byte("PONG")); err != nil {
-				log.Print("could not write to socket")
-				return
-			}
-			continue
-		}
-
-		if err := socket.Write(ctx, msgType, errorMessage); err != nil {
-			log.Print("could not write to socket")
-			return
-		}
+		time.Sleep(time.Second * 2)
 	}
+	return nil
 }
 {{end}}
