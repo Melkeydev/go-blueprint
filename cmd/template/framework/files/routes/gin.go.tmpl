@@ -2,6 +2,11 @@ package server
 
 import (
 	"net/http"
+  {{if .AdvancedOptions.Websocket}}
+	"log"
+	"fmt"
+	"time"
+  {{end}}
 
 	"github.com/gin-gonic/gin"
 
@@ -42,7 +47,6 @@ func (s *Server) healthHandler(c *gin.Context) {
 func (s *Server) websocketHandler(c *gin.Context) {
 	w := c.Writer
 	r := c.Request
-	errorMessage := []byte("This is another message not PING")
 	socket, err := websocket.Accept(w, r, nil)
 
 	if err != nil {
@@ -55,26 +59,15 @@ func (s *Server) websocketHandler(c *gin.Context) {
 	defer socket.Close(websocket.StatusGoingAway, "server closing websocket")
 
 	ctx := r.Context()
+	socketCtx := socket.CloseRead(ctx)
+
 	for {
-		msgType, socketBytes, err := socket.Read(ctx)
-
+		payload := fmt.Sprintf("server timestamp: %d", time.Now().UnixNano())
+		err := socket.Write(socketCtx, websocket.MessageText, []byte(payload))
 		if err != nil {
-			log.Print("could not read from websocket")
-			return
+			break
 		}
-
-		if string(socketBytes) == "PING" {
-			if err := socket.Write(ctx, msgType, []byte("PONG")); err != nil {
-				log.Print("could not write to socket")
-				return
-			}
-			continue
-		}
-
-		if err := socket.Write(ctx, msgType, errorMessage); err != nil {
-			log.Print("could not write to socket")
-			return
-		}
+		time.Sleep(time.Second * 2)
 	}
 }
 {{end}}
