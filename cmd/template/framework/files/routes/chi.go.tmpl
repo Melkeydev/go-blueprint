@@ -4,6 +4,10 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+  {{if .AdvancedOptions.Websocket}}
+	"fmt"
+	"time"
+  {{end}}
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -48,7 +52,6 @@ func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
 
 {{if .AdvancedOptions.Websocket}}
 func (s *Server) websocketHandler(w http.ResponseWriter, r *http.Request) {
-	errorMessage := []byte("This is another message not PING")
 	socket, err := websocket.Accept(w, r, nil)
 
 	if err != nil {
@@ -61,26 +64,15 @@ func (s *Server) websocketHandler(w http.ResponseWriter, r *http.Request) {
 	defer socket.Close(websocket.StatusGoingAway, "server closing websocket")
 
 	ctx := r.Context()
+	socketCtx := socket.CloseRead(ctx)
+
 	for {
-		msgType, socketBytes, err := socket.Read(ctx)
-
+		payload := fmt.Sprintf("server timestamp: %d", time.Now().UnixNano())
+		err := socket.Write(socketCtx, websocket.MessageText, []byte(payload))
 		if err != nil {
-			log.Print("could not read from websocket")
-			return
+			break
 		}
-
-		if string(socketBytes) == "PING" {
-			if err := socket.Write(ctx, msgType, []byte("PONG")); err != nil {
-				log.Print("could not write to socket")
-				return
-			}
-			continue
-		}
-
-		if err := socket.Write(ctx, msgType, errorMessage); err != nil {
-			log.Print("could not write to socket")
-			return
-		}
+		time.Sleep(time.Second * 2)
 	}
 }
 {{end}}
