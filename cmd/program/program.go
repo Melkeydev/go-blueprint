@@ -5,11 +5,11 @@ package program
 import (
 	"bytes"
 	"fmt"
-	"html/template"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
+	"text/template"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/melkeydev/go-blueprint/cmd/flags"
@@ -39,8 +39,8 @@ type Project struct {
 }
 
 type AdvancedTemplates struct {
-	TemplateRoutes  template.HTML
-	TemplateImports template.HTML
+	TemplateRoutes  string
+	TemplateImports string
 }
 
 // A Framework contains the name and templater for a
@@ -720,8 +720,8 @@ func (p *Project) CreateHtmxTemplates() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	p.AdvancedTemplates.TemplateRoutes = template.HTML(routeBuffer.String())
-	p.AdvancedTemplates.TemplateImports = template.HTML(importBuffer.String())
+	p.AdvancedTemplates.TemplateRoutes = routeBuffer.String()
+	p.AdvancedTemplates.TemplateImports = importBuffer.String()
 }
 
 func (p *Project) CreateWebsocketImports(appDir string) {
@@ -753,5 +753,5 @@ func (p *Project) CreateWebsocketImports(appDir string) {
 		log.Fatal(err)
 	}
 	newImports := strings.Join([]string{string(p.AdvancedTemplates.TemplateImports), importBuffer.String()}, "\n")
-	p.AdvancedTemplates.TemplateImports = template.HTML(newImports)
+	p.AdvancedTemplates.TemplateImports = newImports
 }
