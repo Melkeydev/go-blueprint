@@ -1,4 +1,4 @@
-# Database Drivers
+## Database Drivers
 
 To extend the project with database functionality, users can choose from a variety of Go database drivers. Each driver is tailored to work with specific database systems, providing flexibility based on project requirements:
 
@@ -12,7 +12,7 @@ To extend the project with database functionality, users can choose from a varie
 
 Integrating a database adds a new layer to the project structure, primarily in the `internal/database` directory:
 
-```
+```bash
 /(Root)
 ├── /cmd
 │   └── /api

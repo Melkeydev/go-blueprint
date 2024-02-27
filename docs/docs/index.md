@@ -1,4 +1,4 @@
-# Go Blueprint - Ultimate Golang Blueprint Library
+## Go Blueprint - Ultimate Golang Blueprint Library
 
 ![logo](./public/logo.png)
 
@@ -19,72 +19,42 @@ Powerful CLI tool designed to streamline the process of creating Go projects wit
 
 Here's an overview of the project structure created by Go Blueprint when all options are utilized:
 
-```textfile
+```bash
 / (Root)
-├── cmd/
-│   ├── api/
-│   │   └── main.go
-│   └── web/
-│       ├── js/
-│       │   └── htmx.min.js
-│       ├── base.templ
-│       ├── efs.go
-│       ├── hello.go
-│       └── hello.templ
 ├── .github/
 │   └── workflows/
-│       ├── go-test.yml
-│       └── release.yml
-├── internal/
-│   ├── database/
-│   │   └── database.go
-│   └── server/
-│       ├── routes.go
-│       └── server.go
-├── tests/
-│   └── handler_test.go
-├── .air.toml
-├── docker-compose.yml
-├── .env
-├── .gitignore
-├── go.mod
-├── .goreleaser.yml
-├── go.sum
-├── Makefile
-└── README.md
+│       ├── go-test.yml     # GitHub Actions workflow for running tests.
+│       └── release.yml     # GitHub Actions workflow for releasing the application.
+├── cmd/
+│   ├── api/            
+│   │   └── main.go         # Main file for starting the server.
+│   └── web/             
+│       ├── js/         
+│       │   └── htmx.min.js # HTMX library for dynamic HTML content 
+│       ├── base.templ      # Base HTML template file.
+│       ├── base.templ.go   # Generated Go code for base template
+│       ├── efs.go          # File for handling file system operations.
+│       ├── hello.go        # Handler for serving "hello" endpoint.
+│       └── hello.templ     # Template file for the "hello" endpoint.
+|       └── hello.templ.go  # Generated Go code for the "hello" template. 
+├── internal/   
+│   ├── database/           
+│   │   └── database.go     # File containing functions related to database operations.
+│   └── server/             
+│       ├── routes.go       # File defining HTTP routes.
+│       └── server.go       # Main server logic.
+├── tests/    
+│   └── handler_test.go     # Test file for testing HTTP handlers.
+├── .air.toml               # Configuration file for Air, a live-reload utility.
+├── docker-compose.yml      # Docker Compose configuration for defining DB config.
+├── .env                    # Environment configuration file.
+├── .gitignore              # File specifying which files and directories to ignore in Git.
+├── go.mod                  # Go module file for managing dependencies.
+├── .goreleaser.yml         # Configuration file for GoReleaser, a tool for building and releasing binaries.
+├── go.sum                  # Go module file containing checksums for dependencies.
+├── Makefile                # Makefile for defining and running commands.
+└── README.md               # Project's README file containing essential information about the project.
 ```
-
-- **`cmd/`**: Contains the entry points for your application.
-
-  - **`api/`**: Main file (`main.go`).
-
-  - **`web/`**: Main files for the web part of your application, including JavaScript (`js/`), templates (`base.templ`, `efs.go`, `hello.go`, `hello.templ`).
-
-- **`.github/`**: GitHub Actions workflows for testing and releasing (`go-test.yml`, `release.yml`).
-
-- **`internal/`**: Internal packages or modules of your application.
-
-  - **`database/`**: `database.go` file for handling database-related functionality.
-
-  - **`server/`**: Files related to the server, such as `routes.go` for defining routes and `server.go` for server-related logic.
-
-- **`tests/`**: Test files, with `handler_test.go` as an example.
-
-- **`.air.toml`**: Configuration file for [Air](https://github.com/cosmtrek/air), a live-reload utility for Go.
-
-- **`docker-compose.yml`**: Configuration file for Docker Compose, defining DB config.
-
-- **`.env`**: Environment configuration file.
-
-- **`.gitignore`**: Gitignore file specifying which files and directories to ignore.
-
-- **`go.mod` and `go.sum`**: Files used by Go modules to manage dependencies.
-
-- **`.goreleaser.yml`**: Configuration file for [GoReleaser](https://goreleaser.com/), a tool for building and releasing Go binaries.
-
-- **`Makefile`**: A Makefile for defining and running tasks or commands.
-
-- **`README.md`**: The project's README file, containing essential information about the project, how to run it, and any other relevant details.
 
 This structure provides a comprehensive organization of your project, separating source code, tests, configurations and documentation.
 

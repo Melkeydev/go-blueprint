@@ -1,4 +1,4 @@
-# Frameworks
+## Frameworks
 
 
 Created project can utilizes several Go web frameworks to handle HTTP routing and server functionality. The chosen frameworks are:
@@ -14,7 +14,7 @@ Created project can utilizes several Go web frameworks to handle HTTP routing an
 
 The project is structured with a simple layout, focusing on the cmd, internal, and tests directories:
 
-```
+```bash
 /(Root)
 ├── /cmd
 │   └── /api
