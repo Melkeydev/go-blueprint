@@ -177,13 +177,9 @@ var createCmd = &cobra.Command{
 
 			if featureFlags != "" {
 				featuresFlagValues := strings.Split(featureFlags, ",")
-				fmt.Println(len(featuresFlagValues))
 				for _, key := range featuresFlagValues {
 					project.AdvancedOptions[key] = true
 				}
-
-				fmt.Println(project.AdvancedOptions)
-
 			} else {
 				isInteractive = true
 				step := steps.Steps["advanced"]
@@ -193,8 +189,6 @@ var createCmd = &cobra.Command{
 				}
 				project.ExitCLI(tprogram)
 				for key, opt := range options.Advanced.Choices {
-					fmt.Println(key)
-					fmt.Println(opt)
 					project.AdvancedOptions[strings.ToLower(key)] = opt
 				}
 				if err != nil {
