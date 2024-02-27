@@ -26,7 +26,7 @@ Customize the flags according to your project requirements.
 
 ## Advanced Flag
 
-By including the `--advanced` flag, users can choose one or both of the advanced features, HTMX support and GitHub Actions for CI/CD, during the project creation process. The flag enhances the simplicity of Blueprint while offering flexibility for users who require additional functionality.
+By including the `--advanced` flag, users can choose one or all of the advanced features, HTMX support, GitHub Actions for CI/CD and Websocket support, during the project creation process. The flag enhances the simplicity of Blueprint while offering flexibility for users who require additional functionality.
 
 To recreate the project using the same configuration non-interactively, use the following command:
 ```bash
