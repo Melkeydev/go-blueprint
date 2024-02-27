@@ -33,7 +33,7 @@ curl http://localhost:PORT/health
 
 Expected Output:
 ```json
-{"message": "It's healthy}
+{"message": "It's healthy"}
 ```
 
 ## WebSocket Endpoint
