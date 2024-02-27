@@ -174,9 +174,8 @@ var createCmd = &cobra.Command{
 		if flagAdvanced {
 
 			featureFlags := cmd.Flag("feature").Value.String()
-			hasFeatureFlags := featureFlags != ""
 
-			if hasFeatureFlags {
+			if featureFlags != "" {
 				featuresFlagValues := strings.Split(featureFlags, ",")
 				fmt.Println(len(featuresFlagValues))
 				for _, key := range featuresFlagValues {
