@@ -32,5 +32,5 @@ func (f *AdvancedFeatures) Set(value string) error {
 		}
 	}
 
-	return fmt.Errorf("Advanced Feature to use. Allowed values: %s", strings.Join(AllowedAdvancedFeatures, ", "))
+	return fmt.Errorf("advanced Feature to use. Allowed values: %s", strings.Join(AllowedAdvancedFeatures, ", "))
 }
