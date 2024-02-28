@@ -20,17 +20,16 @@ func NonInteractiveCommand(use string, flagSet *pflag.FlagSet) string {
 
 	visitFn := func(flag *pflag.Flag) {
 		if flag.Name != "help" {
-			if flag.Name == "feature" && flag.Value.String() != "" {
+			if flag.Name == "feature" {
 				featureFlagsString := ""
 				// Creates string representation for the feature flags to be
 				// concatenated with the nonInteractiveCommand
 				for _, k := range strings.Split(flag.Value.String(), ",") {
-					featureFlagsString += fmt.Sprintf(" --feature %s", k)
+					if k != "" {
+						featureFlagsString += fmt.Sprintf(" --feature %s", k)
+					}
 				}
-
 				nonInteractiveCommand += featureFlagsString
-			} else if flag.Name == "advanced" {
-				nonInteractiveCommand = fmt.Sprintf("%s --%s", nonInteractiveCommand, flag.Name)
 			} else {
 				nonInteractiveCommand = fmt.Sprintf("%s --%s %s", nonInteractiveCommand, flag.Name, flag.Value.String())
 			}
