@@ -24,7 +24,7 @@ func (f *AdvancedFeatures) Type() string {
 
 func (f *AdvancedFeatures) Set(value string) error {
 	// Contains isn't available in 1.20 yet
-	// if AllowedProjectTypes.Contains(value) {
+	// if AdvancedFeatures.Contains(value) {
 	for _, advancedFeature := range AllowedAdvancedFeatures {
 		if advancedFeature == value {
 			*f = append(*f, advancedFeature)
