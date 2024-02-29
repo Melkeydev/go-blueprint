@@ -738,19 +738,16 @@ func (p *Project) CreateWebsocketImports(appDir string) {
 		log.Fatal(err)
 	}
 
-	importsPlaceHolder := ""
-	if p.AdvancedOptions["Websocket"] {
-		importsPlaceHolder += string(p.FrameworkMap[p.ProjectType].templater.WebsocketImports())
-	}
+	importsPlaceHolder := string(p.FrameworkMap[p.ProjectType].templater.WebsocketImports())
 
 	importTmpl, err := template.New("imports").Parse(importsPlaceHolder)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("CreateWebsocketImports failed to create template: %v", err)
 	}
 	var importBuffer bytes.Buffer
 	err = importTmpl.Execute(&importBuffer, p)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("CreateWebsocketImports failed write template: %v", err)
 	}
 	newImports := strings.Join([]string{string(p.AdvancedTemplates.TemplateImports), importBuffer.String()}, "\n")
 	p.AdvancedTemplates.TemplateImports = newImports

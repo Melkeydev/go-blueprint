@@ -110,7 +110,7 @@ You can now use the `--advanced` flag when running the `create` command to get a
 
 - [HTMX](https://htmx.org/) support using [Templ](https://templ.guide/)
 - CI/CD workflow setup using [Github Actions](https://docs.github.com/en/actions)
-- [Websocket](https://en.wikipedia.org/wiki/WebSocket) sets up a websocket endpoint
+- [Websocket](https://pkg.go.dev/nhooyr.io/websocket) sets up a websocket endpoint
 
 <a id="usage-example"></a>
 
