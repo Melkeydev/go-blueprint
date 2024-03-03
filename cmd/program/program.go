@@ -109,6 +109,7 @@ const (
 	cmdApiPath           = "cmd/api"
 	cmdWebPath           = "cmd/web"
 	internalServerPath   = "internal/server"
+	internalLoggerPath   = "internal/logger"
 	internalDatabasePath = "internal/database"
 	gitHubActionPath     = ".github/workflows"
 	testHandlerPath      = "tests"
@@ -534,7 +535,7 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 		return err
 	}
-	err = p.CreateFileWithInjection(internalServerPath, projectPath, "logger.go", "logger")
+	err = p.CreateFileWithInjection(internalLoggerPath, projectPath, "logger.go", "logger")
 	if err != nil {
 		log.Printf("Error injecting server.go file: %v", err)
 		cobra.CheckErr(err)
