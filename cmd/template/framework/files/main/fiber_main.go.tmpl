@@ -18,7 +18,7 @@ func main() {
 		AddSource:  true,
 	}
 
-	logger, err := logger.NewLogger(loggerConfig)
+	logger, err := logger.New(loggerConfig)
 	if err != nil {
 		panic(fmt.Sprintf("cannot create logger: %s", err))
 	}
