@@ -4,25 +4,26 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"{{.ProjectName}}/internal/logger"
 	"{{.ProjectName}}/internal/server"
 )
 
 func main() {
-	loggerConfig := server.LoggerConfig{
+	loggerConfig := logger.LoggerConfig{
 		LoggerType: "text",
 		Level:      slog.LevelInfo,
 		AddSource:  true,
 	}
 
-	logger, err := server.NewLogger(loggerConfig)
+	logger, err := logger.New(loggerConfig)
 	if err != nil {
-		panic(fmt.Sprintf("cannot create logger: %s", err))
+		logger.Fatal(fmt.Sprintf("cannot create logger: %s", err))
 	}
 
 	server := server.NewServer()
 	logger.Info(fmt.Sprintf("server is starting on port %s", os.Getenv("PORT")))
 	err = server.ListenAndServe()
 	if err != nil {
-		panic(fmt.Sprintf("cannot start server: %s", err))
+		logger.Fatal(fmt.Sprintf("cannot start server: %s", err))
 	}
 }
