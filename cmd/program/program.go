@@ -393,6 +393,12 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 		return err
 	}
+	err = p.CreatePath(internalLoggerPath, projectPath)
+	if err != nil {
+		log.Printf("Error creating path: %s", internalLoggerPath)
+		cobra.CheckErr(err)
+		return err
+	}
 
 	if p.AdvancedOptions["AddHTMXTempl"] {
 		// create folders and hello world file
