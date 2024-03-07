@@ -190,6 +190,10 @@ var createCmd = &cobra.Command{
 				project.ExitCLI(tprogram)
 				for key, opt := range options.Advanced.Choices {
 					project.AdvancedOptions[strings.ToLower(key)] = opt
+					err := cmd.Flag("feature").Value.Set(strings.ToLower(key))
+					if err != nil {
+						log.Fatal("failed to set the feature flag value", err)
+					}
 				}
 				if err != nil {
 					log.Fatal("failed to set the htmx option", err)
