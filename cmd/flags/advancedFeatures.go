@@ -10,9 +10,10 @@ type AdvancedFeatures []string
 const (
 	Htmx              string = "htmx"
 	GoProjectWorkflow string = "githubaction"
+	Websocket         string = "websocket"
 )
 
-var AllowedAdvancedFeatures = []string{string(Htmx), string(GoProjectWorkflow)}
+var AllowedAdvancedFeatures = []string{string(Htmx), string(GoProjectWorkflow), string(Websocket)}
 
 func (f AdvancedFeatures) String() string {
 	return strings.Join(f, ",")

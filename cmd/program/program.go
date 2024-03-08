@@ -527,7 +527,7 @@ func (p *Project) CreateMainFile() error {
 	// be added to the routes depending on the framework choosen.
 	// Only fiber uses a different websocket library, the other frameworks
 	// all work with the same one
-	if p.AdvancedOptions["Websocket"] {
+	if p.AdvancedOptions[string(flags.Websocket)] {
 		p.CreateWebsocketImports(projectPath)
 	}
 

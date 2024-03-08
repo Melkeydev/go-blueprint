@@ -2,7 +2,7 @@ package server
 
 import (
 	"net/http"
-  {{if .AdvancedOptions.Websocket}}
+  {{if .AdvancedOptions.websocket}}
 	"log"
 	"fmt"
 	"time"
@@ -22,7 +22,7 @@ func (s *Server) RegisterRoutes() http.Handler {
   {{if ne .DBDriver "none"}}
 	e.GET("/health", s.healthHandler)
   {{end}}
-  {{if .AdvancedOptions.Websocket}}
+  {{if .AdvancedOptions.websocket}}
 	e.GET("/websocket", s.websocketHandler)
   {{end}}
 
@@ -43,7 +43,7 @@ func (s *Server) healthHandler(c echo.Context) error {
 }
 {{end}}
 
-{{if .AdvancedOptions.Websocket}}
+{{if .AdvancedOptions.websocket}}
 func (s *Server) websocketHandler(c echo.Context) error {
 	w := c.Response().Writer
 	r := c.Request()

@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"encoding/json"
 	"log"
-  {{if .AdvancedOptions.Websocket}}
+  {{if .AdvancedOptions.websocket}}
 	"fmt"
 	"time"
   {{end}}
@@ -19,7 +19,7 @@ func (s *Server) RegisterRoutes() http.Handler {
   {{if ne .DBDriver "none"}}
 	mux.HandleFunc("/health", s.healthHandler)
   {{end}}
-  {{if .AdvancedOptions.Websocket}}
+  {{if .AdvancedOptions.websocket}}
 	mux.HandleFunc("/websocket", s.websocketHandler)
   {{end}}
   {{.AdvancedTemplates.TemplateRoutes}}
@@ -51,7 +51,7 @@ func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
 }
 {{end}}
 
-{{if .AdvancedOptions.Websocket}}
+{{if .AdvancedOptions.websocket}}
 func (s *Server) websocketHandler(w http.ResponseWriter, r *http.Request) {
 	socket, err := websocket.Accept(w, r, nil)
 
