@@ -137,7 +137,7 @@ Advanced features are accessible with the --advanced flag
 go-blueprint create --advanced
 ```
 
-Both advanced features can be enabled using the `--feature` flag along with the `--advanced` flag.
+Advanced features can be enabled using the `--feature` flag along with the `--advanced` flag.
 
 For HTMX:
 ```bash
@@ -149,14 +149,21 @@ For the CI/CD workflow:
 go-blueprint create --advanced --feature githubaction
 ```
 
-Or for both:
+For the websocket:
 ```bash
-go-blueprint create --advanced --feature htmx --feature githubaction
+go-blueprint create --advanced --feature websocket
+```
+
+Or all features at once:
+```bash
+go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket
 ```
 
 <p align="center">
   <img src="./public/blueprint_advanced.png" alt="Advanced Options" width="800"/>
 </p>
+
+ **Visit [documentation](https://go-blueprint.net) to learn more about blueprint and its features.**
 
 <a id="github-stats"></a>
 
