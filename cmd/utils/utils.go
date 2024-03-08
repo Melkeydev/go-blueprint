@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"os/exec"
+	"strings"
 
 	"github.com/spf13/pflag"
 )
@@ -19,7 +20,19 @@ func NonInteractiveCommand(use string, flagSet *pflag.FlagSet) string {
 
 	visitFn := func(flag *pflag.Flag) {
 		if flag.Name != "help" {
-			nonInteractiveCommand = fmt.Sprintf("%s --%s %s", nonInteractiveCommand, flag.Name, flag.Value.String())
+			if flag.Name == "feature" {
+				featureFlagsString := ""
+				// Creates string representation for the feature flags to be
+				// concatenated with the nonInteractiveCommand
+				for _, k := range strings.Split(flag.Value.String(), ",") {
+					if k != "" {
+						featureFlagsString += fmt.Sprintf(" --feature %s", k)
+					}
+				}
+				nonInteractiveCommand += featureFlagsString
+			} else {
+				nonInteractiveCommand = fmt.Sprintf("%s --%s %s", nonInteractiveCommand, flag.Name, flag.Value.String())
+			}
 		}
 	}
 

@@ -42,12 +42,14 @@ var (
 func init() {
 	var flagFramework flags.Framework
 	var flagDBDriver flags.Database
+	var advancedFeatures flags.AdvancedFeatures
 	rootCmd.AddCommand(createCmd)
 
 	createCmd.Flags().StringP("name", "n", "", "Name of project to create")
 	createCmd.Flags().VarP(&flagFramework, "framework", "f", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(flags.AllowedProjectTypes, ", ")))
 	createCmd.Flags().VarP(&flagDBDriver, "driver", "d", fmt.Sprintf("Database drivers to use. Allowed values: %s", strings.Join(flags.AllowedDBDrivers, ", ")))
 	createCmd.Flags().BoolP("advanced", "a", false, "Get prompts for advanced features")
+	createCmd.Flags().Var(&advancedFeatures, "feature", fmt.Sprintf("Advanced feature to use. Allowed values: %s", strings.Join(flags.AllowedAdvancedFeatures, ", ")))
 }
 
 type Options struct {
@@ -170,18 +172,32 @@ var createCmd = &cobra.Command{
 		}
 
 		if flagAdvanced {
-			isInteractive = true
-			step := steps.Steps["advanced"]
-			tprogram = tea.NewProgram((multiSelect.InitialModelMultiSelect(step.Options, options.Advanced, step.Headers, project)))
-			if _, err := tprogram.Run(); err != nil {
-				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
-			}
-			project.ExitCLI(tprogram)
-			for key, opt := range options.Advanced.Choices {
-				project.AdvancedOptions[key] = opt
-			}
-			if err != nil {
-				log.Fatal("failed to set the htmx option", err)
+
+			featureFlags := cmd.Flag("feature").Value.String()
+
+			if featureFlags != "" {
+				featuresFlagValues := strings.Split(featureFlags, ",")
+				for _, key := range featuresFlagValues {
+					project.AdvancedOptions[key] = true
+				}
+			} else {
+				isInteractive = true
+				step := steps.Steps["advanced"]
+				tprogram = tea.NewProgram((multiSelect.InitialModelMultiSelect(step.Options, options.Advanced, step.Headers, project)))
+				if _, err := tprogram.Run(); err != nil {
+					cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
+				}
+				project.ExitCLI(tprogram)
+				for key, opt := range options.Advanced.Choices {
+					project.AdvancedOptions[strings.ToLower(key)] = opt
+					err := cmd.Flag("feature").Value.Set(strings.ToLower(key))
+					if err != nil {
+						log.Fatal("failed to set the feature flag value", err)
+					}
+				}
+				if err != nil {
+					log.Fatal("failed to set the htmx option", err)
+				}
 			}
 
 		}
@@ -228,7 +244,7 @@ var createCmd = &cobra.Command{
 		fmt.Println(endingMsgStyle.Render("\nNext steps:"))
 		fmt.Println(endingMsgStyle.Render(fmt.Sprintf("• cd into the newly created project with: `cd %s`\n", project.ProjectName)))
 
-		if options.Advanced.Choices["AddHTMXTempl"] {
+		if options.Advanced.Choices["Htmx"] {
 			fmt.Println(endingMsgStyle.Render("• Install the templ cli if you haven't already by running `go install github.com/a-h/templ/cmd/templ@latest`\n"))
 			fmt.Println(endingMsgStyle.Render("• Generate templ function files by running `templ generate`\n"))
 		}

@@ -393,7 +393,7 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	if p.AdvancedOptions["AddHTMXTempl"] {
+	if p.AdvancedOptions[string(flags.Htmx)] {
 		// create folders and hello world file
 		err = p.CreatePath(cmdWebPath, projectPath)
 		if err != nil {
@@ -492,7 +492,7 @@ func (p *Project) CreateMainFile() error {
 	}
 
 	// Create .github/workflows folder and inject release.yml and go-test.yml
-	if p.AdvancedOptions["GitHubAction"] {
+	if p.AdvancedOptions[string(flags.GoProjectWorkflow)] {
 		err = p.CreatePath(gitHubActionPath, projectPath)
 		if err != nil {
 			log.Printf("Error creating path: %s", gitHubActionPath)
@@ -688,7 +688,7 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 func (p *Project) CreateHtmxTemplates() {
 	routesPlaceHolder := ""
 	importsPlaceHolder := ""
-	if p.AdvancedOptions["AddHTMXTempl"] {
+	if p.AdvancedOptions[string(flags.Htmx)] {
 		routesPlaceHolder += string(p.FrameworkMap[p.ProjectType].templater.HtmxTemplRoutes())
 		importsPlaceHolder += string(p.FrameworkMap[p.ProjectType].templater.HtmxTemplImports())
 	}
