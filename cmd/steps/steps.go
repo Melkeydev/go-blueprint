@@ -103,6 +103,11 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 						Title: "Go Project Workflow",
 						Desc:  "Workflow templates for testing, cross-compiling and releasing Go projects",
 					},
+					{
+						Flag:  "Websocket",
+						Title: "Weboscket endpoint",
+						Desc:  "Add a websocket endpoint",
+					},
 				},
 			},
 		},

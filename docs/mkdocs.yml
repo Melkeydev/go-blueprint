@@ -13,7 +13,16 @@ theme: readthedocs
 nav:
   - Home: index.md
   - Installation: installation.md
-  - Creating Project: creating-project.md
-  - Frameworks: frameworks.md
-  - DB Drivers: db-drivers.md
-  - Advanced Flag: advanced-flag.md
+  - Project creation & default config:
+    - Project init: creating-project/project-init.md
+    - Makefile: creating-project/makefile.md
+    - Air: creating-project/air.md
+    - Testing endpoints: creating-project/endpoints-test.md
+  - Blueprint Core:
+    - Frameworks: blueprint-core/frameworks.md
+    - DB Drivers: blueprint-core/db-drivers.md
+  - Advanced Flag:
+    - 'AF Usage': advanced-flag/advanced-flag.md
+    - 'HTMX and Templ': advanced-flag/htmx-tmpl.md
+    - 'GoReleaser & GoTest CI': advanced-flag/goreleaser.md
+    - 'Websocket': advanced-flag/websocket.md

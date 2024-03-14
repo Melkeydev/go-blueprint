@@ -1,4 +1,4 @@
-# Installation
+## Installation
 
 
 Go-Blueprint provides a convenient CLI tool to effortlessly set up your Go projects. Follow the steps below to install the tool on your system.

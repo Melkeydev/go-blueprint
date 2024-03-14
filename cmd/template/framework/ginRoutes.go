@@ -39,3 +39,7 @@ func (g GinTemplates) HtmxTemplImports() []byte {
 func (g GinTemplates) HtmxTemplRoutes() []byte {
 	return advanced.GinHtmxTemplRoutesTemplate()
 }
+
+func (g GinTemplates) WebsocketImports() []byte {
+	return advanced.StdLibWebsocketTemplImportsTemplate()
+}

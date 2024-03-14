@@ -5,11 +5,11 @@ package program
 import (
 	"bytes"
 	"fmt"
-	"html/template"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
+	"text/template"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/melkeydev/go-blueprint/cmd/flags"
@@ -39,8 +39,8 @@ type Project struct {
 }
 
 type AdvancedTemplates struct {
-	TemplateRoutes  template.HTML
-	TemplateImports template.HTML
+	TemplateRoutes  string
+	TemplateImports string
 }
 
 // A Framework contains the name and templater for a
@@ -69,6 +69,7 @@ type Templater interface {
 	TestHandler() []byte
 	HtmxTemplRoutes() []byte
 	HtmxTemplImports() []byte
+	WebsocketImports() []byte
 }
 
 type DBDriverTemplater interface {
@@ -522,6 +523,14 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
+	// if the websocket option is checked, a websocket dependency needs to
+	// be added to the routes depending on the framework choosen.
+	// Only fiber uses a different websocket library, the other frameworks
+	// all work with the same one
+	if p.AdvancedOptions[string(flags.Websocket)] {
+		p.CreateWebsocketImports(projectPath)
+	}
+
 	err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routes")
 	if err != nil {
 		log.Printf("Error injecting routes.go file: %v", err)
@@ -711,6 +720,35 @@ func (p *Project) CreateHtmxTemplates() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	p.AdvancedTemplates.TemplateRoutes = template.HTML(routeBuffer.String())
-	p.AdvancedTemplates.TemplateImports = template.HTML(importBuffer.String())
+	p.AdvancedTemplates.TemplateRoutes = routeBuffer.String()
+	p.AdvancedTemplates.TemplateImports = importBuffer.String()
+}
+
+func (p *Project) CreateWebsocketImports(appDir string) {
+	websocketDependency := []string{"nhooyr.io/websocket"}
+	if p.ProjectType == flags.Fiber {
+		websocketDependency = []string{"github.com/gofiber/contrib/websocket"}
+	}
+
+	// Websockets require a different package depending on what framework is
+	// choosen. The application calls go mod tidy at the end so we don't
+	// have to here
+	err := utils.GoGetPackage(appDir, websocketDependency)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	importsPlaceHolder := string(p.FrameworkMap[p.ProjectType].templater.WebsocketImports())
+
+	importTmpl, err := template.New("imports").Parse(importsPlaceHolder)
+	if err != nil {
+		log.Fatalf("CreateWebsocketImports failed to create template: %v", err)
+	}
+	var importBuffer bytes.Buffer
+	err = importTmpl.Execute(&importBuffer, p)
+	if err != nil {
+		log.Fatalf("CreateWebsocketImports failed write template: %v", err)
+	}
+	newImports := strings.Join([]string{string(p.AdvancedTemplates.TemplateImports), importBuffer.String()}, "\n")
+	p.AdvancedTemplates.TemplateImports = newImports
 }

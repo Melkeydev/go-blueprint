@@ -30,6 +30,7 @@ Check the official Go-blueprint [docs](https://go-blueprint.net).
 - [License](#license)
 
 <a id="install"></a>
+
 <h2>
   <picture>
     <img src="./public/install.gif?raw=true" width="60px" style="margin-right: 1px;">
@@ -58,6 +59,7 @@ go-blueprint create --name my-project --framework gin --driver postgres
 See `go-blueprint create -h` for all the options and shorthands.
 
 <a id="frameworks-supported"></a>
+
 <h2>
   <picture>
     <img src="./public/frameworks.gif?raw=true" width="60px" style="margin-right: 1px;">
@@ -94,6 +96,7 @@ Choose from a variety of supported database drivers:
 - [Redis](https://github.com/redis/go-redis)
 
 <a id="advanced-features"></a>
+
 <h2>
   <picture>
     <img src="./public/advanced.gif?raw=true" width="70px" style="margin-right: 1px;">
@@ -101,15 +104,16 @@ Choose from a variety of supported database drivers:
   Advanced Features
 </h2>
 
-Blueprint is focused on being as minimalistic as possible. That being said, we wanted to offer the ability to add other features people may want without bloating the overall experience. 
+Blueprint is focused on being as minimalistic as possible. That being said, we wanted to offer the ability to add other features people may want without bloating the overall experience.
 
 You can now use the `--advanced` flag when running the `create` command to get access to the following features. This is a multi-option prompt; one or more features can be used at the same time:
 
 - [HTMX](https://htmx.org/) support using [Templ](https://templ.guide/)
 - CI/CD workflow setup using [Github Actions](https://docs.github.com/en/actions)
-
+- [Websocket](https://pkg.go.dev/nhooyr.io/websocket) sets up a websocket endpoint
 
 <a id="usage-example"></a>
+
 <h2>
   <picture>
     <img src="./public/example.gif?raw=true" width="60px" style="margin-right: 1px;">
@@ -133,7 +137,7 @@ Advanced features are accessible with the --advanced flag
 go-blueprint create --advanced
 ```
 
-Both advanced features can be enabled using the `--feature` flag along with the `--advanced` flag.
+Advanced features can be enabled using the `--feature` flag along with the `--advanced` flag.
 
 For HTMX:
 ```bash
@@ -145,16 +149,24 @@ For the CI/CD workflow:
 go-blueprint create --advanced --feature githubaction
 ```
 
-Or for both:
+For the websocket:
 ```bash
-go-blueprint create --advanced --feature htmx --feature githubaction
+go-blueprint create --advanced --feature websocket
+```
+
+Or all features at once:
+```bash
+go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket
 ```
 
 <p align="center">
-  <img src="./public/blueprint_2.png" alt="Starter Image" width="800"/>
+  <img src="./public/blueprint_advanced.png" alt="Advanced Options" width="800"/>
 </p>
 
+ **Visit [documentation](https://go-blueprint.net) to learn more about blueprint and its features.**
+
 <a id="github-stats"></a>
+
 <h2>
   <picture>
     <img src="./public/stats.gif?raw=true" width="45px" style="margin-right: 10px;">
@@ -167,6 +179,7 @@ go-blueprint create --advanced --feature htmx --feature githubaction
 </p>
 
 <a id="license"></a>
+
 <h2>
   <picture>
     <img src="./public/license.gif?raw=true" width="50px" style="margin-right: 1px;">
