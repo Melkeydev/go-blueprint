@@ -2,6 +2,8 @@ package web
 
 import (
 	"bytes"
+	"fmt"
+	"log"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -9,7 +11,10 @@ import (
 func HelloWebHandler(c *fiber.Ctx) error {
 	// Parse form data
 	if err := c.BodyParser(c); err != nil {
-		c.Status(fiber.StatusBadRequest).SendString("Bad Request")
+		innerErr := c.Status(fiber.StatusBadRequest).SendString("Bad Request")
+		if innerErr != nil {
+			log.Fatalf("Could not send error in HelloWebHandler: %e", innerErr)
+		}
 	}
 
 	// Get the name from the form data
@@ -18,9 +23,20 @@ func HelloWebHandler(c *fiber.Ctx) error {
 	// Render the component
 	component := HelloPost(name)
 	buf := new(bytes.Buffer)
-	component.Render(c.Context(), buf)
+	err := component.Render(c.Context(), buf)
+	if err != nil {
+		errorString := fmt.Sprintf("Error rendering in HelloWebHandler: %e", err)
+		innerErr := c.Status(fiber.StatusBadRequest).SendString(errorString)
+		if innerErr != nil {
+			log.Fatalf("Could not send error in HelloWebHandler: %e", innerErr)
+		}
+		log.Fatalf(errorString)
+	}
 
 	// Send the response
-	c.Status(fiber.StatusOK).SendString(buf.String())
+	err = c.Status(fiber.StatusOK).SendString(buf.String())
+	if err != nil {
+		log.Fatalf("Could not send OK in HelloWebHandler: %e", err)
+	}
 	return nil
 }
