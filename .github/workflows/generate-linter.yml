@@ -12,7 +12,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
-          go-version: "1.20"
+          go-version: "1.22"
       - name: Install Dependencies
         run: go mod download
   framework_matrix:
@@ -23,7 +23,7 @@ jobs:
           [chi, gin, fiber, gorilla/mux, httprouter, standard-library, echo]
         driver:
           [mysql, postgres, sqlite, mongo, redis, none]
-        goVersion: ["1.20"]
+        goVersion: ["1.22"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

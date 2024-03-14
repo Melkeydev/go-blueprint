@@ -110,6 +110,7 @@ const (
 	cmdApiPath           = "cmd/api"
 	cmdWebPath           = "cmd/web"
 	internalServerPath   = "internal/server"
+	internalLoggerPath   = "internal/logger"
 	internalDatabasePath = "internal/database"
 	gitHubActionPath     = ".github/workflows"
 	testHandlerPath      = "tests"
@@ -393,6 +394,12 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 		return err
 	}
+	err = p.CreatePath(internalLoggerPath, projectPath)
+	if err != nil {
+		log.Printf("Error creating path: %s", internalLoggerPath)
+		cobra.CheckErr(err)
+		return err
+	}
 
 	if p.AdvancedOptions[string(flags.Htmx)] {
 		// create folders and hello world file
@@ -543,6 +550,12 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 		return err
 	}
+	err = p.CreateFileWithInjection(internalLoggerPath, projectPath, "logger.go", "logger")
+	if err != nil {
+		log.Printf("Error injecting server.go file: %v", err)
+		cobra.CheckErr(err)
+		return err
+	}
 
 	err = p.CreateFileWithInjection(root, projectPath, ".env", "env")
 	if err != nil {
@@ -648,6 +661,9 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		err = createdTemplate.Execute(createdFile, p)
 	case "server":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Server())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "logger":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(framework.LoggerTemplate())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "routes":
 		routeFileBytes := p.FrameworkMap[p.ProjectType].templater.Routes()

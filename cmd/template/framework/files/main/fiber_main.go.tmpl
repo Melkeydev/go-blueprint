@@ -2,21 +2,33 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"strconv"
+	"{{.ProjectName}}/internal/logger"
 	"{{.ProjectName}}/internal/server"
 
 	_ "github.com/joho/godotenv/autoload"
 )
 
 func main() {
+	loggerConfig := logger.LoggerConfig{
+		LoggerType: "text",
+		Level:      slog.LevelInfo,
+		AddSource:  true,
+	}
+
+	logger, err := logger.New(loggerConfig)
+	if err != nil {
+		panic(fmt.Sprintf("cannot create logger: %s", err))
+	}
 
 	server := server.New()
 
 	server.RegisterFiberRoutes()
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
-	err := server.Listen(fmt.Sprintf(":%d", port))
-	if err != nil {
-		panic(fmt.Sprintf("cannot start server: %s", err))
+	logger.Info(fmt.Sprintf("server is starting on port %d", port))
+	if err := server.Listen(fmt.Sprintf(":%d", port)); err != nil {
+		logger.Fatal(fmt.Sprintf("cannot start server: %s", err))
 	}
 }
