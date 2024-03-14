@@ -49,8 +49,10 @@ jobs:
         run: export PATH=$PATH:$(go env GOPATH)/bin
 
       - if: ${{ matrix.advanced == 'htmx' }}
-        name: Eching PATH
-        run: echo $PATH:$(go env GOPATH)/bin
+        name: Install dependencies
+        run: |
+          go mod tidy
+          go mod download
 
       - if: ${{ matrix.advanced == 'htmx' }}
         name: Run templ generate
