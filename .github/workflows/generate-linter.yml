@@ -38,13 +38,11 @@ jobs:
 
       - if: ${{ matrix.advanced == 'htmx' }}
         name: Install Templ
-        run: |
-          go install github.com/a-h/templ/cmd/templ@latest
-          which templ
+        run: go install github.com/a-h/templ/cmd/templ@latest
 
       - if: ${{ matrix.advanced == 'htmx' }}
         name: Run templ generate
-        run: templ generate -path ${{ matrix.framework }}
+        run: ./home/runner/go/bin/templ generate -path ${{ matrix.framework }}
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
