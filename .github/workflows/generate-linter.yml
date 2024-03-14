@@ -41,6 +41,10 @@ jobs:
         run: go install github.com/a-h/templ/cmd/templ@latest
 
       - if: ${{ matrix.advanced == 'htmx' }}
+        name: Check go env
+        run: go env
+
+      - if: ${{ matrix.advanced == 'htmx' }}
         name: Run templ generate
         run: ./home/runner/go/bin/templ generate -path ${{ matrix.framework }}
 
