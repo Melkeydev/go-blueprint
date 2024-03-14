@@ -59,7 +59,7 @@ func (s *FiberServer) websocketHandler(con *websocket.Conn) {
 		default:
 			payload := fmt.Sprintf("server timestamp: %d", time.Now().UnixNano())
 			if err := con.WriteMessage(websocket.TextMessage, []byte(payload)); err != nil {
-				log.Printf("could not write to socket: %v", e)
+				log.Printf("could not write to socket: %v", err)
 				return
 			}
 			time.Sleep(time.Second * 2)
