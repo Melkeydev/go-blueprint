@@ -41,22 +41,8 @@ jobs:
         run: go install github.com/a-h/templ/cmd/templ@latest
 
       - if: ${{ matrix.advanced == 'htmx' }}
-        name: Check go env
-        run: go env
-
-      - if: ${{ matrix.advanced == 'htmx' }}
-        name: Adding GOBIN to path
-        run: export PATH=$PATH:$(go env GOPATH)/bin
-
-      - if: ${{ matrix.advanced == 'htmx' }}
-        name: Install dependencies
-        run: |
-          go mod tidy
-          go mod download
-
-      - if: ${{ matrix.advanced == 'htmx' }}
         name: Run templ generate
-        run: templ generate -path ${{ matrix.framework }}
+        run: /home/runner/go/bin/templ generate -path ${{ matrix.framework }}
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
