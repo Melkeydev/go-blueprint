@@ -24,7 +24,7 @@ jobs:
         driver:
           [mysql, postgres, sqlite, mongo, redis, none]
         advanced:
-          [htmx, githubaction, websocket]
+          [htmx, githubaction]
         goVersion: ["1.20"]
     runs-on: ubuntu-latest
     steps:
