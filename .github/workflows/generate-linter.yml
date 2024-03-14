@@ -45,8 +45,12 @@ jobs:
         run: go env
 
       - if: ${{ matrix.advanced == 'htmx' }}
-        name: Check go path bin dir
-        run: ls -l /home/runner/go/bin
+        name: Adding GOBIN to path
+        run: export PATH=$PATH:$(go env GOPATH)/bin
+
+      - if: ${{ matrix.advanced == 'htmx' }}
+        name: Eching PATH
+        run: echo $PATH:$(go env GOPATH)/bin
 
       - if: ${{ matrix.advanced == 'htmx' }}
         name: Run templ generate
