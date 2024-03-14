@@ -39,5 +39,8 @@ jobs:
           version: v1.55.2
           working-directory: ${{ matrix.framework }}
           args: --timeout=5m
+      - name: Build template project
+        working-directory: ./${{ matrix.framework }}
+        run: script -q /dev/null -c "go build cmd/api/main.go" /dev/null
       - name: remove templates
         run: rm -rf ${{ matrix.framework }}
