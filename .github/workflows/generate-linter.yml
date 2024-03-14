@@ -44,7 +44,7 @@ jobs:
         run: /home/runner/go/bin/templ generate -path ${{ matrix.framework }}
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
+        uses: golangci/golangci-lint-action@v4
         with:
           version: v1.55.2
           working-directory: ${{ matrix.framework }}
