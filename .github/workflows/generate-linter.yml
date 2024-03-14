@@ -41,7 +41,7 @@ jobs:
         run: go install github.com/a-h/templ/cmd/templ@latest
       - if: ${{ matrix.advanced == 'htmx' }}
         name: Run templ generate
-        working-dir: ./${{ matrix.framework }}
+        working-directory: ./${{ matrix.framework }}
         run: templ generate ./...
 
       - name: golangci-lint
