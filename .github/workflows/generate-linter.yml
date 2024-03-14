@@ -54,7 +54,7 @@ jobs:
 
       - if: ${{ matrix.advanced == 'htmx' }}
         name: Run templ generate
-        run: ./home/runner/go/bin/templ generate -path ${{ matrix.framework }}
+        run: templ generate -path ${{ matrix.framework }}
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
