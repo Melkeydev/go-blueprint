@@ -45,8 +45,8 @@ jobs:
         run: go env
 
       - if: ${{ matrix.advanced == 'htmx' }}
-        name: Check go path dir
-        run: ls -l /home/runner/go
+        name: Check go path bin dir
+        run: ls -l /home/runner/go/bin
 
       - if: ${{ matrix.advanced == 'htmx' }}
         name: Run templ generate
