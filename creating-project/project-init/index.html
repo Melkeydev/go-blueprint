@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://go-blueprint.net/creating-project/project-init/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Project init - Go-Blueprint Docs</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Project init";
+        var mkdocs_page_input_path = "creating-project/project-init.md";
+        var mkdocs_page_url = "/creating-project/project-init/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Go-Blueprint Docs
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../installation/">Installation</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Project creation & default config</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Project init</a>
+    <ul class="current">
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../makefile/">Makefile</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../air/">Air</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../endpoints-test/">Testing endpoints</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Blueprint Core</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../blueprint-core/frameworks/">Frameworks</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../blueprint-core/db-drivers/">DB Drivers</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Advanced Flag</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../advanced-flag/advanced-flag/">AF Usage</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../advanced-flag/htmx-tmpl/">HTMX and Templ</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../advanced-flag/goreleaser/">GoReleaser & GoTest CI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../advanced-flag/websocket/">Websocket</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Go-Blueprint Docs</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Project creation & default config</li>
+      <li class="breadcrumb-item active">Project init</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Melkeydev/go-blueprint/edit/main/docs/docs/creating-project/project-init.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h2 id="creating-a-project">Creating a Project</h2>
+<p>After installing the Go-Blueprint CLI tool, you can create a new project with the default settings by running the following command:</p>
+<pre><code class="language-bash">go-blueprint create
+</code></pre>
+<p>This command will interactively guide you through the project setup process, allowing you to choose the project name, framework, and database driver.</p>
+<p><img alt="BlueprintInteractive" src="../../public/blueprint_1.png" /></p>
+<h2 id="using-flags-for-non-interactive-setup">Using Flags for Non-Interactive Setup</h2>
+<p>For a non-interactive setup, you can use flags to provide the necessary information during project creation. Here's an example:</p>
+<pre><code>go-blueprint create --name my-project --framework gin --driver postgres
+</code></pre>
+<p>In this example:</p>
+<ul>
+<li><code>--name</code>: Specifies the name of the project (replace "my-project" with your desired project name).</li>
+<li><code>--framework</code>: Specifies the Go framework to be used (e.g., "gin").</li>
+<li><code>--driver</code>: Specifies the database driver to be integrated (e.g., "postgres").</li>
+</ul>
+<p>Customize the flags according to your project requirements.</p>
+<h2 id="advanced-flag">Advanced Flag</h2>
+<p>By including the <code>--advanced</code> flag, users can choose one or all of the advanced features, HTMX, GitHub Actions for CI/CD and Websocket support, during the project creation process. The flag enhances the simplicity of Blueprint while offering flexibility for users who require additional functionality.</p>
+<pre><code class="language-bash">go-blueprint create --advanced
+</code></pre>
+<p>To recreate the project using the same configuration semi-interactively, use the following command:</p>
+<pre><code class="language-bash">go-blueprint create --name my-project --framework chi --driver mysql --advanced
+</code></pre>
+<p>This approach opens interactive mode only for advanced features, which allow you to choose the one or combination of available features.</p>
+<p><img alt="AdvancedFlag" src="../../public/blueprint_advanced.png" /></p>
+<h2 id="non-interactive-setup">Non-Interactive Setup</h2>
+<p>Advanced features can be enabled using the <code>--feature</code> flag along with the <code>--advanced</code> flag:</p>
+<p>For HTMX:</p>
+<pre><code class="language-bash">go-blueprint create --advanced --feature htmx
+</code></pre>
+<p>For the CI/CD workflow:</p>
+<pre><code class="language-bash">go-blueprint create --advanced --feature githubaction
+</code></pre>
+<p>For the websocket:</p>
+<pre><code class="language-bash">go-blueprint create --advanced --feature websocket
+</code></pre>
+<p>Or all features at once:</p>
+<pre><code class="language-bash">go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../../installation/" class="btn btn-neutral float-left" title="Installation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../makefile/" class="btn btn-neutral float-right" title="Makefile">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Melkeydev/go-blueprint" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../../installation/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../makefile/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
