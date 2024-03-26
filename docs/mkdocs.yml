@@ -12,6 +12,20 @@ edit_uri: edit/main/docs/docs
 theme:
   name: material
   custom_dir: custom_theme/
+  theme:
+  features:
+    - navigation.instant
+    - navigation.expand
+    - toc.flow
+  palette: 
+    - scheme: default
+      toggle:
+        icon: material/brightness-7 
+        name: Switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
 
 nav:
   - Home: index.md
@@ -30,3 +44,15 @@ nav:
     - 'HTMX and Templ': advanced-flag/htmx-tmpl.md
     - 'GoReleaser & GoTest CI': advanced-flag/goreleaser.md
     - 'Websocket': advanced-flag/websocket.md
+
+extra:
+    social:
+      - icon: fontawesome/brands/twitch
+        link: https://www.twitch.tv/melkey
+        name: Twitch
+      - icon: fontawesome/brands/discord
+        link: https://discord.com/invite/HHZMSCu
+        name: Discord
+    generator: false
+
+copyright: Copyright &copy; 2024 Melkey
