@@ -1,6 +1,3 @@
-## Frameworks
-
-
 Created project can utilizes several Go web frameworks to handle HTTP routing and server functionality. The chosen frameworks are:
 
 1. [**Chi**](https://github.com/go-chi/chi): Lightweight and flexible router for building Go HTTP services.

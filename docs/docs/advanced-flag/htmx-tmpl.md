@@ -1,5 +1,3 @@
-## HTMX and Templ Setup
-
 The WEB directory contains the web-related components and assets for the project. It leverages htmx and tmpl in Go for dynamic web content generation.
 
 ## Structure

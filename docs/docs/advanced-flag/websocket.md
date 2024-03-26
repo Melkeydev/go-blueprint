@@ -1,5 +1,3 @@
-## Websocket
-
 A `/websocket` endpoint is added in `routes.go` to facilitate websocket connections. Upon accessing this endpoint, the server establishes a websocket connection and begins transmitting timestamp messages at 2-second intervals. WS is utilized across all Go-blueprint supported frameworks. This simple implementation showcases how flexible project is.
 
 ## Testing with WebSocat

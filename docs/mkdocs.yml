@@ -9,10 +9,11 @@ edit_uri: edit/main/docs/docs
 
 ### Build settings ###
 
-theme: readthedocs
+theme: material
 nav:
   - Home: index.md
   - Installation: installation.md
+  - Blueprint UI: blueprint-ui.md
   - Project creation & default config:
     - Project init: creating-project/project-init.md
     - Makefile: creating-project/makefile.md
@@ -26,3 +27,6 @@ nav:
     - 'HTMX and Templ': advanced-flag/htmx-tmpl.md
     - 'GoReleaser & GoTest CI': advanced-flag/goreleaser.md
     - 'Websocket': advanced-flag/websocket.md
+extra_javascript:
+  - |
+    <script defer data-domain="docs.ujstor.com" src="https://analytics.ujstor.com/js/script.js"></script>

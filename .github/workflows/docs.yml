@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - ui-update
 
 jobs:
   build-deploy:
@@ -35,14 +36,15 @@ jobs:
         working-directory: docs
         run: make deploy
 
-      - name: Create and push CNAME file to gh-pages
-        run: |
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Actions"
-          git checkout gh-pages
+      # config for deploying od gh pages
+      # - name: Create and push CNAME file to gh-pages
+      #   run: |
+      #     git config --local user.email "actions@github.com"
+      #     git config --local user.name "GitHub Actions"
+      #     git checkout gh-pages
 
-          echo "go-blueprint.net" > CNAME
+      #     echo "go-blueprint.net" > CNAME
 
-          git add CNAME
-          git commit -m "Add CNAME file"
-          git push origin gh-pages
+      #     git add CNAME
+      #     git commit -m "Add CNAME file"
+      #     git push origin gh-pages

@@ -1,5 +1,3 @@
-## Database Drivers
-
 To extend the project with database functionality, users can choose from a variety of Go database drivers. Each driver is tailored to work with specific database systems, providing flexibility based on project requirements:
 
 1. [Mongo](https://go.mongodb.org/mongo-driver): Provides necessary tools for connecting and interacting with MongoDB databases.

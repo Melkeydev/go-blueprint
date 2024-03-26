@@ -17,7 +17,6 @@ gives the option to integrate with one of the more popular Go frameworks (and th
 - Integrate with a popular frameworks
 - Focus on the actual code of your application
 
-Check the official Go-blueprint [docs](https://go-blueprint.net).
 
 ## Table of Contents
 
@@ -25,6 +24,7 @@ Check the official Go-blueprint [docs](https://go-blueprint.net).
 - [Frameworks Supported](#frameworks-supported)
 - [Database Support](#database-support)
 - [Advanced Features](#advanced-features)
+- [Blueprint UI](#blueprint-ui)
 - [Usage Example](#usage-example)
 - [GitHub Stats](#github-stats)
 - [License](#license)
@@ -112,6 +112,21 @@ You can now use the `--advanced` flag when running the `create` command to get a
 - CI/CD workflow setup using [Github Actions](https://docs.github.com/en/actions)
 - [Websocket](https://pkg.go.dev/nhooyr.io/websocket) sets up a websocket endpoint
 
+<a id="blueprint-ui"></a>
+
+<h2>
+  <picture>
+    <img src="./public/ui.gif?raw=true" width="100px" style="margin-right: 1px;">
+  </picture>
+  Blueprint UI
+</h2>
+
+Blueprint UI is a web application that allows you to create commands for the CLI and preview the structure of your project. You will be able to see directories and files that will be created upon command execution. Check it out at https://go-blueprint.dev
+
+<p align="center">
+  <img src="./public/blueprint_ui.png" alt="Starter Image" width="800"/>
+</p>
+
 <a id="usage-example"></a>
 
 <h2>
@@ -163,7 +178,7 @@ go-blueprint create --name my-project --framework chi --driver mysql --advanced 
   <img src="./public/blueprint_advanced.png" alt="Advanced Options" width="800"/>
 </p>
 
- **Visit [documentation](https://go-blueprint.net) to learn more about blueprint and its features.**
+ **Visit [documentation](https://docs.go-blueprint.dev) to learn more about blueprint and its features.**
 
 <a id="github-stats"></a>
 
