@@ -2,7 +2,7 @@
 
 site_name: Go-Blueprint Docs
 site_description: Official documentation for Go-Blueprint project
-site_url: https://go-blueprint.net/
+site_url: https://docs.go-blueprint.dev/
 
 repo_url: https://github.com/Melkeydev/go-blueprint
 edit_uri: edit/main/docs/docs
@@ -29,4 +29,4 @@ nav:
     - 'Websocket': advanced-flag/websocket.md
 extra_javascript:
   - |
-    <script defer data-domain="docs.ujstor.com" src="https://analytics.ujstor.com/js/script.js"></script>
+    <script defer data-domain="test.ujstor.com" src="https://analytics.ujstor.com/js/script.js"></script>
