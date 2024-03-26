@@ -9,7 +9,10 @@ edit_uri: edit/main/docs/docs
 
 ### Build settings ###
 
-theme: material
+theme:
+  name: material
+  custom_dir: custom_theme/
+
 nav:
   - Home: index.md
   - Installation: installation.md
@@ -27,6 +30,3 @@ nav:
     - 'HTMX and Templ': advanced-flag/htmx-tmpl.md
     - 'GoReleaser & GoTest CI': advanced-flag/goreleaser.md
     - 'Websocket': advanced-flag/websocket.md
-extra_javascript:
-  - |
-    <script defer data-domain="test.ujstor.com" src="https://analytics.ujstor.com/js/script.js"></script>
