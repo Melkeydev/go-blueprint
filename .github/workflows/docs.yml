@@ -43,7 +43,7 @@ jobs:
       #     git config --local user.name "GitHub Actions"
       #     git checkout gh-pages
 
-      #     echo "docs.go-blueprint.dev" > CNAME
+      #     echo "<domain>" > CNAME
 
       #     git add CNAME
       #     git commit -m "Add CNAME file"

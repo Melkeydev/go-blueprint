@@ -121,11 +121,7 @@ You can now use the `--advanced` flag when running the `create` command to get a
   Blueprint UI
 </h2>
 
-Blueprint UI is a web application that allows you to create commands for the CLI and preview the structure of your project. You will be able to see directories and files that will be created upon command execution. Check it out at https://go-blueprint.dev
-
-<p align="center">
-  <img src="./public/blueprint_ui.png" alt="Starter Image" width="800"/>
-</p>
+Blueprint UI is a web application that allows you to create commands for the CLI and preview the structure of your project. You will be able to see directories and files that will be created upon command execution. Check it out at [go-blueprint.dev](https://go-blueprint.dev)
 
 <a id="usage-example"></a>
 

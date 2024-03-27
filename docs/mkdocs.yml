@@ -15,7 +15,8 @@ theme:
   theme:
   features:
     - navigation.instant
-    - navigation.expand
+    - navigation.sections
+    - navigation.footer
     - toc.flow
   palette: 
     - scheme: default
