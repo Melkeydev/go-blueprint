@@ -40,10 +40,10 @@ nav:
     - Frameworks: blueprint-core/frameworks.md
     - DB Drivers: blueprint-core/db-drivers.md
   - Advanced Flag:
-    - 'AF Usage': advanced-flag/advanced-flag.md
-    - 'HTMX and Templ': advanced-flag/htmx-tmpl.md
-    - 'GoReleaser & GoTest CI': advanced-flag/goreleaser.md
-    - 'Websocket': advanced-flag/websocket.md
+    - AF Usage: advanced-flag/advanced-flag.md
+    - HTMX and Templ: advanced-flag/htmx-tmpl.md
+    - GoReleaser & GoTest CI: advanced-flag/goreleaser.md
+    - Websocket: advanced-flag/websocket.md
 
 extra:
     social:
