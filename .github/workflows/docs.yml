@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - ui-update
 
 jobs:
   build-deploy:
