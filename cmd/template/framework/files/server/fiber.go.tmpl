@@ -1,7 +1,6 @@
 package server
 
 import (
-	"time"
 	"github.com/gofiber/fiber/v2"
   {{if ne .DBDriver "none"}}
 	"{{.ProjectName}}/internal/database"
