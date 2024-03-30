@@ -92,7 +92,7 @@ var (
 	gorillaPackage = []string{"github.com/gorilla/mux"}
 	routerPackage  = []string{"github.com/julienschmidt/httprouter"}
 	ginPackage     = []string{"github.com/gin-gonic/gin"}
-	fiberPackage   = []string{"github.com/gofiber/fiber/v2"}
+	fiberPackage   = []string{"github.com/gofiber/fiber/v2", "github.com/gofiber/fiber/v2/middleware/limiter"}
 	echoPackage    = []string{"github.com/labstack/echo/v4", "github.com/labstack/echo/v4/middleware"}
 
 	mysqlDriver    = []string{"github.com/go-sql-driver/mysql"}

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"time"
   {{if .AdvancedOptions.websocket}}
 	"context"
 	"log"
@@ -8,11 +9,15 @@ import (
 	"time"
   {{end}}
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
   {{.AdvancedTemplates.TemplateImports}}
 )
 
 func (s *FiberServer) RegisterFiberRoutes() {
+	rateLimiter := setRouteRateLimiter()
 	s.App.Get("/", s.HelloWorldHandler)
+	// Note: The rateLimiter requires a second parameter because it won't work if placed after the handler.
+	s.App.Get("/limiter", rateLimiter, s.HelloWorldWithRateLimiterHandler)
   {{if ne .DBDriver "none"}}
 	s.App.Get("/health", s.healthHandler)
   {{end}}
@@ -29,6 +34,41 @@ func (s *FiberServer) HelloWorldHandler(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(resp)
+}
+
+// HelloWorldWithRateLimiterHandler is a Fiber handler that returns a JSON response with a "Hello World" message.
+// It uses a rate limiter middleware to limit the number of requests per IP.
+func (s *FiberServer) HelloWorldWithRateLimiterHandler(c *fiber.Ctx) error {
+	// Create a response map with a "message" key and "Hello World" value.
+	resp := fiber.Map{
+		"message": "Hello World",
+	}
+
+	// Return the response as JSON using the Fiber context.
+	return c.JSON(resp)
+}
+
+// setRouteRateLimiter creates and returns a rate limiter middleware configured.
+// It limits the number of requests and defines a custom response for when the rate limit is exceeded.
+func setRouteRateLimiter() fiber.Handler {
+	// Create a new rate limiter using the limiter package.
+	return limiter.New(limiter.Config{
+		// Set the maximum number of requests allowed per IP.
+		// In this example, a maximum of 5 requests per IP is allowed.
+		Max: 5,
+
+		// Set the expiration time for the rate limit.
+		// The limit expires after 1 second, allowing new requests from the same IP after that time.
+		Expiration: 1 * time.Second,
+
+		// Define a custom function to handle the case when the rate limit is reached.
+		LimitReached: func(c *fiber.Ctx) error {
+			// Return a "Too Many Requests" status code (429) and a JSON response indicating the error.
+			return c.Status(fiber.StatusTooManyRequests).JSON(fiber.Map{
+				"error": "Too many requests, please try again later.",
+			})
+		},
+	})
 }
 
 {{if ne .DBDriver "none"}}
