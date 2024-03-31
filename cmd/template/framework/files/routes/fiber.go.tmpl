@@ -16,7 +16,7 @@ func (s *FiberServer) RegisterFiberRoutes() {
 	rateLimiter := setRouteRateLimiter()
 	s.App.Get("/", s.HelloWorldHandler)
 	// Note: The rateLimiter requires a second parameter because it won't work if placed after the handler.
-	s.App.Get("/limiter", rateLimiter, s.HelloWorldWithRateLimiterHandler)
+	s.App.Get("/limiter", rateLimiter, s.HelloWorldHandler)
   {{if ne .DBDriver "none"}}
 	s.App.Get("/health", s.healthHandler)
   {{end}}
@@ -32,18 +32,6 @@ func (s *FiberServer) HelloWorldHandler(c *fiber.Ctx) error {
 		"message": "Hello World",
 	}
 
-	return c.JSON(resp)
-}
-
-// HelloWorldWithRateLimiterHandler is a Fiber handler that returns a JSON response with a "Hello World" message.
-// It uses a rate limiter middleware to limit the number of requests per IP.
-func (s *FiberServer) HelloWorldWithRateLimiterHandler(c *fiber.Ctx) error {
-	// Create a response map with a "message" key and "Hello World" value.
-	resp := fiber.Map{
-		"message": "Hello World",
-	}
-
-	// Return the response as JSON using the Fiber context.
 	return c.JSON(resp)
 }
 
