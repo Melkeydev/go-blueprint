@@ -16,7 +16,10 @@ type FiberServer struct {
 
 func New() *FiberServer {
 	server := &FiberServer{
-		App: fiber.New(),
+		App: fiber.New(fiber.Config{
+		ServerHeader:            "{{.ProjectName}}",
+		AppName:                 "{{.ProjectName}}",
+	}),
   {{if ne .DBDriver "none"}}
 		db:  database.New(),
   {{end}}
