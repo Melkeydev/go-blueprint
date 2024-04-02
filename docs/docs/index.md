@@ -1,3 +1,7 @@
+---
+hide:
+  - toc
+---
 ## Go Blueprint - Ultimate Golang Blueprint Library
 
 ![logo](./public/logo.png)

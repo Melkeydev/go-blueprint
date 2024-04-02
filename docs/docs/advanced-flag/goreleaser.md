@@ -1,5 +1,3 @@
-## GoReleaser - Automating Releases with GoReleaser
-
 Release process for Go projects, providing extensive customization options through its configuration file, `.goreleaser.yml`. By default, it ensures dependency cleanliness, builds binaries for various platforms and architectures, facilitates pre-release creation, and organizes binary packaging into archives with naming schemes.
 
 For comprehensive insights into customization possibilities, refer to the [GoReleaser documentation](https://goreleaser.com/customization/).
@@ -26,7 +24,7 @@ Following these steps ensures proper tagging of your project, prompting GoReleas
 
 The `go-test.yml` file defines a GitHub Actions workflow for continuous integration (CI) of Go projects within a GitHub repository.
 
-### Workflow Steps
+## Workflow Steps
 
 The job outlined in this workflow includes the following steps:
 

@@ -2,17 +2,36 @@
 
 site_name: Go-Blueprint Docs
 site_description: Official documentation for Go-Blueprint project
-site_url: https://go-blueprint.net/
+site_url: https://docs.go-blueprint.dev/
 
 repo_url: https://github.com/Melkeydev/go-blueprint
 edit_uri: edit/main/docs/docs
 
 ### Build settings ###
 
-theme: readthedocs
+theme:
+  name: material
+  custom_dir: custom_theme/
+  theme:
+  features:
+    - navigation.instant
+    - navigation.sections
+    - navigation.footer
+    - toc.flow
+  palette: 
+    - scheme: default
+      toggle:
+        icon: material/brightness-7 
+        name: Switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
 nav:
   - Home: index.md
   - Installation: installation.md
+  - Blueprint UI: blueprint-ui.md
   - Project creation & default config:
     - Project init: creating-project/project-init.md
     - Makefile: creating-project/makefile.md
@@ -22,7 +41,19 @@ nav:
     - Frameworks: blueprint-core/frameworks.md
     - DB Drivers: blueprint-core/db-drivers.md
   - Advanced Flag:
-    - 'AF Usage': advanced-flag/advanced-flag.md
-    - 'HTMX and Templ': advanced-flag/htmx-tmpl.md
-    - 'GoReleaser & GoTest CI': advanced-flag/goreleaser.md
-    - 'Websocket': advanced-flag/websocket.md
+    - AF Usage: advanced-flag/advanced-flag.md
+    - HTMX and Templ: advanced-flag/htmx-tmpl.md
+    - GoReleaser & GoTest CI: advanced-flag/goreleaser.md
+    - Websocket: advanced-flag/websocket.md
+
+extra:
+    social:
+      - icon: fontawesome/brands/twitch
+        link: https://www.twitch.tv/melkey
+        name: Twitch
+      - icon: fontawesome/brands/discord
+        link: https://discord.com/invite/HHZMSCu
+        name: Discord
+    generator: false
+
+copyright: Copyright &copy; 2024 Melkey
