@@ -10,7 +10,6 @@ import (
 	"path/filepath"
 	"strings"
 	"text/template"
-	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/melkeydev/go-blueprint/cmd/flags"
