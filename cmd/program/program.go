@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 	"text/template"
+	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/melkeydev/go-blueprint/cmd/flags"
@@ -115,8 +116,6 @@ const (
 	testHandlerPath      = "tests"
 )
 
-func foo() {}
-
 // ExitCLI checks if the Project has been exited, and closes
 // out of the CLI if it has
 func (p *Project) ExitCLI(tprogram *tea.Program) {
@@ -124,8 +123,8 @@ func (p *Project) ExitCLI(tprogram *tea.Program) {
 		// logo render here
 		if err := tprogram.ReleaseTerminal(); err != nil {
 			log.Fatal(err)
+			os.Exit(1)
 		}
-		os.Exit(1)
 	}
 }
 
