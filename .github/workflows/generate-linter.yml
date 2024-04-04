@@ -20,7 +20,7 @@ jobs:
     strategy:
       matrix:
         framework:
-          [chi, gin, fiber, gorilla/mux, httprouter, standard-library, echo]
+         [chi, gin, fiber, gorilla/mux, httprouter, standard-library, echo]
         driver:
           [mysql, postgres, sqlite, mongo, redis, none]
         advanced:

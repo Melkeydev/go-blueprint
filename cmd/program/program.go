@@ -115,6 +115,8 @@ const (
 	testHandlerPath      = "tests"
 )
 
+func foo() {}
+
 // ExitCLI checks if the Project has been exited, and closes
 // out of the CLI if it has
 func (p *Project) ExitCLI(tprogram *tea.Program) {

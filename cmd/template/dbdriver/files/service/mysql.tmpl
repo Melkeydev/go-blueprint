@@ -50,6 +50,8 @@ func (s *service) Health() map[string]string {
 
 	err := s.db.PingContext(ctx)
 	if err != nil {
+		log.Fatalf(fmt.Sprintf("db down: %v", err))
+	}
 
 	return map[string]string{
 		"message": "It's healthy",
