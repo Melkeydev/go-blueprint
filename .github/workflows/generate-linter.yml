@@ -36,7 +36,7 @@ jobs:
         name: Install Templ & gen templates
         run: | 
           go install github.com/a-h/templ/cmd/templ@latest
-          run: /home/runner/go/bin/templ generate -path ${{ matrix.framework }}
+          /home/runner/go/bin/templ generate -path ${{ matrix.framework }}
 
       - name: golangci-lint
         run: | 
