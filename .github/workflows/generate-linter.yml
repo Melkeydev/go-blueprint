@@ -53,7 +53,7 @@ jobs:
         run: /home/runner/go/bin/templ generate -path ${{ matrix.framework }}
 
       - name: golangci-lint
-        run: golangci-lint run --timeout=5m ${{ matrix.framework }}/...
+        run: golangci-lint run --timeout=5m ${{ matrix.framework }}
       - name: remove templates
         run: rm -rf ${{ matrix.framework }}
 
