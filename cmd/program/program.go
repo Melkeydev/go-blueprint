@@ -122,8 +122,8 @@ func (p *Project) ExitCLI(tprogram *tea.Program) {
 		// logo render here
 		if err := tprogram.ReleaseTerminal(); err != nil {
 			log.Fatal(err)
-			os.Exit(1)
 		}
+		os.Exit(1)
 	}
 }
 
