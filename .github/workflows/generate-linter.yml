@@ -5,20 +5,7 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  install_dependencies:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.22.2'
-      - name: Install Dependencies
-        run: go mod download
-      - name: Install golangci-lint
-        run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.57.2
   framework_matrix:
-    needs: install_dependencies
     strategy:
       matrix:
         framework:
@@ -31,15 +18,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # - name: Setup Go
-      #   uses: actions/setup-go@v5
-      #   with:
-      #     go-version: '1.22.2'
-      # - name: Install golangci-lint
-      #   run: |
-      #     go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.57.2
-      #     go version
-      #     golangci-lint --version
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22.2'
+      - name: Install golangci-lint
+        run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.57.2
       - name: Commit report
         run: |
           git config --global user.name 'testname'
