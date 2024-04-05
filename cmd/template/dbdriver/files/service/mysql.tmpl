@@ -66,7 +66,6 @@ func (s *service) Health() map[string]string {
 	if err != nil {
 		stats["status"] = "down"
 		stats["error"] = fmt.Sprintf("db down: %v", err)
-		stats["message"] = fmt.Sprintf("%v", err)
 		log.Fatalf(fmt.Sprintf("db down: %v", err)) // Log the error and terminate the program
 		return stats
 	}
