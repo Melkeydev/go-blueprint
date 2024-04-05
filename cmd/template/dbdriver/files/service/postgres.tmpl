@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -95,4 +96,3 @@ func (s *service) Health() map[string]string {
 
 	return stats
 }
-
