@@ -1,0 +1,8 @@
+name: Update htmx version
+
+on:
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
