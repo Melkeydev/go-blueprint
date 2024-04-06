@@ -13,7 +13,7 @@ import (
 )
 
 type Service interface {
-	Health() map[string]string
+	Health() (map[string]string, error)
 }
 
 type service struct {
@@ -28,26 +28,26 @@ var (
 	host     = os.Getenv("DB_HOST")
 )
 
-func New() Service {
+func New() (Service, error) {
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", username, password, host, port, database)
 	db, err := sql.Open("pgx", connStr)
 	if err != nil {
-		log.Fatal(err)
+		return nil, fmt.Errorf("error connecting to db: %w", err)
 	}
 	s := &service{db: db}
-	return s
+	return s, nil
 }
 
-func (s *service) Health() map[string]string {
+func (s *service) Health() (map[string]string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
 	err := s.db.PingContext(ctx)
 	if err != nil {
-		log.Fatalf(fmt.Sprintf("db down: %v", err))
+		return nil, fmt.Errorf("error pinging db: %w", err)
 	}
 
 	return map[string]string{
 		"message": "It's healthy",
-	}
+	}, nil
 }
