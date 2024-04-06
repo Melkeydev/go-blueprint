@@ -3,7 +3,6 @@ package database
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"time"
 
@@ -13,7 +12,7 @@ import (
 )
 
 type Service interface {
-	Health() map[string]string
+	Health() (map[string]string, error)
 }
 
 type service struct {
@@ -26,28 +25,24 @@ var (
 	//database = os.Getenv("DB_DATABASE")
 )
 
-func New() Service {
+func New() (Service, error) {
 	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:%s", host, port)))
-
 	if err != nil {
-		log.Fatal(err)
-
+		return nil, fmt.Errorf("error connecting to db: %w", err)
 	}
 	return &service{
 		db: client,
-	}
+	}, nil
 }
 
-func (s *service) Health() map[string]string {
+func (s *service) Health() (map[string]string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
-
 	err := s.db.Ping(ctx, nil)
 	if err != nil {
-		log.Fatalf(fmt.Sprintf("db down: %v", err))
+		return nil, fmt.Errorf("db down: %w", err)
 	}
-
 	return map[string]string{
 		"message": "It's healthy",
-	}
+	}, nil
 }
