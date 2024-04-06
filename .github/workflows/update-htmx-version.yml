@@ -42,6 +42,7 @@ jobs:
         with:
           prettier_options: cmd/template/advanced/files/htmx/htmx.min.js
           dry: True
+        continue-on-error: true
         if: steps.compare_versions.outputs.release_changed == 'false'
 
       - name: Create tmpl after Prettify
