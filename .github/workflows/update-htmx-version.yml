@@ -34,19 +34,19 @@ jobs:
           fi
 
       - name: dump latest htmx version
-        run: curl -L https://unpkg.com/htmx.org@latest -o cmd/template/advanced/files/htmx/htmx.min.js.tmpl
+        run: curl -L https://unpkg.com/htmx.org@latest -o cmd/template/advanced/files/htmx/htmx.min.js
         if: steps.compare_versions.outputs.release_changed == 'false'
 
       - name: Prettify code
         uses: creyD/prettier_action@v4.3
         with:
-          prettier_options: cmd/template/advanced/files/htmx/htmx.min.js.tmpl
+          prettier_options: cmd/template/advanced/files/htmx/htmx.min.js
           dry: True
         if: steps.compare_versions.outputs.release_changed == 'false'
 
-      # - name: Create tmpl after Prettify
-      #   run: mv cmd/template/advanced/files/htmx/htmx.min.js cmd/template/advanced/files/htmx/htmx.min.js.tmpl
-      #   if: steps.compare_versions.outputs.release_changed == 'true'
+      - name: Create tmpl after Prettify
+        run: mv cmd/template/advanced/files/htmx/htmx.min.js cmd/template/advanced/files/htmx/htmx.min.js.tmpl
+        if: steps.compare_versions.outputs.release_changed == 'true'
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
