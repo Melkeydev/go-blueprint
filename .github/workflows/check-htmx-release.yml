@@ -33,7 +33,7 @@ jobs:
           fi
 
       - name: Call workflow to build code
-        if: steps.compare_versions.outputs.release_changed == 'true'
+        if: steps.compare_versions.outputs.release_changed == 'false'
         uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: update-htmx-version.yml
