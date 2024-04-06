@@ -38,11 +38,9 @@ jobs:
         if: steps.compare_versions.outputs.release_changed == 'false'
 
       - name: Prettify code
-        uses: creyD/prettier_action@v4.3
-        with:
-          prettier_options: cmd/template/advanced/files/htmx/htmx.min.js
-          dry: True
-        continue-on-error: true
+        run: |
+          npm install --save-dev --save-exact prettier
+          npx prettier --write cmd/template/advanced/files/htmx/htmx.min.js
         if: steps.compare_versions.outputs.release_changed == 'false'
 
       - name: Create tmpl after Prettify
