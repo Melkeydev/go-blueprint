@@ -45,7 +45,7 @@ jobs:
 
       - name: Create tmpl after Prettify
         run: mv cmd/template/advanced/files/htmx/htmx.min.js cmd/template/advanced/files/htmx/htmx.min.js.tmpl
-        if: steps.compare_versions.outputs.release_changed == 'true'
+        if: steps.compare_versions.outputs.release_changed == 'false'
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
