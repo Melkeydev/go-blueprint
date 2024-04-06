@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"log"
 	"os"
 	"time"
 
@@ -13,7 +12,7 @@ import (
 )
 
 type Service interface {
-	Health() map[string]string
+	Health() (map[string]string, error)
 }
 
 type service struct {
@@ -28,32 +27,29 @@ var (
 	host     = os.Getenv("DB_HOST")
 )
 
-func New() Service {
+func New() (Service, error) {
 	// Opening a driver typically will not attempt to connect to the database.
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", username, password, host, port, dbname))
 	if err != nil {
 		// This will not be a connection error, but a DSN parse error or
 		// another initialization error.
-		log.Fatal(err)
+		return nil, fmt.Errorf("error connecting to db: %w", err)
 	}
 	db.SetConnMaxLifetime(0)
 	db.SetMaxIdleConns(50)
 	db.SetMaxOpenConns(50)
-
 	s := &service{db: db}
-	return s
+	return s, nil
 }
 
-func (s *service) Health() map[string]string {
+func (s *service) Health() (map[string]string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
-
 	err := s.db.PingContext(ctx)
 	if err != nil {
-		log.Fatalf(fmt.Sprintf("db down: %v", err))
+		return nil, fmt.Errorf("error pinging db: %w", err)
 	}
-
 	return map[string]string{
 		"message": "It's healthy",
-	}
+	}, nil
 }
