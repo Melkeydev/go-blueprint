@@ -3,17 +3,16 @@ package database
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	_ "github.com/joho/godotenv/autoload"
-	"github.com/redis/go-redis/v9"
 )
 
 type Service interface {
-	Health() map[string]string
+	Health() (map[string]string, error)
 }
 
 type service struct {
@@ -27,10 +26,10 @@ var (
 	database = os.Getenv("DB_DATABASE")
 )
 
-func New() Service {
+func New() (Service, error) {
 	num, err := strconv.Atoi(database)
 	if err != nil {
-		log.Fatalf(fmt.Sprintf("database incorrect %v", err))
+		return nil, fmt.Errorf("database incorrect: %w", err)
 	}
 
 	fullAddress := fmt.Sprintf("%s:%s", address, port)
@@ -43,24 +42,22 @@ func New() Service {
 
 	s := &service{db: rdb}
 
-	return s
+	return s, nil
 }
 
-func (s *service) Health() map[string]string {
+func (s *service) Health() (map[string]string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
 	result, err := s.db.Ping(ctx).Result()
-
 	if err != nil {
-		log.Fatalf(fmt.Sprintf("db down: %v", err))
+		return nil, fmt.Errorf("db down: %w", err)
 	}
-
-  if result != "PONG" {
-    log.Fatalf(fmt.Sprintf("Unexpected ping response: %s", result))
-  }
+	if result != "PONG" {
+		return nil, fmt.Errorf("unexpected ping response: %s", result)
+	}
 
 	return map[string]string{
 		"message": "It's healthy",
-	}
+	}, nil
 }
