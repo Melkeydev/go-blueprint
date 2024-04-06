@@ -40,7 +40,7 @@ jobs:
       - name: Prettify code
         uses: creyD/prettier_action@v4.3
         with:
-          prettier_options: --write cmd/template/advanced/files/htmx/htmx.mini.js
+          prettier_options: --write cmd/template/advanced/files/htmx/htmx.min.js
         if: steps.compare_versions.outputs.release_changed == 'false'
 
       - name: Create tmpl after Prettify
