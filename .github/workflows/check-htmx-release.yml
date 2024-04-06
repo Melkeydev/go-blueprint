@@ -1,8 +1,9 @@
 name: Check for new htmx release
 
 on:
-  schedule:
-    - cron: '0 0 * * Sun'
+  # schedule:
+  #   - cron: '0 0 * * Sun'
+  push:
   workflow_dispatch:
 
 jobs:
