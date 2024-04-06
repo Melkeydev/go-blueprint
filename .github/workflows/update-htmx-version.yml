@@ -1,9 +1,8 @@
 name: Check for new htmx release
 
 on:
-  push:
-  # schedule:
-  #   - cron: '0 0 * * Sun'
+  schedule:
+    - cron: '0 0 * * Sun'
 
 jobs:
   check_release:
@@ -35,7 +34,7 @@ jobs:
 
       - name: dump latest htmx version
         run: curl -L https://unpkg.com/htmx.org@latest -o cmd/template/advanced/files/htmx/htmx.min.js
-        if: steps.compare_versions.outputs.release_changed == 'false'
+        if: steps.compare_versions.outputs.release_changed == 'true'
 
       - name: Prettify code
         run: |
@@ -44,11 +43,11 @@ jobs:
           rm -rf node_modules
           rm package-lock.json
           rm package.json
-        if: steps.compare_versions.outputs.release_changed == 'false'
+        if: steps.compare_versions.outputs.release_changed == 'true'
 
       - name: Create tmpl after Prettify
         run: mv cmd/template/advanced/files/htmx/htmx.min.js cmd/template/advanced/files/htmx/htmx.min.js.tmpl
-        if: steps.compare_versions.outputs.release_changed == 'false'
+        if: steps.compare_versions.outputs.release_changed == 'true'
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
@@ -58,4 +57,4 @@ jobs:
           body: New version is available. This is an automatic PR to update changes.
           branch: htmx-version-update
           base: main
-        if: steps.compare_versions.outputs.release_changed == 'false'
+        if: steps.compare_versions.outputs.release_changed == 'true'
