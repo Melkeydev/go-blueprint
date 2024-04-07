@@ -1,6 +1,11 @@
 package server
 
 import (
+	"errors"
+	"log"
+	"runtime/debug"
+
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2"
   {{if ne .DBDriver "none"}}
 	"{{.ProjectName}}/internal/database"
@@ -20,10 +25,54 @@ func New() *FiberServer {
 		ServerHeader:            "{{.ProjectName}}",
 		AppName:                 "{{.ProjectName}}",
 	}),
+
+	// Recovery middleware setup
+	recoverMiddleware := recover.New(recover.Config{
+		EnableStackTrace: true,
+		StackTraceHandler: func(c *fiber.Ctx, e interface{}) {
+			// Note: this can be customized, I am using log.PrintF it just for example
+			log.Printf("Panic occurred: %v", e)
+			log.Printf("Stack trace:\n%s", debug.Stack())
+		},
+	})
+
+	// Apply the recover middleware to the fiber.App instance
+	// Note: This is a trick; for example, you can extract any functionality
+	// that the Fiber framework uses with `App.Use` into a modular structure (e.g., each function is smaller as my idiomatic go style), like this
+	server.App.Use(errorHandler, recoverMiddleware)
   {{if ne .DBDriver "none"}}
 		db:  database.New(),
   {{end}}
 	}
 
 	return server
+}
+
+// errorHandler is the error handling middleware after other middleware
+func errorHandler(c *fiber.Ctx) error {
+	// Call the next route handler
+	err := c.Next()
+
+	// Check if there was an error returned by the route handler
+	if err != nil {
+		// Status code defaults to 500
+		code := fiber.StatusInternalServerError
+
+		// Retrieve the custom status code if it's a *fiber.Error
+		var e *fiber.Error
+		if errors.As(err, &e) {
+			code = e.Code
+		}
+
+		// Set Content-Type: application/json
+		c.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
+
+		// Return status code with JSON error message
+		return c.Status(code).JSON(fiber.Map{
+			"error": fiber.ErrInternalServerError.Message,
+		})
+	}
+
+	// No error, continue with the next middleware
+	return nil
 }
