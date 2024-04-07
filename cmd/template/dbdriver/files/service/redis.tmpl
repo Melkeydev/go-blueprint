@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"sync"
 	"time"
 
 	_ "github.com/joho/godotenv/autoload"
@@ -25,25 +26,31 @@ var (
 	port     = os.Getenv("DB_PORT")
 	password = os.Getenv("DB_PASSWORD")
 	database = os.Getenv("DB_DATABASE")
+	dbInstance *service
+	once     sync.Once
 )
 
 func New() Service {
-	num, err := strconv.Atoi(database)
-	if err != nil {
-		log.Fatalf(fmt.Sprintf("database incorrect %v", err))
-	}
+	once.Do(func() {
+		num, err := strconv.Atoi(database)
+		if err != nil {
+			log.Fatalf(fmt.Sprintf("database incorrect %v", err))
+		}
 
-	fullAddress := fmt.Sprintf("%s:%s", address, port)
+		fullAddress := fmt.Sprintf("%s:%s", address, port)
 
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     fullAddress,
-		Password: password,
-		DB:       num,
+		rdb := redis.NewClient(&redis.Options{
+			Addr:     fullAddress,
+			Password: password,
+			DB:       num,
+		})
+
+		dbInstance = &service{
+			db: rdb,
+		}
 	})
 
-	s := &service{db: rdb}
-
-	return s
+	return dbInstance
 }
 
 func (s *service) Health() map[string]string {
