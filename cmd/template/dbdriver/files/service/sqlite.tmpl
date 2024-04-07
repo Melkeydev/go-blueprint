@@ -38,7 +38,9 @@ func New() Service {
 		log.Fatal(err)
 	}
 
-	dbInstance = &service{db: db}
+	dbInstance = &service{
+		db: db,
+	}
 	return dbInstance
 }
 
