@@ -26,6 +26,11 @@ func New() *FiberServer {
 		AppName:                 "{{.ProjectName}}",
 	}),
 
+  {{if ne .DBDriver "none"}}
+		db:  database.New(),
+  {{end}}
+	}
+
 	// Recovery middleware setup
 	recoverMiddleware := recover.New(recover.Config{
 		EnableStackTrace: true,
@@ -40,10 +45,6 @@ func New() *FiberServer {
 	// Note: This is a trick; for example, you can extract any functionality
 	// that the Fiber framework uses with `App.Use` into a modular structure (e.g., each function is smaller as my idiomatic go style), like this
 	server.App.Use(errorHandler, recoverMiddleware)
-  {{if ne .DBDriver "none"}}
-		db:  database.New(),
-  {{end}}
-	}
 
 	return server
 }
