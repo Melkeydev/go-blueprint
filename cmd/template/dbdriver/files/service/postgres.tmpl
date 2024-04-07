@@ -26,16 +26,23 @@ var (
 	username = os.Getenv("DB_USERNAME")
 	port     = os.Getenv("DB_PORT")
 	host     = os.Getenv("DB_HOST")
+	dbInstance *service
 )
 
 func New() Service {
+	// Reuse Connection
+	if dbInstance != nil {
+		return dbInstance
+	}
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", username, password, host, port, database)
 	db, err := sql.Open("pgx", connStr)
 	if err != nil {
 		log.Fatal(err)
 	}
-	s := &service{db: db}
-	return s
+	dbInstance = &service{
+		db: db,
+	}
+	return dbInstance
 }
 
 func (s *service) Health() map[string]string {
