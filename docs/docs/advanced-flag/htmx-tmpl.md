@@ -5,12 +5,14 @@ The WEB directory contains the web-related components and assets for the project
 ```
 web/
 │
-├── js/
-│   └── htmx.min.js         # htmx library for dynamic HTML content
+│
+├── assets/
+│   └── js/
+│       └── htmx.min.js     # htmx library for dynamic HTML content
 │
 ├── base.templ              # Base template for HTML structure
 ├── base_templ.go           # Generated Go code for base template
-├── efs.go                  # Embeds static files (e.g., JavaScript) into the Go binary
+├── efs.go                  # Embeds static files into the Go binary
 │
 ├── hello.go                # Handler for the Hello Web functionality
 ├── hello.templ             # Template for rendering the Hello form and post data

@@ -20,7 +20,8 @@ watching .
 watching cmd
 watching cmd/api
 watching cmd/web
-watching cmd/web/js
+watching cmd/web/assets
+watching cmd/web/assets/js
 watching internal
 watching internal/database
 watching internal/server

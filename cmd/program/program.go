@@ -426,19 +426,19 @@ func (p *Project) CreateMainFile() error {
 			return err
 		}
 
-		err = os.Mkdir(fmt.Sprintf("%s/%s/js", projectPath, cmdWebPath), 0755)
+		err = os.MkdirAll(fmt.Sprintf("%s/%s/assets/js", projectPath, cmdWebPath), 0755)
 		if err != nil {
 			cobra.CheckErr(err)
 		}
 
-		htmxMinJsFile, err := os.Create(fmt.Sprintf("%s/%s/js/htmx.min.js", projectPath, cmdWebPath))
+		htmxMinJsFile, err := os.Create(fmt.Sprintf("%s/%s/assets/js/htmx.min.js", projectPath, cmdWebPath))
 		if err != nil {
 			cobra.CheckErr(err)
 		}
 		defer htmxMinJsFile.Close()
 
 		htmxMinJsTemplate := advanced.HtmxJSTemplate()
-		err = os.WriteFile(fmt.Sprintf("%s/%s/js/htmx.min.js", projectPath, cmdWebPath), htmxMinJsTemplate, 0644)
+		err = os.WriteFile(fmt.Sprintf("%s/%s/assets/js/htmx.min.js", projectPath, cmdWebPath), htmxMinJsTemplate, 0644)
 		if err != nil {
 			return err
 		}

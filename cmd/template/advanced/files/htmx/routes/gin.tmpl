@@ -1,4 +1,4 @@
-r.Static("/js", "./cmd/web/js")
+r.Static("/assets", "./cmd/web/assets")
 
 r.GET("/web", func(c *gin.Context) {
   templ.Handler(web.HelloForm()).ServeHTTP(c.Writer, c.Request)
