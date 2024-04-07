@@ -46,7 +46,9 @@ func New() Service {
 	db.SetMaxIdleConns(50)
 	db.SetMaxOpenConns(50)
 
-	dbInstance = &service{db: db}
+	dbInstance = &service{
+		db: db,
+	}
 	return dbInstance
 }
 
