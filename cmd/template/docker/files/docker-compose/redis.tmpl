@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   redis:
-    image: redis:latest
+    image: redis:7.2.4
     restart: always
     ports:
       - "${DB_PORT}:6379"
