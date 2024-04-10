@@ -1,4 +1,4 @@
-s.App.Static("/js", "./cmd/web/js")
+s.App.Static("/assets", "./cmd/web/assets")
 
 s.App.Get("/web", adaptor.HTTPHandler(templ.Handler(web.HelloForm())))
 

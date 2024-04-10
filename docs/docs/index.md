@@ -27,37 +27,38 @@ Here's an overview of the project structure created by Go Blueprint when all opt
 / (Root)
 ├── .github/
 │   └── workflows/
-│       ├── go-test.yml     # GitHub Actions workflow for running tests.
-│       └── release.yml     # GitHub Actions workflow for releasing the application.
+│       ├── go-test.yml           # GitHub Actions workflow for running tests.
+│       └── release.yml           # GitHub Actions workflow for releasing the application.
 ├── cmd/
 │   ├── api/            
-│   │   └── main.go         # Main file for starting the server.
-│   └── web/             
-│       ├── js/         
-│       │   └── htmx.min.js # HTMX library for dynamic HTML content 
-│       ├── base.templ      # Base HTML template file.
-│       ├── base.templ.go   # Generated Go code for base template
-│       ├── efs.go          # File for handling file system operations.
-│       ├── hello.go        # Handler for serving "hello" endpoint.
-│       └── hello.templ     # Template file for the "hello" endpoint.
-|       └── hello.templ.go  # Generated Go code for the "hello" template. 
+│   │   └── main.go               # Main file for starting the server.
+│   └── web/
+│       ├── assets/               # Main file for starting the server.
+│       │   └── js/         
+│       │       └── htmx.min.js   # HTMX library for dynamic HTML content 
+│       ├── base.templ            # Base HTML template file.
+│       ├── base.templ.go         # Generated Go code for base template
+│       ├── efs.go                # File for handling file system operations.
+│       ├── hello.go              # Handler for serving "hello" endpoint.
+│       ├── hello.templ           # Template file for the "hello" endpoint.
+│       └── hello.templ.go        # Generated Go code for the "hello" template. 
 ├── internal/   
 │   ├── database/           
-│   │   └── database.go     # File containing functions related to database operations.
+│   │   └── database.go           # File containing functions related to database operations.
 │   └── server/             
-│       ├── routes.go       # File defining HTTP routes.
-│       └── server.go       # Main server logic.
+│       ├── routes.go             # File defining HTTP routes.
+│       └── server.go             # Main server logic.
 ├── tests/    
-│   └── handler_test.go     # Test file for testing HTTP handlers.
-├── .air.toml               # Configuration file for Air, a live-reload utility.
-├── docker-compose.yml      # Docker Compose configuration for defining DB config.
-├── .env                    # Environment configuration file.
-├── .gitignore              # File specifying which files and directories to ignore in Git.
-├── go.mod                  # Go module file for managing dependencies.
-├── .goreleaser.yml         # Configuration file for GoReleaser, a tool for building and releasing binaries.
-├── go.sum                  # Go module file containing checksums for dependencies.
-├── Makefile                # Makefile for defining and running commands.
-└── README.md               # Project's README file containing essential information about the project.
+│   └── handler_test.go           # Test file for testing HTTP handlers.
+├── .air.toml                     # Configuration file for Air, a live-reload utility.
+├── docker-compose.yml            # Docker Compose configuration for defining DB config.
+├── .env                          # Environment configuration file.
+├── .gitignore                    # File specifying which files and directories to ignore in Git.
+├── go.mod                        # Go module file for managing dependencies.
+├── .goreleaser.yml               # Configuration file for GoReleaser, a tool for building and releasing binaries.
+├── go.sum                        # Go module file containing checksums for dependencies.
+├── Makefile                      # Makefile for defining and running commands.
+└── README.md                     # Project's README file containing essential information about the project.
 ```
 
 This structure provides a comprehensive organization of your project, separating source code, tests, configurations and documentation.
