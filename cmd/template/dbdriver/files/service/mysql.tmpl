@@ -21,14 +21,20 @@ type service struct {
 }
 
 var (
-	dbname   = os.Getenv("DB_DATABASE")
-	password = os.Getenv("DB_PASSWORD")
-	username = os.Getenv("DB_USERNAME")
-	port     = os.Getenv("DB_PORT")
-	host     = os.Getenv("DB_HOST")
+	dbname     = os.Getenv("DB_DATABASE")
+	password   = os.Getenv("DB_PASSWORD")
+	username   = os.Getenv("DB_USERNAME")
+	port       = os.Getenv("DB_PORT")
+	host       = os.Getenv("DB_HOST")
+	dbInstance *service
 )
 
 func New() Service {
+	// Reuse Connection
+	if dbInstance != nil {
+		return dbInstance
+	}
+
 	// Opening a driver typically will not attempt to connect to the database.
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", username, password, host, port, dbname))
 	if err != nil {
@@ -40,8 +46,10 @@ func New() Service {
 	db.SetMaxIdleConns(50)
 	db.SetMaxOpenConns(50)
 
-	s := &service{db: db}
-	return s
+	dbInstance = &service{
+		db: db,
+	}
+	return dbInstance
 }
 
 func (s *service) Health() map[string]string {
