@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"sync"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -25,21 +24,18 @@ var (
 	host     = os.Getenv("DB_HOST")
 	port     = os.Getenv("DB_PORT")
 	//database = os.Getenv("DB_DATABASE")
-	dbInstance *service
-	once       sync.Once
 )
 
 func New() Service {
-	// Note: This is a different method for MongoDB compared to MySQL because, unlike MongoDB, you don't need to set `sync.Once` for MySQL.
-	once.Do(func() {
-		client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:%s", host, port)))
+	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:%s", host, port)))
 
-		if err != nil {
-			log.Fatal(err)
-		}
-		dbInstance = &service{db: client}
-	})
-	return dbInstance
+	if err != nil {
+		log.Fatal(err)
+
+	}
+	return &service{
+		db: client,
+	}
 }
 
 func (s *service) Health() map[string]string {
