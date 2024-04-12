@@ -37,8 +37,8 @@ func (s *FiberServer) HelloWorldHandler(c *fiber.Ctx) error {
 }
 
 // NewRateLimiter creates and returns a rate limiter middleware.
-// max specifies the maximum number of requests allowed per IP.
-// expiration sets the duration until the rate limit resets for each IP.
+// max specifies the maximum number of requests allowed per IP or custom key such as API Keys.
+// expiration sets the duration until the rate limit resets for each IP or custom key such as API Keys.
 func NewRateLimiter(max int, expiration time.Duration) fiber.Handler {
 	// Create a new rate limiter using the limiter package.
 	return limiter.New(limiter.Config{
