@@ -13,7 +13,8 @@ import (
 )
 
 func (s *FiberServer) RegisterFiberRoutes() {
-	rateLimiter := setRouteRateLimiter()
+	// Note: This can now be customized using parameters, making it easier to maintain.
+	rateLimiter := NewRateLimiter(5, 1 * time.Second)
 	s.App.Get("/", s.HelloWorldHandler)
 	// Note: The rateLimiter requires a second parameter because it won't work if placed after the handler.
 	s.App.Get("/limiter", rateLimiter, s.HelloWorldHandler)
@@ -35,24 +36,18 @@ func (s *FiberServer) HelloWorldHandler(c *fiber.Ctx) error {
 	return c.JSON(resp)
 }
 
-// setRouteRateLimiter creates and returns a rate limiter middleware configured.
-// It limits the number of requests and defines a custom response for when the rate limit is exceeded.
-func setRouteRateLimiter() fiber.Handler {
+// NewRateLimiter creates and returns a rate limiter middleware.
+// max specifies the maximum number of requests allowed per IP.
+// expiration sets the duration until the rate limit resets for each IP.
+func NewRateLimiter(max int, expiration time.Duration) fiber.Handler {
 	// Create a new rate limiter using the limiter package.
 	return limiter.New(limiter.Config{
-		// Set the maximum number of requests allowed per IP.
-		// In this example, a maximum of 5 requests per IP is allowed.
-		Max: 5,
-
-		// Set the expiration time for the rate limit.
-		// The limit expires after 1 second, allowing new requests from the same IP after that time.
-		Expiration: 1 * time.Second,
-
-		// Define a custom function to handle the case when the rate limit is reached.
+		Max:        max,        // Maximum number of requests per IP or custom key such as API Keys.
+		Expiration: expiration, // Reset duration for the rate limit.
 		LimitReached: func(c *fiber.Ctx) error {
 			// Return a "Too Many Requests" status code (429) and a JSON response indicating the error.
 			return c.Status(fiber.StatusTooManyRequests).JSON(fiber.Map{
-				"error": "Too many requests, please try again later.",
+				"error": fiber.ErrTooManyRequests.Message,
 			})
 		},
 	})
