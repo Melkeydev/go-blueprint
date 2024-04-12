@@ -40,7 +40,7 @@ func New() Service {
 	if err != nil {
 		log.Fatal(err)
 	}
-db := stdlib.OpenDBFromPool(pool)
+	db := stdlib.OpenDBFromPool(pool)
 	dbInstance = &service{
 		db: db,
 	}
