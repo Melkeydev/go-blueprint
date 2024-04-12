@@ -13,7 +13,7 @@ import (
 )
 
 func (s *FiberServer) RegisterFiberRoutes() {
-	// Note: This can now be customized using parameters, making it easier to maintain.
+	// Note: This can now be customized using parameters, making it easier to maintain and reusable.
 	rateLimiter := NewRateLimiter(5, 1 * time.Second)
 	s.App.Get("/", s.HelloWorldHandler)
 	// Note: The rateLimiter requires a second parameter because it won't work if placed after the handler.
