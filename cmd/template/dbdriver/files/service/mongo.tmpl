@@ -25,14 +25,14 @@ var (
 	//database = os.Getenv("DB_DATABASE")
 )
 
-func New() (Service, error) {
+func New() Service {
 	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:%s", host, port)))
 	if err != nil {
-		return nil, fmt.Errorf("error connecting to db: %w", err)
+		panic(fmt.Errorf("error connecting to db: %w", err))
 	}
 	return &service{
 		db: client,
-	}, nil
+	}
 }
 
 func (s *service) Health() (map[string]string, error) {
