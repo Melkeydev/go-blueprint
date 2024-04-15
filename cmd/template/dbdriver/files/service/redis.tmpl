@@ -26,10 +26,10 @@ var (
 	database = os.Getenv("DB_DATABASE")
 )
 
-func New() (Service, error) {
+func New() Service {
 	num, err := strconv.Atoi(database)
 	if err != nil {
-		return nil, fmt.Errorf("database incorrect: %w", err)
+		panic(fmt.Errorf("database incorrect: %w", err))
 	}
 
 	fullAddress := fmt.Sprintf("%s:%s", address, port)
@@ -42,7 +42,7 @@ func New() (Service, error) {
 
 	s := &service{db: rdb}
 
-	return s, nil
+	return s
 }
 
 func (s *service) Health() (map[string]string, error) {
