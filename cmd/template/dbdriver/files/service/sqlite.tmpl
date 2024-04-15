@@ -24,13 +24,17 @@ var (
 	dburl = os.Getenv("DB_URL")
 )
 
-func New() (Service, error) {
+func New() Service {
 	db, err := sql.Open("sqlite3", dburl)
 	if err != nil {
-		return nil, fmt.Errorf("error connecting to db: %w", err)
+		panic(fmt.Errorf("error connecting to db: %w", err))
 	}
-	s := &service{db: db}
-	return s, nil
+	db.SetConnMaxLifetime(0)
+	db.SetMaxIdleConns(50)
+	db.SetMaxOpenConns(50)
+	return &service{
+		db: db,
+	}
 }
 
 func (s *service) Health() (map[string]string, error) {
