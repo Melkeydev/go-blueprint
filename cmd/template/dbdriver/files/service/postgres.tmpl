@@ -109,6 +109,6 @@ func (s *service) Health() map[string]string {
 // If the connection is successfully closed, it returns nil.
 // If an error occurs while closing the connection, it returns the error.
 func (s *service) Close() error {
-	log.Printf("Disconnected from database: %s", DB_DATABASE)
+	log.Printf("Disconnected from database: %s", database)
 	return s.db.Close()
 }
