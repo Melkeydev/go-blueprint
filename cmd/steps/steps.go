@@ -105,7 +105,7 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 					},
 					{
 						Flag:  "Websocket",
-						Title: "Weboscket endpoint",
+						Title: "Websocket endpoint",
 						Desc:  "Add a websocket endpoint",
 					},
 				},
