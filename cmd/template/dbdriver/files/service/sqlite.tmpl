@@ -13,8 +13,15 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 )
 
+// Service represents a service that interacts with a database.
 type Service interface {
+	// Health returns a map of health status information.
+	// The keys and values in the map are service-specific.
 	Health() map[string]string
+
+	// Close terminates the database connection.
+	// It returns an error if the connection cannot be closed.
+	Close() error
 }
 
 type service struct {
@@ -94,4 +101,13 @@ func (s *service) Health() map[string]string {
 	}
 
 	return stats
+}
+
+// Close closes the database connection.
+// It logs a message indicating the disconnection from the specific database.
+// If the connection is successfully closed, it returns nil.
+// If an error occurs while closing the connection, it returns the error.
+func (s *service) Close() error {
+	log.Printf("Disconnected from database: %s", dburl)
+	return s.db.Close()
 }
