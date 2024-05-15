@@ -111,6 +111,7 @@ You can now use the `--advanced` flag when running the `create` command to get a
 - [HTMX](https://htmx.org/) support using [Templ](https://templ.guide/)
 - CI/CD workflow setup using [Github Actions](https://docs.github.com/en/actions)
 - [Websocket](https://pkg.go.dev/nhooyr.io/websocket) sets up a websocket endpoint
+- [Tailwind](https://tailwindcss.com/) Css framework
 
 <a id="blueprint-ui"></a>
 
@@ -165,9 +166,14 @@ For the websocket:
 go-blueprint create --advanced --feature websocket
 ```
 
+For Tailwind:
+```bash
+go-blueprint create --advanced --feature tailwind
+```
+
 Or all features at once:
 ```bash
-go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket
+go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind
 ```
 
 <p align="center">

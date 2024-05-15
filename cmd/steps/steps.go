@@ -108,6 +108,11 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 						Title: "Websocket endpoint",
 						Desc:  "Add a websocket endpoint",
 					},
+					{
+						Flag:  "Tailwind",
+						Title: "TailwindCSS",
+						Desc:  "A utility-first CSS framework",
+					},
 				},
 			},
 		},
