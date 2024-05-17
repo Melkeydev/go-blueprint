@@ -85,6 +85,11 @@ func (s *service) Health() map[string]string {
 	poolStats := s.db.PoolStats()
 
 	// Prepare the stats map with Redis server information and pool statistics.
+	// Note: The "stats" map in the code uses string keys and values,
+	// which is suitable for structuring and serializing the data for the frontend (e.g., JSON, XML, HTMX).
+	// Using string types allows for easy conversion and compatibility with various data formats,
+	// making it convenient to create health stats for monitoring or other purposes.
+	// Also note that any raw "memory" (e.g., used_memory) value here is in bytes and can be converted to megabytes or gigabytes as a float64.
 	stats := map[string]string{
 		"redis_status":               "up",
 		"redis_message":              "It's healthy",
