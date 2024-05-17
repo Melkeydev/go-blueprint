@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -103,11 +104,11 @@ func (s *service) Health() map[string]string {
 	}
 
 	// Calculate the number of active connections.
-	activeConns := poolStats.TotalConns - poolStats.IdleConns
-	if activeConns < 0 {
-		activeConns = 0
-	}
-	stats["redis_active_connections"] = strconv.FormatUint(uint64(activeConns), 10)
+	// Note: We use math.Max to ensure that activeConns is always non-negative,
+	// avoiding the need for an explicit check for negative values.
+	// This prevents a potential underflow situation.
+	activeConns := uint64(math.Max(float64(poolStats.TotalConns-poolStats.IdleConns), 0))
+	stats["redis_active_connections"] = strconv.FormatUint(activeConns, 10)
 
 	// Calculate the pool size percentage.
 	poolSize := s.db.Options().PoolSize
