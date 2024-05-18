@@ -2,8 +2,7 @@ name: Check for new htmx release
 
 on:
   schedule:
-    # - cron: '0 0 * * Sun'
-    - cron: '*/5  * * * *'
+    - cron: '0 0 * * Sun'
 
 jobs:
   check_release:
