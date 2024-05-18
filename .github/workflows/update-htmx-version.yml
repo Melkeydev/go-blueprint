@@ -2,7 +2,8 @@ name: Check for new htmx release
 
 on:
   schedule:
-    - cron: '0 0 * * Sun'
+    # - cron: '0 0 * * Sun'
+    - cron: '*/5 * * * *'
 
 jobs:
   check_release:
@@ -14,17 +15,19 @@ jobs:
         run: |
           VERSION_FILE=$(curl https://raw.githubusercontent.com/Melkeydev/go-blueprint/main/cmd/template/advanced/files/htmx/htmx.min.js.tmpl | grep version | awk -F'"' '{print "v" $2}')
           echo "version file: $VERSION_FILE"
+          echo "::set-output name=version_file::$VERSION_FILE"
 
       - name: Get version from GitHub API
         id: get_version_api
         run: |
           VERSION_API=$(curl -s https://api.github.com/repos/bigskysoftware/htmx/releases/latest | jq -r '.tag_name')
           echo "version api: $VERSION_API"
+          echo "::set-output name=version_api::$VERSION_API"
 
       - name: Compare versions
         id: compare_versions
         run: |
-          if [ "$VERSION_API" != "$VERSION_FILE" ]; then
+          if [ "${{ steps.get_version_api.outputs.version_api }}" != "${{ steps.get_version_file.outputs.version_file }}" ]; then
             echo "release_changed=true" >> $GITHUB_OUTPUT
             echo "Release changed: true"
           else
