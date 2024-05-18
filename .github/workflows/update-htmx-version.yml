@@ -10,19 +10,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Get version from file
         id: get_version_file
         run: |
-          VERSION_FILE=$(curl https://raw.githubusercontent.com/Melkeydev/go-blueprint/main/cmd/template/advanced/files/htmx/htmx.min.js.tmpl | grep version | awk -F'"' '{print "v" $2}')
+          VERSION_FILE=$(curl -s https://raw.githubusercontent.com/Melkeydev/go-blueprint/main/cmd/template/advanced/files/htmx/htmx.min.js.tmpl | grep version | awk -F'"' '{print "v" $2}')
           echo "version file: $VERSION_FILE"
-          echo "version_file=$VERSION_FILE" >> $GITHUB_OUTPUT
+          if [[ "$VERSION_FILE" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "version_file=$VERSION_FILE" >> $GITHUB_OUTPUT
+          else
+            echo "Invalid VERSION_FILE format: $VERSION_FILE" >&2
+            exit 1
+          fi
 
       - name: Get version from GitHub API
         id: get_version_api
         run: |
           VERSION_API=$(curl -s https://api.github.com/repos/bigskysoftware/htmx/releases/latest | jq -r '.tag_name')
           echo "version api: $VERSION_API"
-          echo "version_file=$VERSION_API" >> $GITHUB_OUTPUT
+          if [[ "$VERSION_API" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "version_api=$VERSION_API" >> $GITHUB_OUTPUT
+          else
+            echo "Invalid VERSION_API format: $VERSION_API" >&2
+            exit 1
+          fi
 
       - name: Compare versions
         id: compare_versions
