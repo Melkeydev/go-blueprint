@@ -42,7 +42,8 @@ func New() Service {
 		Addr:     fullAddress,
 		Password: password,
 		DB:       num,
-		// Note: It's important to add this for a secure connection. Most cloud services that offer Redis should already have this configured in their services.
+		// Note: It's important to add this for a secure connection. Most cloud services that offer Redis should already have TLS configured in their services.
+		// So on the client-side, you only need to provide the necessary certificates without configuring TLS again (refer to the rule "Don't Repeat Yourself").
 		// For manual setup, please refer to the Redis documentation: https://redis.io/docs/latest/operate/oss_and_stack/management/security/encryption/
 		TLSConfig: &tls.Config{
 			MinVersion: tls.VersionTLS12,
