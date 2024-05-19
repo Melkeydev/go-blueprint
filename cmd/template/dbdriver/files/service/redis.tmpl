@@ -57,31 +57,40 @@ func (s *service) Health() map[string]string {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second) // Default is now 5s
 	defer cancel()
 
-	// Ping the Redis server to check its availability.
-	result, err := s.db.Ping(ctx).Result()
+	stats := make(map[string]string)
 
+	// Check Redis health and populate the stats map
+	stats = s.checkRedisHealth(ctx, stats)
+
+	return stats
+}
+
+// checkRedisHealth checks the health of the Redis server and adds the relevant statistics to the stats map.
+func (s *service) checkRedisHealth(ctx context.Context, stats map[string]string) map[string]string {
+	// Ping the Redis server to check its availability.
+	pong, err := s.db.Ping(ctx).Result()
+	// Note: By extracting and simplifying like this, `log.Fatalf(fmt.Sprintf("db down: %v", err))` 
+	// can be changed into a normal error instead of a fatal error.
 	if err != nil {
 		log.Fatalf(fmt.Sprintf("db down: %v", err))
 	}
 
-	// Check if the ping response is unexpected.
-	if result != "PONG" {
-		log.Fatalf(fmt.Sprintf("Unexpected ping response: %s", result))
-	}
+	// Redis is up
+	stats["redis_status"] = "up"
+	stats["redis_message"] = "It's healthy"
+	stats["redis_ping_response"] = pong
 
 	// Retrieve Redis server information.
 	info, err := s.db.Info(ctx).Result()
 	if err != nil {
-		return map[string]string{
-			"redis_status":  "up",
-			"redis_message": fmt.Sprintf("Failed to retrieve Redis info: %v", err),
-		}
+		stats["redis_message"] = fmt.Sprintf("Failed to retrieve Redis info: %v", err)
+		return stats
 	}
 
 	// Parse the Redis info response.
 	redisInfo := parseRedisInfo(info)
 
-	// Get the pool statistics of the Redis client.
+	// Get the pool stats of the Redis client.
 	poolStats := s.db.PoolStats()
 
 	// Prepare the stats map with Redis server information and pool statistics.
@@ -90,23 +99,19 @@ func (s *service) Health() map[string]string {
 	// Using string types allows for easy conversion and compatibility with various data formats,
 	// making it convenient to create health stats for monitoring or other purposes.
 	// Also note that any raw "memory" (e.g., used_memory) value here is in bytes and can be converted to megabytes or gigabytes as a float64.
-	stats := map[string]string{
-		"redis_status":               "up",
-		"redis_message":              "It's healthy",
-		"redis_version":              redisInfo["redis_version"],
-		"redis_mode":                 redisInfo["redis_mode"],
-		"redis_connected_clients":    redisInfo["connected_clients"],
-		"redis_used_memory":          redisInfo["used_memory"],
-		"redis_used_memory_peak":     redisInfo["used_memory_peak"],
-		"redis_uptime_in_seconds":    redisInfo["uptime_in_seconds"],
-		"redis_hits_connections":     strconv.FormatUint(uint64(poolStats.Hits), 10),
-		"redis_misses_connections":   strconv.FormatUint(uint64(poolStats.Misses), 10),
-		"redis_timeouts_connections": strconv.FormatUint(uint64(poolStats.Timeouts), 10),
-		"redis_total_connections":    strconv.FormatUint(uint64(poolStats.TotalConns), 10),
-		"redis_idle_connections":     strconv.FormatUint(uint64(poolStats.IdleConns), 10),
-		"redis_stale_connections":    strconv.FormatUint(uint64(poolStats.StaleConns), 10),
-		"redis_max_memory":           redisInfo["maxmemory"],
-	}
+	stats["redis_version"] = redisInfo["redis_version"]
+	stats["redis_mode"] = redisInfo["redis_mode"]
+	stats["redis_connected_clients"] = redisInfo["connected_clients"]
+	stats["redis_used_memory"] = redisInfo["used_memory"]
+	stats["redis_used_memory_peak"] = redisInfo["used_memory_peak"]
+	stats["redis_uptime_in_seconds"] = redisInfo["uptime_in_seconds"]
+	stats["redis_hits_connections"] = strconv.FormatUint(uint64(poolStats.Hits), 10)
+	stats["redis_misses_connections"] = strconv.FormatUint(uint64(poolStats.Misses), 10)
+	stats["redis_timeouts_connections"] = strconv.FormatUint(uint64(poolStats.Timeouts), 10)
+	stats["redis_total_connections"] = strconv.FormatUint(uint64(poolStats.TotalConns), 10)
+	stats["redis_idle_connections"] = strconv.FormatUint(uint64(poolStats.IdleConns), 10)
+	stats["redis_stale_connections"] = strconv.FormatUint(uint64(poolStats.StaleConns), 10)
+	stats["redis_max_memory"] = redisInfo["maxmemory"]
 
 	// Calculate the number of active connections.
 	// Note: We use math.Max to ensure that activeConns is always non-negative,
