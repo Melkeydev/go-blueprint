@@ -54,7 +54,7 @@ func New() Service {
 
 // Health returns the health status and statistics of the Redis server.
 func (s *service) Health() map[string]string {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second) // Default is now 5s
 	defer cancel()
 
 	// Ping the Redis server to check its availability.
