@@ -2,7 +2,6 @@ package database
 
 import (
 	"context"
-	"crypto/tls"
 	"fmt"
 	"log"
 	"math"
@@ -42,9 +41,6 @@ func New() Service {
 		Addr:     fullAddress,
 		Password: password,
 		DB:       num,
-		TLSConfig: &tls.Config{
-			MinVersion: tls.VersionTLS12,
-		},
 	})
 
 	s := &service{db: rdb}
