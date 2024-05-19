@@ -6,3 +6,17 @@ services:
     restart: always
     ports:
       - "${DB_PORT}:6379"
+    # Note: Don't forget to modify the "tls-port", "requirepass", and other relevant settings as needed. This is just a default example.
+    command: >
+      redis-server /usr/local/etc/redis/redis.conf
+      --tls-port 6379
+      --port 0
+      --tls-cert-file /usr/local/etc/redis/redis.crt
+      --tls-key-file /usr/local/etc/redis/redis.key
+      --tls-ca-cert-file /usr/local/etc/redis/ca.crt
+      --requirepass ${DB_PASSWORD} # You can customize this; it's just a default value
+    volumes:
+      - ./redis-conf/redis.conf:/usr/local/etc/redis/redis.conf
+      - ./redis-conf/redis.crt:/usr/local/etc/redis/redis.crt
+      - ./redis-conf/redis.key:/usr/local/etc/redis/redis.key
+      - ./redis-conf/ca.crt:/usr/local/etc/redis/ca.crt
