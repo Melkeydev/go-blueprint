@@ -4,4 +4,4 @@ By visiting the Blueprint UI website at [go-blueprint.dev](https://go-blueprint.
 
 ![BlueprintUI](public/blueprint_ui.png)
 
-This enhances the overall experience of using Go Blueprint by providing a visual representation of project setups and simplifying the command generation process.
+This enhances the overall experience of using Go Blueprint by providing a visual representation of project setups and simplifying the command generation process. Check Blueprint UI [code](https://github.com/briancbarrow/go-blueprint-htmx).
