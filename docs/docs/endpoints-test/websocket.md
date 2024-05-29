@@ -13,7 +13,7 @@ $ websocat ws://localhost:PORT/websocket
 
 Replace `PORT` with the port number on which your server is running.
 
-## Expected Output
+## Sample Output
 Upon successful connection, the client should start receiving timestamp messages from the server every 2 seconds.
 
 ```bash

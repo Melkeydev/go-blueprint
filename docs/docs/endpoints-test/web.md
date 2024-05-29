@@ -5,7 +5,7 @@ Navigate to `http://localhost:PORT/web`
 
 This page contains a form with a single input field and a submit button. Upon submitting the form, "Hello, [input]" will be displayed.
 
-### Sample output
+## Sample output
 
 ![htmx](../public/htmx.png)
 

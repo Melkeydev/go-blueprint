@@ -18,7 +18,7 @@ To test the Hello World endpoint, execute the following curl command:
 curl http://localhost:PORT
 ```
 
-Expected Output:
+Sample Output:
 ```json
 {"message": "Hello World"}
 ```
