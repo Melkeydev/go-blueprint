@@ -30,11 +30,11 @@ Here's an overview of the project structure created by Go Blueprint when all opt
 │       ├── go-test.yml           # GitHub Actions workflow for running tests.
 │       └── release.yml           # GitHub Actions workflow for releasing the application.
 ├── cmd/
-│   ├── api/            
+│   ├── api/
 │   │   └── main.go               # Main file for starting the server.
 │   └── web/
-│       ├── assets/               # Main file for starting the server.
-│       │   └── js/         
+│       ├── assets/
+│       │   └── js/
 │       │       └── htmx.min.js   # HTMX library for dynamic HTML content 
 │       ├── base.templ            # Base HTML template file.
 │       ├── base.templ.go         # Generated Go code for base template
@@ -42,10 +42,10 @@ Here's an overview of the project structure created by Go Blueprint when all opt
 │       ├── hello.go              # Handler for serving "hello" endpoint.
 │       ├── hello.templ           # Template file for the "hello" endpoint.
 │       └── hello.templ.go        # Generated Go code for the "hello" template. 
-├── internal/   
-│   ├── database/           
+├── internal/
+│   ├── database/
 │   │   └── database.go           # File containing functions related to database operations.
-│   └── server/             
+│   └── server/
 │       ├── routes.go             # File defining HTTP routes.
 │       └── server.go             # Main server logic.
 ├── tests/    

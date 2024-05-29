@@ -36,24 +36,37 @@ nav:
     - Project init: creating-project/project-init.md
     - Makefile: creating-project/makefile.md
     - Air: creating-project/air.md
-    - Testing endpoints: creating-project/endpoints-test.md
   - Blueprint Core:
     - Frameworks: blueprint-core/frameworks.md
     - DB Drivers: blueprint-core/db-drivers.md
   - Advanced Flag:
     - AF Usage: advanced-flag/advanced-flag.md
-    - HTMX and Templ: advanced-flag/htmx-tmpl.md
+    - HTMX and Templ: advanced-flag/htmx-templ.md
     - GoReleaser & GoTest CI: advanced-flag/goreleaser.md
     - Websocket: advanced-flag/websocket.md
+  - Testing endpoints: 
+    - Server: endpoints-test/server.md
+    - DB Health Endpoints: 
+       - SQL DBs: endpoints-test/sql.md
+       - Redis: endpoints-test/redis.md
+       - MongoDB: endpoints-test/mongo.md
+    - Websocket: endpoints-test/websocket.md
+    - Web Endpoint: endpoints-test/web.md
 
 extra:
     social:
-      - icon: fontawesome/brands/twitch
-        link: https://www.twitch.tv/melkey
-        name: Twitch
       - icon: fontawesome/brands/discord
         link: https://discord.com/invite/HHZMSCu
         name: Discord
+      - icon: fontawesome/brands/twitch
+        link: https://www.twitch.tv/melkey
+        name: Twitch
+      - icon: fontawesome/brands/youtube
+        link: https://www.youtube.com/@MelkeyDev
+        name: YouTube
+      - icon: fontawesome/brands/twitter
+        link: https://x.com/MelkeyDev
+        name: Twitter
     generator: false
 
 copyright: Copyright &copy; 2024 Melkey
