@@ -13,9 +13,6 @@ var baseTemplTemplate []byte
 //go:embed files/tailwind/tailwind.config.js.tmpl
 var tailwindConfigTemplate []byte
 
-//go:embed files/tailwind/package.json.tmpl
-var packageJsonTemplate []byte
-
 //go:embed files/tailwind/input.css.tmpl
 var inputCssTemplate []byte
 
@@ -109,10 +106,6 @@ func BaseTemplTemplate() []byte {
 
 func TailwindConfigTemplate() []byte {
 	return tailwindConfigTemplate
-}
-
-func PackageJsonTemplate() []byte {
-	return packageJsonTemplate
 }
 
 func InputCssTemplate() []byte {

@@ -113,6 +113,8 @@ You can now use the `--advanced` flag when running the `create` command to get a
 - [Websocket](https://pkg.go.dev/nhooyr.io/websocket) sets up a websocket endpoint
 - [Tailwind](https://tailwindcss.com/) Css framework
 
+Note: selecting tailwind option automatically selects htmx.
+
 <a id="blueprint-ui"></a>
 
 <h2>

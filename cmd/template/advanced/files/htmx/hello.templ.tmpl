@@ -3,7 +3,7 @@ package web
 templ HelloForm() {
 	@Base() {
 		<form hx-post="/hello" method="POST" hx-target="#hello-container">
-			<input class="border" id="name" name="name" type="text"/>
+			<input {{if .AdvancedOptions.tailwind}}class="border" {{end}}id="name" name="name" type="text"/>
 			<button type="submit">Submit</button>
 		</form>
 		<div id="hello-container"></div>

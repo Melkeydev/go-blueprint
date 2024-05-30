@@ -216,7 +216,7 @@ func (p *Project) CreateMainFile() error {
 	// check if AbsolutePath exists
 	if _, err := os.Stat(p.AbsolutePath); os.IsNotExist(err) {
 		// create directory
-		if err := os.Mkdir(p.AbsolutePath, 0754); err != nil {
+		if err := os.Mkdir(p.AbsolutePath, 0o754); err != nil {
 			log.Printf("Could not create directory: %v", err)
 			return err
 		}
@@ -248,7 +248,7 @@ func (p *Project) CreateMainFile() error {
 	// Create a new directory with the project name
 	projectPath := filepath.Join(p.AbsolutePath, p.ProjectName)
 	if _, err := os.Stat(projectPath); os.IsNotExist(err) {
-		err := os.MkdirAll(projectPath, 0751)
+		err := os.MkdirAll(projectPath, 0o751)
 		if err != nil {
 			log.Printf("Error creating root project directory %v\n", err)
 			return err
@@ -300,7 +300,6 @@ func (p *Project) CreateMainFile() error {
 
 	// Create correct docker compose for the selected driver
 	if p.DBDriver != "none" {
-
 		if p.DBDriver != "sqlite" {
 			p.createDockerMap()
 			p.Docker = p.DBDriver
@@ -394,6 +393,52 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
+	if p.AdvancedOptions[string(flags.Tailwind)] {
+		// select htmx option automatically since tailwind is selected
+		p.AdvancedOptions[string(flags.Htmx)] = true
+
+		tailwindConfigFile, err := os.Create(fmt.Sprintf("%s/tailwind.config.js", projectPath))
+		if err != nil {
+			cobra.CheckErr(err)
+		}
+		defer tailwindConfigFile.Close()
+
+		tailwindConfigTemplate := advanced.TailwindConfigTemplate()
+		err = os.WriteFile(fmt.Sprintf("%s/tailwind.config.js", projectPath), tailwindConfigTemplate, 0o644)
+		if err != nil {
+			return err
+		}
+
+		err = os.MkdirAll(fmt.Sprintf("%s/%s/assets/css", projectPath, cmdWebPath), 0o755)
+		if err != nil {
+			cobra.CheckErr(err)
+		}
+
+		inputCssFile, err := os.Create(fmt.Sprintf("%s/%s/assets/css/input.css", projectPath, cmdWebPath))
+		if err != nil {
+			cobra.CheckErr(err)
+		}
+		defer inputCssFile.Close()
+
+		inputCssTemplate := advanced.InputCssTemplate()
+		err = os.WriteFile(fmt.Sprintf("%s/%s/assets/css/input.css", projectPath, cmdWebPath), inputCssTemplate, 0o644)
+		if err != nil {
+			return err
+		}
+
+		outputCssFile, err := os.Create(fmt.Sprintf("%s/%s/assets/css/output.css", projectPath, cmdWebPath))
+		if err != nil {
+			cobra.CheckErr(err)
+		}
+		defer outputCssFile.Close()
+
+		outputCssTemplate := advanced.OutputCssTemplate()
+		err = os.WriteFile(fmt.Sprintf("%s/%s/assets/css/output.css", projectPath, cmdWebPath), outputCssTemplate, 0o644)
+		if err != nil {
+			return err
+		}
+	}
+
 	if p.AdvancedOptions[string(flags.Htmx)] {
 		// create folders and hello world file
 		err = p.CreatePath(cmdWebPath, projectPath)
@@ -407,7 +452,7 @@ func (p *Project) CreateMainFile() error {
 		}
 		defer helloTemplFile.Close()
 
-		//inject hello.templ template
+		// inject hello.templ template
 		helloTemplTemplate := template.Must(template.New("hellotempl").Parse((string(advanced.HelloTemplTemplate()))))
 		err = helloTemplTemplate.Execute(helloTemplFile, p)
 		if err != nil {
@@ -426,7 +471,7 @@ func (p *Project) CreateMainFile() error {
 			return err
 		}
 
-		err = os.MkdirAll(fmt.Sprintf("%s/%s/assets/js", projectPath, cmdWebPath), 0755)
+		err = os.MkdirAll(fmt.Sprintf("%s/%s/assets/js", projectPath, cmdWebPath), 0o755)
 		if err != nil {
 			cobra.CheckErr(err)
 		}
@@ -438,7 +483,7 @@ func (p *Project) CreateMainFile() error {
 		defer htmxMinJsFile.Close()
 
 		htmxMinJsTemplate := advanced.HtmxJSTemplate()
-		err = os.WriteFile(fmt.Sprintf("%s/%s/assets/js/htmx.min.js", projectPath, cmdWebPath), htmxMinJsTemplate, 0644)
+		err = os.WriteFile(fmt.Sprintf("%s/%s/assets/js/htmx.min.js", projectPath, cmdWebPath), htmxMinJsTemplate, 0o644)
 		if err != nil {
 			return err
 		}
@@ -531,61 +576,6 @@ func (p *Project) CreateMainFile() error {
 		p.CreateWebsocketImports(projectPath)
 	}
 
-	if p.AdvancedOptions[string(flags.Tailwind)] {
-
-		tailwindConfigFile, err := os.Create(fmt.Sprintf("%s/tailwind.config.js", projectPath))
-		if err != nil {
-			cobra.CheckErr(err)
-		}
-		defer tailwindConfigFile.Close()
-
-		tailwindConfigTemplate := advanced.TailwindConfigTemplate()
-		err = os.WriteFile(fmt.Sprintf("%s/tailwind.config.js", projectPath), tailwindConfigTemplate, 0644)
-		if err != nil {
-			return err
-		}
-
-		packageJsonFile, err := os.Create(fmt.Sprintf("%s/package.json", projectPath))
-		if err != nil {
-			cobra.CheckErr(err)
-		}
-		defer packageJsonFile.Close()
-
-		packageJsonTemplate := advanced.PackageJsonTemplate()
-		err = os.WriteFile(fmt.Sprintf("%s/package.json", projectPath), packageJsonTemplate, 0644)
-		if err != nil {
-			return err
-		}
-		err = os.MkdirAll(fmt.Sprintf("%s/%s/assets/css", projectPath, cmdWebPath), 0755)
-		if err != nil {
-			cobra.CheckErr(err)
-		}
-
-		inputCssFile, err := os.Create(fmt.Sprintf("%s/%s/assets/css/input.css", projectPath, cmdWebPath))
-		if err != nil {
-			cobra.CheckErr(err)
-		}
-		defer inputCssFile.Close()
-
-		inputCssTemplate := advanced.InputCssTemplate()
-		err = os.WriteFile(fmt.Sprintf("%s/%s/assets/css/input.css", projectPath, cmdWebPath), inputCssTemplate, 0644)
-		if err != nil {
-			return err
-		}
-
-		outputCssFile, err := os.Create(fmt.Sprintf("%s/%s/assets/css/output.css", projectPath, cmdWebPath))
-		if err != nil {
-			cobra.CheckErr(err)
-		}
-		defer outputCssFile.Close()
-
-		outputCssTemplate := advanced.OutputCssTemplate()
-		err = os.WriteFile(fmt.Sprintf("%s/%s/assets/css/output.css", projectPath, cmdWebPath), outputCssTemplate, 0644)
-		if err != nil {
-			return err
-		}
-	}
-
 	err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routes")
 	if err != nil {
 		log.Printf("Error injecting routes.go file: %v", err)
@@ -650,14 +640,6 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 	}
 
-	if p.AdvancedOptions[string(flags.Tailwind)] {
-		err = utils.PnpmPackageInstall(projectPath)
-		if err != nil {
-			log.Printf("Could not pnpm install in new project %v\n", err)
-			cobra.CheckErr(err)
-		}
-	}
-
 	err = utils.GoFmt(projectPath)
 	if err != nil {
 		log.Printf("Could not gofmt in new project %v\n", err)
@@ -685,7 +667,7 @@ func (p *Project) CreateMainFile() error {
 func (p *Project) CreatePath(pathToCreate string, projectPath string) error {
 	path := filepath.Join(projectPath, pathToCreate)
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		err := os.MkdirAll(path, 0751)
+		err := os.MkdirAll(path, 0o751)
 		if err != nil {
 			log.Printf("Error creating directory %v\n", err)
 			return err

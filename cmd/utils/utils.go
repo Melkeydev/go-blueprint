@@ -100,14 +100,6 @@ func GoTidy(appDir string) error {
 	return nil
 }
 
-func PnpmPackageInstall(appDir string) error {
-	err := ExecuteCmd("pnpm", []string{"install"}, appDir)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 func CheckGitConfig(key string) (bool, error) {
 	cmd := exec.Command("git", "config", "--get", key)
 	if err := cmd.Run(); err != nil {
