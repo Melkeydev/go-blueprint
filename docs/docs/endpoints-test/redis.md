@@ -50,6 +50,119 @@ The `Health` function returns a JSON-like map structure with various keys repres
 }
 ```
 
+#### Serialization/deserialization
+
+The `Sample Output` is dynamic and unstructured since it depends on the raw map. To make it structurable, it must implement `JSON serialization/deserialization` or `Other serialization/deserialization` (e.g, `XML serialization/deserialization`) to bind it. For example:
+
+- `JSON serialization/deserialization`
+
+```json
+{
+  "redis_health": {
+    "status": "up",
+    "message": "Redis connection pool utilization is high",
+    "stats": {
+      "version": "7.0.15",
+      "mode": "standalone",
+      "connected_clients": "10",
+      "memory": {
+        "used": {
+          "mb": "22.38",
+          "gb": "0.02"
+        },
+        "peak": {
+          "mb": "46.57",
+          "gb": "0.05"
+        },
+        "free": {
+          "mb": "1130.00",
+          "gb": "1.10"
+        },
+        "percentage": "1.98%"
+      },
+      "uptime_stats": "6 days, 3 hours, 37 minutes, 20 seconds",
+      "uptime": [
+        {
+          "day": "6"
+        },
+        {
+          "hour": "3"
+        },
+        {
+          "minute": "37"
+        },
+        {
+          "second": "20"
+        }
+      ],
+      "pooling": {
+        "figures": {
+          "hits": "10",
+          "misses": "2",
+          "timeouts": "0",
+          "total": "4",
+          "stale": "9",
+          "idle": "5",
+          "active": "0",
+          "percentage": "62.50%"
+        },
+        "observed_total": "26"
+      }
+    }
+  }
+}
+```
+
+- `XML serialization/deserialization`
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<redis_health>
+  <status>up</status>
+  <message>Redis connection pool utilization is high</message>
+  <stats>
+    <version>7.0.15</version>
+    <mode>standalone</mode>
+    <connected_clients>10</connected_clients>
+    <memory>
+      <used>
+        <mb>22.38</mb>
+        <gb>0.02</gb>
+      </used>
+      <peak>
+        <mb>46.57</mb>
+        <gb>0.05</gb>
+      </peak>
+      <free>
+        <mb>1130.00</mb>
+        <gb>1.10</gb>
+      </free>
+      <percentage>1.98%</percentage>
+    </memory>
+    <uptime_stats>6 days, 3 hours, 37 minutes, 20 seconds</uptime_stats>
+    <uptime>
+      <day>6</day>
+      <hour>3</hour>
+      <minute>37</minute>
+      <second>20</second>
+    </uptime>
+    <pooling>
+      <figures>
+        <hits>10</hits>
+        <misses>2</misses>
+        <timeouts>0</timeouts>
+        <total>4</total>
+        <stale>9</stale>
+        <idle>5</idle>
+        <active>0</active>
+        <percentage>62.50%</percentage>
+      </figures>
+      <observed_total>26</observed_total>
+    </pooling>
+  </stats>
+</redis_health>
+```
+
 ### Code Implementation
 
 ```go
