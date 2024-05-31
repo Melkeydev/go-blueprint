@@ -50,7 +50,8 @@ The `Health` function returns a JSON-like map structure with various keys repres
 }
 ```
 
-#### NOTE: The `Sample Output` is dynamic and unstructured since it depends on the raw map. To make it structurable, it must implement `JSON serialization/deserialization` or `Other serialization/deserialization` (e.g, `XML serialization/deserialization`) to bind it. For example:
+#### NOTE: 
+The `Sample Output` is dynamic and unstructured since it depends on the raw map. To make it structurable, it must implement `JSON serialization/deserialization` or `Other serialization/deserialization` (e.g, `XML serialization/deserialization`) to bind it. For example:
 
 - `JSON serialization/deserialization`
 
