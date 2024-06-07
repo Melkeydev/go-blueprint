@@ -16,16 +16,18 @@
     in {
       packages = {
         default = let
-          module = pkgs.buildGoModule rec {
-            pname = "go-blueprint";
-            version = "0.5.14";
+          module = pkgs.buildGoModule {
+            name = "go-blueprint";
+            # version = "0.5.14";
 
-            src = pkgs.fetchFromGitHub {
-              owner = "Melkeydev";
-              repo = "go-blueprint";
-              rev = "v${version}";
-              hash = "sha256-vQ7LXC70MpqdHxR4JpM5iRQ4mTO0MVtZF94G/f8sR6A=";
-            };
+            src = ./.;
+
+            # src = pkgs.fetchFromGitHub {
+            #   owner = "Melkeydev";
+            #   repo = "go-blueprint";
+            #   rev = "v${version}";
+            #   hash = "sha256-vQ7LXC70MpqdHxR4JpM5iRQ4mTO0MVtZF94G/f8sR6A=";
+            # };
 
             vendorHash = "sha256-WBzToupC1/O70OYHbKk7S73OEe7XRLAAbY5NoLL7xvw=";
 
