@@ -1,4 +1,6 @@
 {
+  description = "Go-blueprint allows users to spin up a quick Go project using a popular framework";
+
   inputs = {
     nixvim.url = "github:nix-community/nixvim";
     flake-utils.url = "github:numtide/flake-utils";
@@ -28,7 +30,7 @@
             vendorHash = "sha256-WBzToupC1/O70OYHbKk7S73OEe7XRLAAbY5NoLL7xvw=";
 
             meta = with pkgs.lib; {
-              description = "The ultimate golang blueprint library";
+              description = "Go-blueprint allows users to spin up a quick Go project using a popular framework";
               homepage = "https://github.com/Melkeydev/go-blueprint";
               licence = licenses.mit;
             };
