@@ -111,7 +111,7 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 					{
 						Flag:  "Tailwind",
 						Title: "TailwindCSS",
-						Desc:  "A utility-first CSS framework",
+						Desc:  "A utility-first CSS framework (selecting this will automatically add HTMX)",
 					},
 				},
 			},
