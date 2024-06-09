@@ -247,7 +247,7 @@ var createCmd = &cobra.Command{
 		if options.Advanced.Choices["Tailwind"] {
 			options.Advanced.Choices["Htmx"] = true
 			fmt.Println(endingMsgStyle.Render("• Install the tailwind standalone cli if you haven't already, grab the executable for your platform from the latest release on GitHub\n"))
-			fmt.Println(endingMsgStyle.Render("• Tailwind GitHub: https://github.com/tailwindlabs/tailwindcss/releases/\n"))
+			fmt.Println(endingMsgStyle.Render("• More info about the Tailwind CLI: https://tailwindcss.com/blog/standalone-cli\n"))
 		}
 
 		if options.Advanced.Choices["Htmx"] {
