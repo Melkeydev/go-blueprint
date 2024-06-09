@@ -9,6 +9,9 @@ import (
 //go:embed files/routes/http_router.go.tmpl
 var httpRouterRoutesTemplate []byte
 
+//go:embed files/middleware/http_router.go.tmpl
+var httpRouterMiddlewareTemplate []byte
+
 //go:embed files/tests/default-test.go.tmpl
 var httpRouterTestHandlerTemplate []byte
 
@@ -19,8 +22,13 @@ type RouterTemplates struct{}
 func (r RouterTemplates) Main() []byte {
 	return mainTemplate
 }
+
 func (r RouterTemplates) Server() []byte {
 	return standardServerTemplate
+}
+
+func (r RouterTemplates) Middleware() []byte {
+	return httpRouterMiddlewareTemplate
 }
 
 func (r RouterTemplates) Routes() []byte {

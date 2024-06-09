@@ -9,6 +9,9 @@ import (
 //go:embed files/routes/gorilla.go.tmpl
 var gorillaRoutesTemplate []byte
 
+//go:embed files/middleware/gorilla.go.tmpl
+var gorillaMiddlewareTemplate []byte
+
 //go:embed files/tests/default-test.go.tmpl
 var gorillaTestHandlerTemplate []byte
 
@@ -22,6 +25,10 @@ func (g GorillaTemplates) Main() []byte {
 
 func (g GorillaTemplates) Server() []byte {
 	return standardServerTemplate
+}
+
+func (g GorillaTemplates) Middleware() []byte {
+	return gorillaMiddlewareTemplate
 }
 
 func (g GorillaTemplates) Routes() []byte {

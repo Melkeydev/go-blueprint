@@ -24,7 +24,9 @@ func (s *Server) RegisterRoutes() http.Handler {
   {{end}}
   {{.AdvancedTemplates.TemplateRoutes}}
 
-	return mux
+	mwStack := MiddlewareStack(DummyMiddleware)
+
+	return mwStack(mux)
 }
 
 func (s *Server) HelloWorldHandler(w http.ResponseWriter, r *http.Request) {

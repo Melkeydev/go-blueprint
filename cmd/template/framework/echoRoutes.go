@@ -9,6 +9,9 @@ import (
 //go:embed files/routes/echo.go.tmpl
 var echoRoutesTemplate []byte
 
+//go:embed files/middleware/echo.go.tmpl
+var echoMiddlewareTemplate []byte
+
 //go:embed files/tests/echo-test.go.tmpl
 var echoTestHandlerTemplate []byte
 
@@ -19,8 +22,13 @@ type EchoTemplates struct{}
 func (e EchoTemplates) Main() []byte {
 	return mainTemplate
 }
+
 func (e EchoTemplates) Server() []byte {
 	return standardServerTemplate
+}
+
+func (e EchoTemplates) Middleware() []byte {
+	return echoMiddlewareTemplate
 }
 
 func (e EchoTemplates) Routes() []byte {

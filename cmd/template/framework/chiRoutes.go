@@ -24,6 +24,10 @@ func (c ChiTemplates) Server() []byte {
 	return standardServerTemplate
 }
 
+func (c ChiTemplates) Middleware() []byte {
+	return standardMiddlewareTemplate
+}
+
 func (c ChiTemplates) Routes() []byte {
 	return chiRoutesTemplate
 }

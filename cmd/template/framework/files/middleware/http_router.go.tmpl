@@ -1,0 +1,12 @@
+package server
+
+import (
+	"net/http"
+)
+
+func DummyMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Do stuff here
+		next(w, r)
+	})
+}

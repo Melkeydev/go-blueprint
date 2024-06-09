@@ -12,6 +12,9 @@ var fiberRoutesTemplate []byte
 //go:embed files/server/fiber.go.tmpl
 var fiberServerTemplate []byte
 
+//go:embed files/middleware/fiber.go.tmpl
+var fiberMiddlewareTemplate []byte
+
 //go:embed files/main/fiber_main.go.tmpl
 var fiberMainTemplate []byte
 
@@ -25,8 +28,13 @@ type FiberTemplates struct{}
 func (f FiberTemplates) Main() []byte {
 	return fiberMainTemplate
 }
+
 func (f FiberTemplates) Server() []byte {
 	return fiberServerTemplate
+}
+
+func (f FiberTemplates) Middleware() []byte {
+	return fiberMiddlewareTemplate
 }
 
 func (f FiberTemplates) Routes() []byte {

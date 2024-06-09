@@ -1,0 +1,21 @@
+package server
+
+import "net/http"
+
+type Middleware func(http.Handler) http.Handler
+
+func MiddlewareStack(ms ...Middleware) Middleware {
+	return func(next http.Handler) http.Handler {
+		for i := len(ms) - 1; i >= 0; i-- {
+			next = ms[i](next)
+		}
+		return next
+	}
+}
+
+func DummyMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Do stuff here
+		next.ServeHTTP(w, r)
+	})
+}

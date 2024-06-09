@@ -1,0 +1,12 @@
+package server
+
+import (
+	"github.com/labstack/echo/v4"
+)
+
+func DummyMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		c.Response().Header().Set(echo.HeaderServer, "Echo!")
+		return next(c)
+	}
+}
