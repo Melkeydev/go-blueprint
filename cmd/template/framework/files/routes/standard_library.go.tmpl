@@ -24,7 +24,7 @@ func (s *Server) RegisterRoutes() http.Handler {
   {{end}}
   {{.AdvancedTemplates.TemplateRoutes}}
 
-	mwStack := MiddlewareStack(DummyMiddleware)
+	mwStack := MiddlewareStack(Logger)
 
 	return mwStack(mux)
 }

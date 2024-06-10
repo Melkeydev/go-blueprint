@@ -16,7 +16,7 @@ import (
 func (s *Server) RegisterRoutes() http.Handler {
 	r := gin.Default()
 	
-	r.Use(DummyMiddleware())
+	r.Use(Logger())
 
 	r.GET("/", s.HelloWorldHandler)
   {{if ne .DBDriver "none"}}

@@ -1,12 +1,14 @@
 package server
 
 import (
+	"log/slog"
+
 	"github.com/labstack/echo/v4"
 )
 
-func DummyMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+func Logger(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		c.Response().Header().Set(echo.HeaderServer, "Echo!")
+		slog.Info("Request URL path", "path", c.Request().URL.Path)
 		return next(c)
 	}
 }

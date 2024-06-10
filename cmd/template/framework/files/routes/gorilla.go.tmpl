@@ -15,7 +15,7 @@ import (
 
 func (s *Server) RegisterRoutes() http.Handler {
 	r := mux.NewRouter()
-	r.Use(DummyMiddleware)
+	r.Use(Logger)
 	r.HandleFunc("/", s.HelloWorldHandler)
   {{if ne .DBDriver "none"}}
 	r.HandleFunc("/health", s.healthHandler)

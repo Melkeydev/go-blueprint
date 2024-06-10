@@ -1,13 +1,12 @@
 package server
 
 import (
+	"log/slog"
+
 	"github.com/gofiber/fiber/v2"
 )
 
-func DummyMiddleware(c *fiber.Ctx) error {
-	// Set a custom header on all responses:
-	c.Set("X-Custom-Header", "Hello, World")
-
-	// Go to next middleware:
+func Logger(c *fiber.Ctx) error {
+	slog.Info("Request URL path", "path", c.Request().URI().Path())
 	return c.Next()
 }

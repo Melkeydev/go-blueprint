@@ -1,6 +1,9 @@
 package server
 
-import "net/http"
+import (
+	"log/slog"
+	"net/http"
+)
 
 type Middleware func(http.Handler) http.Handler
 
@@ -13,9 +16,9 @@ func MiddlewareStack(ms ...Middleware) Middleware {
 	}
 }
 
-func DummyMiddleware(next http.Handler) http.Handler {
+func Logger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Do stuff here
+		slog.Info("Request URL path", "path", r.RequestURI)
 		next.ServeHTTP(w, r)
 	})
 }

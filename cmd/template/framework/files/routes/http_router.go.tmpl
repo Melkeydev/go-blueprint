@@ -15,7 +15,7 @@ import (
 
 func (s *Server) RegisterRoutes() http.Handler {
 	r := httprouter.New()
-	r.HandlerFunc(http.MethodGet, "/", DummyMiddleware(s.HelloWorldHandler))
+	r.HandlerFunc(http.MethodGet, "/", Logger(s.HelloWorldHandler))
 
   {{if ne .DBDriver "none"}}
 	r.HandlerFunc(http.MethodGet, "/health", s.healthHandler)

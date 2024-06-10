@@ -17,7 +17,7 @@ import (
 
 func (s *Server) RegisterRoutes() http.Handler {
 	r := chi.NewRouter()
-	r.Use(middleware.Logger, DummyMiddleware)
+	r.Use(middleware.Logger, Logger)
 
 	r.Get("/", s.HelloWorldHandler)
   {{if ne .DBDriver "none"}}

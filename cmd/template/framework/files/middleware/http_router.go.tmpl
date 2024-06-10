@@ -1,12 +1,13 @@
 package server
 
 import (
+	"log/slog"
 	"net/http"
 )
 
-func DummyMiddleware(next http.HandlerFunc) http.HandlerFunc {
+func Logger(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Do stuff here
+		slog.Info("Request URL path", "path", r.RequestURI)
 		next(w, r)
 	})
 }
