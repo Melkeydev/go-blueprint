@@ -111,7 +111,7 @@ You can now use the `--advanced` flag when running the `create` command to get a
 - [HTMX](https://htmx.org/) support using [Templ](https://templ.guide/)
 - CI/CD workflow setup using [Github Actions](https://docs.github.com/en/actions)
 - [Websocket](https://pkg.go.dev/nhooyr.io/websocket) sets up a websocket endpoint
-- [Tailwind](https://tailwindcss.com/) Css framework
+- [Tailwind](https://tailwindcss.com/) css framework
 
 Note: selecting tailwind option automatically selects htmx.
 
@@ -153,22 +153,22 @@ go-blueprint create --advanced
 
 Advanced features can be enabled using the `--feature` flag along with the `--advanced` flag.
 
-For HTMX:
+HTMX:
 ```bash
 go-blueprint create --advanced --feature htmx
 ```
 
-For the CI/CD workflow:
+CI/CD workflow:
 ```bash
 go-blueprint create --advanced --feature githubaction
 ```
 
-For the websocket:
+Websocket:
 ```bash
 go-blueprint create --advanced --feature websocket
 ```
 
-For Tailwind:
+Tailwind:
 ```bash
 go-blueprint create --advanced --feature tailwind
 ```
