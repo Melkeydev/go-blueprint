@@ -11,9 +11,10 @@ const (
 	Htmx              string = "htmx"
 	GoProjectWorkflow string = "githubaction"
 	Websocket         string = "websocket"
+	Tailwind          string = "tailwind"
 )
 
-var AllowedAdvancedFeatures = []string{string(Htmx), string(GoProjectWorkflow), string(Websocket)}
+var AllowedAdvancedFeatures = []string{string(Htmx), string(GoProjectWorkflow), string(Websocket), string(Tailwind)}
 
 func (f AdvancedFeatures) String() string {
 	return strings.Join(f, ",")

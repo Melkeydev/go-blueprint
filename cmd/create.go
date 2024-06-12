@@ -244,6 +244,12 @@ var createCmd = &cobra.Command{
 		fmt.Println(endingMsgStyle.Render("\nNext steps:"))
 		fmt.Println(endingMsgStyle.Render(fmt.Sprintf("• cd into the newly created project with: `cd %s`\n", project.ProjectName)))
 
+		if options.Advanced.Choices["Tailwind"] {
+			options.Advanced.Choices["Htmx"] = true
+			fmt.Println(endingMsgStyle.Render("• Install the tailwind standalone cli if you haven't already, grab the executable for your platform from the latest release on GitHub\n"))
+			fmt.Println(endingMsgStyle.Render("• More info about the Tailwind CLI: https://tailwindcss.com/blog/standalone-cli\n"))
+		}
+
 		if options.Advanced.Choices["Htmx"] {
 			fmt.Println(endingMsgStyle.Render("• Install the templ cli if you haven't already by running `go install github.com/a-h/templ/cmd/templ@latest`\n"))
 			fmt.Println(endingMsgStyle.Render("• Generate templ function files by running `templ generate`\n"))

@@ -10,6 +10,15 @@ var helloTemplTemplate []byte
 //go:embed files/htmx/base.templ.tmpl
 var baseTemplTemplate []byte
 
+//go:embed files/tailwind/tailwind.config.js.tmpl
+var tailwindConfigTemplate []byte
+
+//go:embed files/tailwind/input.css.tmpl
+var inputCssTemplate []byte
+
+//go:embed files/tailwind/output.css.tmpl
+var outputCssTemplate []byte
+
 //go:embed files/htmx/htmx.min.js.tmpl
 var htmxMinJsTemplate []byte
 
@@ -55,7 +64,6 @@ var fiberHtmxTemplImports []byte
 //go:embed files/websocket/imports/fiber.tmpl
 var fiberWebsocketTemplImports []byte
 
-
 func EchoHtmxTemplRoutesTemplate() []byte {
 	return echoHtmxTemplRoutes
 }
@@ -96,6 +104,18 @@ func BaseTemplTemplate() []byte {
 	return baseTemplTemplate
 }
 
+func TailwindConfigTemplate() []byte {
+	return tailwindConfigTemplate
+}
+
+func InputCssTemplate() []byte {
+	return inputCssTemplate
+}
+
+func OutputCssTemplate() []byte {
+	return outputCssTemplate
+}
+
 func HtmxJSTemplate() []byte {
 	return htmxMinJsTemplate
 }
@@ -123,4 +143,3 @@ func FiberHtmxTemplImportsTemplate() []byte {
 func FiberWebsocketTemplImportsTemplate() []byte {
 	return fiberWebsocketTemplImports
 }
-
