@@ -57,5 +57,5 @@ chmod +x tailwindcss-linux-x64
 ## Use Tailwind CSS in your project
 
 By default, we do not include CSS examples in the htmx project.
-You need to update base.templ and hello.templ, and then rerun 'templ generate' to see the changes on 'localhost:<PORT>/web' endpoint.
+You need to update base.templ and hello.templ, and then rerun 'templ generate' to see the changes on 'localhost:PORT/web' endpoint.
 
