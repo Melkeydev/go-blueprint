@@ -30,7 +30,7 @@ watch:
 	else \
 	    read -p "Go's 'air' is not installed on your machine. Do you want to install it? [Y/n] " choice; \
 	    if [ "$$choice" != "n" ] && [ "$$choice" != "N" ]; then \
-	        go install github.com/cosmtrek/air@latest; \
+	        go install github.com/air-verse/air@latest; \
 	        air; \
 	        echo "Watching...";\
 	    else \
