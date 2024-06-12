@@ -24,7 +24,7 @@ The `Health` returns a JSON-like map structure with a single key indicating the 
 }
 ```
 
-### Code implementation
+## Code implementation
 
 ```go
 func (s *service) Health() map[string]string {
@@ -44,4 +44,4 @@ func (s *service) Health() map[string]string {
 
 ## Note
 
-Currently, MongoDB does not support advanced health check functions like SQL databases or Redis. Implementation is basic, providing only a simple ping response to indicate if the server is reachable and DB connection healthy. Advanced health metrics such as connection pool statistics, memory usage, and detailed server information are not currently included.
+MongoDB does not support advanced health check functions like SQL databases or Redis. Implementation is basic, providing only a simple ping response to indicate if the server is reachable and DB connection healthy.
