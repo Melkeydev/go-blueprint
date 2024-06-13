@@ -1,6 +1,6 @@
 Tailwind is closely coupled with the advanced HTMX flag, and HTMX will be automatically used if you select Tailwind in your project.
 
-We do not introduce outside dependencies automatically, and you need to update output.css (file is empty by default) with the Tailwind CLI tool.
+We do not introduce outside dependencies automatically, and you need compile output.css (file is empty by default) with the Tailwind CLI tool.
 
 The project tree would look like this:
 ```bash
@@ -56,6 +56,6 @@ chmod +x tailwindcss-linux-x64
 
 ## Use Tailwind CSS in your project
 
-By default, we do not include CSS examples in the htmx project.
-You need to update base.templ and hello.templ, and then rerun 'templ generate' to see the changes on 'localhost:PORT/web' endpoint.
+By default, CSS examples are not included in the codebase.
+Update base.templ and hello.templ, then rerun templ generate to see the changes at the localhost:PORT/web endpoint.
 
