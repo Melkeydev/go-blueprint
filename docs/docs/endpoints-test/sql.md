@@ -44,7 +44,7 @@ The `Health` function returns a JSON-like map structure with the following keys 
 }
 ```
 
-### Code Implementation
+## Code Implementation
 
 ```go
 func (s *service) Health() map[string]string {

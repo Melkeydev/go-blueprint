@@ -11,6 +11,9 @@ Automates the setup of a CI/CD workflow using GitHub Actions.
 - **Websocket Support:**
 WebSocket endpoint that sends continuous data streams through the WS protocol.
 
+- **Tailwind:**
+Adds Tailwind CSS support to the project.
+
 To utilize the `--advanced` flag, use the following command:
 
 ```bash
@@ -27,5 +30,5 @@ go-blueprint create --name my-project --framework chi --driver mysql --advanced
 Non-Interactive Setup is also possible:
 
 ```bash
-go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket
+go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind
 ```

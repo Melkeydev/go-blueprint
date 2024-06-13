@@ -50,7 +50,7 @@ The `Health` function returns a JSON-like map structure with various keys repres
 }
 ```
 
-#### Serialization/deserialization
+### Serialization/deserialization
 
 The `Sample Output` is dynamic and unstructured since it depends on the raw map. To make it structurable, it must implement `JSON serialization/deserialization` or `Other serialization/deserialization` (e.g, `XML serialization/deserialization`) to bind it. For example:
 
@@ -163,7 +163,7 @@ The `Sample Output` is dynamic and unstructured since it depends on the raw map.
 </redis_health>
 ```
 
-### Code Implementation
+## Code Implementation
 
 ```go
 func (s *service) Health() map[string]string {

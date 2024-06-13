@@ -9,7 +9,7 @@ This page contains a form with a single input field and a submit button. Upon su
 
 ![htmx](../public/htmx.png)
 
-### Console log
+## Terminal log
 
 ```bash
 make run

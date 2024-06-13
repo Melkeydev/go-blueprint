@@ -12,4 +12,4 @@ Please include a description of the problem or feature this PR is addressing.
 ## Checklist
 
 - [ ] I have self-reviewed the changes being requested
-- [ ] I have updated the documentation (if applicable)
+- [ ] I have updated the documentation (check issue ticket #218)

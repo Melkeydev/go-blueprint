@@ -34,21 +34,24 @@ Here's an overview of the project structure created by Go Blueprint when all opt
 │   │   └── main.go               # Main file for starting the server.
 │   └── web/
 │       ├── assets/
+│       │   ├── css/
+│       │   │   ├── input.css     # Tailwind input file for compiling output.css with CLI
+│       │   │   └── output.css    # Generated CSS file.
 │       │   └── js/
-│       │       └── htmx.min.js   # HTMX library for dynamic HTML content 
+│       │       └── htmx.min.js   # HTMX library for dynamic HTML content.
 │       ├── base.templ            # Base HTML template file.
-│       ├── base.templ.go         # Generated Go code for base template
-│       ├── efs.go                # File for handling file system operations.
-│       ├── hello.go              # Handler for serving "hello" endpoint.
+│       ├── base_templ.go         # Generated Go code for base template
+│       ├── efs.go                # Includes assets into compiled binary.
+│       ├── hello.go              # Logic for handling "hello" form.
 │       ├── hello.templ           # Template file for the "hello" endpoint.
-│       └── hello.templ.go        # Generated Go code for the "hello" template. 
+│       └── hello_templ.go        # Generated Go code for the "hello" template. 
 ├── internal/
 │   ├── database/
 │   │   └── database.go           # File containing functions related to database operations.
 │   └── server/
 │       ├── routes.go             # File defining HTTP routes.
 │       └── server.go             # Main server logic.
-├── tests/    
+├── tests/
 │   └── handler_test.go           # Test file for testing HTTP handlers.
 ├── .air.toml                     # Configuration file for Air, a live-reload utility.
 ├── docker-compose.yml            # Docker Compose configuration for defining DB config.
@@ -58,6 +61,7 @@ Here's an overview of the project structure created by Go Blueprint when all opt
 ├── .goreleaser.yml               # Configuration file for GoReleaser, a tool for building and releasing binaries.
 ├── go.sum                        # Go module file containing checksums for dependencies.
 ├── Makefile                      # Makefile for defining and running commands.
+├── tailwind.config.js            # Tailwind CSS configuration file.
 └── README.md                     # Project's README file containing essential information about the project.
 ```
 
