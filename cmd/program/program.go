@@ -522,10 +522,6 @@ func (p *Project) CreateMainFile() error {
 				log.Printf("Could not install go dependency %v\n", err)
 				cobra.CheckErr(err)
 			}
-			if err != nil {
-				log.Printf("Could not install go dependency %v\n", err)
-				cobra.CheckErr(err)
-			}
 		} else {
 			helloGoTemplate := template.Must(template.New("efs").Parse((string(advanced.HelloGoTemplate()))))
 			err = helloGoTemplate.Execute(helloGoFile, p)
