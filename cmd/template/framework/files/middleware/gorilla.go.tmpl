@@ -1,0 +1,13 @@
+package server
+
+import (
+	"log/slog"
+	"net/http"
+)
+
+func Logger(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		slog.Info("Request URL path", "path", r.RequestURI)
+		next.ServeHTTP(w, r)
+	})
+}

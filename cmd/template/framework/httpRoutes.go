@@ -12,6 +12,9 @@ var standardRoutesTemplate []byte
 //go:embed files/server/standard_library.go.tmpl
 var standardServerTemplate []byte
 
+//go:embed files/middleware/standard_library.go.tmpl
+var standardMiddlewareTemplate []byte
+
 //go:embed files/tests/default-test.go.tmpl
 var standardTestHandlerTemplate []byte
 
@@ -25,6 +28,10 @@ func (s StandardLibTemplate) Main() []byte {
 
 func (s StandardLibTemplate) Server() []byte {
 	return standardServerTemplate
+}
+
+func (s StandardLibTemplate) Middleware() []byte {
+	return standardMiddlewareTemplate
 }
 
 func (s StandardLibTemplate) Routes() []byte {

@@ -1,0 +1,14 @@
+package server
+
+import (
+	"log/slog"
+
+	"github.com/gin-gonic/gin"
+)
+
+func Logger() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		slog.Info("Request URL path", "path", c.Request.RequestURI)
+		c.Next()
+	}
+}
