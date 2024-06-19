@@ -1,4 +1,8 @@
-s.App.Static("/assets", "./cmd/web/assets")
+s.App.Use("/assets", filesystem.New(filesystem.Config{
+		Root:       http.FS(web.Files),
+		PathPrefix: "assets",
+		Browse:     false,
+	}))
 
 s.App.Get("/web", adaptor.HTTPHandler(templ.Handler(web.HelloForm())))
 
