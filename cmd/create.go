@@ -49,6 +49,7 @@ func init() {
 	createCmd.Flags().VarP(&flagFramework, "framework", "f", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(flags.AllowedProjectTypes, ", ")))
 	createCmd.Flags().VarP(&flagDBDriver, "driver", "d", fmt.Sprintf("Database drivers to use. Allowed values: %s", strings.Join(flags.AllowedDBDrivers, ", ")))
 	createCmd.Flags().BoolP("advanced", "a", false, "Get prompts for advanced features")
+	createCmd.Flags().BoolP("skip-git", "s", false, "Do not initialize git")
 	createCmd.Flags().Var(&advancedFeatures, "feature", fmt.Sprintf("Advanced feature to use. Allowed values: %s", strings.Join(flags.AllowedAdvancedFeatures, ", ")))
 }
 
@@ -231,8 +232,14 @@ var createCmd = &cobra.Command{
 			}
 		}()
 
+		hasSkipGitFlag, flagErr := cmd.Flags().GetBool("skip-git")
+
+		if flagErr != nil {
+			log.Fatal("failed to retrieve skip flag")
+		}
+
 		// This calls the templates
-		err = project.CreateMainFile()
+		err = project.CreateMainFile(hasSkipGitFlag)
 		if err != nil {
 			if releaseErr := spinner.ReleaseTerminal(); releaseErr != nil {
 				log.Printf("Problem releasing terminal: %v", releaseErr)

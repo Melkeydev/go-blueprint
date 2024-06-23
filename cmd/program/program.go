@@ -212,7 +212,7 @@ func (p *Project) createDockerMap() {
 
 // CreateMainFile creates the project folders and files,
 // and writes to them depending on the selected options
-func (p *Project) CreateMainFile() error {
+func (p *Project) CreateMainFile(hasSkipGitFlag bool) error {
 	// check if AbsolutePath exists
 	if _, err := os.Stat(p.AbsolutePath); os.IsNotExist(err) {
 		// create directory
@@ -226,7 +226,7 @@ func (p *Project) CreateMainFile() error {
 	if err != nil {
 		cobra.CheckErr(err)
 	}
-	if !nameSet {
+	if !nameSet && !hasSkipGitFlag {
 		fmt.Println("user.name is not set in git config.")
 		fmt.Println("Please set up git config before trying again.")
 		panic("\nGIT CONFIG ISSUE: user.name is not set in git config.\n")
@@ -237,7 +237,7 @@ func (p *Project) CreateMainFile() error {
 	if err != nil {
 		cobra.CheckErr(err)
 	}
-	if !emailSet {
+	if !emailSet && !hasSkipGitFlag {
 		fmt.Println("user.email is not set in git config.")
 		fmt.Println("Please set up git config before trying again.")
 		panic("\nGIT CONFIG ISSUE: user.email is not set in git config.\n")
@@ -592,12 +592,15 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	// Initialize git repo
-	err = utils.ExecuteCmd("git", []string{"init"}, projectPath)
-	if err != nil {
-		log.Printf("Error initializing git repo: %v", err)
-		cobra.CheckErr(err)
-		return err
+	if !hasSkipGitFlag {
+		// Initialize git repo
+		err = utils.ExecuteCmd("git", []string{"init"}, projectPath)
+		if err != nil {
+			log.Printf("Error initializing git repo: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}
+
 	}
 	// Create gitignore
 	gitignoreFile, err := os.Create(filepath.Join(projectPath, ".gitignore"))
@@ -642,19 +645,21 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 		return err
 	}
-	// Git add files
-	err = utils.ExecuteCmd("git", []string{"add", "."}, projectPath)
-	if err != nil {
-		log.Printf("Error adding files to git repo: %v", err)
-		cobra.CheckErr(err)
-		return err
-	}
-	// Git commit files
-	err = utils.ExecuteCmd("git", []string{"commit", "-m", "Initial commit"}, projectPath)
-	if err != nil {
-		log.Printf("Error committing files to git repo: %v", err)
-		cobra.CheckErr(err)
-		return err
+	if !hasSkipGitFlag {
+		// Git add files
+		err = utils.ExecuteCmd("git", []string{"add", "."}, projectPath)
+		if err != nil {
+			log.Printf("Error adding files to git repo: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}
+		// Git commit files
+		err = utils.ExecuteCmd("git", []string{"commit", "-m", "Initial commit"}, projectPath)
+		if err != nil {
+			log.Printf("Error committing files to git repo: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}
 	}
 	return nil
 }
