@@ -3,8 +3,7 @@
   lib,
 }: let
   go-blueprint = pkgs.buildGoModule {
-    pname = "go-blueprint";
-    version = "0.5.14";
+    name = "go-blueprint";
     src = ./.;
 
     # Needs to be updated each time dependencies change
