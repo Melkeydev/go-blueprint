@@ -588,7 +588,6 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 	}
 
-	fmt.Println(p.GitOptions)
 	if p.GitOptions != flags.NoGit {
 		if !nameSet {
 			fmt.Println("user.name is not set in git config.")
@@ -611,7 +610,7 @@ func (p *Project) CreateMainFile() error {
 			return err
 		}
 
-		if p.GitOptions == flags.GitCommit {
+		if p.GitOptions == flags.Commit {
 			// Git commit files
 			err = utils.ExecuteCmd("git", []string{"commit", "-m", "Initial commit"}, projectPath)
 			if err != nil {

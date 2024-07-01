@@ -218,7 +218,6 @@ var createCmd = &cobra.Command{
 			project.ExitCLI(tprogram)
 
 			project.GitOptions = flags.Git(strings.ToLower(options.Git.Choice))
-			fmt.Println(project.GitOptions)
 			err := cmd.Flag("git").Value.Set(project.GitOptions.String())
 			if err != nil {
 				log.Fatal("failed to set the git flag value", err)

@@ -23,6 +23,7 @@ In this example:
 - `--name`: Specifies the name of the project (replace "my-project" with your desired project name).
 - `--framework`: Specifies the Go framework to be used (e.g., "gin").
 - `--driver`: Specifies the database driver to be integrated (e.g., "postgres").
+- `--git`: Specifies the git configuration option of the project (e.g., "commit").
 
 Customize the flags according to your project requirements.
 

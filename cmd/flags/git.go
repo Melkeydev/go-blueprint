@@ -8,12 +8,12 @@ import (
 type Git string
 
 const (
-	GitCommit Git = "commit"
-	GitStage  Git = "stage"
-	NoGit     Git = "none"
+	Commit = "commit"
+	Stage  = "stage"
+	NoGit  = "none"
 )
 
-var AllowedGitsOptions = []string{string(GitCommit), string(GitStage), string(NoGit)}
+var AllowedGitsOptions = []string{string(Commit), string(Stage), string(None)}
 
 func (f Git) String() string {
 	return string(f)
