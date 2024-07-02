@@ -10,10 +10,10 @@ type Git string
 const (
 	Commit = "commit"
 	Stage  = "stage"
-	NoGit  = "none"
+	Skip   = "skip"
 )
 
-var AllowedGitsOptions = []string{string(Commit), string(Stage), string(None)}
+var AllowedGitsOptions = []string{string(Commit), string(Stage), string(Skip)}
 
 func (f Git) String() string {
 	return string(f)

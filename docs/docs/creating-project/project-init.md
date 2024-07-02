@@ -15,7 +15,7 @@ This command will interactively guide you through the project setup process, all
 For a non-interactive setup, you can use flags to provide the necessary information during project creation. Here's an example:
 
 ```
-go-blueprint create --name my-project --framework gin --driver postgres
+go-blueprint create --name my-project --framework gin --driver postgres --git commit
 ```
 
 In this example:
@@ -37,7 +37,7 @@ go-blueprint create --advanced
 
 To recreate the project using the same configuration semi-interactively, use the following command:
 ```bash
-go-blueprint create --name my-project --framework chi --driver mysql --advanced
+go-blueprint create --name my-project --framework chi --driver mysql --git commit --advanced
 ```
 This approach opens interactive mode only for advanced features, which allow you to choose the one or combination of available features.
 
@@ -68,5 +68,5 @@ go-blueprint create --advanced --feature tailwind
 
 Or all features at once:
 ```bash
-go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind
+go-blueprint create --name my-project --framework chi --driver mysql --git commit --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind
 ```

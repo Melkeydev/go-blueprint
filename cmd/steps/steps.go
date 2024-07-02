@@ -128,7 +128,7 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 						Desc:  "Initialize a new git repository but only stage the changes",
 					},
 					{
-						Title: "None",
+						Title: "Skip",
 						Desc:  "Proceed without initializing a git repository",
 					},
 				},
