@@ -1,28 +1,7 @@
----
-hide:
-  - toc
----
-## Go Blueprint - Ultimate Golang Blueprint Library
-
-![logo](./public/logo.png)
+[Testcontainers for Go](https://golang.testcontainers.org/) is a Go package that makes it simple to create and clean up container-based dependencies for automated integration/smoke tests. The clean, easy-to-use API enables developers to programmatically define containers that should be run as part of a test and clean up those resources when the test is done.
 
 
-Powerful CLI tool designed to streamline the process of creating Go projects with a robust and standardized structure. Not only does Go Blueprint facilitate project initialization, but it also offers seamless integration with popular Go frameworks, allowing you to focus on your application's code from the very beginning.
-
-## Why Choose Go Blueprint?
-
-- **Easy Setup and Installation**: Go Blueprint simplifies the setup process, making it a breeze to install and get started with your Go projects.
-
-- **Pre-established Go Project Structure**: Save time and effort by having the entire Go project structure set up automatically. No need to worry about directory layouts or configuration files.
-
-- **HTTP Server Configuration Made Easy**: Whether you prefer Go's standard library HTTP package, Chi, Gin, Fiber, HttpRouter, Gorilla/mux or Echo, Go Blueprint caters to your server setup needs.
-
-- **Focus on Your Application Code**: With Go Blueprint handling the project scaffolding, you can dedicate more time and energy to developing your application logic.
-
-## Project Structure
-
-Here's an overview of the project structure created by Go Blueprint when all options are utilized:
-
+The project tree would look like this:
 ```bash
 / (Root)
 ├── .github/
@@ -66,8 +45,22 @@ Here's an overview of the project structure created by Go Blueprint when all opt
 └── README.md                     # Project's README file containing essential information about the project.
 ```
 
-This structure provides a comprehensive organization of your project, separating source code, tests, configurations and documentation.
+## Requirements
 
+You need a container runtime installed on your machine. Testcontainers supports Docker and any other container runtime that implements the Docker APIs.
 
+To install Docker:
 
+```bash
+curl -sLO get.docker.com
+```
 
+## Running the tests
+
+Go to the `internal/database` directory and run the following command:
+
+```bash
+go test -v
+```
+
+Testcontainers automatically downloads the required Docker images and start the containers. The tests run against the containers, and once the tests are done, the containers are stopped and removed. For further information, refer to the [official documentation](https://golang.testcontainers.org/).
