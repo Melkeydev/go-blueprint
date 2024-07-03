@@ -112,6 +112,7 @@ You can now use the `--advanced` flag when running the `create` command to get a
 - CI/CD workflow setup using [Github Actions](https://docs.github.com/en/actions)
 - [Websocket](https://pkg.go.dev/nhooyr.io/websocket) sets up a websocket endpoint
 - [Tailwind](https://tailwindcss.com/) css framework
+- [Testcontainers](https://testcontainers.com/) sets up integration tests using Testcontainers for Go
 
 Note: selecting tailwind option automatically selects htmx.
 

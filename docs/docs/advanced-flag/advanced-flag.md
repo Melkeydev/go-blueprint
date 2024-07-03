@@ -14,6 +14,9 @@ WebSocket endpoint that sends continuous data streams through the WS protocol.
 - **Tailwind:**
 Adds Tailwind CSS support to the project.
 
+- **Testcontainers:**
+Adds Testcontainers for Go to set up integration tests for the project.
+
 To utilize the `--advanced` flag, use the following command:
 
 ```bash
