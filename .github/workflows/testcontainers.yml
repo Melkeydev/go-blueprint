@@ -1,0 +1,40 @@
+name: Test Generated Testcontainers Blueprints
+
+on:
+  pull_request: {}
+  workflow_dispatch: {}
+
+jobs:
+  testcontainers_matrix:
+    strategy:
+      matrix:
+        driver:
+          [mysql, postgres, sqlite, mongo, redis, none]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22.2'
+
+      - name: Commit report
+        run: |
+          git config --global user.name 'testname'
+          git config --global user.email 'testemail@users.noreply.github.com'
+
+      - name: build ${{ matrix.framework }} template
+        run: script -q /dev/null -c "go run main.go create -n ${{ matrix.framework }} -f ${{ matrix.framework}} -d ${{matrix.driver}} --advanced true --feature testcontainers" /dev/null
+
+      - name: install gotestsum
+        working-directory: ${{ matrix.framework }}
+        run: |
+          go install gotest.tools/gotestsum@latest
+
+      - name: run ${{ matrix.framework }} integration tests
+        working-directory: ${{ matrix.framework }}
+        run: |
+          gotestsum --format short-verbose --packages="./..." --junitfile TEST-${{ matrix.framework }}.xml -- -coverprofile=coverage.out
+
+      - name: remove ${{ matrix.framework }} template
+        run: rm -rf ${{ matrix.framework }}
