@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         driver:
-          [mysql, postgres, sqlite, mongo, redis, none]
+          [mysql, postgres, sqlite, mongo, redis]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
