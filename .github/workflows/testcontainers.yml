@@ -26,15 +26,9 @@ jobs:
       - name: build ${{ matrix.driver }} template
         run: script -q /dev/null -c "go run main.go create -n ${{ matrix.driver }} -f fiber -d ${{matrix.driver}} --advanced true --feature testcontainers" /dev/null
 
-      - name: install gotestsum
-        working-directory: ${{ matrix.driver }}
-        run: |
-          go install gotest.tools/gotestsum@latest
-
       - name: run ${{ matrix.driver }} integration tests
         working-directory: ${{ matrix.driver }}
-        run: |
-          gotestsum --format short-verbose --packages="./internal/database" --junitfile TEST-${{ matrix.driver }}.xml -- -coverprofile=coverage.out
+        run: make itest
 
       - name: remove ${{ matrix.driver }} template
         run: rm -rf ${{ matrix.driver }}
