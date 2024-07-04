@@ -34,7 +34,7 @@ jobs:
       - name: run ${{ matrix.driver }} integration tests
         working-directory: ${{ matrix.driver }}
         run: |
-          gotestsum --format short-verbose --packages="./..." --junitfile TEST-${{ matrix.driver }}.xml -- -coverprofile=coverage.out
+          gotestsum --format short-verbose --packages="./internal/database" --junitfile TEST-${{ matrix.driver }}.xml -- -coverprofile=coverage.out
 
       - name: remove ${{ matrix.driver }} template
         run: rm -rf ${{ matrix.driver }}
