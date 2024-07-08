@@ -7,7 +7,6 @@ on:
 jobs:
   framework_matrix:
     strategy:
-      max-parallel: 128
       matrix:
         framework:
          [chi, gin, fiber, gorilla/mux, httprouter, standard-library, echo]
@@ -15,8 +14,6 @@ jobs:
           [mysql, postgres, sqlite, mongo, redis, none]
         advanced:
           [htmx, githubaction, websocket]
-        git:
-          [commit, stage, skip]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -33,7 +30,7 @@ jobs:
           git config --global user.email 'testemail@users.noreply.github.com'
 
       - name: build templates
-        run: script -q /dev/null -c "go run main.go create -n ${{ matrix.framework }} -f ${{ matrix.framework}} -d ${{ matrix.driver }} --advanced true --feature ${{ matrix.advanced }} -g ${{ matrix.git }}" /dev/null
+        run: script -q /dev/null -c "go run main.go create -n ${{ matrix.framework }} -f ${{ matrix.framework}} -d ${{ matrix.driver }} --advanced true --feature ${{ matrix.advanced }} -g commit" /dev/null
 
       - if: ${{ matrix.advanced == 'htmx' }}
         name: Install Templ & gen templates
