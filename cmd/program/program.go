@@ -356,20 +356,11 @@ func (p *Project) CreateMainFile() error {
 
 	defer makeFile.Close()
 
-	if p.DBDriver == "sqlite" || p.DBDriver == "none" {
-		// inject makefile template
-		makeFileTemplate := template.Must(template.New("makefile").Parse(string(framework.NonDbMakeFileTemplate())))
-		err = makeFileTemplate.Execute(makeFile, p)
-		if err != nil {
-			return err
-		}
-	} else {
-		// inject makefile template for database excluding sqlite
-		makeFileTemplate := template.Must(template.New("makefile").Parse(string(framework.MakeTemplate())))
-		err = makeFileTemplate.Execute(makeFile, p)
-		if err != nil {
-			return err
-		}
+	// inject makefile template
+	makeFileTemplate := template.Must(template.New("makefile").Parse(string(framework.MakeTemplate())))
+	err = makeFileTemplate.Execute(makeFile, p)
+	if err != nil {
+		return err
 	}
 
 	readmeFile, err := os.Create(filepath.Join(projectPath, "README.md"))
