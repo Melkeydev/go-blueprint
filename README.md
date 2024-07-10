@@ -38,7 +38,7 @@ gives the option to integrate with one of the more popular Go frameworks (and th
   Install
 </h2>
 
-```sh
+```bash
 go install github.com/melkeydev/go-blueprint@latest
 ```
 
@@ -46,14 +46,14 @@ This installs a go binary that will automatically bind to your $GOPATH
 
 Then in a new terminal run:
 
-```
+```bash
 go-blueprint create
 ```
 
 You can also use the provided flags to set up a project without interacting with the UI.
 
-```
-go-blueprint create --name my-project --framework gin --driver postgres
+```bash
+go-blueprint create --name my-project --framework gin --driver postgres --git commit
 ```
 
 See `go-blueprint create -h` for all the options and shorthands.
@@ -138,7 +138,7 @@ Blueprint UI is a web application that allows you to create commands for the CLI
 Here's an example of setting up a project with a specific database driver:
 
 ```bash
-go-blueprint create --name my-project --framework gin --driver postgres
+go-blueprint create --name my-project --framework gin --driver postgres --git commit
 ```
 
 <p align="center">
@@ -175,7 +175,7 @@ go-blueprint create --advanced --feature tailwind
 
 Or all features at once:
 ```bash
-go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind
+go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --git commit
 ```
 
 <p align="center">

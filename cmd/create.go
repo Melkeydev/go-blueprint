@@ -43,6 +43,7 @@ func init() {
 	var flagFramework flags.Framework
 	var flagDBDriver flags.Database
 	var advancedFeatures flags.AdvancedFeatures
+	var flagGit flags.Git
 	rootCmd.AddCommand(createCmd)
 
 	createCmd.Flags().StringP("name", "n", "", "Name of project to create")
@@ -50,6 +51,7 @@ func init() {
 	createCmd.Flags().VarP(&flagDBDriver, "driver", "d", fmt.Sprintf("Database drivers to use. Allowed values: %s", strings.Join(flags.AllowedDBDrivers, ", ")))
 	createCmd.Flags().BoolP("advanced", "a", false, "Get prompts for advanced features")
 	createCmd.Flags().Var(&advancedFeatures, "feature", fmt.Sprintf("Advanced feature to use. Allowed values: %s", strings.Join(flags.AllowedAdvancedFeatures, ", ")))
+	createCmd.Flags().VarP(&flagGit, "git", "g", fmt.Sprintf("Git to use. Allowed values: %s", strings.Join(flags.AllowedGitsOptions, ", ")))
 }
 
 type Options struct {
@@ -58,6 +60,7 @@ type Options struct {
 	DBDriver    *multiInput.Selection
 	Advanced    *multiSelect.Selection
 	Workflow    *multiInput.Selection
+	Git         *multiInput.Selection
 }
 
 // createCmd defines the "create" command for the CLI
@@ -81,6 +84,7 @@ var createCmd = &cobra.Command{
 		// If this flag is filled, it is always valid
 		flagFramework := flags.Framework(cmd.Flag("framework").Value.String())
 		flagDBDriver := flags.Database(cmd.Flag("driver").Value.String())
+		flagGit := flags.Git(cmd.Flag("git").Value.String())
 
 		options := Options{
 			ProjectName: &textinput.Output{},
@@ -89,6 +93,7 @@ var createCmd = &cobra.Command{
 			Advanced: &multiSelect.Selection{
 				Choices: make(map[string]bool),
 			},
+			Git: &multiInput.Selection{},
 		}
 
 		project := &program.Project{
@@ -98,6 +103,7 @@ var createCmd = &cobra.Command{
 			FrameworkMap:    make(map[flags.Framework]program.Framework),
 			DBDriverMap:     make(map[flags.Database]program.Driver),
 			AdvancedOptions: make(map[string]bool),
+			GitOptions:      flagGit,
 		}
 
 		steps := steps.InitSteps(flagFramework, flagDBDriver)
@@ -200,6 +206,22 @@ var createCmd = &cobra.Command{
 				}
 			}
 
+		}
+
+		if project.GitOptions == "" {
+			isInteractive = true
+			step := steps.Steps["git"]
+			tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, options.Git, step.Headers, project))
+			if _, err := tprogram.Run(); err != nil {
+				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
+			}
+			project.ExitCLI(tprogram)
+
+			project.GitOptions = flags.Git(strings.ToLower(options.Git.Choice))
+			err := cmd.Flag("git").Value.Set(project.GitOptions.String())
+			if err != nil {
+				log.Fatal("failed to set the git flag value", err)
+			}
 		}
 
 		currentWorkingDir, err := os.Getwd()
