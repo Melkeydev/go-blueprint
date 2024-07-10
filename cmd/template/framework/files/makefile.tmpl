@@ -5,7 +5,7 @@ all: build
 
 build:
 	@echo "Building..."
-	{{if .AdvancedOptions.htmx}}@templ generate{{end}}
+	{{if or ( .AdvancedOptions.htmx ) ( .AdvancedOptions.tailwind )}}@templ generate{{end}}
 	{{if .AdvancedOptions.tailwind}}@tailwindcss -i cmd/web/assets/css/input.css -o cmd/web/assets/css/output.css{{end}}
 	@go build -o main cmd/api/main.go
 
