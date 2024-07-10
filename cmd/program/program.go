@@ -36,6 +36,7 @@ type Project struct {
 	DockerMap         map[flags.Database]Docker
 	AdvancedOptions   map[string]bool
 	AdvancedTemplates AdvancedTemplates
+	GitOptions        flags.Git
 }
 
 type AdvancedTemplates struct {
@@ -220,16 +221,6 @@ func (p *Project) CreateMainFile() error {
 			log.Printf("Could not create directory: %v", err)
 			return err
 		}
-	}
-
-	nameSet, err := utils.CheckGitConfig("user.name")
-	if err != nil {
-		cobra.CheckErr(err)
-	}
-	if !nameSet {
-		fmt.Println("user.name is not set in git config.")
-		fmt.Println("Please set up git config before trying again.")
-		panic("\nGIT CONFIG ISSUE: user.name is not set in git config.\n")
 	}
 
 	// Check if user.email is set.
@@ -583,13 +574,6 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	// Initialize git repo
-	err = utils.ExecuteCmd("git", []string{"init"}, projectPath)
-	if err != nil {
-		log.Printf("Error initializing git repo: %v", err)
-		cobra.CheckErr(err)
-		return err
-	}
 	// Create gitignore
 	gitignoreFile, err := os.Create(filepath.Join(projectPath, ".gitignore"))
 	if err != nil {
@@ -633,19 +617,43 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 		return err
 	}
-	// Git add files
-	err = utils.ExecuteCmd("git", []string{"add", "."}, projectPath)
+
+	nameSet, err := utils.CheckGitConfig("user.name")
 	if err != nil {
-		log.Printf("Error adding files to git repo: %v", err)
 		cobra.CheckErr(err)
-		return err
 	}
-	// Git commit files
-	err = utils.ExecuteCmd("git", []string{"commit", "-m", "Initial commit"}, projectPath)
-	if err != nil {
-		log.Printf("Error committing files to git repo: %v", err)
-		cobra.CheckErr(err)
-		return err
+
+	if p.GitOptions != flags.Skip {
+		if !nameSet {
+			fmt.Println("user.name is not set in git config.")
+			fmt.Println("Please set up git config before trying again.")
+			panic("\nGIT CONFIG ISSUE: user.name is not set in git config.\n")
+		}
+		// Initialize git repo
+		err = utils.ExecuteCmd("git", []string{"init"}, projectPath)
+		if err != nil {
+			log.Printf("Error initializing git repo: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}
+
+		// Git add files
+		err = utils.ExecuteCmd("git", []string{"add", "."}, projectPath)
+		if err != nil {
+			log.Printf("Error adding files to git repo: %v", err)
+			cobra.CheckErr(err)
+			return err
+		}
+
+		if p.GitOptions == flags.Commit {
+			// Git commit files
+			err = utils.ExecuteCmd("git", []string{"commit", "-m", "Initial commit"}, projectPath)
+			if err != nil {
+				log.Printf("Error committing files to git repo: %v", err)
+				cobra.CheckErr(err)
+				return err
+			}
+		}
 	}
 	return nil
 }
