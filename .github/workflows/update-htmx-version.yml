@@ -1,10 +1,8 @@
 name: Check for new htmx release
 
 on:
-  push:
-    branches: [workflows-refactor]
-  # schedule:
-  #   - cron: '0 0 * * Sun'
+  schedule:
+    - cron: '0 0 * * Sun'
 
 jobs:
   check_release:

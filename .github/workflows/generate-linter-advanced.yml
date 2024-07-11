@@ -8,14 +8,10 @@ jobs:
   framework_matrix:
     strategy:
       matrix:
-        framework:
-          [chi]
-        driver:
-          [postgres]
-        git:
-          [commit]
-        advanced:
-          [htmx, githubaction, websocket, tailwind]
+        framework: [chi, gin, fiber, gorilla/mux, httprouter, standard-library, echo]
+        driver: [postgres]
+        git: [commit]
+        advanced: [htmx, githubaction, websocket, tailwind]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
