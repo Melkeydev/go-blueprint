@@ -1,8 +1,6 @@
 name: Linting Generated Blueprints Core
 
 on:
-  push:
-    branches: [workflows-refactor]
   pull_request: {}
   workflow_dispatch: {}
 
