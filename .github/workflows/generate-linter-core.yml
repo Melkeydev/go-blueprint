@@ -1,0 +1,42 @@
+name: Linting Generated Blueprints Core
+
+on:
+  push:
+    branches: [workflows-refactor]
+  pull_request: {}
+  workflow_dispatch: {}
+
+jobs:
+  framework_matrix:
+    strategy:
+      matrix:
+        framework:
+         [chi, gin, fiber, gorilla/mux, httprouter, standard-library, echo]
+        driver:
+          [mysql, postgres, sqlite, mongo, redis, none]
+        git:
+          [commit, stage, skip]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22.x'
+      - name: Install golangci-lint
+        run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.57.2
+
+      - name: Commit report
+        run: |
+          git config --global user.name 'testname'
+          git config --global user.email 'testemail@users.noreply.github.com'
+
+      - name: build templates
+        run: script -q /dev/null -c "go run main.go create -n ${{ matrix.framework }} -f ${{ matrix.framework}} -d ${{ matrix.driver }} -g ${{ matrix.git}}" /dev/null
+
+        run: | 
+          cd ${{ matrix.framework }}
+          golangci-lint run
+
+      - name: remove templates
+        run: rm -rf ${{ matrix.framework }}
