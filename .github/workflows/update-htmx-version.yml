@@ -59,8 +59,8 @@ jobs:
           rm package.json
 
       - name: Create tmpl after Prettify
-        run: mv cmd/template/advanced/files/htmx/htmx.min.js cmd/template/advanced/files/htmx/htmx.min.js.tmpl
         if: steps.compare_versions.outputs.release_changed == 'true'
+        run: mv cmd/template/advanced/files/htmx/htmx.min.js cmd/template/advanced/files/htmx/htmx.min.js.tmpl
 
       - name: Create Pull Request
         if: steps.compare_versions.outputs.release_changed == 'true'
