@@ -16,10 +16,17 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.21.1'
-      -
-        name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v5.0.0
+          go-version: '1.22.x'
+{{if or ( .AdvancedOptions.htmx ) ( .AdvancedOptions.tailwind )}}
+      - name: Install templ
+        shell: bash
+        run: go install github.com/a-h/templ/cmd/templ@latest
+      - name: Run templ generate
+        shell: bash
+        run: templ generate -path .
+{{end}}
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
           version: ${{"{{"}} env.GITHUB_REF_NAME {{"}}"}}
