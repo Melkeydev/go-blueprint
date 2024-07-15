@@ -5,7 +5,7 @@ all: build
 
 build:
 	@echo "Building..."
-	{{if .AdvancedOptions.htmx}}@templ generate{{end}}
+	{{if or ( .AdvancedOptions.htmx ) ( .AdvancedOptions.tailwind )}}@templ generate{{end}}
 	{{if .AdvancedOptions.tailwind}}@tailwindcss -i cmd/web/assets/css/input.css -o cmd/web/assets/css/output.css{{end}}
 	@go build -o main cmd/api/main.go
 
@@ -13,6 +13,7 @@ build:
 run:
 	@go run cmd/api/main.go
 
+{{if and (ne .DBDriver "none") (ne .DBDriver "sqlite")}}
 # Create DB container
 docker-run:
 	@if docker compose up 2>/dev/null; then \
@@ -30,6 +31,7 @@ docker-down:
 		echo "Falling back to Docker Compose V1"; \
 		docker-compose down; \
 	fi
+{{end}}
 
 # Test the application
 test:

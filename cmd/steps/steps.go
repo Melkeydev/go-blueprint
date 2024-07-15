@@ -120,6 +120,24 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 					},
 				},
 			},
+			"git": {
+				StepName: "Git Repository",
+				Headers:  "Which git option would you like to select for your project?",
+				Options: []Item{
+					{
+						Title: "Commit",
+						Desc:  "Initialize a new git repository and commit all the changes",
+					},
+					{
+						Title: "Stage",
+						Desc:  "Initialize a new git repository but only stage the changes",
+					},
+					{
+						Title: "Skip",
+						Desc:  "Proceed without initializing a git repository",
+					},
+				},
+			},
 		},
 	}
 
