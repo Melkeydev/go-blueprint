@@ -43,7 +43,6 @@ nav:
     - AF Usage: advanced-flag/advanced-flag.md
     - HTMX and Templ: advanced-flag/htmx-templ.md
     - Tailwind CSS: advanced-flag/tailwind.md
-    - Testcontainers: advanced-flag/testcontainers.md
     - GoReleaser & GoTest CI: advanced-flag/goreleaser.md
     - Websocket: advanced-flag/websocket.md
   - Testing endpoints: 
