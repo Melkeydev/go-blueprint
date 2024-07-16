@@ -108,14 +108,13 @@ var (
 )
 
 const (
-	root                         = "/"
-	cmdApiPath                   = "cmd/api"
-	cmdWebPath                   = "cmd/web"
-	internalServerPath           = "internal/server"
-	internalDatabasePath         = "internal/database"
-	gitHubActionPath             = ".github/workflows"
-	testHandlerPath              = "tests"
-	testcontainersPackage string = "github.com/testcontainers/testcontainers-go"
+	root                 = "/"
+	cmdApiPath           = "cmd/api"
+	cmdWebPath           = "cmd/web"
+	internalServerPath   = "internal/server"
+	internalDatabasePath = "internal/database"
+	gitHubActionPath     = ".github/workflows"
+	testHandlerPath      = "tests"
 )
 
 // ExitCLI checks if the Project has been exited, and closes
