@@ -5,14 +5,13 @@ import (
 	"log"
 	"testing"
 
-	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/redis"
 )
 
 func mustStartRedisContainer() (func(context.Context) error, error) {
-	dbContainer, err := redis.RunContainer(
+	dbContainer, err := redis.Run(
 		context.Background(),
-		testcontainers.WithImage("docker.io/redis:7.2.4"),
+		"docker.io/redis:7.2.4",
 		redis.WithSnapshotting(10, 1),
 		redis.WithLogLevel(redis.LogLevelVerbose),
 	)

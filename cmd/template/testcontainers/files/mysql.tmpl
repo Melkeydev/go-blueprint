@@ -18,8 +18,8 @@ func mustStartMySQLContainer() (func(context.Context) error, error) {
 		dbUser = "user"
 	)
 
-	dbContainer, err := mysql.RunContainer(context.Background(),
-		testcontainers.WithImage("mysql:8.0.36"),
+	dbContainer, err := mysql.Run(context.Background(),
+		"mysql:8.0.36",
 		mysql.WithDatabase(dbName),
 		mysql.WithUsername(dbUser),
 		mysql.WithPassword(dbPwd),

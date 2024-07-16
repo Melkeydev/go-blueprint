@@ -18,8 +18,9 @@ func mustStartPostgresContainer() (func(context.Context) error, error) {
 		dbUser = "user"
 	)
 
-	dbContainer, err := postgres.RunContainer(
-		context.Background(), testcontainers.WithImage("postgres:latest"),
+	dbContainer, err := postgres.Run(
+		context.Background(),
+		"postgres:latest",
 		postgres.WithDatabase(dbName),
 		postgres.WithUsername(dbUser),
 		postgres.WithPassword(dbPwd),
