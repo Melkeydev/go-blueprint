@@ -1,11 +1,11 @@
-name: Test Generated Testcontainers Blueprints
+name: Integrations Test for the Generated Blueprints
 
 on:
   pull_request: {}
   workflow_dispatch: {}
 
 jobs:
-  testcontainers_matrix:
+  itests_matrix:
     strategy:
       matrix:
         driver:
