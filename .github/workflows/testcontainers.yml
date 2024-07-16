@@ -24,7 +24,7 @@ jobs:
           git config --global user.email 'testemail@users.noreply.github.com'
 
       - name: build ${{ matrix.driver }} template
-        run: script -q /dev/null -c "go run main.go create -n ${{ matrix.driver }} -f fiber -d ${{matrix.driver}}" /dev/null
+        run: script -q /dev/null -c "go run main.go create -n ${{ matrix.driver }} -g commit -f fiber -d ${{matrix.driver}}" /dev/null
 
       - name: run ${{ matrix.driver }} integration tests
         working-directory: ${{ matrix.driver }}
