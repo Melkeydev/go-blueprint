@@ -66,12 +66,7 @@ TailwindCSS:
 go-blueprint create --advanced --feature tailwind
 ```
 
-Testcontainers:
-```bash
-go-blueprint create --advanced --feature testcontainers
-```
-
 Or all features at once:
 ```bash
-go-blueprint create --name my-project --framework chi --driver mysql --git commit --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --feature testcontainers
+go-blueprint create --name my-project --framework chi --driver mysql --git commit --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind
 ```

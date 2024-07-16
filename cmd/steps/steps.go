@@ -113,11 +113,6 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 						Title: "TailwindCSS",
 						Desc:  "A utility-first CSS framework (selecting this will automatically add HTMX)",
 					},
-					{
-						Flag:  "Testcontainers",
-						Title: "Integration tests with Testcontainers",
-						Desc:  "Unit tests with real dependencies",
-					},
 				},
 			},
 			"git": {
