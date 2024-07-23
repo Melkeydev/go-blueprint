@@ -1,13 +1,12 @@
-package tests
+package server
 import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"github.com/gin-gonic/gin"
-	"{{.ProjectName}}/internal/server"
 )
 func TestHelloWorldHandler(t *testing.T) {
-	s := &server.Server{}
+	s := &Server{}
 	r := gin.New()
 	r.GET("/", s.HelloWorldHandler)
 	// Create a test HTTP request
