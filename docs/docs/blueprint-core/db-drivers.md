@@ -20,9 +20,8 @@ Integrating a database adds a new layer to the project structure, primarily in t
 │   │   └── database.go
 │   └── /server
 │       ├── routes.go
+│       ├── routes_test.go
 │       └── server.go
-├── /tests
-│   └── handler_test.go
 ├── go.mod
 ├── go.sum
 ├── Makefile
