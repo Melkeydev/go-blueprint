@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"text/template"
 
@@ -37,6 +38,7 @@ type Project struct {
 	AdvancedOptions   map[string]bool
 	AdvancedTemplates AdvancedTemplates
 	GitOptions        flags.Git
+	UnixBased         bool
 }
 
 type AdvancedTemplates struct {
@@ -115,6 +117,14 @@ const (
 	gitHubActionPath     = ".github/workflows"
 	testHandlerPath      = "tests"
 )
+
+// CheckOs checks Operation system and generates MakeFile and `go build` command
+// Based on Project.Unixbase
+func (p *Project) CheckOs() {
+	if runtime.GOOS != "windows" {
+		p.UnixBased = true
+	}
+}
 
 // ExitCLI checks if the Project has been exited, and closes
 // out of the CLI if it has
@@ -245,6 +255,9 @@ func (p *Project) CreateMainFile() error {
 			return err
 		}
 	}
+
+	// Define Operating system
+	p.CheckOs()
 
 	// Create the map for our program
 	p.createFrameworkMap()
