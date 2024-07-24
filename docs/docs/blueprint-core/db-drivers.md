@@ -17,6 +17,7 @@ Integrating a database adds a new layer to the project structure, primarily in t
 │       └── main.go
 ├── /internal
 │   ├── /database
+│   │   ├── database_test.go
 │   │   └── database.go
 │   └── /server
 │       ├── routes.go
@@ -32,6 +33,39 @@ Integrating a database adds a new layer to the project structure, primarily in t
 ## Database Driver Implementation
 
 Users can select the desired database driver based on their project's specific needs. The chosen driver is then imported into the project, and the `database.go` file is adjusted accordingly to establish a connection and manage interactions with the selected database.
+
+## Integration Tests for Database Operations
+
+For all the database drivers but the `Sqlite`, integration tests are automatically generated to ensure that the database connection is working correctly. It uses [Testcontainers for Go](https://golang.testcontainers.org/) to spin up a containerized instance of the database server, run the tests, and then tear down the container.
+
+[Testcontainers for Go](https://golang.testcontainers.org/) is a Go package that makes it simple to create and clean up container-based dependencies for automated integration/smoke tests. The clean, easy-to-use API enables developers to programmatically define containers that should be run as part of a test and clean up those resources when the test is done.
+
+
+### Requirements
+
+You need a container runtime installed on your machine. Testcontainers supports Docker and any other container runtime that implements the Docker APIs.
+
+To install Docker:
+
+```bash
+curl -sLO get.docker.com
+```
+
+### Running the tests
+
+Go to the `internal/database` directory and run the following command:
+
+```bash
+go test -v
+```
+
+or just run the following command from the root directory:
+
+```bash
+make itest
+```
+
+Testcontainers automatically pulls the required Docker images and start the containers. The tests run against the containers, and once the tests are done, the containers are stopped and removed. For further information, refer to the [official documentation](https://golang.testcontainers.org/).
 
 ## Docker-Compose for Quick Database Spinup
 

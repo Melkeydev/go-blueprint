@@ -76,6 +76,7 @@ type Templater interface {
 type DBDriverTemplater interface {
 	Service() []byte
 	Env() []byte
+	Tests() []byte
 }
 
 type DockerTemplater interface {
@@ -286,6 +287,15 @@ func (p *Project) CreateMainFile() error {
 			log.Printf("Error injecting database.go file: %v", err)
 			cobra.CheckErr(err)
 			return err
+		}
+
+		if p.DBDriver != "sqlite" {
+			err = p.CreateFileWithInjection(internalDatabasePath, projectPath, "database_test.go", "integration-tests")
+			if err != nil {
+				log.Printf("Error injecting database_test.go file: %v", err)
+				cobra.CheckErr(err)
+				return err
+			}
 		}
 	}
 
@@ -707,6 +717,9 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		err = createdTemplate.Execute(createdFile, p)
 	case "db-docker":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DockerMap[p.Docker].templater.Docker())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "integration-tests":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.Tests())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "tests":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.TestHandler())))

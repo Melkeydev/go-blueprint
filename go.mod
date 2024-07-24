@@ -1,6 +1,6 @@
 module github.com/melkeydev/go-blueprint
 
-go 1.20
+go 1.22.4
 
 require (
 	github.com/charmbracelet/bubbles v0.16.1

@@ -47,6 +47,7 @@ Here's an overview of the project structure created by Go Blueprint when all opt
 │       └── hello_templ.go        # Generated Go code for the "hello" template. 
 ├── internal/
 │   ├── database/
+│   │   └── database_test.go      # File containing integrations tests for the database operations.
 │   │   └── database.go           # File containing functions related to database operations.
 │   └── server/
 │       ├── routes.go             # File defining HTTP routes.
