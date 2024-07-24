@@ -229,7 +229,8 @@ func (p *Project) CreateMainFile() error {
 	if err != nil {
 		cobra.CheckErr(err)
 	}
-	if !emailSet {
+
+	if !emailSet && p.GitOptions.String() != flags.Skip {
 		fmt.Println("user.email is not set in git config.")
 		fmt.Println("Please set up git config before trying again.")
 		panic("\nGIT CONFIG ISSUE: user.email is not set in git config.\n")
