@@ -19,9 +19,8 @@ The project is structured with a simple layout, focusing on the cmd, internal, a
 ├── /internal
 │   └── /server
 │       ├── routes.go
+│       ├── routes_test.go
 │       └── server.go
-├── /tests
-│   └── handler_test.go
 ├── go.mod
 ├── go.sum
 ├── Makefile

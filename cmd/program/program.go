@@ -114,7 +114,6 @@ const (
 	internalServerPath   = "internal/server"
 	internalDatabasePath = "internal/database"
 	gitHubActionPath     = ".github/workflows"
-	testHandlerPath      = "tests"
 )
 
 // ExitCLI checks if the Project has been exited, and closes
@@ -332,19 +331,6 @@ func (p *Project) CreateMainFile() error {
 	}
 
 	err = p.CreateFileWithInjection(cmdApiPath, projectPath, "main.go", "main")
-	if err != nil {
-		cobra.CheckErr(err)
-		return err
-	}
-
-	err = p.CreatePath(testHandlerPath, projectPath)
-	if err != nil {
-		log.Printf("Error creating path: %s", projectPath)
-		cobra.CheckErr(err)
-		return err
-	}
-	// inject testhandler template
-	err = p.CreateFileWithInjection(testHandlerPath, projectPath, "handler_test.go", "tests")
 	if err != nil {
 		cobra.CheckErr(err)
 		return err
@@ -571,6 +557,13 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 		return err
 	}
+
+	err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes_test.go", "tests")
+	if err != nil {
+		cobra.CheckErr(err)
+		return err
+	}
+
 	err = p.CreateFileWithInjection(internalServerPath, projectPath, "server.go", "server")
 	if err != nil {
 		log.Printf("Error injecting server.go file: %v", err)

@@ -51,9 +51,8 @@ Here's an overview of the project structure created by Go Blueprint when all opt
 │   │   └── database.go           # File containing functions related to database operations.
 │   └── server/
 │       ├── routes.go             # File defining HTTP routes.
+│       ├── routes_test.go        # Test file for testing HTTP handlers.
 │       └── server.go             # Main server logic.
-├── tests/
-│   └── handler_test.go           # Test file for testing HTTP handlers.
 ├── .air.toml                     # Configuration file for Air, a live-reload utility.
 ├── docker-compose.yml            # Docker Compose configuration for defining DB config.
 ├── .env                          # Environment configuration file.
