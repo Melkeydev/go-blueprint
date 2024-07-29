@@ -3,6 +3,7 @@ Tailwind is closely coupled with the advanced HTMX flag, and HTMX will be automa
 We do not introduce outside dependencies automatically, and you need compile output.css (file is empty by default) with the Tailwind CLI tool.
 
 The project tree would look like this:
+
 ```bash
 / (Root)
 ├── cmd/
@@ -24,7 +25,7 @@ The project tree would look like this:
 ├── internal/
 │   └── server/
 │       ├── routes.go
-│       ├── routes_test.go 
+│       ├── routes_test.go
 │       └── server.go
 ├── go.mod
 ├── go.sum
@@ -58,3 +59,19 @@ chmod +x tailwindcss-linux-x64
 By default, CSS examples are not included in the codebase.
 Update base.templ and hello.templ, then rerun templ generate to see the changes at the localhost:PORT/web endpoint.
 
+## Standalone Rustywind
+
+[Rustywind](https://github.com/avencera/rustywind) is a CLI tool for oraganizing and formatting Tailwind classes by [avencera](https://github.com/avencera)
+
+```bash
+curl -LSfs https://avencera.github.io/rustywind/install.sh | sh -s -- --git avencera/rustywind
+```
+
+## Rustywind formatting
+
+Rustywind will check and format all `.templ` files inside cmd/web folder
+
+```bash
+rustywind cmd/web/assets/css/input.css --write
+rustywind --write $(shell find cmd/web -name '*.templ')
+```
