@@ -1,13 +1,12 @@
-package tests
+package server
 import (
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"{{.ProjectName}}/internal/server"
 	"testing"
 )
 func TestHandler(t *testing.T) {
-    s := &server.Server{}
+    s := &Server{}
     server := httptest.NewServer(http.HandlerFunc(s.HelloWorldHandler))
     defer server.Close()
     resp, err := http.Get(server.URL)

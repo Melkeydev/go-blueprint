@@ -1,0 +1,34 @@
+name: Integrations Test for the Generated Blueprints
+
+on:
+  pull_request: {}
+  workflow_dispatch: {}
+
+jobs:
+  itests_matrix:
+    strategy:
+      matrix:
+        driver:
+          [mysql, postgres, mongo, redis]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22.x'
+
+      - name: Commit report
+        run: |
+          git config --global user.name 'testname'
+          git config --global user.email 'testemail@users.noreply.github.com'
+
+      - name: build ${{ matrix.driver }} template
+        run: script -q /dev/null -c "go run main.go create -n ${{ matrix.driver }} -g commit -f fiber -d ${{matrix.driver}}" /dev/null
+
+      - name: run ${{ matrix.driver }} integration tests
+        working-directory: ${{ matrix.driver }}
+        run: make itest
+
+      - name: remove ${{ matrix.driver }} template
+        run: rm -rf ${{ matrix.driver }}

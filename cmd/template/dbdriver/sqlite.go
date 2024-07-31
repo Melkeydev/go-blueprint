@@ -19,3 +19,7 @@ func (m SqliteTemplate) Service() []byte {
 func (m SqliteTemplate) Env() []byte {
 	return sqliteEnvTemplate
 }
+
+func (m SqliteTemplate) Tests() []byte {
+	return []byte{}
+}

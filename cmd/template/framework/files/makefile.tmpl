@@ -36,7 +36,14 @@ docker-down:
 # Test the application
 test:
 	@echo "Testing..."
-	@go test ./tests -v
+	@go test ./... -v
+
+{{if and (ne .DBDriver "none") (ne .DBDriver "sqlite")}}
+# Integrations Tests for the application
+itest:
+	@echo "Running integration tests..."
+	@go test ./internal/database -v
+{{end}}
 
 # Clean the binary
 clean:

@@ -78,6 +78,7 @@ type Templater interface {
 type DBDriverTemplater interface {
 	Service() []byte
 	Env() []byte
+	Tests() []byte
 }
 
 type DockerTemplater interface {
@@ -115,7 +116,6 @@ const (
 	internalServerPath   = "internal/server"
 	internalDatabasePath = "internal/database"
 	gitHubActionPath     = ".github/workflows"
-	testHandlerPath      = "tests"
 )
 
 // CheckOs checks Operation system and generates MakeFile and `go build` command
@@ -238,7 +238,8 @@ func (p *Project) CreateMainFile() error {
 	if err != nil {
 		cobra.CheckErr(err)
 	}
-	if !emailSet {
+
+	if !emailSet && p.GitOptions.String() != flags.Skip {
 		fmt.Println("user.email is not set in git config.")
 		fmt.Println("Please set up git config before trying again.")
 		panic("\nGIT CONFIG ISSUE: user.email is not set in git config.\n")
@@ -300,6 +301,15 @@ func (p *Project) CreateMainFile() error {
 			cobra.CheckErr(err)
 			return err
 		}
+
+		if p.DBDriver != "sqlite" {
+			err = p.CreateFileWithInjection(internalDatabasePath, projectPath, "database_test.go", "integration-tests")
+			if err != nil {
+				log.Printf("Error injecting database_test.go file: %v", err)
+				cobra.CheckErr(err)
+				return err
+			}
+		}
 	}
 
 	// Create correct docker compose for the selected driver
@@ -334,19 +344,6 @@ func (p *Project) CreateMainFile() error {
 	}
 
 	err = p.CreateFileWithInjection(cmdApiPath, projectPath, "main.go", "main")
-	if err != nil {
-		cobra.CheckErr(err)
-		return err
-	}
-
-	err = p.CreatePath(testHandlerPath, projectPath)
-	if err != nil {
-		log.Printf("Error creating path: %s", projectPath)
-		cobra.CheckErr(err)
-		return err
-	}
-	// inject testhandler template
-	err = p.CreateFileWithInjection(testHandlerPath, projectPath, "handler_test.go", "tests")
 	if err != nil {
 		cobra.CheckErr(err)
 		return err
@@ -573,6 +570,13 @@ func (p *Project) CreateMainFile() error {
 		cobra.CheckErr(err)
 		return err
 	}
+
+	err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes_test.go", "tests")
+	if err != nil {
+		cobra.CheckErr(err)
+		return err
+	}
+
 	err = p.CreateFileWithInjection(internalServerPath, projectPath, "server.go", "server")
 	if err != nil {
 		log.Printf("Error injecting server.go file: %v", err)
@@ -720,6 +724,9 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		err = createdTemplate.Execute(createdFile, p)
 	case "db-docker":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DockerMap[p.Docker].templater.Docker())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "integration-tests":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.Tests())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "tests":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.TestHandler())))

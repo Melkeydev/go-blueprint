@@ -29,7 +29,7 @@ make docker-down
 ```
 
 - **Test the Application:**
-Executes tests defined in the `./tests` directory.
+Executes all tests defined in the project.
 ```bash
 make test
 ```

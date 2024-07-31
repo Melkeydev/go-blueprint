@@ -24,9 +24,8 @@ The project tree would look like this:
 ├── internal/
 │   └── server/
 │       ├── routes.go
+│       ├── routes_test.go 
 │       └── server.go
-├── tests/
-│   └── handler_test.go
 ├── go.mod
 ├── go.sum
 ├── Makefile
