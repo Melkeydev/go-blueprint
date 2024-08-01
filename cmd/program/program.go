@@ -672,14 +672,6 @@ func (p *Project) CreateMainFile() error {
 			}
 		}
 	}
-
-	// Air auto installation
-	//err = p.AirAutoInstallation(projectPath)
-	//if err != nil {
-	//	log.Printf("Error in installing Air: %v", err)
-	//	cobra.CheckErr(err)
-	//	return err
-	//}
 	return nil
 }
 
