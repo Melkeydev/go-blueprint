@@ -51,9 +51,9 @@ clean:
 	@rm -f main
 
 # Live Reload
-watch:
 {{if .UnixBased}}
-    @if command -v air > /dev/null; then \
+watch:
+	@if command -v air > /dev/null; then \
             air; \
             echo "Watching...";\
         else \
@@ -66,7 +66,10 @@ watch:
                 echo "You chose not to install air. Exiting..."; \
                 exit 1; \
             fi; \
-        fi{{else}}	@air
+        fi
+{{else}}
+watch:
+	@air
 {{end}}
 
 .PHONY: all build run test clean watch
