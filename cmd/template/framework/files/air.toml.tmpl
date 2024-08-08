@@ -4,7 +4,7 @@ tmp_dir = "tmp"
 
 [build]
   args_bin = []
-  bin = "./main"
+  bin = {{if .UnixBased }}"./main"{{ else }}".\\main.exe"{{ end }}
   cmd = "make build"
   delay = 1000
   exclude_dir = ["assets", "tmp", "vendor", "testdata"]

@@ -7,7 +7,7 @@ build:
 	@echo "Building..."
 	{{if or ( .AdvancedOptions.htmx ) ( .AdvancedOptions.tailwind )}}@templ generate{{end}}
 	{{if .AdvancedOptions.tailwind}}@tailwindcss -i cmd/web/assets/css/input.css -o cmd/web/assets/css/output.css{{end}}
-	@go build -o main cmd/api/main.go
+	{{if .UnixBased }}@go build -o main cmd/api/main.go{{ else }}@go build -o main.exe cmd/api/main.go{{ end }}
 
 # Run the application
 run:
@@ -51,20 +51,25 @@ clean:
 	@rm -f main
 
 # Live Reload
+{{if .UnixBased}}
 watch:
 	@if command -v air > /dev/null; then \
-	    air; \
-	    echo "Watching...";\
-	else \
-	    read -p "Go's 'air' is not installed on your machine. Do you want to install it? [Y/n] " choice; \
-	    if [ "$$choice" != "n" ] && [ "$$choice" != "N" ]; then \
-	        go install github.com/air-verse/air@latest; \
-	        air; \
-	        echo "Watching...";\
-	    else \
-	        echo "You chose not to install air. Exiting..."; \
-	        exit 1; \
-	    fi; \
-	fi
+            air; \
+            echo "Watching...";\
+        else \
+            read -p "Go's 'air' is not installed on your machine. Do you want to install it? [Y/n] " choice; \
+            if [ "$$choice" != "n" ] && [ "$$choice" != "N" ]; then \
+                go install github.com/air-verse/air@latest; \
+                air; \
+                echo "Watching...";\
+            else \
+                echo "You chose not to install air. Exiting..."; \
+                exit 1; \
+            fi; \
+        fi
+{{else}}
+watch:
+	@air
+{{end}}
 
-.PHONY: all build run test clean
+.PHONY: all build run test clean watch
