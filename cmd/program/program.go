@@ -785,7 +785,7 @@ func (p *Project) CreateHtmxTemplates() {
 }
 
 func (p *Project) CreateWebsocketImports(appDir string) {
-	websocketDependency := []string{"nhooyr.io/websocket"}
+	websocketDependency := []string{"github.com/coder/websocket"}
 	if p.ProjectType == flags.Fiber {
 		websocketDependency = []string{"github.com/gofiber/contrib/websocket"}
 	}
