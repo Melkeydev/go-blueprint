@@ -2,8 +2,14 @@
 
 # Build the application
 all: build
+{{if or ( .AdvancedOptions.htmx ) ( .AdvancedOptions.tailwind )}}
 
-build:
+check:
+	@command -v templ >/dev/null 2>&1 || { echo >&2 "templ is not installed. Run 'go install go install github.com/a-h/templ/cmd/templ@latest' to install it or check your environment."; exit 1; }
+	@command -v tailwindcss  >/dev/null 2>&1 || { echo >&2 "tailwindcss is not install. Go to https://tailwindcss.com/docs/installation to install it or check your environment."; exit 1; }
+
+{{end}}
+build:{{if or ( .AdvancedOptions.htmx ) ( .AdvancedOptions.tailwind )}} check{{end}}
 	@echo "Building..."
 	{{if or ( .AdvancedOptions.htmx ) ( .AdvancedOptions.tailwind )}}@templ generate{{end}}
 	{{if .AdvancedOptions.tailwind}}@tailwindcss -i cmd/web/assets/css/input.css -o cmd/web/assets/css/output.css{{end}}
