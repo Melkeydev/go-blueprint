@@ -75,8 +75,15 @@ var createCmd = &cobra.Command{
 
 		isInteractive := false
 		flagName := cmd.Flag("name").Value.String()
-		if flagName != "" && doesDirectoryExistAndIsNotEmpty(flagName) {
-			err = fmt.Errorf("directory '%s' already exists and is not empty. Please choose a different name", flagName)
+
+		if flagName != "" && !utils.ValidateModuleName(flagName) {
+			err = fmt.Errorf("'%s' is not a valid module name. Please choose a different name", flagName)
+			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
+		}
+
+		rootDirName := utils.GetRootDir(flagName)
+		if rootDirName != "" && doesDirectoryExistAndIsNotEmpty(rootDirName) {
+			err = fmt.Errorf("directory '%s' already exists and is not empty. Please choose a different name", rootDirName)
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
 
@@ -126,8 +133,15 @@ var createCmd = &cobra.Command{
 				log.Printf("Name of project contains an error: %v", err)
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
-			if doesDirectoryExistAndIsNotEmpty(options.ProjectName.Output) {
-				err = fmt.Errorf("directory '%s' already exists and is not empty. Please choose a different name", options.ProjectName.Output)
+
+			if options.ProjectName.Output != "" && !utils.ValidateModuleName(options.ProjectName.Output) {
+				err = fmt.Errorf("'%s' is not a valid module name. Please choose a different name", options.ProjectName.Output)
+				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
+			}
+
+			rootDirName = utils.GetRootDir(options.ProjectName.Output)
+			if doesDirectoryExistAndIsNotEmpty(rootDirName) {
+				err = fmt.Errorf("directory '%s' already exists and is not empty. Please choose a different name", rootDirName)
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
 			project.ExitCLI(tprogram)
