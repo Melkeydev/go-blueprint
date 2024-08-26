@@ -278,7 +278,7 @@ var createCmd = &cobra.Command{
 		}
 
 		fmt.Println(endingMsgStyle.Render("\nNext steps:"))
-		fmt.Println(endingMsgStyle.Render(fmt.Sprintf("• cd into the newly created project with: `cd %s`\n", project.ProjectName)))
+		fmt.Println(endingMsgStyle.Render(fmt.Sprintf("• cd into the newly created project with: `cd %s`\n", utils.GetRootDir(project.ProjectName))))
 
 		if options.Advanced.Choices["Tailwind"] {
 			options.Advanced.Choices["Htmx"] = true
