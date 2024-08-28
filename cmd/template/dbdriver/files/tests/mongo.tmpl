@@ -33,13 +33,13 @@ func mustStartMongoContainer() (func(context.Context) error, error) {
 func TestMain(m *testing.M) {
 	teardown, err := mustStartMongoContainer()
 	if err != nil {
-		log.Fatalf("could not start postgres container: %v", err)
+		log.Fatalf("could not start mongodb container: %v", err)
 	}
 
 	m.Run()
 
 	if teardown != nil && teardown(context.Background()) != nil {
-		log.Fatalf("could not teardown postgres container: %v", err)
+		log.Fatalf("could not teardown mongodb container: %v", err)
 	}
 }
 
