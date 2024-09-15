@@ -248,7 +248,7 @@ func (p *Project) CreateMainFile() error {
 	p.ProjectName = strings.TrimSpace(p.ProjectName)
 
 	// Create a new directory with the project name
-	projectPath := filepath.Join(p.AbsolutePath, p.ProjectName)
+	projectPath := filepath.Join(p.AbsolutePath, utils.GetRootDir(p.ProjectName))
 	if _, err := os.Stat(projectPath); os.IsNotExist(err) {
 		err := os.MkdirAll(projectPath, 0o751)
 		if err != nil {

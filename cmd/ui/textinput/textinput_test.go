@@ -8,6 +8,8 @@ func TestInputSanitization(t *testing.T) {
 		"new_project",
 		"NEW_PROJECT",
 		"new-project",
+		"new/project",
+		"new.project",
 	}
 	for _, testCase := range passTestCases {
 		if err := sanitizeInput(testCase); err != nil {
