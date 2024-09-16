@@ -19,7 +19,7 @@ templ-install:
 			exit 1; \
 		fi; \
 	fi
-{{ -else }}
+{{- else }}
 	@powershell -ExecutionPolicy Bypass -Command "if (Get-Command templ -ErrorAction SilentlyContinue) { \
 		Write-Output 'templ is already installed.'; \
 	} else { \
