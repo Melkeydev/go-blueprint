@@ -28,14 +28,13 @@ tailwind:
 	@chmod +x tailwindcss
 {{- else }}
 tailwind:
-	@curl -sL https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-windows-x64 -o tailwindcss
-{{- end }}
+	@Invoke-WebRequest -Uri "https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-windows-x64.exe" -OutFile "tailwindcss.exe"{{- end }}
 {{- end }}
 
 build:{{- if .AdvancedOptions.tailwind }} tailwind{{- end }}{{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) .OSCheck.UnixBased }} templ-install{{- end }}
 	@echo "Building..."
 	{{ if or .AdvancedOptions.htmx .AdvancedOptions.tailwind }}@templ generate{{- end }}
-	{{ if .AdvancedOptions.tailwind }}@./tailwindcss -i cmd/web/assets/css/input.css -o cmd/web/assets/css/output.css{{- end }}
+	{{ if and (.AdvancedOptions.tailwind) (.OSCheck.UnixBased ) }}@./tailwindcss -i cmd/web/assets/css/input.css -o cmd/web/assets/css/output.css{{- else }}@.\tailwindcss.exe -i cmd/web/assets/css/input.css -o cmd/web/assets/css/output.css{{- end }}
 	{{ if .OSCheck.UnixBased }}@go build -o main cmd/api/main.go{{- else }}@go build -o main.exe cmd/api/main.go{{- end }}
 
 # Run the application
