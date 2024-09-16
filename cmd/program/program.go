@@ -38,7 +38,7 @@ type Project struct {
 	AdvancedOptions   map[string]bool
 	AdvancedTemplates AdvancedTemplates
 	GitOptions        flags.Git
-	UnixBased         bool
+	OSCheck           map[string]bool
 }
 
 type AdvancedTemplates struct {
@@ -120,9 +120,19 @@ const (
 
 // CheckOs checks Operation system and generates MakeFile and `go build` command
 // Based on Project.Unixbase
-func (p *Project) CheckOs() {
+func (p *Project) CheckOS() {
+	if p.OSCheck == nil {
+		p.OSCheck = make(map[string]bool)
+	}
+
 	if runtime.GOOS != "windows" {
-		p.UnixBased = true
+		p.OSCheck["UnixBased"] = true
+	}
+	if runtime.GOOS == "linux" {
+		p.OSCheck["linux"] = true
+	}
+	if runtime.GOOS == "darwin" {
+		p.OSCheck["darwin"] = true
 	}
 }
 
@@ -258,7 +268,7 @@ func (p *Project) CreateMainFile() error {
 	}
 
 	// Define Operating system
-	p.CheckOs()
+	p.CheckOS()
 
 	// Create the map for our program
 	p.createFrameworkMap()
