@@ -50,7 +50,7 @@ tailwind:
 build:{{- if .AdvancedOptions.tailwind }} tailwind{{- end }}{{- if or .AdvancedOptions.htmx .AdvancedOptions.tailwind }} templ-install{{- end }}
 	@echo "Building..."
 	{{ if or .AdvancedOptions.htmx .AdvancedOptions.tailwind }}@templ generate{{- end }}
-	{{ if and (.AdvancedOptions.tailwind) (.OSCheck.UnixBased ) }}@./tailwindcss -i cmd/web/assets/css/input.css -o cmd/web/assets/css/output.css{{- else }}@.\tailwindcss.exe -i cmd/web/assets/css/input.css -o cmd/web/assets/css/output.css{{- end }}
+	{{ if .AdvancedOptions.tailwind }}@{{ if .OSCheck.UnixBased }}./tailwindcss{{ else }}.\tailwindcss.exe{{ end }} -i cmd/web/assets/css/input.css -o cmd/web/assets/css/output.css{{ end }}
 	{{ if .OSCheck.UnixBased }}@go build -o main cmd/api/main.go{{- else }}@go build -o main.exe cmd/api/main.go{{- end }}
 
 # Run the application
