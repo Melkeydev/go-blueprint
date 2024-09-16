@@ -121,9 +121,7 @@ const (
 // CheckOs checks Operation system and generates MakeFile and `go build` command
 // Based on Project.Unixbase
 func (p *Project) CheckOS() {
-	if p.OSCheck == nil {
-		p.OSCheck = make(map[string]bool)
-	}
+	p.OSCheck = make(map[string]bool)
 
 	if runtime.GOOS != "windows" {
 		p.OSCheck["UnixBased"] = true

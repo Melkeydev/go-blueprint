@@ -3,7 +3,8 @@
 # Build the application
 all: build
 
-{{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) .OSCheck.UnixBased }}
+{{- if or .AdvancedOptions.htmx .AdvancedOptions.tailwind }}
+{{- if .OSCheck.UnixBased }}
 templ-install:
 	@if ! command -v templ > /dev/null; then \
 		read -p "Go's 'templ' is not installed on your machine. Do you want to install it? [Y/n] " choice; \
@@ -18,6 +19,20 @@ templ-install:
 			exit 1; \
 		fi; \
 	fi
+{{ -else }}
+	@powershell -ExecutionPolicy Bypass -Command "if (Get-Command templ -ErrorAction SilentlyContinue) { \
+		Write-Output 'templ is already installed.'; \
+	} else { \
+		Write-Output 'Installing templ...'; \
+		go install github.com/a-h/templ/cmd/templ@latest; \
+		if (-not (Get-Command templ -ErrorAction SilentlyContinue)) { \
+			Write-Output 'templ installation failed. Exiting...'; \
+			exit 1; \
+		} else { \
+			Write-Output 'templ installed successfully.'; \
+		} \
+	}"
+{{- end }}
 {{- end }}
 
 {{- if .AdvancedOptions.tailwind}}
@@ -28,10 +43,10 @@ tailwind:
 	@chmod +x tailwindcss
 {{- else }}
 tailwind:
-	@powershell -Command "Invoke-WebRequest -Uri 'https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-windows-x64.exe' -OutFile 'tailwindcss.exe'"{{- end }}
+	@powershell -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri 'https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-windows-x64.exe' -OutFile 'tailwindcss.exe'"{{- end }}
 {{- end }}
 
-build:{{- if .AdvancedOptions.tailwind }} tailwind{{- end }}{{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) .OSCheck.UnixBased }} templ-install{{- end }}
+build:{{- if .AdvancedOptions.tailwind }} tailwind{{- end }}{{- if .AdvancedOptions.htmx .AdvancedOptions.tailwind }} templ-install{{- end }}
 	@echo "Building..."
 	{{ if or .AdvancedOptions.htmx .AdvancedOptions.tailwind }}@templ generate{{- end }}
 	{{ if and (.AdvancedOptions.tailwind) (.OSCheck.UnixBased ) }}@./tailwindcss -i cmd/web/assets/css/input.css -o cmd/web/assets/css/output.css{{- else }}@.\tailwindcss.exe -i cmd/web/assets/css/input.css -o cmd/web/assets/css/output.css{{- end }}
@@ -107,7 +122,15 @@ watch:
         fi
 {{- else }}
 watch:
-	@air
+	@powershell -ExecutionPolicy Bypass -Command "if (Get-Command air -ErrorAction SilentlyContinue) { \
+		air; \
+		Write-Output 'Watching...'; \
+	} else { \
+		Write-Output 'Installing air...'; \
+		go install github.com/air-verse/air@latest; \
+		air; \
+		Write-Output 'Watching...'; \
+	}"
 {{- end }}
 
-.PHONY: all build run test clean watch{{- if .AdvancedOptions.tailwind }} tailwind{{- end }}{{- if and (ne .DBDriver "none") (ne .DBDriver "sqlite") }} docker-run docker-down itest{{- end }}{{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) .OSCheck.UnixBased }} templ-install{{- end }}
+.PHONY: all build run test clean watch{{- if .AdvancedOptions.tailwind }} tailwind{{- end }}{{- if and (ne .DBDriver "none") (ne .DBDriver "sqlite") }} docker-run docker-down itest{{- end }}{{- if or .AdvancedOptions.htmx .AdvancedOptions.tailwind }} templ-install{{- end }}
