@@ -28,7 +28,7 @@ tailwind:
 	@chmod +x tailwindcss
 {{- else }}
 tailwind:
-	@Invoke-WebRequest -Uri "https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-windows-x64.exe" -OutFile "tailwindcss.exe"{{- end }}
+	@powershell -Command "Invoke-WebRequest -Uri 'https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-windows-x64.exe' -OutFile 'tailwindcss.exe'"{{- end }}
 {{- end }}
 
 build:{{- if .AdvancedOptions.tailwind }} tailwind{{- end }}{{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) .OSCheck.UnixBased }} templ-install{{- end }}
