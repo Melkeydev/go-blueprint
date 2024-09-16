@@ -46,7 +46,7 @@ tailwind:
 	@powershell -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri 'https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-windows-x64.exe' -OutFile 'tailwindcss.exe'"{{- end }}
 {{- end }}
 
-build:{{- if .AdvancedOptions.tailwind }} tailwind{{- end }}{{- if .AdvancedOptions.htmx .AdvancedOptions.tailwind }} templ-install{{- end }}
+build:{{- if .AdvancedOptions.tailwind }} tailwind{{- end }}{{- if or .AdvancedOptions.htmx .AdvancedOptions.tailwind }} templ-install{{- end }}
 	@echo "Building..."
 	{{ if or .AdvancedOptions.htmx .AdvancedOptions.tailwind }}@templ generate{{- end }}
 	{{ if and (.AdvancedOptions.tailwind) (.OSCheck.UnixBased ) }}@./tailwindcss -i cmd/web/assets/css/input.css -o cmd/web/assets/css/output.css{{- else }}@.\tailwindcss.exe -i cmd/web/assets/css/input.css -o cmd/web/assets/css/output.css{{- end }}
