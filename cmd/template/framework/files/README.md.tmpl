@@ -23,7 +23,7 @@ Run the application
 make run
 ```
 
-{- if and (ne .DBDriver "none") (ne .DBDriver "sqlite") }}
+{{- if and (ne .DBDriver "none") (ne .DBDriver "sqlite") }}
 Create DB container
 ```bash
 make docker-run
@@ -38,19 +38,19 @@ DB Integrations Test:
 ```bash
 make itest
 ```
-{{ - end }}
+{{- end }}
 
-live reload the application
+Live reload the application:
 ```bash
 make watch
 ```
 
-run the test suite
+Run the test suite:
 ```bash
 make test
 ```
 
-clean up binary from the last build
+Clean up binary from the last build:
 ```bash
 make clean
 ```
