@@ -1,7 +1,7 @@
 # Simple Makefile for a Go project
 
 # Build the application
-all: build
+all: build test
 
 {{- if or .AdvancedOptions.htmx .AdvancedOptions.tailwind }}
 {{- if .OSCheck.UnixBased }}

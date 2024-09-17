@@ -8,30 +8,37 @@ These instructions will get you a copy of the project up and running on your loc
 
 ## MakeFile
 
-run all make commands with clean tests
+Run build make command with tests
 ```bash
-make all build
+make all
 ```
 
-build the application
+Build the application
 ```bash
 make build
 ```
 
-run the application
+Run the application
 ```bash
 make run
 ```
 
+{- if and (ne .DBDriver "none") (ne .DBDriver "sqlite") }}
 Create DB container
 ```bash
 make docker-run
 ```
 
-Shutdown DB container
+Shutdown DB Container
 ```bash
 make docker-down
 ```
+
+DB Integrations Test:
+```bash
+make itest
+```
+{{ - end }}
 
 live reload the application
 ```bash
