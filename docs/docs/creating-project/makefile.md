@@ -4,47 +4,57 @@ Makefile is designed for building, running, and testing a Go project. It include
 
 ## Targets
 
-### `all`
+***`all`***
+
 The default target that builds the application by running the `build` target.
 
-### `templ-install`
+***`templ-install`***
+
 This target installs the Go-based templating tool, `templ`, if it is not already installed. It supports:
 
 - **Unix-based systems**: Prompts the user to install `templ` if it is missing.
 - **Windows**: Uses PowerShell to check for and install `templ`.
 
-### `tailwind`
+***`tailwind`***
+
 This target downloads and sets up `tailwindcss`, depending on the user's operating system:
 
 - **Linux**: Downloads the Linux binary.
 - **macOS**: Downloads the macOS binary.
 - **Windows**: Uses PowerShell to download the Windows executable.
 
-### `build`
+***`build`***
+
 Builds the Go application and generates assets with `templ` and `tailwind`, if the corresponding advanced options are enabled:
 
 - Uses `templ` to generate templates.
 - Runs `tailwindcss` to compile CSS.
 
-### `run`
+***`run`***
+
 Runs the Go application by executing the `cmd/api/main.go` file.
 
-### `docker-run` and `docker-down`
+***`docker-run`*** and ***`docker-down`***
+
 These targets manage a database container:
 
 - **Unix-based systems**: Tries Docker Compose V2 first, falls back to V1 if needed.
 - **Windows**: Uses Docker Compose without version fallback.
 
-### `test`
+***`test`***
+
 Runs unit tests for the application using `go test`.
 
-### `itest`
-Runs integration tests if a database is used.
+***`itest`***
 
-### `clean`
+Runs integration tests if a database Lite) is used.
+
+***`clean`***
+
 Removes the compiled binary (`main` or `main.exe` depending on the OS).
 
-### `watch`
+***`watch`***
+
 Enables live reload for the project using the `air` tool:
 
 - **Unix-based systems**: Checks if `air` is installed and prompts for installation if missing.
