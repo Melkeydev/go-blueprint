@@ -1,49 +1,52 @@
 ## Makefile Project Management
 
-This Makefile is included as a default after project creation. It offers a set of commands to simplify various development tasks for managing a Go project.
+Makefile is designed for building, running, and testing a Go project. It includes support for advanced options like HTMX and Tailwind CSS, and handles OS-specific operations for Unix-based systems (Linux/macOS) and Windows.
 
-## Commands
+## Targets
 
-- **Build the Application:**
-Compiles the application and generates the executable.
-```bash
-make build
-```
+### `all`
+The default target that builds the application by running the `build` target.
 
-- **Run the Application:**
-Executes the application using `go run`.
-```bash
-make run
-```
+### `templ-install`
+This target installs the Go-based templating tool, `templ`, if it is not already installed. It supports:
 
-- **Create DB Container:**
-Utilizes Docker Compose to set up the database container. It includes a fallback for Docker Compose V1.
-```bash
-make docker-run
-```
+- **Unix-based systems**: Prompts the user to install `templ` if it is missing.
+- **Windows**: Uses PowerShell to check for and install `templ`.
 
-- **Shutdown DB Container:**
-Stops and removes the database container. It also has a fallback for Docker Compose V1.
-```bash
-make docker-down
-```
+### `tailwind`
+This target downloads and sets up `tailwindcss`, depending on the user's operating system:
 
-- **Test the Application:**
-Executes all tests defined in the project.
-```bash
-make test
-```
+- **Linux**: Downloads the Linux binary.
+- **macOS**: Downloads the macOS binary.
+- **Windows**: Uses PowerShell to download the Windows executable.
 
-- **Clean the Binary:**
-Removes the generated binary file.
-```bash
-make clean
-```
+### `build`
+Builds the Go application and generates assets with `templ` and `tailwind`, if the corresponding advanced options are enabled:
 
-- **Live Reload:**
-Monitors file changes and automatically rebuilds and restarts the application using `air`.
-```bash
-make watch
-```
+- Uses `templ` to generate templates.
+- Runs `tailwindcss` to compile CSS.
 
-Makefile simplifies common development tasks, making it easier to build, run, test, and manage dependencies in a Go project. It enhances productivity by providing a standardized approach to project management.
+### `run`
+Runs the Go application by executing the `cmd/api/main.go` file.
+
+### `docker-run` and `docker-down`
+These targets manage a database container:
+
+- **Unix-based systems**: Tries Docker Compose V2 first, falls back to V1 if needed.
+- **Windows**: Uses Docker Compose without version fallback.
+
+### `test`
+Runs unit tests for the application using `go test`.
+
+### `itest`
+Runs integration tests if a database is used.
+
+### `clean`
+Removes the compiled binary (`main` or `main.exe` depending on the OS).
+
+### `watch`
+Enables live reload for the project using the `air` tool:
+
+- **Unix-based systems**: Checks if `air` is installed and prompts for installation if missing.
+- **Windows**: Uses PowerShell to manage `air` installation and execution.
+

@@ -22,7 +22,7 @@ templ-install:
 {{- else }}
 templ-install:
 	@powershell -ExecutionPolicy Bypass -Command "if (Get-Command templ -ErrorAction SilentlyContinue) { \
-		Write-Output 'templ is already installed.'; \
+		; \
 	} else { \
 		Write-Output 'Installing templ...'; \
 		go install github.com/a-h/templ/cmd/templ@latest; \
