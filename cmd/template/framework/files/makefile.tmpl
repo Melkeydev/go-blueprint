@@ -39,12 +39,12 @@ templ-install:
 {{- if .AdvancedOptions.tailwind}}
 {{- if .OSCheck.UnixBased}}
 tailwind:
-	{{ if .OSCheck.linux }}@curl -sL https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64 -o tailwindcss{{- end }}
-	{{ if .OSCheck.darwin }}@curl -sL https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-macos-x64 -o tailwindcss{{- end }}
+	{{ if .OSCheck.linux }}@if [ ! -f tailwindcss ]; then curl -sL https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64 -o tailwindcss; fi{{- end }}
+	{{ if .OSCheck.darwin }}@if [ ! -f tailwindcss ]; then curl -sL https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-macos-x64 -o tailwindcss; fi{{- end }}
 	@chmod +x tailwindcss
 {{- else }}
 tailwind:
-	@powershell -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri 'https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-windows-x64.exe' -OutFile 'tailwindcss.exe'"{{- end }}
+	@if not exist tailwindcss.exe powershell -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri 'https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-windows-x64.exe' -OutFile 'tailwindcss.exe'"{{- end }}
 {{- end }}
 
 build:{{- if .AdvancedOptions.tailwind }} tailwind{{- end }}{{- if or .AdvancedOptions.htmx .AdvancedOptions.tailwind }} templ-install{{- end }}
