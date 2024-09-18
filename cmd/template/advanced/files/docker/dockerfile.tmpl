@@ -1,0 +1,16 @@
+FROM golang:1.22-alpine AS build
+
+RUN apk add --no-cache make
+
+WORKDIR /app
+
+COPY . .
+RUN go mod download
+
+RUN make build
+
+FROM alpine:3.20.1 AS prod
+WORKDIR /app
+COPY --from=build /app/main /app/main
+EXPOSE ${PORT}
+CMD ["./main"]

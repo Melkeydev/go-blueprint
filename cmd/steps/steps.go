@@ -113,6 +113,11 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 						Title: "TailwindCSS",
 						Desc:  "A utility-first CSS framework (selecting this will automatically add HTMX)",
 					},
+					{
+						Flag:  "Docker",
+						Title: "Docker",
+						Desc:  "Dockerfile and docker-compose generic configuration for go project",
+					},
 				},
 			},
 			"git": {

@@ -1,0 +1,15 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      PORT: ${PORT}
+    networks:
+      - blueprint
+
+networks:
+  blueprint:
