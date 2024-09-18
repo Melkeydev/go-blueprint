@@ -1,8 +1,32 @@
-version: '3.8'
-
 services:
-  redis:
+{{- if .AdvancedOptions.docker }}
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      PORT: ${PORT}
+      BLUEPRINT_DB_PORT: ${BLUEPRINT_DB_PORT}
+      BLUEPRINT_DB_ADDRESS: ${BLUEPRINT_DB_ADDRES}
+      BLUEPRINT_DB_PASSWORD: ${BLUEPRINT_DB_PASSWORD}
+      BLUEPRINT_DB_DATABASE: ${BLUEPRINT_DB_DATABASE}
+    networks:
+      - blueprint
+{{- end }}
+  redis_bp:
     image: redis:7.2.4
     restart: always
     ports:
-      - "${DB_PORT}:6379"
+      - "${BLUEPRINT_DB_PORT}:6379"
+    {{- if .AdvancedOptions.docker }}
+    networks:
+      - blueprint
+    {{- end }}
+
+{{- if .AdvancedOptions.docker }}
+networks:
+  blueprint:
+{{- end }}

@@ -1,6 +1,6 @@
 FROM golang:1.22-alpine AS build
 
-RUN apk add --no-cache make
+RUN apk add --no-cache make curl
 
 WORKDIR /app
 

@@ -1,17 +1,43 @@
-version: '3.8'
-
 services:
-  mysql:
+{{- if .AdvancedOptions.docker }}
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      APP_ENV: ${APP_ENV}
+      PORT: ${PORT}
+      BLUEPRINT_DB_HOST: ${BLUEPRINT_DB_HOST}
+      BLUEPRINT_DB_PORT: ${BLUEPRINT_DB_PORT}
+      BLUEPRINT_DB_DATABASE: ${BLUEPRINT_DB_DATABASE}
+      BLUEPRINT_DB_USERNAME: ${BLUEPRINT_DB_USERNAME}
+      BLUEPRINT_DB_PASSWORD: ${BLUEPRINT_DB_PASSWORD}
+      BLUEPRINT_DB_ROOT_PASSWORD: ${BLUEPRINT_DB_ROOT_PASSWORD}
+    networks:
+      - blueprint
+{{- end }}
+  mysql_bp:
     image: mysql:latest
     environment:
-      MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${BLUEPRINT_DB_DATABASE}
+      MYSQL_USER: ${BLUEPRINT_DB_USERNAME}
+      MYSQL_PASSWORD: ${BLUEPRINT_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${BLUEPRINT_DB_ROOT_PASSWORD}
     ports:
-      - "${DB_PORT}:3306"
+      - "${BLUEPRINT_DB_PORT}:3306"
     volumes:
-      - mysql_volume:/var/lib/mysql
+      - mysql_volume_bp:/var/lib/mysql
+    {{- if .AdvancedOptions.docker }}
+    networks:
+      - blueprint
+    {{- end }}
 
 volumes:
-  mysql_volume:
+  mysql_volume_bp:
+{{- if .AdvancedOptions.docker }}
+networks:
+  blueprint:
+{{- end }}

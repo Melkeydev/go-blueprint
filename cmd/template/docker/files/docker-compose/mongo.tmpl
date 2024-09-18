@@ -1,15 +1,39 @@
-version: '3.8'
-
 services:
-  mongo:
+{{- if .AdvancedOptions.docker }}
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      APP_ENV: ${APP_ENV}
+      PORT: ${PORT}
+      BLUEPRINT_DB_HOST: ${BLUEPRINT_DB_HOST}
+      BLUEPRINT_DB_PORT:  ${BLUEPRINT_DB_PORT}
+      BLUEPRINT_DB_USERNAME: ${BLUEPRINT_DB_USERNAME}
+      BLUEPRINT_DB_ROOT_PASSWORD: ${BLUEPRINT_DB_ROOT_PASSWORD}
+    networks:
+      - blueprint
+{{- end }}
+  mongo_bp:
     image: mongo:latest
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MONGO_INITDB_ROOT_USERNAME: ${BLUEPRINT_DB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${BLUEPRINT_DB_ROOT_PASSWORD}
     ports:
-      - "${DB_PORT}:27017"
+      - "${BLUEPRINT_DB_PORT}:27017"
     volumes:
-      - mongo_volume:/data/db
+      - mongo_volume_bp:/data/db
+    {{- if .AdvancedOptions.docker }}
+    networks:
+      - blueprint
+    {{- end }}
 
 volumes:
-  mongo_volume:
+  mongo_volume_bp:
+{{- if .AdvancedOptions.docker }}
+networks:
+  blueprint:
+{{- end }}

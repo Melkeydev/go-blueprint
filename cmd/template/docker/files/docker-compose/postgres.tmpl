@@ -1,16 +1,42 @@
-version: '3.8'
-
 services:
-  psql:
+{{- if .AdvancedOptions.docker }}
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      APP_ENV: ${APP_ENV}
+      PORT: ${PORT}
+      BLUEPRINT_DB_HOST: ${BLUEPRINT_DB_HOST}
+      BLUEPRINT_DB_PORT: ${BLUEPRINT_DB_PORT}
+      BLUEPRINT_DB_DATABASE: ${BLUEPRINT_DB_DATABASE}
+      BLUEPRINT_DB_USERNAME: ${BLUEPRINT_DB_USERNAME}
+      BLUEPRINT_DB_PASSWORD: ${BLUEPRINT_DB_PASSWORD}
+      BLUEPRINT_DB_SCHEMA: ${BLUEPRINT_DB_SCHEMA}
+    networks:
+      - blueprint
+{{- end }}
+  psql_bp:
     image: postgres:latest
     environment:
-      POSTGRES_DB: ${DB_DATABASE}
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${BLUEPRINT_DB_DATABASE}
+      POSTGRES_USER: ${BLUEPRINT_DB_USERNAME}
+      POSTGRES_PASSWORD: ${BLUEPRINT_DB_PASSWORD}
     ports:
-      - "${DB_PORT}:5432"
+      - "${BLUEPRINT_DB_PORT}:5432"
     volumes:
-      - psql_volume:/var/lib/postgresql/data
+      - psql_volume_bp:/var/lib/postgresql/data
+    {{- if .AdvancedOptions.docker }}
+    networks:
+      - blueprint
+    {{- end }}
 
 volumes:
-  psql_volume:
+  psql_volume_bp:
+{{- if .AdvancedOptions.docker }}
+networks:
+  blueprint:
+{{- end }}
