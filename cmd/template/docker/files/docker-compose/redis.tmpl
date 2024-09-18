@@ -8,6 +8,7 @@ services:
     ports:
       - ${PORT}:${PORT}
     environment:
+      APP_ENV: ${APP_ENV}
       PORT: ${PORT}
       BLUEPRINT_DB_PORT: ${BLUEPRINT_DB_PORT}
       BLUEPRINT_DB_ADDRESS: ${BLUEPRINT_DB_ADDRES}

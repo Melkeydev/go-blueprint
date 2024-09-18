@@ -7,9 +7,5 @@ services:
     ports:
       - ${PORT}:${PORT}
     environment:
+      APP_ENV: ${APP_ENV}
       PORT: ${PORT}
-    networks:
-      - blueprint
-
-networks:
-  blueprint:
