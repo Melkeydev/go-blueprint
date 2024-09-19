@@ -9,3 +9,11 @@ services:
     environment:
       APP_ENV: ${APP_ENV}
       PORT: ${PORT}
+{{ if and .AdvancedOptions.docker .DBDriver "sqlite" }}
+      BLUEPRINT_DB_URL: ${BLUEPRINT_DB_URL}
+    volumes:
+      - sqlite_bp:/app
+
+volumes:
+  sqlite_bp:
+{{- end }}

@@ -51,13 +51,13 @@ build:{{- if .AdvancedOptions.tailwind }} tailwind{{- end }}{{- if or .AdvancedO
 	@echo "Building..."
 	{{ if or .AdvancedOptions.htmx .AdvancedOptions.tailwind }}@templ generate{{- end }}
 	{{ if .AdvancedOptions.tailwind }}@{{ if .OSCheck.UnixBased }}./tailwindcss{{ else }}.\tailwindcss.exe{{ end }} -i cmd/web/assets/css/input.css -o cmd/web/assets/css/output.css{{ end }}
-	{{ if .OSCheck.UnixBased }}@go build -o main cmd/api/main.go{{- else }}@go build -o main.exe cmd/api/main.go{{- end }}
+	{{ if .OSCheck.UnixBased }}@{{ if and .AdvancedOptions.docker .DBDriver "sqlite" }}CGO_ENABLED=1 GOOS=linux{{end}} go build -o main cmd/api/main.go{{- else }}@go build -o main.exe cmd/api/main.go{{- end }}
 
 # Run the application
 run:
 	@go run cmd/api/main.go
 
-{{- if and (ne .DBDriver "none") (ne .DBDriver "sqlite") }}
+{{- if or .AdvancedOptions.docker (and (ne .DBDriver "none") (ne .DBDriver "sqlite")) }}
 {{- if .OSCheck.UnixBased }}
 # Create DB container
 docker-run:

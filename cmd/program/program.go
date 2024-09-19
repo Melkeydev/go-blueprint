@@ -333,7 +333,7 @@ func (p *Project) CreateMainFile() error {
 				return err
 			}
 		} else {
-			fmt.Println(" We are unable to create docker-compose.yml file for an SQLite database")
+			fmt.Println(" SQLite doesn't support docker-compose.yml configuration")
 		}
 	}
 

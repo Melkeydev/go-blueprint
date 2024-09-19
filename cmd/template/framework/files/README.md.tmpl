@@ -23,7 +23,7 @@ Run the application
 make run
 ```
 
-{{- if and (ne .DBDriver "none") (ne .DBDriver "sqlite") }}
+{{- if or .AdvancedOptions.docker (and (ne .DBDriver "none") (ne .DBDriver "sqlite")) }}
 Create DB container
 ```bash
 make docker-run
