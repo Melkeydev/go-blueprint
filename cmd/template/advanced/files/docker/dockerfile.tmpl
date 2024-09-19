@@ -1,6 +1,6 @@
 FROM golang:1.22-alpine AS build
 
-RUN apk add --no-cache make curl{{- if and .AdvancedOptions.docker .DBDriver "sqlite" }} alpine-sdk{{ end}}
+RUN apk add --no-cache make curl{{- if and (.AdvancedOptions.docker) (eq .DBDriver "sqlite") }} alpine-sdk{{ end}}
 
 WORKDIR /app
 
