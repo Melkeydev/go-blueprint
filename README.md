@@ -181,7 +181,7 @@ go-blueprint create --advanced --feature docker
 
 Or all features at once:
 ```bash
-go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind ---feature docker -git commit
+go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --feature docker -git commit
 ```
 
 <p align="center">
