@@ -54,7 +54,8 @@ Here's an overview of the project structure created by Go Blueprint when all opt
 │       ├── routes_test.go        # Test file for testing HTTP handlers.
 │       └── server.go             # Main server logic.
 ├── .air.toml                     # Configuration file for Air, a live-reload utility.
-├── docker-compose.yml            # Docker Compose configuration for defining DB config.
+├── docker-compose.yml            # Docker Compose configuration.
+├── Dockerfile                    # Dockerfile configuration for the go project.
 ├── .env                          # Environment configuration file.
 ├── .gitignore                    # File specifying which files and directories to ignore in Git.
 ├── go.mod                        # Go module file for managing dependencies.
@@ -66,7 +67,3 @@ Here's an overview of the project structure created by Go Blueprint when all opt
 ```
 
 This structure provides a comprehensive organization of your project, separating source code, tests, configurations and documentation.
-
-
-
-
