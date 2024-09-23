@@ -36,7 +36,7 @@ services:
       - psql_volume_bp:/var/lib/postgresql/data
     {{- if .AdvancedOptions.docker }}
     healthcheck:
-      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${BLUEPRINT_DB_PASSWORD} -d ${BLUEPRINT_DB_DATABASE}'"]
+      test: ["CMD", "sh -c 'pg_isready -U ${BLUEPRINT_DB_USERNAME} -d ${BLUEPRINT_DB_DATABASE}'"]
       interval: 5s
       timeout: 5s
       retries: 3
