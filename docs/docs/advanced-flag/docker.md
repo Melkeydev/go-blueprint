@@ -4,7 +4,7 @@ The Dockerfile includes a two-stage build that leverages Makefile configuration.
 ## Dockerfile
 
 ```dockerfile
-FROM golang:1.22-alpine AS build
+FROM golang:1.23-alpine AS build
 
 RUN apk add --no-cache make curl
 
@@ -32,6 +32,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: prod
+    restart: unless-stopped
     ports:
       - ${PORT}:${PORT}
     environment:
@@ -42,11 +43,14 @@ services:
       BLUEPRINT_DB_DATABASE: ${BLUEPRINT_DB_DATABASE}
       BLUEPRINT_DB_USERNAME: ${BLUEPRINT_DB_USERNAME}
       BLUEPRINT_DB_PASSWORD: ${BLUEPRINT_DB_PASSWORD}
-      BLUEPRINT_DB_ROOT_PASSWORD: ${BLUEPRINT_DB_ROOT_PASSWORD}
+    depends_on:
+      mysql_bp:
+        condition: service_healthy
     networks:
       - blueprint
   mysql_bp:
     image: mysql:latest
+    restart: unless-stopped
     environment:
       MYSQL_DATABASE: ${BLUEPRINT_DB_DATABASE}
       MYSQL_USER: ${BLUEPRINT_DB_USERNAME}
@@ -56,6 +60,12 @@ services:
       - "${BLUEPRINT_DB_PORT}:3306"
     volumes:
       - mysql_volume_bp:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${BLUEPRINT_DB_USERNAME}", "--password=${BLUEPRINT_DB_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     networks:
       - blueprint
 
