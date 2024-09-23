@@ -5,6 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: prod
+    restart: unless-stopped
     ports:
       - ${PORT}:${PORT}
     environment:
@@ -14,11 +15,16 @@ services:
       BLUEPRINT_DB_PORT:  ${BLUEPRINT_DB_PORT}
       BLUEPRINT_DB_USERNAME: ${BLUEPRINT_DB_USERNAME}
       BLUEPRINT_DB_ROOT_PASSWORD: ${BLUEPRINT_DB_ROOT_PASSWORD}
+    depends_on:
+      mongo_bp:
+        condition: service_healthy
     networks:
       - blueprint
 {{- end }}
+
   mongo_bp:
     image: mongo:latest
+    restart: unless-stopped
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${BLUEPRINT_DB_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${BLUEPRINT_DB_ROOT_PASSWORD}
@@ -27,6 +33,12 @@ services:
     volumes:
       - mongo_volume_bp:/data/db
     {{- if .AdvancedOptions.docker }}
+    healthcheck:
+      test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     networks:
       - blueprint
     {{- end }}

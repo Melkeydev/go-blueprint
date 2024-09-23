@@ -5,6 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: prod
+    restart: unless-stopped
     ports:
       - ${PORT}:${PORT}
     environment:
@@ -15,12 +16,16 @@ services:
       BLUEPRINT_DB_DATABASE: ${BLUEPRINT_DB_DATABASE}
       BLUEPRINT_DB_USERNAME: ${BLUEPRINT_DB_USERNAME}
       BLUEPRINT_DB_PASSWORD: ${BLUEPRINT_DB_PASSWORD}
-      BLUEPRINT_DB_ROOT_PASSWORD: ${BLUEPRINT_DB_ROOT_PASSWORD}
+    depends_on:
+      mysql_bp:
+        condition: service_healthy
     networks:
       - blueprint
 {{- end }}
+
   mysql_bp:
     image: mysql:latest
+    restart: unless-stopped
     environment:
       MYSQL_DATABASE: ${BLUEPRINT_DB_DATABASE}
       MYSQL_USER: ${BLUEPRINT_DB_USERNAME}
@@ -31,6 +36,12 @@ services:
     volumes:
       - mysql_volume_bp:/var/lib/mysql
     {{- if .AdvancedOptions.docker }}
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${BLUEPRINT_DB_USERNAME}", "--password=${BLUEPRINT_DB_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     networks:
       - blueprint
     {{- end }}

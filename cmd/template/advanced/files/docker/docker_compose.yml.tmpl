@@ -4,6 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: prod
+    restart: unless-stopped
     ports:
       - ${PORT}:${PORT}
     environment:

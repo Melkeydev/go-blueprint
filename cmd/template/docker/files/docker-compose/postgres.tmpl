@@ -5,6 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: prod
+    restart: unless-stopped
     ports:
       - ${PORT}:${PORT}
     environment:
@@ -16,11 +17,16 @@ services:
       BLUEPRINT_DB_USERNAME: ${BLUEPRINT_DB_USERNAME}
       BLUEPRINT_DB_PASSWORD: ${BLUEPRINT_DB_PASSWORD}
       BLUEPRINT_DB_SCHEMA: ${BLUEPRINT_DB_SCHEMA}
+    depends_on:
+      psql_bp:
+        condition: service_healthy
     networks:
       - blueprint
 {{- end }}
+
   psql_bp:
     image: postgres:latest
+    restart: unless-stopped
     environment:
       POSTGRES_DB: ${BLUEPRINT_DB_DATABASE}
       POSTGRES_USER: ${BLUEPRINT_DB_USERNAME}
@@ -30,6 +36,12 @@ services:
     volumes:
       - psql_volume_bp:/var/lib/postgresql/data
     {{- if .AdvancedOptions.docker }}
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${BLUEPRINT_DB_PASSWORD} -d ${BLUEPRINT_DB_DATABASE}'"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     networks:
       - blueprint
     {{- end }}

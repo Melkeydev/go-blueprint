@@ -5,29 +5,38 @@ services:
       context: .
       dockerfile: Dockerfile
       target: prod
+    restart: unless-stopped
     ports:
       - ${PORT}:${PORT}
     environment:
       APP_ENV: ${APP_ENV}
       PORT: ${PORT}
       BLUEPRINT_DB_PORT: ${BLUEPRINT_DB_PORT}
-      BLUEPRINT_DB_ADDRESS: ${BLUEPRINT_DB_ADDRES}
+      BLUEPRINT_DB_ADDRESS: ${BLUEPRINT_DB_ADDRESS}
       BLUEPRINT_DB_PASSWORD: ${BLUEPRINT_DB_PASSWORD}
       BLUEPRINT_DB_DATABASE: ${BLUEPRINT_DB_DATABASE}
+    depends_on:
+      redis_bp:
+        condition: service_healthy
     networks:
       - blueprint
 {{- end }}
+
   redis_bp:
     image: redis:7.2.4
-    restart: always
+    restart: unless-stopped
     ports:
       - "${BLUEPRINT_DB_PORT}:6379"
     {{- if .AdvancedOptions.docker }}
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh ${BLUEPRINT_DB_HOST}:${BLUEPRINT_DB_PORT} --quiet
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     networks:
       - blueprint
-    {{- end }}
 
-{{- if .AdvancedOptions.docker }}
 networks:
   blueprint:
 {{- end }}
