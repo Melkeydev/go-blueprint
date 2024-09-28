@@ -28,7 +28,7 @@ services:
       - "${BLUEPRINT_DB_PORT}:6379"
     {{- if .AdvancedOptions.docker }}
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh ${BLUEPRINT_DB_HOST}:${BLUEPRINT_DB_PORT} --quiet
+      test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 5s
       retries: 3
