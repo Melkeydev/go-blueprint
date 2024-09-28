@@ -36,11 +36,11 @@ services:
       - mysql_volume_bp:/var/lib/mysql
     {{- if .AdvancedOptions.docker }}
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${BLUEPRINT_DB_USERNAME}", "--password=${BLUEPRINT_DB_PASSWORD}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "${BLUEPRINT_DB_HOST}", "-u", "${BLUEPRINT_DB_USERNAME}", "--password=${BLUEPRINT_DB_PASSWORD}"]
       interval: 5s
       timeout: 5s
       retries: 3
-      start_period: 5s
+      start_period: 15s 
     networks:
       - blueprint
     {{- end }}

@@ -61,11 +61,11 @@ services:
     volumes:
       - mysql_volume_bp:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${BLUEPRINT_DB_USERNAME}", "--password=${BLUEPRINT_DB_PASSWORD}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "${BLUEPRINT_DB_HOST}", "-u", "${BLUEPRINT_DB_USERNAME}", "--password=${BLUEPRINT_DB_PASSWORD}"]
       interval: 5s
       timeout: 5s
       retries: 3
-      start_period: 5s
+      start_period: 15s
     networks:
       - blueprint
 
@@ -75,4 +75,7 @@ networks:
   blueprint:
 ```
 
+## Note
+If you are testing more than one framework locally, be aware of Docker leftovers such as volumes.
+For proper cleaning and building, use `docker compose down --volumes` and `docker compose up --build`.
 
