@@ -13,7 +13,7 @@ services:
 {{- if and (.AdvancedOptions.docker) (eq .DBDriver "sqlite") }}
       BLUEPRINT_DB_URL: ${BLUEPRINT_DB_URL}
     volumes:
-      - sqlite_bp:/app
+      - sqlite_bp:/app/db
 
 volumes:
   sqlite_bp:
