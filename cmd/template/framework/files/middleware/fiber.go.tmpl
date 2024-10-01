@@ -1,0 +1,12 @@
+package server
+
+import (
+	"log/slog"
+
+	"github.com/gofiber/fiber/v2"
+)
+
+func Logger(c *fiber.Ctx) error {
+	slog.Info("Request URL path", "path", c.Request().URI().Path())
+	return c.Next()
+}

@@ -14,7 +14,7 @@ import (
 )
 func (s *Server) RegisterRoutes() http.Handler {
 	e := echo.New()
-	e.Use(middleware.Logger())
+	e.Use(Logger)
 	e.Use(middleware.Recover())
   {{.AdvancedTemplates.TemplateRoutes}}
 

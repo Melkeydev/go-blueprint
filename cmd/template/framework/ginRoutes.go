@@ -12,6 +12,9 @@ var ginRoutesTemplate []byte
 //go:embed files/tests/gin-test.go.tmpl
 var ginTestHandlerTemplate []byte
 
+//go:embed files/middleware/gin.go.tmpl
+var ginMiddlewareTemplate []byte
+
 // GinTemplates contains the methods used for building
 // an app that uses [github.com/gin-gonic/gin]
 type GinTemplates struct{}
@@ -22,6 +25,10 @@ func (g GinTemplates) Main() []byte {
 
 func (g GinTemplates) Server() []byte {
 	return standardServerTemplate
+}
+
+func (g GinTemplates) Middleware() []byte {
+	return ginMiddlewareTemplate
 }
 
 func (g GinTemplates) Routes() []byte {

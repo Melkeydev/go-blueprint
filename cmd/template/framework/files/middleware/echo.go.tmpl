@@ -1,0 +1,14 @@
+package server
+
+import (
+	"log/slog"
+
+	"github.com/labstack/echo/v4"
+)
+
+func Logger(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		slog.Info("Request URL path", "path", c.Request().URL.Path)
+		return next(c)
+	}
+}
