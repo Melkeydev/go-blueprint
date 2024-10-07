@@ -1,6 +1,7 @@
 FROM golang:1.23-alpine AS build
-
-RUN apk add --no-cache make curl{{- if and (.AdvancedOptions.docker) (eq .DBDriver "sqlite") }} alpine-sdk{{ end }}
+{{- if or (.AdvancedOptions.tailwind) (eq .DBDriver "sqlite") }}
+RUN apk add --no-cache{{- if .AdvancedOptions.tailwind }} curl{{ end }}{{- if (eq .DBDriver "sqlite") }} alpine-sdk{{ end }}
+{{- end }}
 
 WORKDIR /app
 
@@ -13,7 +14,8 @@ RUN templ generate
 {{- end}}
 
 {{- if .AdvancedOptions.tailwind}}
-RUN curl -sL https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64 -o tailwindcss && chmod +x tailwindcss
+RUN curl -sL https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64 -o tailwindcss
+RUN chmod +x tailwindcss
 RUN ./tailwindcss -i cmd/web/assets/css/input.css -o cmd/web/assets/css/output.css
 {{- end }}
 
