@@ -1,4 +1,5 @@
-r.Static("/assets", "./cmd/web/assets")
+staticFiles, _ := fs.Sub(web.Files, "assets")
+r.StaticFS("/assets", http.FS(staticFiles))
 
 r.GET("/web", func(c *gin.Context) {
   templ.Handler(web.HelloForm()).ServeHTTP(c.Writer, c.Request)

@@ -49,6 +49,9 @@ var chiHtmxTemplRoutes []byte
 //go:embed files/htmx/routes/gin.tmpl
 var ginHtmxTemplRoutes []byte
 
+//go:embed files/htmx/imports/gin.tmpl
+var ginHtmxTemplImports []byte
+
 //go:embed files/htmx/routes/gorilla.tmpl
 var gorillaHtmxTemplRoutes []byte
 
@@ -142,4 +145,8 @@ func FiberHtmxTemplImportsTemplate() []byte {
 
 func FiberWebsocketTemplImportsTemplate() []byte {
 	return fiberWebsocketTemplImports
+}
+
+func GinHtmxTemplImportsTemplate() []byte {
+	return ginHtmxTemplImports
 }
