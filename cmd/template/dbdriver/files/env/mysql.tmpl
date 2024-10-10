@@ -1,6 +1,10 @@
-DB_HOST=localhost
-DB_PORT=3306
-DB_DATABASE=blueprint
-DB_USERNAME=melkey
-DB_PASSWORD=password1234
-DB_ROOT_PASSWORD=password4321
+{{- if .AdvancedOptions.docker }}
+BLUEPRINT_DB_HOST=mysql_bp
+{{- else }}
+BLUEPRINT_DB_HOST=localhost
+{{- end }}
+BLUEPRINT_DB_PORT=3306
+BLUEPRINT_DB_DATABASE=blueprint
+BLUEPRINT_DB_USERNAME=melkey
+BLUEPRINT_DB_PASSWORD=password1234
+BLUEPRINT_DB_ROOT_PASSWORD=password4321

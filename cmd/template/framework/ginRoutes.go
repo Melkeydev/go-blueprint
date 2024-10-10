@@ -33,7 +33,7 @@ func (g GinTemplates) TestHandler() []byte {
 }
 
 func (g GinTemplates) HtmxTemplImports() []byte {
-	return advanced.StdLibHtmxTemplImportsTemplate()
+	return advanced.GinHtmxTemplImportsTemplate()
 }
 
 func (g GinTemplates) HtmxTemplRoutes() []byte {

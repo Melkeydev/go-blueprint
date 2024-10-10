@@ -1,17 +1,53 @@
-version: '3.8'
-
 services:
-  mysql:
-    image: mysql:latest
-    environment:
-      MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+{{- if .AdvancedOptions.docker }}
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod
+    restart: unless-stopped
     ports:
-      - "${DB_PORT}:3306"
+      - ${PORT}:${PORT}
+    environment:
+      APP_ENV: ${APP_ENV}
+      PORT: ${PORT}
+      BLUEPRINT_DB_HOST: ${BLUEPRINT_DB_HOST}
+      BLUEPRINT_DB_PORT: ${BLUEPRINT_DB_PORT}
+      BLUEPRINT_DB_DATABASE: ${BLUEPRINT_DB_DATABASE}
+      BLUEPRINT_DB_USERNAME: ${BLUEPRINT_DB_USERNAME}
+      BLUEPRINT_DB_PASSWORD: ${BLUEPRINT_DB_PASSWORD}
+    depends_on:
+      mysql_bp:
+        condition: service_healthy
+    networks:
+      - blueprint
+{{- end }}
+  mysql_bp:
+    image: mysql:latest
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${BLUEPRINT_DB_DATABASE}
+      MYSQL_USER: ${BLUEPRINT_DB_USERNAME}
+      MYSQL_PASSWORD: ${BLUEPRINT_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${BLUEPRINT_DB_ROOT_PASSWORD}
+    ports:
+      - "${BLUEPRINT_DB_PORT}:3306"
     volumes:
-      - mysql_volume:/var/lib/mysql
+      - mysql_volume_bp:/var/lib/mysql
+    {{- if .AdvancedOptions.docker }}
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "${BLUEPRINT_DB_HOST}", "-u", "${BLUEPRINT_DB_USERNAME}", "--password=${BLUEPRINT_DB_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 15s 
+    networks:
+      - blueprint
+    {{- end }}
 
 volumes:
-  mysql_volume:
+  mysql_volume_bp:
+{{- if .AdvancedOptions.docker }}
+networks:
+  blueprint:
+{{- end }}

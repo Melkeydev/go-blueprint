@@ -112,6 +112,7 @@ You can now use the `--advanced` flag when running the `create` command to get a
 - CI/CD workflow setup using [Github Actions](https://docs.github.com/en/actions)
 - [Websocket](https://pkg.go.dev/github.com/coder/websocket) sets up a websocket endpoint
 - [Tailwind](https://tailwindcss.com/) css framework
+- Docker configuration for go project
 
 Note: selecting tailwind option automatically selects htmx.
 
@@ -173,9 +174,14 @@ Tailwind:
 go-blueprint create --advanced --feature tailwind
 ```
 
+Docker:
+```bash
+go-blueprint create --advanced --feature docker
+```
+
 Or all features at once:
 ```bash
-go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --git commit
+go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --feature docker -git commit
 ```
 
 <p align="center">

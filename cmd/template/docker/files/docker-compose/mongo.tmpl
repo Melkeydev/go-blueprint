@@ -1,15 +1,50 @@
-version: '3.8'
-
 services:
-  mongo:
-    image: mongo:latest
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+{{- if .AdvancedOptions.docker }}
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod
+    restart: unless-stopped
     ports:
-      - "${DB_PORT}:27017"
+      - ${PORT}:${PORT}
+    environment:
+      APP_ENV: ${APP_ENV}
+      PORT: ${PORT}
+      BLUEPRINT_DB_HOST: ${BLUEPRINT_DB_HOST}
+      BLUEPRINT_DB_PORT:  ${BLUEPRINT_DB_PORT}
+      BLUEPRINT_DB_USERNAME: ${BLUEPRINT_DB_USERNAME}
+      BLUEPRINT_DB_ROOT_PASSWORD: ${BLUEPRINT_DB_ROOT_PASSWORD}
+    depends_on:
+      mongo_bp:
+        condition: service_healthy
+    networks:
+      - blueprint
+{{- end }}
+  mongo_bp:
+    image: mongo:latest
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${BLUEPRINT_DB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${BLUEPRINT_DB_ROOT_PASSWORD}
+    ports:
+      - "${BLUEPRINT_DB_PORT}:27017"
     volumes:
-      - mongo_volume:/data/db
+      - mongo_volume_bp:/data/db
+    {{- if .AdvancedOptions.docker }}
+    healthcheck:
+      test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - blueprint
+    {{- end }}
 
 volumes:
-  mongo_volume:
+  mongo_volume_bp:
+{{- if .AdvancedOptions.docker }}
+networks:
+  blueprint:
+{{- end }}

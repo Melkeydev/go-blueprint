@@ -70,6 +70,9 @@ build: tailwind templ-install
 
 ## Use Tailwind CSS in your project
 
-By default, CSS examples are not included in the codebase.
+By default, simple CSS examples are included in the codebase.
 Update base.templ and hello.templ, then rerun templ generate to see the changes at the `localhost:PORT/web` endpoint.
+
+![Tailwind](../public/tailwind.png)
+
 

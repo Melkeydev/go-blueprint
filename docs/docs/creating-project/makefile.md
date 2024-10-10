@@ -6,7 +6,7 @@ Makefile is designed for building, running, and testing a Go project. It include
 
 ***`all`***
 
-The default target that builds the application by running the `build` target.
+The default target that builds and test the application by running the `build` and `test` target.
 
 ***`templ-install`***
 
