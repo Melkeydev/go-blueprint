@@ -1,19 +1,25 @@
 The Docker advanced flag provides the app's Dockerfile configuration and creates or updates the docker-compose.yml file, which is generated if a DB driver is used.
-The Dockerfile includes a two-stage build that leverages Makefile configuration. In the end, you will have a smaller image without unnecessary build dependencies.
+The Dockerfile includes a two-stage build, and the final config depends on the use of advanced features. In the end, you will have a smaller image without unnecessary build dependencies.
 
 ## Dockerfile
 
 ```dockerfile
 FROM golang:1.23-alpine AS build
 
-RUN apk add --no-cache make curl
+RUN apk add --no-cache curl
 
 WORKDIR /app
 
 COPY . .
-RUN go mod download
 
-RUN make build
+RUN go mod download && \
+    go install github.com/a-h/templ/cmd/templ@latest && \
+    templ generate && \
+    curl -sL https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64 -o tailwindcss && \
+    chmod +x tailwindcss && \
+    ./tailwindcss -i cmd/web/assets/css/input.css -o cmd/web/assets/css/output.css
+
+RUN go build -o main cmd/api/main.go
 
 FROM alpine:3.20.1 AS prod
 WORKDIR /app
