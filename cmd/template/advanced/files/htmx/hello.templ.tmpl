@@ -11,7 +11,7 @@ templ HelloForm() {
 }
 
 templ HelloPost(name string) {
-	<div {{if .AdvancedOptions.tailwind}}class="bg-green-100 p-4 shadow-md"{{end}}>
+	<div {{if .AdvancedOptions.tailwind}}class="bg-green-100 p-4 shadow-md rounded-lg mt-6"{{end}}>
 		<p>Hello, { name }</p>
 	</div>
 }

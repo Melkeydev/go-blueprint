@@ -5,12 +5,13 @@ RUN apk add --no-cache{{- if .AdvancedOptions.tailwind }} curl{{ end }}{{- if (e
 
 WORKDIR /app
 
+COPY go.mod go.sum ./
+RUN go mod download
+
 COPY . .
 
-RUN go mod download{{ if or .AdvancedOptions.htmx .AdvancedOptions.tailwind }} && \{{- end}}
-
 {{- if or .AdvancedOptions.htmx .AdvancedOptions.tailwind }}
-    go install github.com/a-h/templ/cmd/templ@latest && \
+RUN go install github.com/a-h/templ/cmd/templ@latest && \
     templ generate{{- if .AdvancedOptions.tailwind}} && \{{- end}}
 {{- end}}
 
