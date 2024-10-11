@@ -45,7 +45,3 @@ go-blueprint version
 This should display the version information of the installed Go-Blueprint.
 
 Now you have successfully built and installed Go-Blueprint from the source code.
-
-
-
-

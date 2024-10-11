@@ -333,7 +333,7 @@ func (p *Project) CreateMainFile() error {
 				return err
 			}
 		} else {
-			fmt.Println(" We are unable to create docker-compose.yml file for an SQLite database")
+			fmt.Println(" SQLite doesn't support docker-compose.yml configuration")
 		}
 	}
 
@@ -570,6 +570,39 @@ func (p *Project) CreateMainFile() error {
 	// all work with the same one
 	if p.AdvancedOptions[string(flags.Websocket)] {
 		p.CreateWebsocketImports(projectPath)
+	}
+
+	if p.AdvancedOptions[string(flags.Docker)] {
+		Dockerfile, err := os.Create(filepath.Join(projectPath, "Dockerfile"))
+		if err != nil {
+			cobra.CheckErr(err)
+			return err
+		}
+		defer Dockerfile.Close()
+
+		// inject Docker template
+		dockerfileTemplate := template.Must(template.New("Dockerfile").Parse(string(advanced.Dockerfile())))
+		err = dockerfileTemplate.Execute(Dockerfile, p)
+		if err != nil {
+			return err
+		}
+
+		if p.DBDriver == "none" || p.DBDriver == "sqlite" {
+
+			Dockercompose, err := os.Create(filepath.Join(projectPath, "docker-compose.yml"))
+			if err != nil {
+				cobra.CheckErr(err)
+				return err
+			}
+			defer Dockercompose.Close()
+
+			// inject DockerCompose template
+			dockerComposeTemplate := template.Must(template.New("docker-compose.yml").Parse(string(advanced.DockerCompose())))
+			err = dockerComposeTemplate.Execute(Dockercompose, p)
+			if err != nil {
+				return err
+			}
+		}
 	}
 
 	err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routes")

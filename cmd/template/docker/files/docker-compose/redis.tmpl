@@ -1,8 +1,41 @@
-version: '3.8'
-
 services:
-  redis:
-    image: redis:7.2.4
-    restart: always
+{{- if .AdvancedOptions.docker }}
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod
+    restart: unless-stopped
     ports:
-      - "${DB_PORT}:6379"
+      - ${PORT}:${PORT}
+    environment:
+      APP_ENV: ${APP_ENV}
+      PORT: ${PORT}
+      BLUEPRINT_DB_PORT: ${BLUEPRINT_DB_PORT}
+      BLUEPRINT_DB_ADDRESS: ${BLUEPRINT_DB_ADDRESS}
+      BLUEPRINT_DB_PASSWORD: ${BLUEPRINT_DB_PASSWORD}
+      BLUEPRINT_DB_DATABASE: ${BLUEPRINT_DB_DATABASE}
+    depends_on:
+      redis_bp:
+        condition: service_healthy
+    networks:
+      - blueprint
+{{- end }}
+  redis_bp:
+    image: redis:7.2.4
+    restart: unless-stopped
+    ports:
+      - "${BLUEPRINT_DB_PORT}:6379"
+    {{- if .AdvancedOptions.docker }}
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - blueprint
+
+networks:
+  blueprint:
+{{- end }}

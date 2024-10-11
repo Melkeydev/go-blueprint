@@ -1,1 +1,5 @@
-DB_URL=./test.db
+{{- if .AdvancedOptions.docker }}
+BLUEPRINT_DB_URL=./db/test.db
+{{- else }}
+BLUEPRINT_DB_URL=./test.db
+{{- end }}

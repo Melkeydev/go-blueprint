@@ -3,13 +3,15 @@ package web
 templ HelloForm() {
 	@Base() {
 		<form hx-post="/hello" method="POST" hx-target="#hello-container">
-			<input {{if .AdvancedOptions.tailwind}}class="border" {{end}}id="name" name="name" type="text"/>
-			<button type="submit">Submit</button>
+			<input {{if .AdvancedOptions.tailwind}}class="bg-gray-200 text-black p-2 border border-gray-400 rounded-lg"{{end}}id="name" name="name" type="text"/>
+			<button type="submit" {{if .AdvancedOptions.tailwind}}class="bg-orange-500 hover:bg-orange-700 text-white py-2 px-4 rounded"{{end}}>Submit</button>
 		</form>
 		<div id="hello-container"></div>
 	}
 }
 
 templ HelloPost(name string) {
-	<div>Hello, { name }</div>
+	<div {{if .AdvancedOptions.tailwind}}class="bg-green-100 p-4 shadow-md rounded-lg mt-6"{{end}}>
+		<p>Hello, { name }</p>
+	</div>
 }
