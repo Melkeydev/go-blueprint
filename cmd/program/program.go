@@ -245,6 +245,7 @@ func (p *Project) CreateMainFile() error {
 	emailSet, err := utils.CheckGitConfig("user.email")
 	if err != nil {
 		cobra.CheckErr(err)
+		return err
 	}
 
 	if !emailSet && p.GitOptions.String() != flags.Skip {
@@ -276,6 +277,7 @@ func (p *Project) CreateMainFile() error {
 	if err != nil {
 		log.Printf("Could not initialize go.mod in new project %v\n", err)
 		cobra.CheckErr(err)
+		return err
 	}
 
 	// Install the correct package for the selected framework
@@ -284,6 +286,7 @@ func (p *Project) CreateMainFile() error {
 		if err != nil {
 			log.Printf("Could not install go dependency for the chosen framework %v\n", err)
 			cobra.CheckErr(err)
+			return err
 		}
 	}
 
@@ -294,6 +297,7 @@ func (p *Project) CreateMainFile() error {
 		if err != nil {
 			log.Printf("Could not install go dependency for chosen driver %v\n", err)
 			cobra.CheckErr(err)
+			return err
 		}
 
 		err = p.CreatePath(internalDatabasePath, projectPath)
@@ -342,6 +346,7 @@ func (p *Project) CreateMainFile() error {
 	if err != nil {
 		log.Printf("Could not install go dependency %v\n", err)
 		cobra.CheckErr(err)
+		return err
 	}
 
 	err = p.CreatePath(cmdApiPath, projectPath)
@@ -400,6 +405,7 @@ func (p *Project) CreateMainFile() error {
 		tailwindConfigFile, err := os.Create(fmt.Sprintf("%s/tailwind.config.js", projectPath))
 		if err != nil {
 			cobra.CheckErr(err)
+			return err
 		}
 		defer tailwindConfigFile.Close()
 
@@ -412,11 +418,13 @@ func (p *Project) CreateMainFile() error {
 		err = os.MkdirAll(fmt.Sprintf("%s/%s/assets/css", projectPath, cmdWebPath), 0o755)
 		if err != nil {
 			cobra.CheckErr(err)
+			return err
 		}
 
 		inputCssFile, err := os.Create(fmt.Sprintf("%s/%s/assets/css/input.css", projectPath, cmdWebPath))
 		if err != nil {
 			cobra.CheckErr(err)
+			return err
 		}
 		defer inputCssFile.Close()
 
@@ -429,6 +437,7 @@ func (p *Project) CreateMainFile() error {
 		outputCssFile, err := os.Create(fmt.Sprintf("%s/%s/assets/css/output.css", projectPath, cmdWebPath))
 		if err != nil {
 			cobra.CheckErr(err)
+			return err
 		}
 		defer outputCssFile.Close()
 
@@ -449,6 +458,7 @@ func (p *Project) CreateMainFile() error {
 		helloTemplFile, err := os.Create(fmt.Sprintf("%s/%s/hello.templ", projectPath, cmdWebPath))
 		if err != nil {
 			cobra.CheckErr(err)
+			return err
 		}
 		defer helloTemplFile.Close()
 
@@ -462,6 +472,7 @@ func (p *Project) CreateMainFile() error {
 		baseTemplFile, err := os.Create(fmt.Sprintf("%s/%s/base.templ", projectPath, cmdWebPath))
 		if err != nil {
 			cobra.CheckErr(err)
+			return err
 		}
 		defer baseTemplFile.Close()
 
@@ -474,11 +485,13 @@ func (p *Project) CreateMainFile() error {
 		err = os.MkdirAll(fmt.Sprintf("%s/%s/assets/js", projectPath, cmdWebPath), 0o755)
 		if err != nil {
 			cobra.CheckErr(err)
+			return err
 		}
 
 		htmxMinJsFile, err := os.Create(fmt.Sprintf("%s/%s/assets/js/htmx.min.js", projectPath, cmdWebPath))
 		if err != nil {
 			cobra.CheckErr(err)
+			return err
 		}
 		defer htmxMinJsFile.Close()
 
@@ -491,6 +504,7 @@ func (p *Project) CreateMainFile() error {
 		efsFile, err := os.Create(fmt.Sprintf("%s/%s/efs.go", projectPath, cmdWebPath))
 		if err != nil {
 			cobra.CheckErr(err)
+			return err
 		}
 		defer efsFile.Close()
 
@@ -503,11 +517,13 @@ func (p *Project) CreateMainFile() error {
 		if err != nil {
 			log.Printf("Could not install go dependency %v\n", err)
 			cobra.CheckErr(err)
+			return err
 		}
 
 		helloGoFile, err := os.Create(fmt.Sprintf("%s/%s/hello.go", projectPath, cmdWebPath))
 		if err != nil {
 			cobra.CheckErr(err)
+			return err
 		}
 		defer efsFile.Close()
 
@@ -521,6 +537,7 @@ func (p *Project) CreateMainFile() error {
 			if err != nil {
 				log.Printf("Could not install go dependency %v\n", err)
 				cobra.CheckErr(err)
+				return err
 			}
 		} else {
 			helloGoTemplate := template.Must(template.New("efs").Parse((string(advanced.HelloGoTemplate()))))
@@ -667,6 +684,7 @@ func (p *Project) CreateMainFile() error {
 	if err != nil {
 		log.Printf("Could not go tidy in new project %v\n", err)
 		cobra.CheckErr(err)
+		return err
 	}
 
 	err = utils.GoFmt(projectPath)
@@ -679,6 +697,7 @@ func (p *Project) CreateMainFile() error {
 	nameSet, err := utils.CheckGitConfig("user.name")
 	if err != nil {
 		cobra.CheckErr(err)
+		return err
 	}
 
 	if p.GitOptions != flags.Skip {
