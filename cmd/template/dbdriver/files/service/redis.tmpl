@@ -32,7 +32,7 @@ var (
 func New() Service {
 	num, err := strconv.Atoi(database)
 	if err != nil {
-		log.Fatalf(fmt.Sprintf("database incorrect %v", err))
+		log.Fatalf("database incorrect %v", err)
 	}
 
 	fullAddress := fmt.Sprintf("%s:%s", address, port)
