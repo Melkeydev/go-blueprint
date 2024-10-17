@@ -180,7 +180,7 @@ func (s *service) Health() map[string]string {
 func (s *service) checkRedisHealth(ctx context.Context, stats map[string]string) map[string]string {
 	pong, err := s.db.Ping(ctx).Result()
 	if err != nil {
-		log.Fatalf(fmt.Sprintf("db down: %v", err))
+		log.Fatalf("db down: %v", err) 
 	}
 
 	stats["redis_status"] = "up"
