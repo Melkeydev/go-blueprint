@@ -20,7 +20,6 @@ import (
 	"github.com/melkeydev/go-blueprint/cmd/template/docker"
 	"github.com/melkeydev/go-blueprint/cmd/template/framework"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
-	"github.com/spf13/cobra"
 )
 
 // A Project contains the data for the project folder
@@ -244,7 +243,6 @@ func (p *Project) CreateMainFile() error {
 	// Check if user.email is set.
 	emailSet, err := utils.CheckGitConfig("user.email")
 	if err != nil {
-		cobra.CheckErr(err)
 		return err
 	}
 
@@ -276,7 +274,6 @@ func (p *Project) CreateMainFile() error {
 	err = utils.InitGoMod(p.ProjectName, projectPath)
 	if err != nil {
 		log.Printf("Could not initialize go.mod in new project %v\n", err)
-		cobra.CheckErr(err)
 		return err
 	}
 
@@ -285,7 +282,6 @@ func (p *Project) CreateMainFile() error {
 		err = utils.GoGetPackage(projectPath, p.FrameworkMap[p.ProjectType].packageName)
 		if err != nil {
 			log.Printf("Could not install go dependency for the chosen framework %v\n", err)
-			cobra.CheckErr(err)
 			return err
 		}
 	}
@@ -296,21 +292,18 @@ func (p *Project) CreateMainFile() error {
 		err = utils.GoGetPackage(projectPath, p.DBDriverMap[p.DBDriver].packageName)
 		if err != nil {
 			log.Printf("Could not install go dependency for chosen driver %v\n", err)
-			cobra.CheckErr(err)
 			return err
 		}
 
 		err = p.CreatePath(internalDatabasePath, projectPath)
 		if err != nil {
 			log.Printf("Error creating path: %s", internalDatabasePath)
-			cobra.CheckErr(err)
 			return err
 		}
 
 		err = p.CreateFileWithInjection(internalDatabasePath, projectPath, "database.go", "database")
 		if err != nil {
 			log.Printf("Error injecting database.go file: %v", err)
-			cobra.CheckErr(err)
 			return err
 		}
 
@@ -318,7 +311,6 @@ func (p *Project) CreateMainFile() error {
 			err = p.CreateFileWithInjection(internalDatabasePath, projectPath, "database_test.go", "integration-tests")
 			if err != nil {
 				log.Printf("Error injecting database_test.go file: %v", err)
-				cobra.CheckErr(err)
 				return err
 			}
 		}
@@ -333,7 +325,6 @@ func (p *Project) CreateMainFile() error {
 			err = p.CreateFileWithInjection(root, projectPath, "docker-compose.yml", "db-docker")
 			if err != nil {
 				log.Printf("Error injecting docker-compose.yml file: %v", err)
-				cobra.CheckErr(err)
 				return err
 			}
 		} else {
@@ -345,26 +336,23 @@ func (p *Project) CreateMainFile() error {
 	err = utils.GoGetPackage(projectPath, godotenvPackage)
 	if err != nil {
 		log.Printf("Could not install go dependency %v\n", err)
-		cobra.CheckErr(err)
+
 		return err
 	}
 
 	err = p.CreatePath(cmdApiPath, projectPath)
 	if err != nil {
 		log.Printf("Error creating path: %s", projectPath)
-		cobra.CheckErr(err)
 		return err
 	}
 
 	err = p.CreateFileWithInjection(cmdApiPath, projectPath, "main.go", "main")
 	if err != nil {
-		cobra.CheckErr(err)
 		return err
 	}
 
 	makeFile, err := os.Create(filepath.Join(projectPath, "Makefile"))
 	if err != nil {
-		cobra.CheckErr(err)
 		return err
 	}
 
@@ -379,7 +367,6 @@ func (p *Project) CreateMainFile() error {
 
 	readmeFile, err := os.Create(filepath.Join(projectPath, "README.md"))
 	if err != nil {
-		cobra.CheckErr(err)
 		return err
 	}
 	defer readmeFile.Close()
@@ -394,7 +381,6 @@ func (p *Project) CreateMainFile() error {
 	err = p.CreatePath(internalServerPath, projectPath)
 	if err != nil {
 		log.Printf("Error creating path: %s", internalServerPath)
-		cobra.CheckErr(err)
 		return err
 	}
 
@@ -404,7 +390,6 @@ func (p *Project) CreateMainFile() error {
 
 		tailwindConfigFile, err := os.Create(fmt.Sprintf("%s/tailwind.config.js", projectPath))
 		if err != nil {
-			cobra.CheckErr(err)
 			return err
 		}
 		defer tailwindConfigFile.Close()
@@ -417,13 +402,11 @@ func (p *Project) CreateMainFile() error {
 
 		err = os.MkdirAll(fmt.Sprintf("%s/%s/assets/css", projectPath, cmdWebPath), 0o755)
 		if err != nil {
-			cobra.CheckErr(err)
 			return err
 		}
 
 		inputCssFile, err := os.Create(fmt.Sprintf("%s/%s/assets/css/input.css", projectPath, cmdWebPath))
 		if err != nil {
-			cobra.CheckErr(err)
 			return err
 		}
 		defer inputCssFile.Close()
@@ -436,7 +419,6 @@ func (p *Project) CreateMainFile() error {
 
 		outputCssFile, err := os.Create(fmt.Sprintf("%s/%s/assets/css/output.css", projectPath, cmdWebPath))
 		if err != nil {
-			cobra.CheckErr(err)
 			return err
 		}
 		defer outputCssFile.Close()
@@ -452,12 +434,10 @@ func (p *Project) CreateMainFile() error {
 		// create folders and hello world file
 		err = p.CreatePath(cmdWebPath, projectPath)
 		if err != nil {
-			cobra.CheckErr(err)
 			return err
 		}
 		helloTemplFile, err := os.Create(fmt.Sprintf("%s/%s/hello.templ", projectPath, cmdWebPath))
 		if err != nil {
-			cobra.CheckErr(err)
 			return err
 		}
 		defer helloTemplFile.Close()
@@ -471,7 +451,6 @@ func (p *Project) CreateMainFile() error {
 
 		baseTemplFile, err := os.Create(fmt.Sprintf("%s/%s/base.templ", projectPath, cmdWebPath))
 		if err != nil {
-			cobra.CheckErr(err)
 			return err
 		}
 		defer baseTemplFile.Close()
@@ -484,13 +463,11 @@ func (p *Project) CreateMainFile() error {
 
 		err = os.MkdirAll(fmt.Sprintf("%s/%s/assets/js", projectPath, cmdWebPath), 0o755)
 		if err != nil {
-			cobra.CheckErr(err)
 			return err
 		}
 
 		htmxMinJsFile, err := os.Create(fmt.Sprintf("%s/%s/assets/js/htmx.min.js", projectPath, cmdWebPath))
 		if err != nil {
-			cobra.CheckErr(err)
 			return err
 		}
 		defer htmxMinJsFile.Close()
@@ -503,7 +480,6 @@ func (p *Project) CreateMainFile() error {
 
 		efsFile, err := os.Create(fmt.Sprintf("%s/%s/efs.go", projectPath, cmdWebPath))
 		if err != nil {
-			cobra.CheckErr(err)
 			return err
 		}
 		defer efsFile.Close()
@@ -516,13 +492,11 @@ func (p *Project) CreateMainFile() error {
 		err = utils.GoGetPackage(projectPath, templPackage)
 		if err != nil {
 			log.Printf("Could not install go dependency %v\n", err)
-			cobra.CheckErr(err)
 			return err
 		}
 
 		helloGoFile, err := os.Create(fmt.Sprintf("%s/%s/hello.go", projectPath, cmdWebPath))
 		if err != nil {
-			cobra.CheckErr(err)
 			return err
 		}
 		defer efsFile.Close()
@@ -536,7 +510,6 @@ func (p *Project) CreateMainFile() error {
 			err = utils.GoGetPackage(projectPath, []string{"github.com/gofiber/fiber/v2/middleware/adaptor"})
 			if err != nil {
 				log.Printf("Could not install go dependency %v\n", err)
-				cobra.CheckErr(err)
 				return err
 			}
 		} else {
@@ -555,28 +528,24 @@ func (p *Project) CreateMainFile() error {
 		err = p.CreatePath(gitHubActionPath, projectPath)
 		if err != nil {
 			log.Printf("Error creating path: %s", gitHubActionPath)
-			cobra.CheckErr(err)
 			return err
 		}
 
 		err = p.CreateFileWithInjection(gitHubActionPath, projectPath, "release.yml", "releaser")
 		if err != nil {
 			log.Printf("Error injecting release.yml file: %v", err)
-			cobra.CheckErr(err)
 			return err
 		}
 
 		err = p.CreateFileWithInjection(gitHubActionPath, projectPath, "go-test.yml", "go-test")
 		if err != nil {
 			log.Printf("Error injecting go-test.yml file: %v", err)
-			cobra.CheckErr(err)
 			return err
 		}
 
 		err = p.CreateFileWithInjection(root, projectPath, ".goreleaser.yml", "releaser-config")
 		if err != nil {
 			log.Printf("Error injecting .goreleaser.yml file: %v", err)
-			cobra.CheckErr(err)
 			return err
 		}
 	}
@@ -592,7 +561,6 @@ func (p *Project) CreateMainFile() error {
 	if p.AdvancedOptions[string(flags.Docker)] {
 		Dockerfile, err := os.Create(filepath.Join(projectPath, "Dockerfile"))
 		if err != nil {
-			cobra.CheckErr(err)
 			return err
 		}
 		defer Dockerfile.Close()
@@ -608,7 +576,6 @@ func (p *Project) CreateMainFile() error {
 
 			Dockercompose, err := os.Create(filepath.Join(projectPath, "docker-compose.yml"))
 			if err != nil {
-				cobra.CheckErr(err)
 				return err
 			}
 			defer Dockercompose.Close()
@@ -625,34 +592,29 @@ func (p *Project) CreateMainFile() error {
 	err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routes")
 	if err != nil {
 		log.Printf("Error injecting routes.go file: %v", err)
-		cobra.CheckErr(err)
 		return err
 	}
 
 	err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes_test.go", "tests")
 	if err != nil {
-		cobra.CheckErr(err)
 		return err
 	}
 
 	err = p.CreateFileWithInjection(internalServerPath, projectPath, "server.go", "server")
 	if err != nil {
 		log.Printf("Error injecting server.go file: %v", err)
-		cobra.CheckErr(err)
 		return err
 	}
 
 	err = p.CreateFileWithInjection(root, projectPath, ".env", "env")
 	if err != nil {
 		log.Printf("Error injecting .env file: %v", err)
-		cobra.CheckErr(err)
 		return err
 	}
 
 	// Create gitignore
 	gitignoreFile, err := os.Create(filepath.Join(projectPath, ".gitignore"))
 	if err != nil {
-		cobra.CheckErr(err)
 		return err
 	}
 	defer gitignoreFile.Close()
@@ -667,7 +629,6 @@ func (p *Project) CreateMainFile() error {
 	// Create .air.toml file
 	airTomlFile, err := os.Create(filepath.Join(projectPath, ".air.toml"))
 	if err != nil {
-		cobra.CheckErr(err)
 		return err
 	}
 
@@ -683,20 +644,17 @@ func (p *Project) CreateMainFile() error {
 	err = utils.GoTidy(projectPath)
 	if err != nil {
 		log.Printf("Could not go tidy in new project %v\n", err)
-		cobra.CheckErr(err)
 		return err
 	}
 
 	err = utils.GoFmt(projectPath)
 	if err != nil {
 		log.Printf("Could not gofmt in new project %v\n", err)
-		cobra.CheckErr(err)
 		return err
 	}
 
 	nameSet, err := utils.CheckGitConfig("user.name")
 	if err != nil {
-		cobra.CheckErr(err)
 		return err
 	}
 
@@ -710,7 +668,6 @@ func (p *Project) CreateMainFile() error {
 		err = utils.ExecuteCmd("git", []string{"init"}, projectPath)
 		if err != nil {
 			log.Printf("Error initializing git repo: %v", err)
-			cobra.CheckErr(err)
 			return err
 		}
 
@@ -718,7 +675,6 @@ func (p *Project) CreateMainFile() error {
 		err = utils.ExecuteCmd("git", []string{"add", "."}, projectPath)
 		if err != nil {
 			log.Printf("Error adding files to git repo: %v", err)
-			cobra.CheckErr(err)
 			return err
 		}
 
@@ -727,7 +683,6 @@ func (p *Project) CreateMainFile() error {
 			err = utils.ExecuteCmd("git", []string{"commit", "-m", "Initial commit"}, projectPath)
 			if err != nil {
 				log.Printf("Error committing files to git repo: %v", err)
-				cobra.CheckErr(err)
 				return err
 			}
 		}
