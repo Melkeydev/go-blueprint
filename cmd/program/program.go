@@ -352,9 +352,9 @@ func (p *Project) CreateMainFile() error {
 	}
 
 	if p.DBDriver == flags.Scylla {
-		fmt.Println("Replacing gocql with scylladb/gocql")
 		err = utils.GoModReplace(projectPath, "github.com/gocql/gocql=github.com/scylladb/gocql@v1.7.0")
 		if err != nil {
+			log.Printf("Could not replace go dependency %v\n", err)
 			return err
 		}
 	}

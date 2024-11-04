@@ -52,6 +52,7 @@ nav:
        - SQL DBs: endpoints-test/sql.md
        - Redis: endpoints-test/redis.md
        - MongoDB: endpoints-test/mongo.md
+       - ScyllaDB: endpoints-test/scylladb.md
     - Websocket: endpoints-test/websocket.md
     - Web Endpoint: endpoints-test/web.md
 
