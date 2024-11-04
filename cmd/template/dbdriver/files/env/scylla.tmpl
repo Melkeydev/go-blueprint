@@ -1,0 +1,11 @@
+{{- if .AdvancedOptions.docker }}
+BLUEPRINT_DB_HOST=psql_bp
+{{- else }}
+BLUEPRINT_DB_HOSTS=localhost
+{{- end }}
+BLUEPRINT_DB_KEYSPACE=
+BLUEPRINT_DB_CONSISTENCY="LocalQuorum"
+#BLUEPRINT_DB_USERNAME=danielhe4rt
+#BLUEPRINT_DB_PASSWORD=your-password-here
+#BLUEPRINT_DB_CONNECTIONS=2
+

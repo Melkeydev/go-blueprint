@@ -103,6 +103,7 @@ var (
 	sqliteDriver   = []string{"github.com/mattn/go-sqlite3"}
 	redisDriver    = []string{"github.com/redis/go-redis/v9"}
 	mongoDriver    = []string{"go.mongodb.org/mongo-driver"}
+	scyllaDriver   = []string{"github.com/gocql/gocql"}
 
 	godotenvPackage = []string{"github.com/joho/godotenv"}
 	templPackage    = []string{"github.com/a-h/templ"}
@@ -205,6 +206,11 @@ func (p *Project) createDBDriverMap() {
 		packageName: redisDriver,
 		templater:   dbdriver.RedisTemplate{},
 	}
+
+	p.DBDriverMap[flags.Scylla] = Driver{
+		packageName: scyllaDriver,
+		templater:   dbdriver.ScyllaTemplate{},
+	}
 }
 
 func (p *Project) createDockerMap() {
@@ -225,6 +231,11 @@ func (p *Project) createDockerMap() {
 	p.DockerMap[flags.Redis] = Docker{
 		packageName: []string{},
 		templater:   docker.RedisDockerTemplate{},
+	}
+
+	p.DockerMap[flags.Redis] = Docker{
+		packageName: []string{},
+		templater:   docker.ScyllaDockerTemplate{},
 	}
 }
 

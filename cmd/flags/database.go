@@ -16,10 +16,11 @@ const (
 	Sqlite   Database = "sqlite"
 	Mongo    Database = "mongo"
 	Redis    Database = "redis"
+	Scylla   Database = "scylla"
 	None     Database = "none"
 )
 
-var AllowedDBDrivers = []string{string(MySql), string(Postgres), string(Sqlite), string(Mongo), string(Redis), string(None)}
+var AllowedDBDrivers = []string{string(MySql), string(Postgres), string(Sqlite), string(Mongo), string(Redis), string(Scylla), string(None)}
 
 func (f Database) String() string {
 	return string(f)
