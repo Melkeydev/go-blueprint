@@ -1,1 +1,23 @@
-// TODO: implement docker-file for scylla database
+services:
+{{- if .AdvancedOptions.docker }}
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod
+    restart: unless-stopped
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      APP_ENV: ${APP_ENV}
+      PORT: ${PORT}
+      BLUEPRINT_DB_PORT: ${BLUEPRINT_DB_PORT}
+      BLUEPRINT_DB_ADDRESS: ${BLUEPRINT_DB_ADDRESS}
+      BLUEPRINT_DB_PASSWORD: ${BLUEPRINT_DB_PASSWORD}
+      BLUEPRINT_DB_DATABASE: ${BLUEPRINT_DB_DATABASE}
+    networks:
+      - blueprint
+{{- end }}
+
+networks:
+  blueprint:

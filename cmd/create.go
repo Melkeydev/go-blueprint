@@ -184,13 +184,14 @@ var createCmd = &cobra.Command{
 
 			// this type casting is always safe since the user interface can
 			// only pass strings that can be cast to a flags.Database instance
+			fmt.Println(options.DBDriver.Choice)
 			project.DBDriver = flags.Database(strings.ToLower(options.DBDriver.Choice))
 			err := cmd.Flag("driver").Value.Set(project.DBDriver.String())
 			if err != nil {
 				log.Fatal("failed to set the driver flag value", err)
 			}
 		}
-
+		log.Printf("fodase")
 		if flagAdvanced {
 
 			featureFlags := cmd.Flag("feature").Value.String()

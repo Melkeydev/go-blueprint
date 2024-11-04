@@ -1,4 +1,4 @@
-package main
+package database
 
 import (
 	"context"
@@ -26,12 +26,12 @@ type service struct {
 
 // Environment variables for ScyllaDB connection.
 var (
-	hosts                = os.Getenv("DB_HOSTS")       // Comma-separated list of hosts:port
-	username             = os.Getenv("DB_USERNAME")    // Username for authentication
-	password             = os.Getenv("DB_PASSWORD")    // Password for authentication
-	keyspace             = os.Getenv("DB_KEYSPACE")    // Keyspace to connect to
-	consistencyLevel     = os.Getenv("DB_CONSISTENCY") // Consistency level (optional)
-	numbersOfConnections = os.Getenv("DB_CONNECTIONS") // Number of connections (optional)
+	hosts                = os.Getenv("BLUEPRINT_DB_HOSTS")       // Comma-separated list of hosts:port
+	username             = os.Getenv("BLUEPRINT_DB_USERNAME")    // Username for authentication
+	password             = os.Getenv("BLUEPRINT_DB_PASSWORD")    // Password for authentication
+	keyspace             = os.Getenv("BLUEPRINT_DB_KEYSPACE")    // Keyspace to connect to
+	consistencyLevel     = os.Getenv("BLUEPRINT_DB_CONSISTENCY") // Consistency level (optional)
+	numbersOfConnections = os.Getenv("BLUEPRINT_DB_CONNECTIONS") // Number of connections (optional)
 )
 
 // New initializes a new Service with a ScyllaDB Session.
@@ -106,10 +106,6 @@ func parseConsistency(cons string) (gocql.Consistency, error) {
 		return gocql.LocalQuorum, nil
 	case "EACH_QUORUM":
 		return gocql.EachQuorum, nil
-	case "SERIAL":
-		return gocql.Serial, nil
-	case "LOCAL_SERIAL":
-		return gocql.LocalSerial, nil
 	default:
 		return gocql.Quorum, fmt.Errorf("unknown consistency level: %s", cons)
 	}

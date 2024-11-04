@@ -232,8 +232,7 @@ func (p *Project) createDockerMap() {
 		packageName: []string{},
 		templater:   docker.RedisDockerTemplate{},
 	}
-
-	p.DockerMap[flags.Redis] = Docker{
+	p.DockerMap[flags.Scylla] = Docker{
 		packageName: []string{},
 		templater:   docker.ScyllaDockerTemplate{},
 	}
@@ -345,10 +344,19 @@ func (p *Project) CreateMainFile() error {
 
 	// Install the godotenv package
 	err = utils.GoGetPackage(projectPath, godotenvPackage)
+
 	if err != nil {
 		log.Printf("Could not install go dependency %v\n", err)
 
 		return err
+	}
+
+	if p.DBDriver == flags.Scylla {
+		fmt.Println("Replacing gocql with scylladb/gocql")
+		err = utils.GoModReplace(projectPath, "github.com/gocql/gocql=github.com/scylladb/gocql@v1.7.0")
+		if err != nil {
+			return err
+		}
 	}
 
 	err = p.CreatePath(cmdApiPath, projectPath)
