@@ -16,7 +16,7 @@ const (
 	Sqlite   Database = "sqlite"
 	Mongo    Database = "mongo"
 	Redis    Database = "redis"
-	Scylla   Database = "scylladb"
+	Scylla   Database = "scylla"
 	None     Database = "none"
 )
 
