@@ -98,7 +98,7 @@ func GoFmt(appDir string) error {
 }
 
 // GoModReplace runs "go mod edit -replace" in the selected
-// replace_payload e.g: github.com/gocql/gocql=github.com/scylladb/gocql@v1.7.0
+// replace_payload e.g: github.com/gocql/gocql=github.com/scylladb/gocql@v1.14.4
 func GoModReplace(appDir string, replace string) error {
 	if err := ExecuteCmd("go",
 		[]string{"mod", "edit", "-replace", replace},

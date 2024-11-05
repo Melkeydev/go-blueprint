@@ -103,7 +103,8 @@ var (
 	sqliteDriver   = []string{"github.com/mattn/go-sqlite3"}
 	redisDriver    = []string{"github.com/redis/go-redis/v9"}
 	mongoDriver    = []string{"go.mongodb.org/mongo-driver"}
-	scyllaDriver   = []string{"github.com/gocql/gocql"}
+	gocqlDriver    = []string{"github.com/gocql/gocql"}
+	scyllaDriver   = "github.com/scylladb/gocql@v1.14.4" // Replacement for GoCQL
 
 	godotenvPackage = []string{"github.com/joho/godotenv"}
 	templPackage    = []string{"github.com/a-h/templ"}
@@ -208,7 +209,7 @@ func (p *Project) createDBDriverMap() {
 	}
 
 	p.DBDriverMap[flags.Scylla] = Driver{
-		packageName: scyllaDriver,
+		packageName: gocqlDriver,
 		templater:   dbdriver.ScyllaTemplate{},
 	}
 }
@@ -352,7 +353,8 @@ func (p *Project) CreateMainFile() error {
 	}
 
 	if p.DBDriver == flags.Scylla {
-		err = utils.GoModReplace(projectPath, "github.com/gocql/gocql=github.com/scylladb/gocql@v1.7.0")
+		replace := fmt.Sprintf("%s=%s", gocqlDriver[0], scyllaDriver)
+		err = utils.GoModReplace(projectPath, replace)
 		if err != nil {
 			log.Printf("Could not replace go dependency %v\n", err)
 			return err
