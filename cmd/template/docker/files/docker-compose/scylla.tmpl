@@ -28,7 +28,7 @@ services:
     image: scylladb/scylla:6.2
     restart: unless-stopped
     command:
-      - --smp=1
+      - --smp=2
       - --memory=1GB
       - --overprovisioned=1
       - --developer-mode=1
