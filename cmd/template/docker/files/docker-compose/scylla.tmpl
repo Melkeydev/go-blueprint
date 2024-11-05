@@ -40,7 +40,7 @@ services:
       - scylla_bp:/var/lib/scylla
     {{- if .AdvancedOptions.docker }}
     healthcheck:
-      test: ["CMD-SHELL", "cqlsh -e "SHOW VERSION" || exit 1"]
+      test: ["CMD-SHELL", 'cqlsh -e "SHOW VERSION" || exit 1']
       interval: 15s
       timeout: 30s
       retries: 15
