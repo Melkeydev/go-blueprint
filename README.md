@@ -94,6 +94,7 @@ Choose from a variety of supported database drivers:
 - [Sqlite](https://github.com/mattn/go-sqlite3)
 - [Mongo](https://go.mongodb.org/mongo-driver)
 - [Redis](https://github.com/redis/go-redis)
+- [ScyllaDB GoCQL](https://github.com/scylladb/gocql)
 
 <a id="advanced-features"></a>
 
