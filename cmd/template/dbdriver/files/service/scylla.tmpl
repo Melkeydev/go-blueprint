@@ -26,17 +26,15 @@ type service struct {
 
 // Environment variables for ScyllaDB connection.
 var (
-	hosts                = os.Getenv("BLUEPRINT_DB_HOSTS")       // Comma-separated list of hosts:port
-	username             = os.Getenv("BLUEPRINT_DB_USERNAME")    // Username for authentication
-	password             = os.Getenv("BLUEPRINT_DB_PASSWORD")    // Password for authentication
-	keyspace             = os.Getenv("BLUEPRINT_DB_KEYSPACE")    // Keyspace to connect to
-	consistencyLevel     = os.Getenv("BLUEPRINT_DB_CONSISTENCY") // Consistency level (optional)
-	numbersOfConnections = os.Getenv("BLUEPRINT_DB_CONNECTIONS") // Number of connections (optional)
+	hosts            = os.Getenv("BLUEPRINT_DB_HOSTS")       // Comma-separated list of hosts:port
+	username         = os.Getenv("BLUEPRINT_DB_USERNAME")    // Username for authentication
+	password         = os.Getenv("BLUEPRINT_DB_PASSWORD")    // Password for authentication
+	consistencyLevel = os.Getenv("BLUEPRINT_DB_CONSISTENCY") // Consistency level
 )
 
 // New initializes a new Service with a ScyllaDB Session.
 func New() Service {
-	cluster := gocql.NewCluster(parseHosts(hosts)...)
+	cluster := gocql.NewCluster(strings.Split(hosts, ",")...)
 	cluster.PoolConfig.HostSelectionPolicy = gocql.TokenAwareHostPolicy(gocql.RoundRobinHostPolicy())
 
 	// Set authentication if provided
@@ -47,11 +45,6 @@ func New() Service {
 		}
 	}
 
-	// Set keyspace
-	if keyspace != "" {
-		cluster.Keyspace = keyspace
-	}
-
 	// Set consistency level if provided
 	if consistencyLevel != "" {
 		if cl, err := parseConsistency(consistencyLevel); err == nil {
@@ -59,15 +52,6 @@ func New() Service {
 		} else {
 			log.Printf("Invalid SCYLLA_DB_CONSISTENCY '%s', using default: %v", consistencyLevel, err)
 		}
-	}
-
-	// Set number of connections
-	numbersOfConnections, err := strconv.Atoi(numbersOfConnections)
-
-	if err != nil {
-		cluster.NumConns = 2
-	} else {
-		cluster.NumConns = numbersOfConnections
 	}
 
 	// Create Session
@@ -80,35 +64,24 @@ func New() Service {
 	return s
 }
 
-// parseHosts splits the comma-separated hosts string into a slice.
-func parseHosts(hosts string) []string {
-	return strings.Split(hosts, ",")
-}
-
 // parseConsistency converts a string to a gocql.Consistency value.
 func parseConsistency(cons string) (gocql.Consistency, error) {
-	switch strings.ToUpper(cons) {
-	case "ANY":
-		return gocql.Any, nil
-	case "ONE":
-		return gocql.One, nil
-	case "TWO":
-		return gocql.Two, nil
-	case "THREE":
-		return gocql.Three, nil
-	case "QUORUM":
-		return gocql.Quorum, nil
-	case "ALL":
-		return gocql.All, nil
-	case "LOCAL_ONE":
-		return gocql.LocalOne, nil
-	case "LOCAL_QUORUM":
-		return gocql.LocalQuorum, nil
-	case "EACH_QUORUM":
-		return gocql.EachQuorum, nil
-	default:
-		return gocql.Quorum, fmt.Errorf("unknown consistency level: %s", cons)
+	consistencyMap := map[string]gocql.Consistency{
+		"ANY":          gocql.Any,
+		"ONE":          gocql.One,
+		"TWO":          gocql.Two,
+		"THREE":        gocql.Three,
+		"QUORUM":       gocql.Quorum,
+		"ALL":          gocql.All,
+		"LOCAL_ONE":    gocql.LocalOne,
+		"LOCAL_QUORUM": gocql.LocalQuorum,
+		"EACH_QUORUM":  gocql.EachQuorum,
 	}
+
+	if consistency, ok := consistencyMap[strings.ToUpper(cons)]; ok {
+		return consistency, nil
+	}
+	return gocql.LocalQuorum, fmt.Errorf("unknown consistency level: %s", cons)
 }
 
 // Health returns the health status and statistics of the ScyllaDB cluster.
@@ -119,13 +92,6 @@ func (s *service) Health() map[string]string {
 	stats := make(map[string]string)
 
 	// Check ScyllaDB health and populate the stats map
-	stats = s.checkScyllaHealth(ctx, stats)
-
-	return stats
-}
-
-// checkScyllaHealth checks the health of the ScyllaDB cluster and adds relevant statistics.
-func (s *service) checkScyllaHealth(ctx context.Context, stats map[string]string) map[string]string {
 	startedAt := time.Now()
 
 	// Execute a simple query to check connectivity
@@ -160,25 +126,32 @@ func (s *service) checkScyllaHealth(ctx context.Context, stats map[string]string
 		log.Fatalf("Failed to close keyspaces iterator: %v", err)
 	}
 
-	// Get cluster host information
+	// Get cluster information
 	var currentDatacenter string
-	clusterNodesIterator := s.Session.Query("SELECT data_center FROM system.peers").Iter()
-	clusterNodesIterator.Scan(&currentDatacenter)
+	var currentHostStatus bool
 
-	// +1 is because the default connection (coordinator) is not included in the query
-	stats["scylla_cluster_size"] = strconv.Itoa(clusterNodesIterator.NumRows() + 1)
-	stats["scylla_current_datacenter"] = currentDatacenter
+	var clusterNodesUp uint
+	var clusterNodesDown uint
+	var clusterSize uint
+
+	clusterNodesIterator := s.Session.Query("SELECT dc, up FROM system.cluster_status").Iter()
+	for clusterNodesIterator.Scan(&currentDatacenter, &currentHostStatus) {
+		clusterSize++
+		if currentHostStatus {
+			clusterNodesUp++
+		} else {
+			clusterNodesDown++
+		}
+	}
+
 	if err := clusterNodesIterator.Close(); err != nil {
 		log.Fatalf("Failed to close cluster nodes iterator: %v", err)
 	}
 
-	// Retrieve Connected Sessions
-	connectedSessionsIterator := s.Session.Query("SELECT connection_stage as connected_sessions FROM system.clients").Iter()
-	stats["scylla_active_conns"] = strconv.Itoa(connectedSessionsIterator.NumRows())
-
-	if err := connectedSessionsIterator.Close(); err != nil {
-		log.Fatalf("Failed to close cluster nodes iterator: %v", err)
-	}
+	stats["scylla_cluster_size"] = strconv.Itoa(int(clusterSize))
+	stats["scylla_cluster_nodes_up"] = strconv.Itoa(int(clusterNodesUp))
+	stats["scylla_cluster_nodes_down"] = strconv.Itoa(int(clusterNodesDown))
+	stats["scylla_current_datacenter"] = currentDatacenter
 
 	// Calculate the time taken to perform the health check
 	stats["scylla_health_check_duration"] = time.Since(startedAt).String()

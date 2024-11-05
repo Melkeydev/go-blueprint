@@ -31,10 +31,11 @@ services:
       - --smp=2
       - --memory=1GB
       - --overprovisioned=1
-      - --developer-mode=1
+      - --developer-mode=1 # Disable for production
       - --seeds=scylla_bp
     ports:
-      - "${BLUEPRINT_DB_PORT}:9042"
+      - "9042:9042"
+      - "19042:19042"
     volumes:
       - scylla_bp:/var/lib/scylla
     {{- if .AdvancedOptions.docker }}
