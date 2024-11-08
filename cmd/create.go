@@ -267,6 +267,7 @@ var createCmd = &cobra.Command{
 			}
 		}()
 
+		// Look into this
 		// This calls the templates
 		err = project.CreateMainFile()
 		if err != nil {
