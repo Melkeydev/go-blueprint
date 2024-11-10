@@ -402,9 +402,6 @@ func (p *Project) CreateMainFile() error {
 		if err := p.CreateViteReactProject(projectPath); err != nil {
 			return fmt.Errorf("failed to set up React project: %w", err)
 		}
-
-		// if the user also selects Tailwind
-
 	}
 
 	if p.AdvancedOptions[string(flags.Tailwind)] {
@@ -844,6 +841,42 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("failed to create Vite project: %w", err)
+	}
+
+	// Handle Tailwind configuration if selected
+	if p.AdvancedOptions[string(flags.Tailwind)] {
+		fmt.Println("Tailwind selected. Configuring with React...")
+		cmd := exec.Command("npm", "install", "-D", "tailwindcss", "postcss", "autoprefixer")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			return fmt.Errorf("failed to install Tailwind: %w", err)
+		}
+		cmd = exec.Command("npx", "tailwindcss", "init", "-p")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			return fmt.Errorf("failed to initialize Tailwind: %w", err)
+		}
+
+		// use the tailwind config file
+		err = os.WriteFile("tailwind.config.js", advanced.ReactTailwindConfigTemplate(), 0644)
+		if err != nil {
+			return fmt.Errorf("failed to write tailwind config: %w", err)
+		}
+
+		srcDir := filepath.Join(frontendPath, "src")
+		if err := os.MkdirAll(srcDir, 0755); err != nil {
+			return fmt.Errorf("failed to create src directory: %w", err)
+		}
+
+		err = os.WriteFile(filepath.Join(srcDir, "index.css"), advanced.InputCssTemplateReact(), 0644)
+		if err != nil {
+			return fmt.Errorf("failed to update index.css: %w", err)
+		}
+
+		// set to false to not re-do in next step
+		p.AdvancedOptions[string(flags.Tailwind)] = false
 	}
 
 	return nil
