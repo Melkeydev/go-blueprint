@@ -135,63 +135,6 @@ func (p *Project) CheckOS() {
 	}
 }
 
-func checkNpmInstalled() error {
-	cmd := exec.Command("npm", "--version")
-	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("npm is not installed: %w", err)
-	}
-	return nil
-}
-
-func createViteReactProject(projectPath string) error {
-	if err := checkNpmInstalled(); err != nil {
-		return err
-	}
-
-	frontendPath := filepath.Join(projectPath, "frontend")
-	if err := os.MkdirAll(frontendPath, 0755); err != nil {
-		return fmt.Errorf("failed to create frontend directory: %w", err)
-	}
-
-	originalDir, err := os.Getwd()
-	if err != nil {
-		return fmt.Errorf("failed to get current directory: %w", err)
-	}
-	defer os.Chdir(originalDir)
-
-	if err := os.Chdir(frontendPath); err != nil {
-		return fmt.Errorf("failed to change to frontend directory: %w", err)
-	}
-
-	// the interactive vite command will not work as we can't interact with it
-	fmt.Println("Installing create-vite...")
-	cmd := exec.Command("npm", "install", "-g", "create-vite")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("failed to install create-vite: %w", err)
-	}
-
-	fmt.Println("Creating Vite + React project...")
-	cmd = exec.Command("create-vite", ".", "--template", "react-ts") // default is with typescript
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("failed to create Vite project: %w", err)
-	}
-
-	// Install dependencies
-	fmt.Println("Installing dependencies...")
-	cmd = exec.Command("npm", "install")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("failed to install dependencies: %w", err)
-	}
-
-	return nil
-}
-
 // ExitCLI checks if the Project has been exited, and closes
 // out of the CLI if it has
 func (p *Project) ExitCLI(tprogram *tea.Program) {
@@ -453,13 +396,14 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	// START
 	if p.AdvancedOptions[string(flags.React)] {
 		// deselect htmx option automatically since react is selected
 		p.AdvancedOptions[string(flags.Htmx)] = false
-		if err := createViteReactProject(projectPath); err != nil {
+		if err := p.CreateViteReactProject(projectPath); err != nil {
 			return fmt.Errorf("failed to set up React project: %w", err)
 		}
+
+		// if the user also selects Tailwind
 
 	}
 
@@ -865,6 +809,46 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 	return nil
 }
 
+func (p *Project) CreateViteReactProject(projectPath string) error {
+	if err := checkNpmInstalled(); err != nil {
+		return err
+	}
+
+	frontendPath := filepath.Join(projectPath, "frontend")
+	if err := os.MkdirAll(frontendPath, 0755); err != nil {
+		return fmt.Errorf("failed to create frontend directory: %w", err)
+	}
+
+	originalDir, err := os.Getwd()
+	if err != nil {
+		return fmt.Errorf("failed to get current directory: %w", err)
+	}
+	defer os.Chdir(originalDir)
+
+	if err := os.Chdir(frontendPath); err != nil {
+		return fmt.Errorf("failed to change to frontend directory: %w", err)
+	}
+
+	// the interactive vite command will not work as we can't interact with it
+	fmt.Println("Installing create-vite...")
+	cmd := exec.Command("npm", "install", "-g", "create-vite")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("failed to install create-vite: %w", err)
+	}
+
+	fmt.Println("Creating Vite + React project...")
+	cmd = exec.Command("create-vite", ".", "--template", "react-ts") // default is with typescript
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("failed to create Vite project: %w", err)
+	}
+
+	return nil
+}
+
 // Create React Template with Vite - (we dont need to actually create templates, we can just use the command and step by step)
 func (p *Project) CreateHtmxTemplates() {
 	routesPlaceHolder := ""
@@ -923,4 +907,12 @@ func (p *Project) CreateWebsocketImports(appDir string) {
 	}
 	newImports := strings.Join([]string{string(p.AdvancedTemplates.TemplateImports), importBuffer.String()}, "\n")
 	p.AdvancedTemplates.TemplateImports = newImports
+}
+
+func checkNpmInstalled() error {
+	cmd := exec.Command("npm", "--version")
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("npm is not installed: %w", err)
+	}
+	return nil
 }

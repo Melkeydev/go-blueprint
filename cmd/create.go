@@ -245,6 +245,7 @@ var createCmd = &cobra.Command{
 		}
 		project.AbsolutePath = currentWorkingDir
 
+		// Look into this
 		spinner := tea.NewProgram(spinner.InitialModelNew())
 
 		// add synchronization to wait for spinner to finish
@@ -267,7 +268,6 @@ var createCmd = &cobra.Command{
 			}
 		}()
 
-		// Look into this
 		// This calls the templates
 		err = project.CreateMainFile()
 		if err != nil {
