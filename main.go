@@ -1,6 +1,6 @@
 package main
 
-import "github.com/josepht273/go-blueprint/cmd"
+import "github.com/melkeydev/go-blueprint/cmd"
 
 func main() {
 	cmd.Execute()
