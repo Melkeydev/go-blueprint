@@ -402,6 +402,9 @@ func (p *Project) CreateMainFile() error {
 		if err := p.CreateViteReactProject(projectPath); err != nil {
 			return fmt.Errorf("failed to set up React project: %w", err)
 		}
+
+		// if everything went smoothly, remove tailwing flag option
+		p.AdvancedOptions[string(flags.Tailwind)] = false
 	}
 
 	if p.AdvancedOptions[string(flags.Tailwind)] {
@@ -837,7 +840,6 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 
 	fmt.Println("Creating Vite + React project...")
 	cmd = exec.Command("create-vite", ".", "--template", "react-ts") // default is with typescript
-	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("failed to create Vite project: %w", err)
@@ -873,6 +875,17 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 		err = os.WriteFile(filepath.Join(srcDir, "index.css"), advanced.InputCssTemplateReact(), 0644)
 		if err != nil {
 			return fmt.Errorf("failed to update index.css: %w", err)
+		}
+
+		if err := os.WriteFile(filepath.Join(srcDir, "App.tsx"), advanced.ReactTailwindAppfile(), 0644); err != nil {
+			return fmt.Errorf("failed to write App.tsx template: %w", err)
+		}
+
+		if err := os.Remove(filepath.Join(srcDir, "App.css")); err != nil {
+			// Don't return error if file doesn't exist
+			if !os.IsNotExist(err) {
+				return fmt.Errorf("failed to remove App.css: %w", err)
+			}
 		}
 
 		// set to false to not re-do in next step
