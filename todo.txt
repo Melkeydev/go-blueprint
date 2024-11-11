@@ -1,5 +1,0 @@
-// Create new React prompt
-// Test passing that variable around
-// run the cmd.Os command
-// make sure to install Vite
-// Cannot select HTMX if React is reacted

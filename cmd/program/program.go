@@ -823,7 +823,12 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 	if err != nil {
 		return fmt.Errorf("failed to get current directory: %w", err)
 	}
-	defer os.Chdir(originalDir)
+
+	defer func() {
+		if err := os.Chdir(originalDir); err != nil {
+			fmt.Fprintf(os.Stderr, "failed to change back to original directory: %v\n", err)
+		}
+	}()
 
 	if err := os.Chdir(frontendPath); err != nil {
 		return fmt.Errorf("failed to change to frontend directory: %w", err)
