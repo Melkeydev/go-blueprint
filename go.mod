@@ -1,4 +1,4 @@
-module github.com/melkeydev/go-blueprint
+module github.com/josepht273/go-blueprint
 
 go 1.23.3
 
