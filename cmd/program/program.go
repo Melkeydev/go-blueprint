@@ -812,40 +812,47 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 		return err
 	}
 
-	frontendPath := filepath.Join(projectPath, "frontend")
-	if err := os.MkdirAll(frontendPath, 0755); err != nil {
-		return fmt.Errorf("failed to create frontend directory: %w", err)
-	}
-
 	originalDir, err := os.Getwd()
 	if err != nil {
 		return fmt.Errorf("failed to get current directory: %w", err)
 	}
-
 	defer func() {
 		if err := os.Chdir(originalDir); err != nil {
 			fmt.Fprintf(os.Stderr, "failed to change back to original directory: %v\n", err)
 		}
 	}()
 
-	if err := os.Chdir(frontendPath); err != nil {
-		return fmt.Errorf("failed to change to frontend directory: %w", err)
+	// change into the project directory to run vite command
+	err = os.Chdir(projectPath)
+	if err != nil {
+		fmt.Println("failed to change into project directory: %w", err)
 	}
 
 	// the interactive vite command will not work as we can't interact with it
 	fmt.Println("Installing create-vite...")
-	cmd := exec.Command("npm", "install", "-g", "create-vite")
+	cmd := exec.Command("npm", "create", "vite@latest", "frontend", "--", "--template", "react-ts")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("failed to install create-vite: %w", err)
+		return fmt.Errorf("failed to use create-vite: %w", err)
 	}
 
-	fmt.Println("Creating Vite + React project...")
-	cmd = exec.Command("create-vite", ".", "--template", "react-ts") // default is with typescript
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("failed to create Vite project: %w", err)
+	frontendPath := filepath.Join(projectPath, "frontend")
+	if err := os.MkdirAll(frontendPath, 0755); err != nil {
+		return fmt.Errorf("failed to create frontend directory: %w", err)
+	}
+
+	if err := os.Chdir(frontendPath); err != nil {
+		return fmt.Errorf("failed to change to frontend directory: %w", err)
+	}
+
+	srcDir := filepath.Join(frontendPath, "src")
+	if err := os.MkdirAll(srcDir, 0755); err != nil {
+		return fmt.Errorf("failed to create src directory: %w", err)
+	}
+
+	if err := os.WriteFile(filepath.Join(srcDir, "App.tsx"), advanced.ReactAppfile(), 0644); err != nil {
+		return fmt.Errorf("failed to write App.tsx template: %w", err)
 	}
 
 	// Handle Tailwind configuration if selected

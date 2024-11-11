@@ -6,14 +6,6 @@ import './App.css'
 function App() {
   const [count, setCount] = useState(0)
 
-  const fetchData = () => {
-    fetch('http://localhost:8080/')
-      .then(response => response.text())
-      .then(data => setMessage(data))
-      .catch(error => console.error('Error fetching data:', error))
-  }
-  const [message, setMessage] = useState<string>('')
-
   return (
     <>
       <div>
