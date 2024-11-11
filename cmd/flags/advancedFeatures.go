@@ -12,9 +12,8 @@ const (
 	GoProjectWorkflow string = "githubaction"
 	Websocket         string = "websocket"
 	Tailwind          string = "tailwind"
-	// react
-	React  string = "react"
-	Docker string = "docker"
+	React             string = "react"
+	Docker            string = "docker"
 )
 
 var AllowedAdvancedFeatures = []string{string(React), string(Htmx), string(GoProjectWorkflow), string(Websocket), string(Tailwind), string(Docker)}

@@ -242,8 +242,6 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
-	fmt.Println("this is the project", p.AdvancedOptions)
-
 	// Check if user.email is set.
 	emailSet, err := utils.CheckGitConfig("user.email")
 	if err != nil {
@@ -900,7 +898,6 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 	return nil
 }
 
-// Create React Template with Vite - (we dont need to actually create templates, we can just use the command and step by step)
 func (p *Project) CreateHtmxTemplates() {
 	routesPlaceHolder := ""
 	importsPlaceHolder := ""

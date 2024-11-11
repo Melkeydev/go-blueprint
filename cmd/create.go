@@ -245,7 +245,6 @@ var createCmd = &cobra.Command{
 		}
 		project.AbsolutePath = currentWorkingDir
 
-		// Look into this
 		spinner := tea.NewProgram(spinner.InitialModelNew())
 
 		// add synchronization to wait for spinner to finish
