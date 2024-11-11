@@ -22,7 +22,8 @@ The `Health` returns a JSON-like map structure with a single key indicating the 
 {
   "message": "It's healthy",
   "status": "up",
-  "scylla_active_conns": "5",
+  "scylla_cluster_nodes_up": "3",
+  "scylla_cluster_nodes_down": "0",
   "scylla_cluster_size": "1",
   "scylla_current_datacenter": "datacenter1",
   "scylla_current_time": "2024-11-04 22:59:21.69 +0000 UTC",
@@ -34,7 +35,13 @@ The `Health` returns a JSON-like map structure with a single key indicating the 
 ## Code implementation
 
 ```go
-func (s *service) checkScyllaHealth(ctx context.Context, stats map[string]string) map[string]string {
+func (s *service) Health() map[string]string {
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
+    
+    stats := make(map[string]string)
+    
+    // Check ScyllaDB health and populate the stats map
     startedAt := time.Now()
     
     // Execute a simple query to check connectivity
@@ -69,25 +76,32 @@ func (s *service) checkScyllaHealth(ctx context.Context, stats map[string]string
         log.Fatalf("Failed to close keyspaces iterator: %v", err)
     }
     
-    // Get cluster host information
+    // Get cluster information
     var currentDatacenter string
-    clusterNodesIterator := s.Session.Query("SELECT data_center FROM system.peers").Iter()
-    clusterNodesIterator.Scan(&currentDatacenter)
+    var currentHostStatus bool
     
-    // +1 is because the default connection (coordinator) is not included in the query
-    stats["scylla_cluster_size"] = strconv.Itoa(clusterNodesIterator.NumRows() + 1)
-    stats["scylla_current_datacenter"] = currentDatacenter
+    var clusterNodesUp uint
+    var clusterNodesDown uint
+    var clusterSize uint
+    
+    clusterNodesIterator := s.Session.Query("SELECT dc, up FROM system.cluster_status").Iter()
+    for clusterNodesIterator.Scan(&currentDatacenter, &currentHostStatus) {
+        clusterSize++
+        if currentHostStatus {
+            clusterNodesUp++
+        } else {
+            clusterNodesDown++
+        }
+    }
+    
     if err := clusterNodesIterator.Close(); err != nil {
         log.Fatalf("Failed to close cluster nodes iterator: %v", err)
     }
     
-    // Retrieve Connected Sessions
-    connectedSessionsIterator := s.Session.Query("SELECT connection_stage as connected_sessions FROM system.clients").Iter()
-    stats["scylla_active_conns"] = strconv.Itoa(connectedSessionsIterator.NumRows())
-    
-    if err := connectedSessionsIterator.Close(); err != nil {
-        log.Fatalf("Failed to close cluster nodes iterator: %v", err)
-    }
+    stats["scylla_cluster_size"] = strconv.Itoa(int(clusterSize))
+    stats["scylla_cluster_nodes_up"] = strconv.Itoa(int(clusterNodesUp))
+    stats["scylla_cluster_nodes_down"] = strconv.Itoa(int(clusterNodesDown))
+    stats["scylla_current_datacenter"] = currentDatacenter
     
     // Calculate the time taken to perform the health check
     stats["scylla_health_check_duration"] = time.Since(startedAt).String()
@@ -99,4 +113,4 @@ func (s *service) checkScyllaHealth(ctx context.Context, stats map[string]string
 ## Note
 
 Scylladb does not support advanced health check functions like SQL databases or Redis. 
-Implementation is based on queries at `system` related keyspaces.
+The current implementation is based on queries at `system` related keyspaces.
