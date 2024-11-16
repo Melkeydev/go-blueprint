@@ -18,7 +18,7 @@ Adds Tailwind CSS support to the project.
 Docker configuration for go project.
 
 - **React:**
-frontend written in TypeScript, including an example fetch request to the backend.
+Frontend written in TypeScript, including an example fetch request to the backend.
 
 
 To utilize the `--advanced` flag, use the following command:
