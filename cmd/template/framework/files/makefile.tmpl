@@ -55,7 +55,11 @@ build:{{- if and .AdvancedOptions.tailwind (not .AdvancedOptions.react) }} tailw
 
 # Run the application
 run:
-	@go run cmd/api/main.go
+	@go run cmd/api/main.go{{- if .AdvancedOptions.react }} &
+	@npm install --prefix ./frontend
+	@npm run dev --prefix ./frontend
+	{{- end }}
+
 
 {{- if or .AdvancedOptions.docker (and (ne .DBDriver "none") (ne .DBDriver "sqlite")) }}
 {{- if .OSCheck.UnixBased }}
