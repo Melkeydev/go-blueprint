@@ -9,12 +9,20 @@ import (
   {{end}}
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/cors"
 
   {{.AdvancedTemplates.TemplateImports}}
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
 	r := gin.Default()
+
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173"}, // Add your frontend URL
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
+		AllowHeaders:     []string{"Accept", "Authorization", "Content-Type"},
+		AllowCredentials: true, // Enable cookies/auth
+	}))
 
 	r.GET("/", s.HelloWorldHandler)
   {{if ne .DBDriver "none"}}
@@ -41,7 +49,6 @@ func (s *Server) healthHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, s.db.Health())
 }
 {{end}}
-
 
 {{if .AdvancedOptions.websocket}}
 func (s *Server) websocketHandler(c *gin.Context) {
@@ -71,3 +78,4 @@ func (s *Server) websocketHandler(c *gin.Context) {
 	}
 }
 {{end}}
+

@@ -15,8 +15,11 @@ import (
 
 func (s *Server) RegisterRoutes() http.Handler {
 	r := httprouter.New()
-	r.HandlerFunc(http.MethodGet, "/", s.HelloWorldHandler)
 
+	// Wrap all routes with CORS middleware
+	corsWrapper := s.corsMiddleware(r)
+
+	r.HandlerFunc(http.MethodGet, "/", s.HelloWorldHandler)
   {{if ne .DBDriver "none"}}
 	r.HandlerFunc(http.MethodGet, "/health", s.healthHandler)
   {{end}}
@@ -25,7 +28,26 @@ func (s *Server) RegisterRoutes() http.Handler {
   {{end}}
   {{.AdvancedTemplates.TemplateRoutes}}
 
-	return r
+	return corsWrapper
+}
+
+// CORS middleware
+func (s *Server) corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// CORS headers
+		w.Header().Set("Access-Control-Allow-Origin", "*") // Use "*" for all origins, or replace with specific origins
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH")
+		w.Header().Set("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type, X-CSRF-Token")
+		w.Header().Set("Access-Control-Allow-Credentials", "false") // Set to "true" if credentials are needed
+
+		// Handle preflight OPTIONS requests
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }
 
 func (s *Server) HelloWorldHandler(w http.ResponseWriter, r *http.Request) {
@@ -78,3 +100,4 @@ func (s *Server) websocketHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 {{end}}
+

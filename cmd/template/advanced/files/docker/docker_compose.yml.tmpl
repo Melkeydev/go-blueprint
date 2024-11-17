@@ -14,7 +14,21 @@ services:
       BLUEPRINT_DB_URL: ${BLUEPRINT_DB_URL}
     volumes:
       - sqlite_bp:/app/db
+{{- end }}
+{{- if .AdvancedOptions.react }}
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: frontend
+    restart: unless-stopped
+    ports:
+      - 5173:5173
+    depends_on:
+      - app
+{{- end }}
 
+{{- if and (.AdvancedOptions.docker) (eq .DBDriver "sqlite") }}
 volumes:
   sqlite_bp:
 {{- end }}

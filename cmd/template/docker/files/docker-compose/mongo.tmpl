@@ -21,6 +21,20 @@ services:
     networks:
       - blueprint
 {{- end }}
+{{- if and .AdvancedOptions.react .AdvancedOptions.docker }}
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: frontend
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - 5173:5173
+    networks:
+      - blueprint
+{{- end }}
   mongo_bp:
     image: mongo:latest
     restart: unless-stopped

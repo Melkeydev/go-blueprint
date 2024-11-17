@@ -8,10 +8,20 @@ import (
 	"time"
   {{end}}
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
   {{.AdvancedTemplates.TemplateImports}}
 )
 
 func (s *FiberServer) RegisterFiberRoutes() {
+	// Apply CORS middleware
+	s.App.Use(cors.New(cors.Config{
+		AllowOrigins:     "*",
+		AllowMethods:     "GET,POST,PUT,DELETE,OPTIONS,PATCH",
+		AllowHeaders:     "Accept,Authorization,Content-Type",
+		AllowCredentials: false, // credentials require explicit origins
+		MaxAge:           300,
+	}))
+
 	s.App.Get("/", s.HelloWorldHandler)
   {{if ne .DBDriver "none"}}
 	s.App.Get("/health", s.healthHandler)
@@ -67,3 +77,4 @@ func (s *FiberServer) websocketHandler(con *websocket.Conn) {
 	}
 }
 {{end}}
+

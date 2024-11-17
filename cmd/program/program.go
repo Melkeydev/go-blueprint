@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -382,6 +383,17 @@ func (p *Project) CreateMainFile() error {
 	if err != nil {
 		log.Printf("Error creating path: %s", internalServerPath)
 		return err
+	}
+
+	if p.AdvancedOptions[string(flags.React)] {
+		// deselect htmx option automatically since react is selected
+		p.AdvancedOptions[string(flags.Htmx)] = false
+		if err := p.CreateViteReactProject(projectPath); err != nil {
+			return fmt.Errorf("failed to set up React project: %w", err)
+		}
+
+		// if everything went smoothly, remove tailwing flag option
+		p.AdvancedOptions[string(flags.Tailwind)] = false
 	}
 
 	if p.AdvancedOptions[string(flags.Tailwind)] {
@@ -769,6 +781,104 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 	return nil
 }
 
+func (p *Project) CreateViteReactProject(projectPath string) error {
+	if err := checkNpmInstalled(); err != nil {
+		return err
+	}
+
+	originalDir, err := os.Getwd()
+	if err != nil {
+		return fmt.Errorf("failed to get current directory: %w", err)
+	}
+	defer func() {
+		if err := os.Chdir(originalDir); err != nil {
+			fmt.Fprintf(os.Stderr, "failed to change back to original directory: %v\n", err)
+		}
+	}()
+
+	// change into the project directory to run vite command
+	err = os.Chdir(projectPath)
+	if err != nil {
+		fmt.Println("failed to change into project directory: %w", err)
+	}
+
+	// the interactive vite command will not work as we can't interact with it
+	fmt.Println("Installing create-vite...")
+	cmd := exec.Command("npm", "create", "vite@latest", "frontend", "--", "--template", "react-ts")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("failed to use create-vite: %w", err)
+	}
+
+	frontendPath := filepath.Join(projectPath, "frontend")
+	if err := os.MkdirAll(frontendPath, 0755); err != nil {
+		return fmt.Errorf("failed to create frontend directory: %w", err)
+	}
+
+	if err := os.Chdir(frontendPath); err != nil {
+		return fmt.Errorf("failed to change to frontend directory: %w", err)
+	}
+
+	srcDir := filepath.Join(frontendPath, "src")
+	if err := os.MkdirAll(srcDir, 0755); err != nil {
+		return fmt.Errorf("failed to create src directory: %w", err)
+	}
+
+	if err := os.WriteFile(filepath.Join(srcDir, "App.tsx"), advanced.ReactAppfile(), 0644); err != nil {
+		return fmt.Errorf("failed to write App.tsx template: %w", err)
+	}
+
+	// Handle Tailwind configuration if selected
+	if p.AdvancedOptions[string(flags.Tailwind)] {
+		fmt.Println("Tailwind selected. Configuring with React...")
+		cmd := exec.Command("npm", "install", "-D", "tailwindcss", "postcss", "autoprefixer")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			return fmt.Errorf("failed to install Tailwind: %w", err)
+		}
+		cmd = exec.Command("npx", "tailwindcss", "init", "-p")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			return fmt.Errorf("failed to initialize Tailwind: %w", err)
+		}
+
+		// use the tailwind config file
+		err = os.WriteFile("tailwind.config.js", advanced.ReactTailwindConfigTemplate(), 0644)
+		if err != nil {
+			return fmt.Errorf("failed to write tailwind config: %w", err)
+		}
+
+		srcDir := filepath.Join(frontendPath, "src")
+		if err := os.MkdirAll(srcDir, 0755); err != nil {
+			return fmt.Errorf("failed to create src directory: %w", err)
+		}
+
+		err = os.WriteFile(filepath.Join(srcDir, "index.css"), advanced.InputCssTemplateReact(), 0644)
+		if err != nil {
+			return fmt.Errorf("failed to update index.css: %w", err)
+		}
+
+		if err := os.WriteFile(filepath.Join(srcDir, "App.tsx"), advanced.ReactTailwindAppfile(), 0644); err != nil {
+			return fmt.Errorf("failed to write App.tsx template: %w", err)
+		}
+
+		if err := os.Remove(filepath.Join(srcDir, "App.css")); err != nil {
+			// Don't return error if file doesn't exist
+			if !os.IsNotExist(err) {
+				return fmt.Errorf("failed to remove App.css: %w", err)
+			}
+		}
+
+		// set to false to not re-do in next step
+		p.AdvancedOptions[string(flags.Tailwind)] = false
+	}
+
+	return nil
+}
+
 func (p *Project) CreateHtmxTemplates() {
 	routesPlaceHolder := ""
 	importsPlaceHolder := ""
@@ -826,4 +936,12 @@ func (p *Project) CreateWebsocketImports(appDir string) {
 	}
 	newImports := strings.Join([]string{string(p.AdvancedTemplates.TemplateImports), importBuffer.String()}, "\n")
 	p.AdvancedTemplates.TemplateImports = newImports
+}
+
+func checkNpmInstalled() error {
+	cmd := exec.Command("npm", "--version")
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("npm is not installed: %w", err)
+	}
+	return nil
 }

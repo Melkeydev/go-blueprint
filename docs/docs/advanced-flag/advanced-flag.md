@@ -14,6 +14,13 @@ WebSocket endpoint that sends continuous data streams through the WS protocol.
 - **Tailwind:**
 Adds Tailwind CSS support to the project.
 
+- **Docker:**
+Docker configuration for go project.
+
+- **React:**
+Frontend written in TypeScript, including an example fetch request to the backend.
+
+
 To utilize the `--advanced` flag, use the following command:
 
 ```bash
