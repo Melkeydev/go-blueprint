@@ -22,6 +22,20 @@ services:
     networks:
       - blueprint
 {{- end }}
+{{- if and .AdvancedOptions.react .AdvancedOptions.docker }}
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: frontend_runner
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - 5173:5173
+    networks:
+      - blueprint
+{{- end }}
   mysql_bp:
     image: mysql:latest
     restart: unless-stopped
