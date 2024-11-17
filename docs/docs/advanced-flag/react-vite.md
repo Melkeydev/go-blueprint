@@ -1,4 +1,4 @@
-This template provides a minimal setup for getting React working with Vite for the frontend. It allows you to easily integrate React with Tailwind CSS and Vite for fast development.
+This template provides a minimal setup for getting React working with Vite for the frontend and go on the backend. It allows you to easily integrate React with Tailwind CSS and Vite for fast development.
 
 The React advanced flag can be combined with the Tailwind flag for enhanced styling capabilities.
 
@@ -7,7 +7,7 @@ The React advanced flag can be combined with the Tailwind flag for enhanced styl
 ```bash
 / (Root)
 ├── frontend/                     # React advanced flag. Excludes HTMX.
-│   ├── node_modules/             # Node.js dependencies.
+│   ├── node_modules/             # Node dependencies.
 │   ├── public/
 │   │   ├── index.html
 │   │   └── favicon.ico
@@ -59,3 +59,19 @@ npm run dev
 
 
 You can extend the `vite.config.ts` to include additional configurations as needed, such as adding plugins for optimizing the build process, enabling TypeScript support, or configuring Tailwind CSS.
+
+## Makefile
+
+The make run target will start the Go server in the backend, install frontend dependencies, and run the Vite development server for the frontend.
+
+```bash
+run:
+	@go run cmd/api/main.go &
+	@npm install --prefix ./frontend
+	@npm run dev --prefix ./frontend
+```
+
+After running this command, you can verify the connection between the frontend and backend by checking the console. You can also fetch data from the backend to test the integration.
+
+![React](../public/react.png)
+
