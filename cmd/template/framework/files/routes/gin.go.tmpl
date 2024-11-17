@@ -16,6 +16,22 @@ import (
 func (s *Server) RegisterRoutes() http.Handler {
 	r := gin.Default()
 
+	// Apply CORS middleware
+	r.Use(func(c *gin.Context) {
+		c.Header("Access-Control-Allow-Origin", "http://localhost:5173") // Add specific origins here or change localhost accordingly
+		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH")
+		c.Header("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type")
+		c.Header("Access-Control-Allow-Credentials", "true")
+
+		// Handle preflight OPTIONS requests
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(http.StatusNoContent)
+			return
+		}
+
+		c.Next()
+	})
+
 	r.GET("/", s.HelloWorldHandler)
   {{if ne .DBDriver "none"}}
 	r.GET("/health", s.healthHandler)
@@ -41,7 +57,6 @@ func (s *Server) healthHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, s.db.Health())
 }
 {{end}}
-
 
 {{if .AdvancedOptions.websocket}}
 func (s *Server) websocketHandler(c *gin.Context) {
@@ -71,3 +86,4 @@ func (s *Server) websocketHandler(c *gin.Context) {
 	}
 }
 {{end}}
+
