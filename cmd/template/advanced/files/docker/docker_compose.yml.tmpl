@@ -24,6 +24,8 @@ services:
     restart: unless-stopped
     ports:
       - 5173:5173
+    depends_on:
+      - app
 {{- end }}
 
 {{- if and (.AdvancedOptions.docker) (eq .DBDriver "sqlite") }}
