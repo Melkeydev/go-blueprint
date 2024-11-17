@@ -20,7 +20,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: frontend_runner
+      target: frontend
     restart: unless-stopped
     ports:
       - 5173:5173
