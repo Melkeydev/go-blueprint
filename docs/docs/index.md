@@ -46,7 +46,7 @@ Here's an overview of the project structure created by Go Blueprint when all opt
 │       ├── hello.templ           # Template file for the "hello" endpoint.
 │       └── hello_templ.go        # Generated Go code for the "hello" template. 
 ├── frontend/                     # React advanced flag. Excludes HTMX.
-│   ├── node_modules/             # Node.js dependencies.
+│   ├── node_modules/             # Node dependencies.
 │   ├── public/
 │   │   ├── index.html
 │   │   └── favicon.ico

@@ -39,6 +39,12 @@ function App() {
       <button onClick={fetchData}>
         Click to fetch from Go server
       </button>
+      {message && (
+        <div>
+          <h2>Server Response:</h2>
+          <p>{message}</p>
+        </div>
+      )}
     </>
   )
 }

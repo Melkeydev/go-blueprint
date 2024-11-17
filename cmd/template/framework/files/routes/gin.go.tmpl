@@ -9,6 +9,7 @@ import (
   {{end}}
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/cors"
 
   {{.AdvancedTemplates.TemplateImports}}
 )
@@ -16,21 +17,12 @@ import (
 func (s *Server) RegisterRoutes() http.Handler {
 	r := gin.Default()
 
-	// Apply CORS middleware
-	r.Use(func(c *gin.Context) {
-		c.Header("Access-Control-Allow-Origin", "http://localhost:5173") // Add specific origins here or change localhost accordingly
-		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH")
-		c.Header("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type")
-		c.Header("Access-Control-Allow-Credentials", "true")
-
-		// Handle preflight OPTIONS requests
-		if c.Request.Method == "OPTIONS" {
-			c.AbortWithStatus(http.StatusNoContent)
-			return
-		}
-
-		c.Next()
-	})
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173"}, // Add your frontend URL
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
+		AllowHeaders:     []string{"Accept", "Authorization", "Content-Type"},
+		AllowCredentials: true, // Enable cookies/auth
+	}))
 
 	r.GET("/", s.HelloWorldHandler)
   {{if ne .DBDriver "none"}}
