@@ -75,3 +75,137 @@ After running this command, you can verify the connection between the frontend a
 
 ![React](../public/react.png)
 
+## Dockerfile
+
+Combine React advanced flag wiht Docker flag to get Docker and docker-compose configuration and run them with:
+
+```bash
+make docker-run
+```
+
+### Dockerfile
+
+```dockerfile
+FROM golang:1.23-alpine AS build
+
+WORKDIR /app
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+RUN go build -o main cmd/api/main.go
+
+FROM alpine:3.20.1 AS prod
+WORKDIR /app
+COPY --from=build /app/main /app/main
+EXPOSE ${PORT}
+CMD ["./main"]
+
+
+FROM node:20 AS frontend_builder
+WORKDIR /frontend
+
+COPY frontend/package*.json ./
+RUN npm install
+COPY frontend/. .
+RUN npm run build
+
+FROM node:20-slim AS frontend_runner
+RUN npm install -g serve
+COPY --from=frontend_builder /frontend/dist /app/dist
+EXPOSE 5173
+CMD ["serve", "-s", "/app/dist", "-l", "5173"]
+```
+
+### Docker compose without db
+
+```yaml
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod
+    restart: unless-stopped
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      APP_ENV: ${APP_ENV}
+      PORT: ${PORT}
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: frontend_runner
+    restart: unless-stopped
+    ports:
+      - 5173:5173
+    depends_on:
+      - app
+```
+
+### Docker compose with db
+
+```yaml
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod
+    restart: unless-stopped
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      APP_ENV: ${APP_ENV}
+      PORT: ${PORT}
+      BLUEPRINT_DB_HOST: ${BLUEPRINT_DB_HOST}
+      BLUEPRINT_DB_PORT: ${BLUEPRINT_DB_PORT}
+      BLUEPRINT_DB_DATABASE: ${BLUEPRINT_DB_DATABASE}
+      BLUEPRINT_DB_USERNAME: ${BLUEPRINT_DB_USERNAME}
+      BLUEPRINT_DB_PASSWORD: ${BLUEPRINT_DB_PASSWORD}
+      BLUEPRINT_DB_SCHEMA: ${BLUEPRINT_DB_SCHEMA}
+    depends_on:
+      psql_bp:
+        condition: service_healthy
+    networks:
+      - blueprint
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: frontend_runner
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - 5173:5173
+    networks:
+      - blueprint
+  psql_bp:
+    image: postgres:latest
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${BLUEPRINT_DB_DATABASE}
+      POSTGRES_USER: ${BLUEPRINT_DB_USERNAME}
+      POSTGRES_PASSWORD: ${BLUEPRINT_DB_PASSWORD}
+    ports:
+      - "${BLUEPRINT_DB_PORT}:5432"
+    volumes:
+      - psql_volume_bp:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${BLUEPRINT_DB_USERNAME} -d ${BLUEPRINT_DB_DATABASE}'"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - blueprint
+
+volumes:
+  psql_volume_bp:
+networks:
+  blueprint:
+```

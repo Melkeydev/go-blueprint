@@ -29,11 +29,11 @@ COPY --from=build /app/main /app/main
 EXPOSE ${PORT}
 CMD ["./main"]
 
-{{- if .AdvancedOptions.react}}
+{{ if .AdvancedOptions.react}}
 FROM node:20 AS frontend_builder
 WORKDIR /frontend
 
-COPY frontend/package.json frontend/package-lock.json ./
+COPY frontend/package*.json ./
 RUN npm install
 COPY frontend/. .
 RUN npm run build
