@@ -112,7 +112,7 @@ RUN npm install
 COPY frontend/. .
 RUN npm run build
 
-FROM node:20-slim AS frontend_runner
+FROM node:20-slim AS frontend
 RUN npm install -g serve
 COPY --from=frontend_builder /frontend/dist /app/dist
 EXPOSE 5173
@@ -138,7 +138,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: frontend_runner
+      target: frontend
     restart: unless-stopped
     ports:
       - 5173:5173
@@ -176,7 +176,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: frontend_runner
+      target: frontend
     restart: unless-stopped
     depends_on:
       - app
