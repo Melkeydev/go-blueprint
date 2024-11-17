@@ -15,8 +15,15 @@ services:
     volumes:
       - sqlite_bp:/app/db
 {{- end }}
-{{- if .AdvancedOptions.react}}
-
+{{- if .AdvancedOptions.react }}
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: frontend_runner
+    restart: unless-stopped
+    ports:
+      - 5173:5173
 {{- end }}
 
 {{- if and (.AdvancedOptions.docker) (eq .DBDriver "sqlite") }}
