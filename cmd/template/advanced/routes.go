@@ -13,6 +13,18 @@ var baseTemplTemplate []byte
 //go:embed files/tailwind/tailwind.config.js.tmpl
 var tailwindConfigTemplate []byte
 
+//go:embed files/react/tailwind/tailwind.config.js.tmpl
+var reactTailwindConfigTemplate []byte
+
+//go:embed files/react/tailwind/index.css.tmpl
+var inputCssTemplateReact []byte
+
+//go:embed files/react/tailwind/app.tsx.tmpl
+var reactTailwindAppFile []byte
+
+//go:embed files/react/app.tsx.tmpl
+var reactAppFile []byte
+
 //go:embed files/tailwind/input.css.tmpl
 var inputCssTemplate []byte
 
@@ -109,6 +121,22 @@ func BaseTemplTemplate() []byte {
 
 func TailwindConfigTemplate() []byte {
 	return tailwindConfigTemplate
+}
+
+func ReactTailwindConfigTemplate() []byte {
+	return reactTailwindConfigTemplate
+}
+
+func ReactTailwindAppfile() []byte {
+	return reactTailwindAppFile
+}
+
+func ReactAppfile() []byte {
+	return reactAppFile
+}
+
+func InputCssTemplateReact() []byte {
+	return inputCssTemplateReact
 }
 
 func InputCssTemplate() []byte {

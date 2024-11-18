@@ -46,6 +46,7 @@ nav:
     - GoReleaser & GoTest CI: advanced-flag/goreleaser.md
     - Websocket: advanced-flag/websocket.md
     - Docker: advanced-flag/docker.md
+    - React & Vite (TypeScript): advanced-flag/react-vite.md
   - Testing endpoints: 
     - Server: endpoints-test/server.md
     - DB Health Endpoints: 

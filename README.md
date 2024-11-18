@@ -17,7 +17,6 @@ gives the option to integrate with one of the more popular Go frameworks (and th
 - Integrate with a popular frameworks
 - Focus on the actual code of your application
 
-
 ## Table of Contents
 
 - [Install](#install)
@@ -114,8 +113,9 @@ You can now use the `--advanced` flag when running the `create` command to get a
 - [Websocket](https://pkg.go.dev/github.com/coder/websocket) sets up a websocket endpoint
 - [Tailwind](https://tailwindcss.com/) css framework
 - Docker configuration for go project
+- [React](https://react.dev/) frontend written in TypeScript, including an example fetch request to the backend
 
-Note: selecting tailwind option automatically selects htmx.
+Note: Selecting Tailwind option will automatically select HTMX unless React is explicitly selected
 
 <a id="blueprint-ui"></a>
 
@@ -156,40 +156,52 @@ go-blueprint create --advanced
 Advanced features can be enabled using the `--feature` flag along with the `--advanced` flag.
 
 HTMX:
+
 ```bash
 go-blueprint create --advanced --feature htmx
 ```
 
 CI/CD workflow:
+
 ```bash
 go-blueprint create --advanced --feature githubaction
 ```
 
 Websocket:
+
 ```bash
 go-blueprint create --advanced --feature websocket
 ```
 
 Tailwind:
+
 ```bash
 go-blueprint create --advanced --feature tailwind
 ```
 
 Docker:
+
 ```bash
 go-blueprint create --advanced --feature docker
 ```
 
-Or all features at once:
+React:
+
 ```bash
-go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --feature docker -git commit
+go-blueprint create --advanced --feature react
+```
+
+Or all features at once:
+
+```bash
+go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --feature docker -git commit --feature react
 ```
 
 <p align="center">
   <img src="./public/blueprint_advanced.png" alt="Advanced Options" width="800"/>
 </p>
 
- **Visit [documentation](https://docs.go-blueprint.dev) to learn more about blueprint and its features.**
+**Visit [documentation](https://docs.go-blueprint.dev) to learn more about blueprint and its features.**
 
 <a id="github-stats"></a>
 

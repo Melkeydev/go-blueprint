@@ -29,6 +29,42 @@ COPY --from=build /app/main /app/main
 EXPOSE ${PORT}
 CMD ["./main"]
 ```
+
+Docker config if React flag is used:
+
+```dockerfile
+FROM golang:1.23-alpine AS build
+
+WORKDIR /app
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+RUN go build -o main cmd/api/main.go
+
+FROM alpine:3.20.1 AS prod
+WORKDIR /app
+COPY --from=build /app/main /app/main
+EXPOSE ${PORT}
+CMD ["./main"]
+
+
+FROM node:20 AS frontend_builder
+WORKDIR /frontend
+
+COPY frontend/package*.json ./
+RUN npm install
+COPY frontend/. .
+RUN npm run build
+
+FROM node:20-slim AS frontend
+RUN npm install -g serve
+COPY --from=frontend_builder /frontend/dist /app/dist
+EXPOSE 5173
+CMD ["serve", "-s", "/app/dist", "-l", "5173"]
+```
 ## Docker compose
 Docker and docker-compose.yml pull environment variables from the .env file.
 
@@ -87,3 +123,8 @@ networks:
 If you are testing more than one framework locally, be aware of Docker leftovers such as volumes.
 For proper cleaning and building, use `docker compose down --volumes` and `docker compose up --build`.
 
+or
+
+```bash
+docker compose build --no-cache && docker compose up
+```
