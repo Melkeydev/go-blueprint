@@ -1,0 +1,70 @@
+services:
+{{- if .AdvancedOptions.docker }}
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod
+    restart: unless-stopped
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      APP_ENV: ${APP_ENV}
+      PORT: ${PORT}
+      BLUEPRINT_DB_HOSTS: ${BLUEPRINT_DB_HOSTS}
+      BLUEPRINT_DB_PORT: ${BLUEPRINT_DB_PORT}
+      BLUEPRINT_DB_CONSISTENCY: ${BLUEPRINT_DB_CONSISTENCY}
+      BLUEPRINT_DB_KEYSPACE: ${BLUEPRINT_DB_KEYSPACE}
+      BLUEPRINT_DB_USERNAME: ${BLUEPRINT_DB_USERNAME}
+      BLUEPRINT_DB_PASSWORD: ${BLUEPRINT_DB_PASSWORD}
+      BLUEPRINT_DB_CONNECTIONS: ${BLUEPRINT_DB_CONNECTIONS}
+    depends_on:
+      scylla_bp:
+        condition: service_healthy
+    networks:
+      - blueprint
+{{- end }}
+{{- if and .AdvancedOptions.react .AdvancedOptions.docker }}
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: frontend
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - 5173:5173
+    networks:
+      - blueprint
+{{- end }}
+  scylla_bp:
+    image: scylladb/scylla:6.2
+    restart: unless-stopped
+    command:
+      - --smp=2
+      - --memory=1GB
+      - --overprovisioned=1
+      - --developer-mode=1 # Disable for production
+      - --seeds=scylla_bp
+    ports:
+      - "9042:9042"
+      - "19042:19042"
+    volumes:
+      - scylla_bp:/var/lib/scylla
+    {{- if .AdvancedOptions.docker }}
+    healthcheck:
+      test: ["CMD-SHELL", 'cqlsh -e "SHOW VERSION" || exit 1']
+      interval: 15s
+      timeout: 30s
+      retries: 15
+      start_period: 30s
+    networks:
+      - blueprint
+    {{- end }}
+volumes:
+  scylla_bp:
+{{- if .AdvancedOptions.docker }}
+networks:
+  blueprint:
+{{- end }}

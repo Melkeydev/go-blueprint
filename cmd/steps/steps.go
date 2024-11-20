@@ -83,6 +83,9 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 						Title: "Redis",
 						Desc:  "Redis driver for Go."},
 					{
+						Title: "Scylla",
+						Desc:  "ScyllaDB Enhanced driver from GoCQL."},
+					{
 						Title: "None",
 						Desc:  "Choose this option if you don't wish to install a specific database driver."},
 				},

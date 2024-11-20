@@ -1,0 +1,10 @@
+{{- if .AdvancedOptions.docker }}
+# BLUEPRINT_DB_HOSTS=scylla_bp:9042 # ScyllaDB default port
+BLUEPRINT_DB_HOSTS=scylla_bp:19042 # ScyllaDB Shard-Aware port
+{{- else }}
+# BLUEPRINT_DB_HOSTS=localhost:9042 # ScyllaDB default port
+BLUEPRINT_DB_HOSTS=localhost:19042 # ScyllaDB Shard-Aware port
+{{- end }}
+BLUEPRINT_DB_CONSISTENCY="LOCAL_QUORUM"
+# BLUEPRINT_DB_USERNAME=
+# BLUEPRINT_DB_PASSWORD=

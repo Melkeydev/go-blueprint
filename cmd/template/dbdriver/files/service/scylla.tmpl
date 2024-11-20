@@ -1,0 +1,165 @@
+package database
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"os"
+	"strconv"
+	"strings"
+	"time"
+
+	"github.com/gocql/gocql"
+	_ "github.com/joho/godotenv/autoload"
+)
+
+// Service defines the interface for health checks.
+type Service interface {
+	Health() map[string]string
+	Close() error
+}
+
+// service implements the Service interface.
+type service struct {
+	Session *gocql.Session
+}
+
+// Environment variables for ScyllaDB connection.
+var (
+	hosts            = os.Getenv("BLUEPRINT_DB_HOSTS")       // Comma-separated list of hosts:port
+	username         = os.Getenv("BLUEPRINT_DB_USERNAME")    // Username for authentication
+	password         = os.Getenv("BLUEPRINT_DB_PASSWORD")    // Password for authentication
+	consistencyLevel = os.Getenv("BLUEPRINT_DB_CONSISTENCY") // Consistency level
+)
+
+// New initializes a new Service with a ScyllaDB Session.
+func New() Service {
+	cluster := gocql.NewCluster(strings.Split(hosts, ",")...)
+	cluster.PoolConfig.HostSelectionPolicy = gocql.TokenAwareHostPolicy(gocql.RoundRobinHostPolicy())
+
+	// Set authentication if provided
+	if username != "" && password != "" {
+		cluster.Authenticator = gocql.PasswordAuthenticator{
+			Username: username,
+			Password: password,
+		}
+	}
+
+	// Set consistency level if provided
+	if consistencyLevel != "" {
+		if cl, err := parseConsistency(consistencyLevel); err == nil {
+			cluster.Consistency = cl
+		} else {
+			log.Printf("Invalid SCYLLA_DB_CONSISTENCY '%s', using default: %v", consistencyLevel, err)
+		}
+	}
+
+	// Create Session
+	session, err := cluster.CreateSession()
+	if err != nil {
+		log.Fatalf("Failed to connect to ScyllaDB cluster: %v", err)
+	}
+
+	s := &service{Session: session}
+	return s
+}
+
+// parseConsistency converts a string to a gocql.Consistency value.
+func parseConsistency(cons string) (gocql.Consistency, error) {
+	consistencyMap := map[string]gocql.Consistency{
+		"ANY":          gocql.Any,
+		"ONE":          gocql.One,
+		"TWO":          gocql.Two,
+		"THREE":        gocql.Three,
+		"QUORUM":       gocql.Quorum,
+		"ALL":          gocql.All,
+		"LOCAL_ONE":    gocql.LocalOne,
+		"LOCAL_QUORUM": gocql.LocalQuorum,
+		"EACH_QUORUM":  gocql.EachQuorum,
+	}
+
+	if consistency, ok := consistencyMap[strings.ToUpper(cons)]; ok {
+		return consistency, nil
+	}
+	return gocql.LocalQuorum, fmt.Errorf("unknown consistency level: %s", cons)
+}
+
+// Health returns the health status and statistics of the ScyllaDB cluster.
+func (s *service) Health() map[string]string {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	stats := make(map[string]string)
+
+	// Check ScyllaDB health and populate the stats map
+	startedAt := time.Now()
+
+	// Execute a simple query to check connectivity
+	query := "SELECT now() FROM system.local"
+	iter := s.Session.Query(query).WithContext(ctx).Iter()
+	var currentTime time.Time
+	if !iter.Scan(&currentTime) {
+		if err := iter.Close(); err != nil {
+			stats["status"] = "down"
+			stats["message"] = fmt.Sprintf("Failed to execute query: %v", err)
+			return stats
+		}
+	}
+	if err := iter.Close(); err != nil {
+		stats["status"] = "down"
+		stats["message"] = fmt.Sprintf("Error during query execution: %v", err)
+		return stats
+	}
+
+	// ScyllaDB is up
+	stats["status"] = "up"
+	stats["message"] = "It's healthy"
+	stats["scylla_current_time"] = currentTime.String()
+
+	// Retrieve cluster information
+	// Get keyspace information
+	getKeyspacesQuery := "SELECT keyspace_name FROM system_schema.keyspaces"
+	keyspacesIterator := s.Session.Query(getKeyspacesQuery).Iter()
+
+	stats["scylla_keyspaces"] = strconv.Itoa(keyspacesIterator.NumRows())
+	if err := keyspacesIterator.Close(); err != nil {
+		log.Fatalf("Failed to close keyspaces iterator: %v", err)
+	}
+
+	// Get cluster information
+	var currentDatacenter string
+	var currentHostStatus bool
+
+	var clusterNodesUp uint
+	var clusterNodesDown uint
+	var clusterSize uint
+
+	clusterNodesIterator := s.Session.Query("SELECT dc, up FROM system.cluster_status").Iter()
+	for clusterNodesIterator.Scan(&currentDatacenter, &currentHostStatus) {
+		clusterSize++
+		if currentHostStatus {
+			clusterNodesUp++
+		} else {
+			clusterNodesDown++
+		}
+	}
+
+	if err := clusterNodesIterator.Close(); err != nil {
+		log.Fatalf("Failed to close cluster nodes iterator: %v", err)
+	}
+
+	stats["scylla_cluster_size"] = strconv.Itoa(int(clusterSize))
+	stats["scylla_cluster_nodes_up"] = strconv.Itoa(int(clusterNodesUp))
+	stats["scylla_cluster_nodes_down"] = strconv.Itoa(int(clusterNodesDown))
+	stats["scylla_current_datacenter"] = currentDatacenter
+
+	// Calculate the time taken to perform the health check
+	stats["scylla_health_check_duration"] = time.Since(startedAt).String()
+	return stats
+}
+
+// Close gracefully closes the ScyllaDB Session.
+func (s *service) Close() error {
+	s.Session.Close()
+	return nil
+}

@@ -104,6 +104,8 @@ var (
 	sqliteDriver   = []string{"github.com/mattn/go-sqlite3"}
 	redisDriver    = []string{"github.com/redis/go-redis/v9"}
 	mongoDriver    = []string{"go.mongodb.org/mongo-driver"}
+	gocqlDriver    = []string{"github.com/gocql/gocql"}
+	scyllaDriver   = "github.com/scylladb/gocql@v1.14.4" // Replacement for GoCQL
 
 	godotenvPackage = []string{"github.com/joho/godotenv"}
 	templPackage    = []string{"github.com/a-h/templ"}
@@ -206,6 +208,11 @@ func (p *Project) createDBDriverMap() {
 		packageName: redisDriver,
 		templater:   dbdriver.RedisTemplate{},
 	}
+
+	p.DBDriverMap[flags.Scylla] = Driver{
+		packageName: gocqlDriver,
+		templater:   dbdriver.ScyllaTemplate{},
+	}
 }
 
 func (p *Project) createDockerMap() {
@@ -226,6 +233,10 @@ func (p *Project) createDockerMap() {
 	p.DockerMap[flags.Redis] = Docker{
 		packageName: []string{},
 		templater:   docker.RedisDockerTemplate{},
+	}
+	p.DockerMap[flags.Scylla] = Docker{
+		packageName: []string{},
+		templater:   docker.ScyllaDockerTemplate{},
 	}
 }
 
@@ -335,10 +346,20 @@ func (p *Project) CreateMainFile() error {
 
 	// Install the godotenv package
 	err = utils.GoGetPackage(projectPath, godotenvPackage)
+
 	if err != nil {
 		log.Printf("Could not install go dependency %v\n", err)
 
 		return err
+	}
+
+	if p.DBDriver == flags.Scylla {
+		replace := fmt.Sprintf("%s=%s", gocqlDriver[0], scyllaDriver)
+		err = utils.GoModReplace(projectPath, replace)
+		if err != nil {
+			log.Printf("Could not replace go dependency %v\n", err)
+			return err
+		}
 	}
 
 	err = p.CreatePath(cmdApiPath, projectPath)
