@@ -3,16 +3,19 @@ To test the ScyllaDB Health Check endpoint, use the following curl command:
 ```bash
 curl http://localhost:PORT/health
 ```
+
 ## Health Function
 
-The `Health` function checks the health of the ScyllaDB Cluster by pinging the [Coordinator Node](https://opensource.docs.scylladb.com/stable/architecture/architecture-fault-tolerance.html). It returns a simple map containing a health message.
+The `Health` function checks the health of the ScyllaDB Cluster by pinging
+the [Coordinator Node](https://opensource.docs.scylladb.com/stable/architecture/architecture-fault-tolerance.html). It
+returns a simple map containing a health message.
 
 ### Functionality
 
 **Ping ScyllaDB Server**: The function pings the ScyllaDB through server to check its availability.
 
-   - If the ping fails, it logs the error and terminates the program.
-   - If the ping succeeds, it returns a health message indicating that the server with some .
+- If the ping fails, it logs the error and terminates the program.
+- If the ping succeeds, it returns a health message indicating that the server with some .
 
 ### Sample Output
 
@@ -32,7 +35,42 @@ The `Health` returns a JSON-like map structure with a single key indicating the 
 }
 ```
 
+## ScyllaDB Setup
+
+Before starting the cluster, ensure the [fs.aio-max-nr](https://www.kernel.org/doc/Documentation/sysctl/fs.txt) value is
+sufficient (e.g. `1048576` or `2097152` or more).
+
+If you prefer to configure it manually, run one of the following commands to check the current value:
+
+```sh
+sysctl --all | grep --word-regexp -- 'aio-max-nr'
+```
+
+```sh
+sysctl fs.aio-max-nr
+```
+
+```sh
+cat /proc/sys/fs/aio-max-nr
+```
+
+If the value is lower than required, you can use one of these commands:
+
+```sh
+# Update config non-persistent
+sysctl --write fs.aio-max-nr=1048576
+```
+
+Here's some links for more relevant information and automation:
+
+* [Repository: gvieira/ws-scylla](https://github.com/gvieira18/ws-scylla/) - Simple ScyllaDB Cluster magement with
+  Makefiles
+* [ScyllaDB University: 101 Essentials Track](https://university.scylladb.com/courses/scylla-essentials-overview) -
+  Learn the base concepts of ScyllaDB
+
 ## Code implementation
+
+Here you can check how the Health Check is done under the hood:
 
 ```go
 func (s *service) Health() map[string]string {
@@ -112,5 +150,5 @@ func (s *service) Health() map[string]string {
 
 ## Note
 
-Scylladb does not support advanced health check functions like SQL databases or Redis. 
+Scylladb does not support advanced health check functions like SQL databases or Redis.
 The current implementation is based on queries at `system` related keyspaces.

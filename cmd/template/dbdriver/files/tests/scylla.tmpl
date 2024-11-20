@@ -19,7 +19,6 @@ const (
 func mustStartScyllaDBContainer() (testcontainers.Container, error) {
 
 	// Define the container
-	name := "scylla-test"
 	image := "scylladb/scylla:6.2"
 	exposedPorts := []string{"9042/tcp", "19042/tcp"}
 	commands := []string{
@@ -42,7 +41,6 @@ func mustStartScyllaDBContainer() (testcontainers.Container, error) {
 				return strings.Contains(string(data), "COMPLETED")
 			}),
 		),
-		Name: name,
 	}
 
 	// Start the container
