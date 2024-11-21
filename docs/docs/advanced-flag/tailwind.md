@@ -57,11 +57,11 @@ templ-install:
 		fi; \
 	fi
 
-tailwind:
+tailwind-install:
 	@if [ ! -f tailwindcss ]; then curl -sL https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64 -o tailwindcss; fi
 	@chmod +x tailwindcss
 
-build: tailwind templ-install
+build: tailwind-install templ-install
 	@echo "Building..."
 	@templ generate
 	@./tailwindcss -i cmd/web/assets/css/input.css -o cmd/web/assets/css/output.css

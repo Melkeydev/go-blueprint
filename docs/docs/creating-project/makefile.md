@@ -15,7 +15,7 @@ This target installs the Go-based templating tool, `templ`, if it is not already
 - **Unix-based systems**: Prompts the user to install `templ` if it is missing.
 - **Windows**: Uses PowerShell to check for and install `templ`.
 
-***`tailwind`***
+***`tailwind-install`***
 
 This target downloads and sets up `tailwindcss`, depending on the user's operating system:
 
