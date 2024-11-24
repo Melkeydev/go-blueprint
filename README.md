@@ -194,7 +194,7 @@ go-blueprint create --advanced --feature react
 Or all features at once:
 
 ```bash
-go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --feature docker -git commit --feature react
+go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --feature docker --git commit --feature react
 ```
 
 <p align="center">
