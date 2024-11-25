@@ -214,7 +214,7 @@ go-blueprint create --name my-project --framework chi --driver mysql --advanced 
   <picture>
     <img src="./public/stats.gif?raw=true" width="45px" style="margin-right: 10px;">
   </picture>
-  Github Stats
+  GitHub Stats
 </h2>
 
 <p align="center">
