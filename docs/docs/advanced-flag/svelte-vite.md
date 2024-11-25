@@ -69,7 +69,7 @@ run:
 
 After running this command, you can verify the connection between the frontend and backend by checking the console. You can also fetch data from the backend to test the integration.
 
-![Svelte](../public/react.png)
+![Svelte](../public/svelte.png)
 
 ## Dockerfile
 
