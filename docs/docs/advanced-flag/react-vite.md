@@ -9,7 +9,6 @@ The React advanced flag can be combined with the Tailwind flag for enhanced styl
 ├── frontend/                     # React advanced flag. Excludes HTMX.
 │   ├── node_modules/             # Node dependencies.
 │   ├── public/
-│   │   ├── index.html
 │   │   └── favicon.ico
 │   ├── src/                      # React source files.
 │   │   ├── App.tsx               # Main React component.

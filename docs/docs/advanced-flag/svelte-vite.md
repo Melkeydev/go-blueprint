@@ -9,7 +9,6 @@ The Svelte advanced flag can be combined with the Tailwind flag for enhanced sty
 ├── frontend/                     # Svelte advanced flag. Excludes HTMX.
 │   ├── node_modules/             # Node dependencies.
 │   ├── public/
-│   │   ├── index.html
 │   │   └── favicon.ico
 │   ├── src/                      # Svelte source files.
 │   │   ├── App.svelte            # Main Svelte component.
