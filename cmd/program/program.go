@@ -859,16 +859,6 @@ func (p *Project) CreateViteProject(projectPath string) error {
 		return fmt.Errorf("failed to create src directory: %w", err)
 	}
 
-	if p.AdvancedOptions[string(flags.React)] {
-		if err := os.WriteFile(filepath.Join(srcDir, "App.tsx"), advanced.ReactAppfile(), 0644); err != nil {
-			return fmt.Errorf("failed to write App.tsx template: %w", err)
-		}
-	} else if p.AdvancedOptions[string(flags.Svelte)] {
-		if err := os.WriteFile(filepath.Join(srcDir, "App.svelte"), advanced.SvelteAppfile(), 0644); err != nil {
-			return fmt.Errorf("failed to write App.svelte template: %w", err)
-		}
-	}
-
 	// Handle Tailwind configuration if selected
 	if p.AdvancedOptions[string(flags.Tailwind)] {
 
@@ -891,25 +881,17 @@ func (p *Project) CreateViteProject(projectPath string) error {
 			return fmt.Errorf("failed to initialize Tailwind: %w", err)
 		}
 
-		// use the tailwind config file
-		if p.AdvancedOptions[string(flags.React)] {
-			err = os.WriteFile("tailwind.config.js", advanced.ReactTailwindConfigTemplate(), 0644)
-			if err != nil {
-				return fmt.Errorf("failed to write tailwind config: %w", err)
-			}
-		} else if p.AdvancedOptions[string(flags.Svelte)] {
-			err = os.WriteFile("tailwind.config.js", advanced.SvelteTailwindConfigTemplate(), 0644)
-			if err != nil {
-				return fmt.Errorf("failed to write tailwind config: %w", err)
-			}
-		}
-
 		srcDir := filepath.Join(frontendPath, "src")
 		if err := os.MkdirAll(srcDir, 0755); err != nil {
 			return fmt.Errorf("failed to create src directory: %w", err)
 		}
 
 		if p.AdvancedOptions[string(flags.React)] {
+			// use the tailwind config file for React
+			err = os.WriteFile("tailwind.config.js", advanced.ReactTailwindConfigTemplate(), 0644)
+			if err != nil {
+				return fmt.Errorf("failed to write tailwind config: %w", err)
+			}
 			// update index.css for React
 			err = os.WriteFile(filepath.Join(srcDir, "index.css"), advanced.InputCssTemplateReact(), 0644)
 			if err != nil {
@@ -928,6 +910,11 @@ func (p *Project) CreateViteProject(projectPath string) error {
 				}
 			}
 		} else if p.AdvancedOptions[string(flags.Svelte)] {
+			// use the tailwind config file for svelte
+			err = os.WriteFile("tailwind.config.js", advanced.SvelteTailwindConfigTemplate(), 0644)
+			if err != nil {
+				return fmt.Errorf("failed to write tailwind config: %w", err)
+			}
 			// update app.css for Svelte
 			err = os.WriteFile(filepath.Join(srcDir, "app.css"), advanced.InputCssTemplateSvelte(), 0644)
 			if err != nil {
@@ -941,6 +928,17 @@ func (p *Project) CreateViteProject(projectPath string) error {
 
 		// set to false to not re-do in next step
 		p.AdvancedOptions[string(flags.Tailwind)] = false
+	} else {
+		// if tailwind is not selected, use the default App file with server call example
+		if p.AdvancedOptions[string(flags.React)] {
+			if err := os.WriteFile(filepath.Join(srcDir, "App.tsx"), advanced.ReactAppfile(), 0644); err != nil {
+				return fmt.Errorf("failed to write App.tsx template: %w", err)
+			}
+		} else if p.AdvancedOptions[string(flags.Svelte)] {
+			if err := os.WriteFile(filepath.Join(srcDir, "App.svelte"), advanced.SvelteAppfile(), 0644); err != nil {
+				return fmt.Errorf("failed to write App.svelte template: %w", err)
+			}
+		}
 	}
 
 	return nil
