@@ -191,6 +191,10 @@ React:
 go-blueprint create --advanced --feature react
 ```
 
+```bash
+go-blueprint create --advanced --feature svelte
+```
+
 Or all features at once:
 
 ```bash

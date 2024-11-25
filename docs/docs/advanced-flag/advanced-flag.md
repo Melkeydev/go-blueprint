@@ -20,6 +20,8 @@ Docker configuration for go project.
 - **React:**
 Frontend written in TypeScript, including an example fetch request to the backend.
 
+- **Svelte:**
+Frontend written in TypeScript, including an example fetch request to the backend.
 
 To utilize the `--advanced` flag, use the following command:
 
