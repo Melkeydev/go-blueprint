@@ -102,6 +102,11 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 						Desc:  "Use Vite to spin up a React project in TypeScript. This disables selecting HTMX/Templ",
 					},
 					{
+						Flag:  "Svlete",
+						Title: "Svlete",
+						Desc:  "Use Vite to spin up a Svelte project in TypeScript. This disables selecting HTMX/Templ",
+					},
+					{
 						Flag:  "Htmx",
 						Title: "HTMX/Templ",
 						Desc:  "Add starter HTMX and Templ files. This disables selecting React",

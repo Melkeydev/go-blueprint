@@ -1,0 +1,59 @@
+<script lang="ts">
+  import svelteLogo from './assets/svelte.svg'
+  import viteLogo from '/vite.svg'
+  let count: number = $state(0)
+  let message: string = $state('');
+
+  const increment = () => {
+    count += 1
+  }
+
+  async function fetchData() {
+    try {
+      const response = await fetch('http://localhost:8080/');
+      message = await response.text();
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }
+</script>
+
+<main class="text-center p-8">
+  <div class="flex justify-center space-x-8">
+    <a href="https://vite.dev" target="_blank" rel="noreferrer">
+      <img src={viteLogo} class="h-24 p-6 transition-filter duration-300 hover:drop-shadow-[0_0_2em_#646cffaa]" alt="Vite Logo" />
+    </a>
+    <a href="https://svelte.dev" target="_blank" rel="noreferrer">
+      <img src={svelteLogo} class="h-24 p-6 transition-filter duration-300 hover:drop-shadow-[0_0_2em_#ff3e00aa]" alt="Svelte Logo" />
+    </a>
+  </div>
+  <h1 class="text-4xl mt-8">Vite + Svelte</h1>
+
+  <p class="text-gray-500 mt-4">
+    Click on the Vite and Svelte logos to learn more
+  </p>
+
+  <div class="card p-8 mt-8">
+  <button class="bg-gray-600 text-white py-2 px-4 hover:bg-gray-800 rounded mt-4" on:click={increment}>
+
+  count is {count}
+</button>
+    <p class="mt-4">
+      Edit <code>src/App.svelte</code> and save to test HMR
+    </p>
+  </div>
+
+  <button class="bg-green-600 text-white py-2 px-4 hover:bg-green-800 rounded mt-4" on:click={fetchData}>
+    Click to fetch from Go server
+  </button>
+  {#if message}
+    <div class="mt-4">
+      <h2 class="text-2xl">Server Response:</h2>
+      <p>{message}</p>
+    </div>
+  {/if}
+
+  <p class="mt-8">
+    Check out <a href="https://svelte.dev/docs/svelte/overview" target="_blank" rel="noreferrer" class="text-blue-500 hover:text-blue-700">Svelte</a>, the official Svelte app powered by Vite!
+  </p>
+</main>

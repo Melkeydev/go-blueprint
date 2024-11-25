@@ -1,0 +1,73 @@
+<script lang="ts">
+  import svelteLogo from './assets/svelte.svg'
+  import viteLogo from '/vite.svg'
+  import Counter from './lib/Counter.svelte'
+  let message: string = $state('');
+
+  async function fetchData() {
+    try {
+      const response = await fetch('http://localhost:8080/');
+      message = await response.text();
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }
+</script>
+
+<main>
+  <div>
+    <a href="https://vite.dev" target="_blank" rel="noreferrer">
+      <img src={viteLogo} class="logo" alt="Vite Logo" />
+    </a>
+    <a href="https://svelte.dev" target="_blank" rel="noreferrer">
+      <img src={svelteLogo} class="logo svelte" alt="Svelte Logo" />
+    </a>
+  </div>
+  <h1>Vite + Svelte</h1>
+
+  <p class="read-the-docs">
+    Click on the Vite and Svelte logos to learn more
+  </p>
+
+  <div class="card">
+    <Counter />
+    <p>
+      Edit <code>src/App.svelte</code> and save to test HMR
+    </p>
+  </div>
+
+  <button class="btn-fetch" on:click={fetchData}>
+    Click to fetch from Go server
+  </button>
+  {#if message}
+    <div>
+      <h2>Server Response:</h2>
+      <p>{message}</p>
+    </div>
+  {/if}
+
+  <p>
+    Check out <a href="https://svelte.dev/docs/svelte/overview" target="_blank" rel="noreferrer">Svelte</a>, the official Svelte app powered by Vite!
+  </p>
+</main>
+
+<style>
+  .logo {
+    height: 6em;
+    padding: 1.5em;
+    will-change: filter;
+    transition: filter 300ms;
+  }
+  .logo:hover {
+    filter: drop-shadow(0 0 2em #646cffaa);
+  }
+  .logo.svelte:hover {
+    filter: drop-shadow(0 0 2em #ff3e00aa);
+  }
+  .read-the-docs {
+    color: #888;
+  }
+  .btn-fetch {
+    background-color: #36b962;
+  }
+</style>

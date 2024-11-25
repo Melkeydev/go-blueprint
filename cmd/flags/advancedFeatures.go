@@ -13,6 +13,7 @@ const (
 	Websocket         string = "websocket"
 	Tailwind          string = "tailwind"
 	React             string = "react"
+	Svelte            string = "svelte"
 	Docker            string = "docker"
 )
 
