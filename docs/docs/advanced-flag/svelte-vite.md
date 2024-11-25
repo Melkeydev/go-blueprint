@@ -73,7 +73,7 @@ After running this command, you can verify the connection between the frontend a
 
 ## Dockerfile
 
-Combine React advanced flag wiht Docker flag to get Docker and docker-compose configuration and run them with:
+Combine svelte advanced flag with Docker flag to get Docker and docker-compose configuration and run them with:
 
 ```bash
 make docker-run
