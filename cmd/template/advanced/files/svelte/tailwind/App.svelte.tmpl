@@ -18,7 +18,7 @@
   }
 </script>
 
-<main class="text-center p-8">
+<main class="text-center p-8 bg-neutral-800 h-screen text-white">
   <div class="flex justify-center space-x-8">
     <a href="https://vite.dev" target="_blank" rel="noreferrer">
       <img src={viteLogo} class="h-24 p-6 transition-filter duration-300 hover:drop-shadow-[0_0_2em_#646cffaa]" alt="Vite Logo" />
@@ -34,18 +34,19 @@
   </p>
 
   <div class="card p-8 mt-8">
-  <button class="bg-gray-600 text-white py-2 px-4 hover:bg-gray-800 rounded mt-4" on:click={increment}>
+    <button class="bg-gray-600 text-white py-2 px-4 hover:bg-gray-800 rounded mt-4" onclick={increment}>
+      count is {count}
+    </button>
 
-  count is {count}
-</button>
     <p class="mt-4">
       Edit <code>src/App.svelte</code> and save to test HMR
     </p>
   </div>
 
-  <button class="bg-green-600 text-white py-2 px-4 hover:bg-green-800 rounded mt-4" on:click={fetchData}>
+  <button class="bg-green-600 text-white py-2 px-4 hover:bg-green-800 rounded mt-4" onclick={fetchData}>
     Click to fetch from Go server
   </button>
+
   {#if message}
     <div class="mt-4">
       <h2 class="text-2xl">Server Response:</h2>
