@@ -296,6 +296,7 @@ var createCmd = &cobra.Command{
 
 		if options.Advanced.Choices["Htmx"] {
 			options.Advanced.Choices["react"] = false
+			options.Advanced.Choices["svelte"] = false
 			fmt.Println(endingMsgStyle.Render("• Install the templ cli if you haven't already by running `go install github.com/a-h/templ/cmd/templ@latest`\n"))
 			fmt.Println(endingMsgStyle.Render("• Generate templ function files by running `templ generate`\n"))
 		}
