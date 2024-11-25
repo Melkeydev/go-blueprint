@@ -102,14 +102,14 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 						Desc:  "Use Vite to spin up a React project in TypeScript. This disables selecting HTMX/Templ",
 					},
 					{
-						Flag:  "Svlete",
-						Title: "Svlete",
+						Flag:  "Svelte",
+						Title: "Svelte",
 						Desc:  "Use Vite to spin up a Svelte project in TypeScript. This disables selecting HTMX/Templ",
 					},
 					{
 						Flag:  "Htmx",
 						Title: "HTMX/Templ",
-						Desc:  "Add starter HTMX and Templ files. This disables selecting React",
+						Desc:  "Add starter HTMX and Templ files. This disables selecting React or Svelte",
 					},
 					{
 						Flag:  "GitHubAction",
@@ -124,7 +124,7 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 					{
 						Flag:  "Tailwind",
 						Title: "TailwindCSS",
-						Desc:  "A utility-first CSS framework (selecting this will automatically add HTMX unless React is specified)",
+						Desc:  "A utility-first CSS framework (selecting this will automatically add HTMX unless React or Svelte is specified)",
 					},
 					{
 						Flag:  "Docker",
