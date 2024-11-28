@@ -50,7 +50,7 @@ tailwind-install:
 build:{{- if and .AdvancedOptions.tailwind (not .AdvancedOptions.react) }} tailwind-install{{- end }}{{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }} templ-install{{- end }}
 	@echo "Building..."
 	{{ if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }}@templ generate{{- end }}
-	{{ if and .AdvancedOptions.tailwind (not .AdvancedOptions.react) }}@{{ if .OSCheck.UnixBased }}./tailwindcss{{ else }}.\tailwindcss.exe{{ end }} -i cmd/web/assets/css/input.css -o cmd/web/assets/css/output.css{{ end }}
+	{{ if and .AdvancedOptions.tailwind (not .AdvancedOptions.react) }}@{{ if .OSCheck.UnixBased }}./tailwindcss{{ else }}.\tailwindcss.exe{{ end }} -i cmd/web/styles/input.css -o cmd/web/assets/css/output.css{{ end }}
 	{{ if .OSCheck.UnixBased }}@{{- if and (.AdvancedOptions.docker) (eq .DBDriver "sqlite") }}CGO_ENABLED=1 GOOS=linux {{ end }}go build -o main cmd/api/main.go{{- else }}@go build -o main.exe cmd/api/main.go{{- end }}
 
 # Run the application

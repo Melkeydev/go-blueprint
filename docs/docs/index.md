@@ -33,9 +33,10 @@ Here's an overview of the project structure created by Go Blueprint when all opt
 │   ├── api/
 │   │   └── main.go               # Main file for starting the server.
 │   └── web/
+│       ├── styles/               # only for generating css will not be served public
+│       │   └── input.css         # Tailwind input file for compiling output.css with CLI when HTMX is used
 │       ├── assets/
 │       │   ├── css/
-│       │   │   ├── input.css     # Tailwind input file for compiling output.css with CLI when HTMX is used
 │       │   │   └── output.css    # Generated CSS file.
 │       │   └── js/
 │       │       └── htmx.min.js   # HTMX library for dynamic HTML content.
@@ -44,7 +45,7 @@ Here's an overview of the project structure created by Go Blueprint when all opt
 │       ├── efs.go                # Includes assets into compiled binary.
 │       ├── hello.go              # Logic for handling "hello" form.
 │       ├── hello.templ           # Template file for the "hello" endpoint.
-│       └── hello_templ.go        # Generated Go code for the "hello" template. 
+│       └── hello_templ.go        # Generated Go code for the "hello" template.
 ├── frontend/                     # React advanced flag. Excludes HTMX.
 │   ├── node_modules/             # Node dependencies.
 │   ├── public/

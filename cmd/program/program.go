@@ -438,14 +438,14 @@ func (p *Project) CreateMainFile() error {
 			return err
 		}
 
-		inputCssFile, err := os.Create(fmt.Sprintf("%s/%s/assets/css/input.css", projectPath, cmdWebPath))
+		inputCssFile, err := os.Create(fmt.Sprintf("%s/%s/styles/input.css", projectPath, cmdWebPath))
 		if err != nil {
 			return err
 		}
 		defer inputCssFile.Close()
 
 		inputCssTemplate := advanced.InputCssTemplate()
-		err = os.WriteFile(fmt.Sprintf("%s/%s/assets/css/input.css", projectPath, cmdWebPath), inputCssTemplate, 0o644)
+		err = os.WriteFile(fmt.Sprintf("%s/%s/styles/input.css", projectPath, cmdWebPath), inputCssTemplate, 0o644)
 		if err != nil {
 			return err
 		}
