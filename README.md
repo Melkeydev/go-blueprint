@@ -43,6 +43,18 @@ go install github.com/melkeydev/go-blueprint@latest
 
 This installs a go binary that will automatically bind to your $GOPATH
 
+if you using zsh, you should add manualy at `~/.zshrc`
+
+```bash
+GOPATH=$HOME/go  PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
+```
+
+dont forget to update
+
+```bash
+source ~/.zshrc
+```
+
 Then in a new terminal run:
 
 ```bash
