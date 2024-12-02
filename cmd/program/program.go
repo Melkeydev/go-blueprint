@@ -438,6 +438,11 @@ func (p *Project) CreateMainFile() error {
 			return err
 		}
 
+		err = os.MkdirAll(fmt.Sprintf("%s/%s/styles", projectPath, cmdWebPath), 0o755)
+		if err != nil {
+			return fmt.Errorf("failed to create styles directory: %w", err)
+		}
+
 		inputCssFile, err := os.Create(fmt.Sprintf("%s/%s/styles/input.css", projectPath, cmdWebPath))
 		if err != nil {
 			return err
