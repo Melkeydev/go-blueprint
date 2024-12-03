@@ -3,7 +3,7 @@
 # Build the application
 all: build test
 
-{{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }}
+{{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not (or .AdvancedOptions.react .AdvancedOptions.svelte)) }}
 {{- if .OSCheck.UnixBased }}
 templ-install:
 	@if ! command -v templ > /dev/null; then \
@@ -36,7 +36,7 @@ templ-install:
 {{- end }}
 {{- end }}
 
-{{- if and .AdvancedOptions.tailwind (not .AdvancedOptions.react) }}
+{{- if and .AdvancedOptions.tailwind (not (or .AdvancedOptions.react .AdvancedOptions.svelte)) }}
 {{- if .OSCheck.UnixBased}}
 tailwind-install:
 	{{ if .OSCheck.linux }}@if [ ! -f tailwindcss ]; then curl -sL https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64 -o tailwindcss; fi{{- end }}
@@ -55,7 +55,7 @@ build:{{- if and .AdvancedOptions.tailwind (not .AdvancedOptions.react) }} tailw
 
 # Run the application
 run:
-	@go run cmd/api/main.go{{- if .AdvancedOptions.react }} &
+	@go run cmd/api/main.go{{- if (or .AdvancedOptions.react .AdvancedOptions.svelte) }} &
 	@npm install --prefix ./frontend
 	@npm run dev --prefix ./frontend
 	{{- end }}
