@@ -4,7 +4,7 @@ To extend the project with database functionality, users can choose from a varie
 2. [MySQL](https://github.com/go-sql-driver/mysql): Enables seamless integration with MySQL databases.
 3. [Postgres](https://github.com/jackc/pgx/): Facilitates connectivity to PostgreSQL databases.
 4. [Redis](https://github.com/redis/go-redis): Provides tools for connecting and interacting with Redis.
-5. [SQLite](https://github.com/mattn/go-sqlite3): Suitable for projects requiring a lightweight, self-contained database. and interacting with Redis
+5. [SQLite](https://github.com/mattn/go-sqlite3): Suitable for projects requiring a lightweight, self-contained database.
 6. [ScyllaDB](https://github.com/scylladb/gocql): Facilitates connectivity to ScyllaDB databases.
 
 ## Updated Project Structure
