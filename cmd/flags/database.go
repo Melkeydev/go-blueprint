@@ -31,8 +31,8 @@ func (f *Database) Type() string {
 }
 
 func (f *Database) Set(value string) error {
-	// Contains isn't available in 1.20 yet
-	// if AllowedDBDrivers.Contains(value) {
+	// slices.Contains isn't available in 1.20 yet
+	// if slices.Contains(AllowedDBDrivers, value) {
 	for _, database := range AllowedDBDrivers {
 		if database == value {
 			*f = Database(value)
