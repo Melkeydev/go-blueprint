@@ -1,10 +1,10 @@
 To extend the project with database functionality, users can choose from a variety of Go database drivers. Each driver is tailored to work with specific database systems, providing flexibility based on project requirements:
 
-1. [Mongo](https://go.mongodb.org/mongo-driver): Provides necessary tools for connecting and interacting with MongoDB databases.
-2. [Mysql](https://github.com/go-sql-driver/mysql): Enables seamless integration with MySQL databases.
+1. [MongoDB](https://go.mongodb.org/mongo-driver): Provides necessary tools for connecting and interacting with MongoDB databases.
+2. [MySQL](https://github.com/go-sql-driver/mysql): Enables seamless integration with MySQL databases.
 3. [Postgres](https://github.com/jackc/pgx/): Facilitates connectivity to PostgreSQL databases.
 4. [Redis](https://github.com/redis/go-redis): Provides tools for connecting and interacting with Redis.
-5. [Sqlite](https://github.com/mattn/go-sqlite3): Suitable for projects requiring a lightweight, self-contained database. and interacting with Redis
+5. [SQLite](https://github.com/mattn/go-sqlite3): Suitable for projects requiring a lightweight, self-contained database. and interacting with Redis
 6. [ScyllaDB](https://github.com/scylladb/gocql): Facilitates connectivity to ScyllaDB databases.
 
 ## Updated Project Structure
@@ -36,7 +36,7 @@ Users can select the desired database driver based on their project's specific n
 
 ## Integration Tests for Database Operations
 
-For all the database drivers but the `Sqlite`, integration tests are automatically generated to ensure that the database connection is working correctly. It uses [Testcontainers for Go](https://golang.testcontainers.org/) to spin up a containerized instance of the database server, run the tests, and then tear down the container.
+For all the database drivers but the `SQLite`, integration tests are automatically generated to ensure that the database connection is working correctly. It uses [Testcontainers for Go](https://golang.testcontainers.org/) to spin up a containerized instance of the database server, run the tests, and then tear down the container.
 
 [Testcontainers for Go](https://golang.testcontainers.org/) is a Go package that makes it simple to create and clean up container-based dependencies for automated integration/smoke tests. The clean, easy-to-use API enables developers to programmatically define containers that should be run as part of a test and clean up those resources when the test is done.
 

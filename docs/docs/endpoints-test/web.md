@@ -7,7 +7,7 @@ This page contains a form with a single input field and a submit button. Upon su
 
 ## Sample output
 
-![htmx](../public/htmx.png)
+![HTMX](../public/htmx.png)
 
 ## Terminal log
 

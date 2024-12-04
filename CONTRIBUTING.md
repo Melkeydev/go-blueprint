@@ -20,7 +20,7 @@ If you have run into a bug or want to discuss a new feature, please [file an iss
 
 ## Contributing Code with Pull Requests
 
-go-blueprint uses [Github pull requests](https://github.com/Melkeydev/go-blueprint/pulls). Feel free to fork, hack away at your changes and submit.
+go-blueprint uses [GitHub pull requests](https://github.com/Melkeydev/go-blueprint/pulls). Feel free to fork, hack away at your changes and submit.
 
 ### Requirements
 

@@ -150,5 +150,5 @@ func (s *service) Health() map[string]string {
 
 ## Note
 
-Scylladb does not support advanced health check functions like SQL databases or Redis.
+ScyllaDB does not support advanced health check functions like SQL databases or Redis.
 The current implementation is based on queries at `system` related keyspaces.

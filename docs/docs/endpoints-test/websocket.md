@@ -1,5 +1,5 @@
 ## Testing with WebSocat
-[WebSocat](https://github.com/vi/websocat) is a versatile tool for working with websockets from the command line. Below are some examples of using WebSocat to test the websocket endpoint:
+[WebSocat](https://github.com/vi/websocat) is a versatile tool for working with websockets from the command line. Below are some examples of using WebSocat to test the WebSocket endpoint:
 
 ```bash
 # Start server

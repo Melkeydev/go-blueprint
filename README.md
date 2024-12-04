@@ -13,7 +13,7 @@ gives the option to integrate with one of the more popular Go frameworks (and th
 
 - Easy to set up and install
 - Have the entire Go structure already established
-- Setting up a Go HTTP server (or Fasthttp with Fiber)
+- Setting up a Go HTTP server (or FastHTTP with Fiber)
 - Integrate with a popular frameworks
 - Focus on the actual code of your application
 
@@ -88,10 +88,10 @@ Go Blueprint now offers enhanced database support, allowing you to choose your p
 
 Choose from a variety of supported database drivers:
 
-- [Mysql](https://github.com/go-sql-driver/mysql)
+- [MySQL](https://github.com/go-sql-driver/mysql)
 - [Postgres](https://github.com/jackc/pgx/)
-- [Sqlite](https://github.com/mattn/go-sqlite3)
-- [Mongo](https://go.mongodb.org/mongo-driver)
+- [SQLite](https://github.com/mattn/go-sqlite3)
+- [MongoDB](https://go.mongodb.org/mongo-driver)
 - [Redis](https://github.com/redis/go-redis)
 - [ScyllaDB GoCQL](https://github.com/scylladb/gocql)
 
@@ -109,9 +109,9 @@ Blueprint is focused on being as minimalistic as possible. That being said, we w
 You can now use the `--advanced` flag when running the `create` command to get access to the following features. This is a multi-option prompt; one or more features can be used at the same time:
 
 - [HTMX](https://htmx.org/) support using [Templ](https://templ.guide/)
-- CI/CD workflow setup using [Github Actions](https://docs.github.com/en/actions)
-- [Websocket](https://pkg.go.dev/github.com/coder/websocket) sets up a websocket endpoint
-- [Tailwind](https://tailwindcss.com/) css framework
+- CI/CD workflow setup using [GitHub Actions](https://docs.github.com/en/actions)
+- [WebSocket](https://pkg.go.dev/github.com/coder/websocket) sets up a WebSocket endpoint
+- [Tailwind](https://tailwindcss.com/) CSS framework
 - Docker configuration for go project
 - [React](https://react.dev/) frontend written in TypeScript, including an example fetch request to the backend
 

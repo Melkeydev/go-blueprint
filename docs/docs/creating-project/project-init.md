@@ -29,7 +29,7 @@ Customize the flags according to your project requirements.
 
 ## Advanced Flag
 
-By including the `--advanced` flag, users can choose one or all of the advanced features, HTMX, GitHub Actions for CI/CD, Websocket, Docker and TailwindCSS support, during the project creation process. The flag enhances the simplicity of Blueprint while offering flexibility for users who require additional functionality.
+By including the `--advanced` flag, users can choose one or all of the advanced features, HTMX, GitHub Actions for CI/CD, WebSocket, Docker and Tailwind CSS support, during the project creation process. The flag enhances the simplicity of Blueprint while offering flexibility for users who require additional functionality.
 
 ```bash
 go-blueprint create --advanced
@@ -57,14 +57,16 @@ CI/CD workflow:
 go-blueprint create --advanced --feature githubaction
 ```
 
-Websocket:
+WebSocket:
 ```bash
 go-blueprint create --advanced --feature websocket
 ```
-TailwindCSS:
+
+Tailwind CSS:
 ```bash
 go-blueprint create --advanced --feature tailwind
 ```
+
 Docker:
 ```bash
 go-blueprint create --advanced --feature docker

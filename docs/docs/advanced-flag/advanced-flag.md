@@ -8,7 +8,7 @@ Enables the integration of HTMX support for dynamic web pages using Templ.
 - **CI/CD Workflow Setup using GitHub Actions:**
 Automates the setup of a CI/CD workflow using GitHub Actions.
 
-- **Websocket Support:**
+- **WebSocket Support:**
 WebSocket endpoint that sends continuous data streams through the WS protocol.
 
 - **Tailwind:**
