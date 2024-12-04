@@ -4,7 +4,7 @@ package steps
 
 import "github.com/melkeydev/go-blueprint/cmd/flags"
 
-// A StepSchema contains the data that is used
+// StepSchema contains the data that is used
 // for an individual step of the CLI
 type StepSchema struct {
 	StepName string // The name of a given step
@@ -18,7 +18,7 @@ type Steps struct {
 	Steps map[string]StepSchema
 }
 
-// An Item contains the data for each option
+// Item contains the data for each option
 // in a [StepSchema].Options
 type Item struct {
 	Flag, Title, Desc string

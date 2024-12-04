@@ -32,7 +32,7 @@ func (o *Output) update(val string) {
 	o.Output = val
 }
 
-// A textnput.model contains the data for the textinput step.
+// model contains the data for the textinput step.
 //
 // It has the required methods that make it a bubbletea.Model
 type model struct {

@@ -21,7 +21,7 @@ var (
 	descriptionStyle      = lipgloss.NewStyle().Foreground(lipgloss.Color("#40BDA3"))
 )
 
-// A Selection represents a choice made in a multiInput step
+// Selection represents a choice made in a multiInput step
 type Selection struct {
 	Choice string
 }
@@ -31,7 +31,7 @@ func (s *Selection) Update(value string) {
 	s.Choice = value
 }
 
-// A multiInput.model contains the data for the multiInput step.
+// model contains the data for the multiInput step.
 //
 // It has the required methods that make it a [tea.Model]
 type model struct {

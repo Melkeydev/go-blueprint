@@ -120,7 +120,7 @@ const (
 	gitHubActionPath     = ".github/workflows"
 )
 
-// CheckOs checks Operation system and generates MakeFile and `go build` command
+// CheckOS checks Operation system and generates MakeFile and `go build` command
 // Based on Project.Unixbase
 func (p *Project) CheckOS() {
 	p.OSCheck = make(map[string]bool)
