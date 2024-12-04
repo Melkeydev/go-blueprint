@@ -9,7 +9,7 @@ type Framework string
 
 // These are all the current frameworks supported. If you want to add one, you
 // can simply copy and past a line here. Do not forget to also add it into the
-// AllowedProjectTypes slice too!
+// [AllowedProjectTypes] slice too!
 const (
 	Chi             Framework = "chi"
 	Gin             Framework = "gin"
@@ -31,7 +31,7 @@ func (f *Framework) Type() string {
 }
 
 func (f *Framework) Set(value string) error {
-	// slices.Contains isn't available in 1.20 yet
+	// [slices.Contains] isn't available in 1.20 yet
 	// if slices.Contains(AllowedProjectTypes, value) {
 	for _, project := range AllowedProjectTypes {
 		if project == value {

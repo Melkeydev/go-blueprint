@@ -33,7 +33,7 @@ func (s *Selection) Update(optionName string, value bool) {
 
 // A multiSelect.model contains the data for the multiSelect step.
 //
-// It has the required methods that make it a bubbletea.Model
+// It has the required methods that make it a [tea.Model]
 type model struct {
 	cursor   int
 	options  []steps.Item

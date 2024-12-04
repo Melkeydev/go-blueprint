@@ -33,7 +33,7 @@ func (s *Selection) Update(value string) {
 
 // A multiInput.model contains the data for the multiInput step.
 //
-// It has the required methods that make it a bubbletea.Model
+// It has the required methods that make it a [tea.Model]
 type model struct {
 	cursor   int
 	choices  []steps.Item

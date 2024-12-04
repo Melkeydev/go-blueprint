@@ -27,7 +27,7 @@ func (f *AdvancedFeatures) Type() string {
 }
 
 func (f *AdvancedFeatures) Set(value string) error {
-	// slices.Contains isn't available in 1.20 yet
+	// [slices.Contains] isn't available in 1.20 yet
 	// if slices.Contains(AllowedAdvancedFeatures, value) {
 	for _, advancedFeature := range AllowedAdvancedFeatures {
 		if advancedFeature == value {

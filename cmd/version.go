@@ -15,9 +15,9 @@ import (
 var GoBlueprintVersion string
 
 // Go Blueprint needs to be built in a specific way to provide useful version information.
-// First we try to get the version from ldflags embedded into GoBlueprintVersion.
-// Then we try to get the version from from the go.mod build info. 
-// If Go Blueprint is installed with a specific version tag or using @latest then that version will be included in bi.Main.Version. 
+// First we try to get the version from ldflags embedded into [GoBlueprintVersion].
+// Then we try to get the version from from the go.mod build info.
+// If Go Blueprint is installed with a specific version tag or using @latest then that version will be included in bi.Main.Version.
 // This won't give any version info when running 'go install' with the source code locally.
 // Finally we try to get the version from other embedded VCS info.
 func getGoBlueprintVersion() string {

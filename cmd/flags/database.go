@@ -9,7 +9,7 @@ type Database string
 
 // These are all the current databases supported. If you want to add one, you
 // can simply copy and past a line here. Do not forget to also add it into the
-// AllowedDBDrivers slice too!
+// [AllowedDBDrivers] slice too!
 const (
 	MySql    Database = "mysql"
 	Postgres Database = "postgres"
@@ -31,7 +31,7 @@ func (f *Database) Type() string {
 }
 
 func (f *Database) Set(value string) error {
-	// slices.Contains isn't available in 1.20 yet
+	// [slices.Contains] isn't available in 1.20 yet
 	// if slices.Contains(AllowedDBDrivers, value) {
 	for _, database := range AllowedDBDrivers {
 		if database == value {
