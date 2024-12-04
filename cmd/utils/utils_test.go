@@ -48,10 +48,10 @@ func TestGeRootDir(t *testing.T) {
 		"@":                        "@",
 	}
 
-	for intput, output := range testCases {
-		rootDir := GetRootDir(intput)
+	for input, output := range testCases {
+		rootDir := GetRootDir(input)
 		if rootDir != output {
-			t.Errorf("testing:%s expected:%s got:%s", intput, output, rootDir)
+			t.Errorf("testing:%s expected:%s got:%s", input, output, rootDir)
 		}
 	}
 }

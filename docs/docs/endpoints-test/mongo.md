@@ -9,7 +9,7 @@ The `Health` function checks the health of the MongoDB by pinging it. It returns
 
 ### Functionality
 
-**Ping MongoDB Server**: The function pings the MongoDB thru server to check its availability.
+**Ping MongoDB Server**: The function pings the MongoDB through server to check its availability.
 
    - If the ping fails, it logs the error and terminates the program.
    - If the ping succeeds, it returns a health message indicating that the server is healthy.

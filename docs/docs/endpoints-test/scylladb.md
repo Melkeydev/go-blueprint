@@ -61,7 +61,7 @@ If the value is lower than required, you can use one of these commands:
 sysctl --write fs.aio-max-nr=1048576
 ```
 
-Here's some links for more relevant information and automation:
+Here are some links for more relevant information and automation:
 
 * [Repository: gvieira/ws-scylla](https://github.com/gvieira18/ws-scylla/) - Simple ScyllaDB Cluster magement with
   Makefiles
