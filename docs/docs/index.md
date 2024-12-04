@@ -91,4 +91,4 @@ Here's an overview of the project structure created by Go Blueprint when all opt
 
 ```
 
-This structure provides a comprehensive organization of your project, separating source code, tests, configurations and documentation.
+This structure provides a comprehensive organization of your project, separating source code, tests, configurations, and documentation.
