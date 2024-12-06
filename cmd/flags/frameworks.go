@@ -8,7 +8,7 @@ import (
 type Framework string
 
 // These are all the current frameworks supported. If you want to add one, you
-// can simply copy and past a line here. Do not forget to also add it into the
+// can simply copy and paste a line here. Do not forget to also add it into the
 // AllowedProjectTypes slice too!
 const (
 	Chi             Framework = "chi"
