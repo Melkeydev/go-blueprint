@@ -13,10 +13,11 @@ const (
 	Websocket         string = "websocket"
 	Tailwind          string = "tailwind"
 	React             string = "react"
+	Svelte            string = "svelte"
 	Docker            string = "docker"
 )
 
-var AllowedAdvancedFeatures = []string{string(React), string(Htmx), string(GoProjectWorkflow), string(Websocket), string(Tailwind), string(Docker)}
+var AllowedAdvancedFeatures = []string{string(React), string(Svelte), string(Htmx), string(GoProjectWorkflow), string(Websocket), string(Tailwind), string(Docker)}
 
 func (f AdvancedFeatures) String() string {
 	return strings.Join(f, ",")

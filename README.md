@@ -114,8 +114,9 @@ You can now use the `--advanced` flag when running the `create` command to get a
 - [Tailwind](https://tailwindcss.com/) css framework
 - Docker configuration for go project
 - [React](https://react.dev/) frontend written in TypeScript, including an example fetch request to the backend
+- [Svelte](https://svelte.dev/) frontend written in TypeScript, including an example fetch request to the backend
 
-Note: Selecting Tailwind option will automatically select HTMX unless React is explicitly selected
+Note: Selecting Tailwind option will automatically select HTMX unless React or Svelte is explicitly selected
 
 <a id="blueprint-ui"></a>
 
@@ -189,6 +190,10 @@ React:
 
 ```bash
 go-blueprint create --advanced --feature react
+```
+
+```bash
+go-blueprint create --advanced --feature svelte
 ```
 
 Or all features at once:

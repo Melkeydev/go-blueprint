@@ -22,14 +22,14 @@ import (
 
 const logo = `
 
- ____  _                       _       _   
-|  _ \| |                     (_)     | |  
-| |_) | |_   _  ___ _ __  _ __ _ _ __ | |_ 
+ ____  _                       _       _
+|  _ \| |                     (_)     | |
+| |_) | |_   _  ___ _ __  _ __ _ _ __ | |_
 |  _ <| | | | |/ _ \ '_ \| '__| | '_ \| __|
-| |_) | | |_| |  __/ |_) | |  | | | | | |_ 
+| |_) | | |_| |  __/ |_) | |  | | | | | |_
 |____/|_|\__,_|\___| .__/|_|  |_|_| |_|\__|
-				   | |                     
-				   |_|                     
+				   | |
+				   |_|
 
 `
 
@@ -280,7 +280,7 @@ var createCmd = &cobra.Command{
 		fmt.Println(endingMsgStyle.Render("\nNext steps:"))
 		fmt.Println(endingMsgStyle.Render(fmt.Sprintf("• cd into the newly created project with: `cd %s`\n", utils.GetRootDir(project.ProjectName))))
 
-		if options.Advanced.Choices["React"] {
+		if options.Advanced.Choices["React"] || options.Advanced.Choices["Svelte"] {
 			options.Advanced.Choices["Htmx"] = false
 			options.Advanced.Choices["Tailwind"] = false
 			fmt.Println(endingMsgStyle.Render("• cd into frontend\n"))
@@ -296,6 +296,7 @@ var createCmd = &cobra.Command{
 
 		if options.Advanced.Choices["Htmx"] {
 			options.Advanced.Choices["react"] = false
+			options.Advanced.Choices["svelte"] = false
 			fmt.Println(endingMsgStyle.Render("• Install the templ cli if you haven't already by running `go install github.com/a-h/templ/cmd/templ@latest`\n"))
 			fmt.Println(endingMsgStyle.Render("• Generate templ function files by running `templ generate`\n"))
 		}

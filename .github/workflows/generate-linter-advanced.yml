@@ -11,7 +11,7 @@ jobs:
         framework: [chi, gin, fiber, gorilla/mux, httprouter, standard-library, echo]
         driver: [postgres]
         git: [commit]
-        advanced: [htmx, githubaction, websocket, tailwind, docker, react]
+        advanced: [htmx, githubaction, websocket, tailwind, docker, react, svelte]
 
     runs-on: ubuntu-latest
     steps:
