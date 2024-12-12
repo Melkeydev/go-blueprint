@@ -69,7 +69,7 @@ CMD ["serve", "-s", "/app/dist", "-l", "5173"]
 Docker and docker-compose.yml pull environment variables from the .env file.
 
 Example if the Docker flag is used with the MySQL DB driver:
-```ymal
+```yaml
 services:
   app:
     build:
