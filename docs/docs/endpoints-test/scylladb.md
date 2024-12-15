@@ -63,7 +63,7 @@ sysctl --write fs.aio-max-nr=1048576
 
 Here's some links for more relevant information and automation:
 
-* [Repository: gvieira/ws-scylla](https://github.com/gvieira18/ws-scylla/) - Simple ScyllaDB Cluster magement with
+* [Repository: gvieira/ws-scylla](https://github.com/gvieira18/ws-scylla/) - Simple ScyllaDB Cluster management with
   Makefiles
 * [ScyllaDB University: 101 Essentials Track](https://university.scylladb.com/courses/scylla-essentials-overview) -
   Learn the base concepts of ScyllaDB
