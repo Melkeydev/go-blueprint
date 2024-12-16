@@ -639,7 +639,6 @@ func (p *Project) CreateMainFile() error {
 			if err != nil {
 				return err
 			}
-
 		}
 	}
 
