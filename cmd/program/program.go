@@ -855,6 +855,32 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 		return fmt.Errorf("failed to write App.tsx template: %w", err)
 	}
 
+	// Create the global `.env` file from the template
+	err = p.CreateFileWithInjection("", projectPath, ".env", "env")
+	if err != nil {
+		return fmt.Errorf("failed to create global .env file: %w", err)
+	}
+
+	// Read from the global `.env` file and create the frontend-specific `.env`
+	globalEnvPath := filepath.Join(projectPath, ".env")
+	vitePort := "8080" // Default fallback
+
+	// Read the global .env file
+	if data, err := os.ReadFile(globalEnvPath); err == nil {
+		lines := strings.Split(string(data), "\n")
+		for _, line := range lines {
+			if strings.HasPrefix(line, "PORT=") {
+				vitePort = strings.SplitN(line, "=", 2)[1] // Get the backend port value
+				break
+			}
+		}
+	}
+
+	// Use a template to generate the frontend .env file
+	frontendEnvContent := fmt.Sprintf("VITE_PORT=%s\n", vitePort)
+	if err := os.WriteFile(filepath.Join(frontendPath, ".env"), []byte(frontendEnvContent), 0644); err != nil {
+		return fmt.Errorf("failed to create frontend .env file: %w", err)
+	}
 	// Handle Tailwind configuration if selected
 	if p.AdvancedOptions[string(flags.Tailwind)] {
 		fmt.Println("Tailwind selected. Configuring with React...")
