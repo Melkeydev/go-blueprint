@@ -406,11 +406,12 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	if p.AdvancedOptions[string(flags.React)] {
-		// deselect htmx option automatically since react is selected
+	if p.AdvancedOptions[string(flags.React)] || p.AdvancedOptions[string(flags.Svelte)] {
+		// deselect htmx option automatically since react or svelte is selected
 		p.AdvancedOptions[string(flags.Htmx)] = false
-		if err := p.CreateViteReactProject(projectPath); err != nil {
-			return fmt.Errorf("failed to set up React project: %w", err)
+		if err := p.CreateViteProject(projectPath); err != nil {
+			// if there was an error creating the vite project, return the error
+			return fmt.Errorf("failed to set up Vite project: %w", err)
 		}
 
 		// if everything went smoothly, remove tailwing flag option
@@ -802,7 +803,7 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 	return nil
 }
 
-func (p *Project) CreateViteReactProject(projectPath string) error {
+func (p *Project) CreateViteProject(projectPath string) error {
 	if err := checkNpmInstalled(); err != nil {
 		return err
 	}
@@ -825,7 +826,19 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 
 	// the interactive vite command will not work as we can't interact with it
 	fmt.Println("Installing create-vite...")
-	cmd := exec.Command("npm", "create", "vite@latest", "frontend", "--", "--template", "react-ts")
+
+	// for any future changes, we can use the advanced options to determine the template
+	var templateOption string
+
+	if p.AdvancedOptions[string(flags.React)] {
+		templateOption = "react-ts"
+	} else if p.AdvancedOptions[string(flags.Svelte)] {
+		templateOption = "svelte-ts"
+	} else {
+		return fmt.Errorf("unsupported template option")
+	}
+
+	cmd := exec.Command("npm", "create", "vite@latest", "frontend", "--", "--template", templateOption)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
@@ -846,13 +859,15 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 		return fmt.Errorf("failed to create src directory: %w", err)
 	}
 
-	if err := os.WriteFile(filepath.Join(srcDir, "App.tsx"), advanced.ReactAppfile(), 0644); err != nil {
-		return fmt.Errorf("failed to write App.tsx template: %w", err)
-	}
-
 	// Handle Tailwind configuration if selected
 	if p.AdvancedOptions[string(flags.Tailwind)] {
-		fmt.Println("Tailwind selected. Configuring with React...")
+
+		if p.AdvancedOptions[string(flags.React)] {
+			fmt.Println("Tailwind selected. Configuring with React...")
+		} else if p.AdvancedOptions[string(flags.Svelte)] {
+			fmt.Println("Tailwind selected. Configuring with Svelte...")
+		}
+
 		cmd := exec.Command("npm", "install", "-D", "tailwindcss", "postcss", "autoprefixer")
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
@@ -866,35 +881,64 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 			return fmt.Errorf("failed to initialize Tailwind: %w", err)
 		}
 
-		// use the tailwind config file
-		err = os.WriteFile("tailwind.config.js", advanced.ReactTailwindConfigTemplate(), 0644)
-		if err != nil {
-			return fmt.Errorf("failed to write tailwind config: %w", err)
-		}
-
 		srcDir := filepath.Join(frontendPath, "src")
 		if err := os.MkdirAll(srcDir, 0755); err != nil {
 			return fmt.Errorf("failed to create src directory: %w", err)
 		}
 
-		err = os.WriteFile(filepath.Join(srcDir, "index.css"), advanced.InputCssTemplateReact(), 0644)
-		if err != nil {
-			return fmt.Errorf("failed to update index.css: %w", err)
-		}
+		if p.AdvancedOptions[string(flags.React)] {
+			// use the tailwind config file for React
+			err = os.WriteFile("tailwind.config.js", advanced.ReactTailwindConfigTemplate(), 0644)
+			if err != nil {
+				return fmt.Errorf("failed to write tailwind config: %w", err)
+			}
+			// update index.css for React
+			err = os.WriteFile(filepath.Join(srcDir, "index.css"), advanced.InputCssTemplateReact(), 0644)
+			if err != nil {
+				return fmt.Errorf("failed to update index.css: %w", err)
+			}
 
-		if err := os.WriteFile(filepath.Join(srcDir, "App.tsx"), advanced.ReactTailwindAppfile(), 0644); err != nil {
-			return fmt.Errorf("failed to write App.tsx template: %w", err)
-		}
+			if err := os.WriteFile(filepath.Join(srcDir, "App.tsx"), advanced.ReactTailwindAppfile(), 0644); err != nil {
+				return fmt.Errorf("failed to write App.tsx template: %w", err)
+			}
 
-		if err := os.Remove(filepath.Join(srcDir, "App.css")); err != nil {
-			// Don't return error if file doesn't exist
-			if !os.IsNotExist(err) {
-				return fmt.Errorf("failed to remove App.css: %w", err)
+			// this only exists in the React template
+			if err := os.Remove(filepath.Join(srcDir, "App.css")); err != nil {
+				// Don't return error if file doesn't exist
+				if !os.IsNotExist(err) {
+					return fmt.Errorf("failed to remove App.css: %w", err)
+				}
+			}
+		} else if p.AdvancedOptions[string(flags.Svelte)] {
+			// use the tailwind config file for svelte
+			err = os.WriteFile("tailwind.config.js", advanced.SvelteTailwindConfigTemplate(), 0644)
+			if err != nil {
+				return fmt.Errorf("failed to write tailwind config: %w", err)
+			}
+			// update app.css for Svelte
+			err = os.WriteFile(filepath.Join(srcDir, "app.css"), advanced.InputCssTemplateSvelte(), 0644)
+			if err != nil {
+				return fmt.Errorf("failed to update app.css: %w", err)
+			}
+
+			if err := os.WriteFile(filepath.Join(srcDir, "App.svelte"), advanced.SvelteTailwindAppfile(), 0644); err != nil {
+				return fmt.Errorf("failed to write App.svelte template: %w", err)
 			}
 		}
 
 		// set to false to not re-do in next step
 		p.AdvancedOptions[string(flags.Tailwind)] = false
+	} else {
+		// if tailwind is not selected, use the default App file with server call example
+		if p.AdvancedOptions[string(flags.React)] {
+			if err := os.WriteFile(filepath.Join(srcDir, "App.tsx"), advanced.ReactAppfile(), 0644); err != nil {
+				return fmt.Errorf("failed to write App.tsx template: %w", err)
+			}
+		} else if p.AdvancedOptions[string(flags.Svelte)] {
+			if err := os.WriteFile(filepath.Join(srcDir, "App.svelte"), advanced.SvelteAppfile(), 0644); err != nil {
+				return fmt.Errorf("failed to write App.svelte template: %w", err)
+			}
+		}
 	}
 
 	return nil
