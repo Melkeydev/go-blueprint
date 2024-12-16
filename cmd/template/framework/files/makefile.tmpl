@@ -56,7 +56,7 @@ build:{{- if and .AdvancedOptions.tailwind (not .AdvancedOptions.react) }} tailw
 # Run the application
 run:
 	@go run cmd/api/main.go{{- if .AdvancedOptions.react }} &
-	@npm install --prefix ./frontend
+	@npm install --prefer-offline --no-fund --prefix ./frontend
 	@npm run dev --prefix ./frontend
 	{{- end }}
 

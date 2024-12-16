@@ -828,18 +828,11 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 		fmt.Println("failed to change into project directory: %w", err)
 	}
 
-	// Configure npm to prefer offline and use cache
-	configCmd := exec.Command("npm", "config", "set", "prefer-offline", "true")
-	if err := configCmd.Run(); err != nil {
-		fmt.Println("Warning: Failed to set npm offline preference:", err)
-	}
-
 	// the interactive vite command will not work as we can't interact with it
-	fmt.Println("Running create-vite (using cache if available)...")
+	fmt.Println("Installing create-vite (using cache if available)...")
 	cmd := exec.Command("npm", "create", "vite@latest", "frontend", "--",
 		"--template", "react-ts",
 		"--prefer-offline",
-		"--no-audit",
 		"--no-fund")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -895,9 +888,8 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 	// Handle Tailwind configuration if selected
 	if p.AdvancedOptions[string(flags.Tailwind)] {
 		fmt.Println("Installing Tailwind dependencies (using cache if available)...")
-		cmd := exec.Command("npm", "install", "-D",
+		cmd := exec.Command("npm", "install",
 			"--prefer-offline",
-			"--no-audit",
 			"--no-fund",
 			"tailwindcss", "postcss", "autoprefixer")
 		cmd.Stdout = os.Stdout
