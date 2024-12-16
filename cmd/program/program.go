@@ -828,9 +828,19 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 		fmt.Println("failed to change into project directory: %w", err)
 	}
 
+	// Configure npm to prefer offline and use cache
+	configCmd := exec.Command("npm", "config", "set", "prefer-offline", "true")
+	if err := configCmd.Run(); err != nil {
+		fmt.Println("Warning: Failed to set npm offline preference:", err)
+	}
+
 	// the interactive vite command will not work as we can't interact with it
-	fmt.Println("Installing create-vite...")
-	cmd := exec.Command("npm", "create", "vite@latest", "frontend", "--", "--template", "react-ts")
+	fmt.Println("Running create-vite (using cache if available)...")
+	cmd := exec.Command("npm", "create", "vite@latest", "frontend", "--",
+		"--template", "react-ts",
+		"--prefer-offline",
+		"--no-audit",
+		"--no-fund")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
@@ -881,16 +891,23 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 	if err := os.WriteFile(filepath.Join(frontendPath, ".env"), []byte(frontendEnvContent), 0644); err != nil {
 		return fmt.Errorf("failed to create frontend .env file: %w", err)
 	}
+
 	// Handle Tailwind configuration if selected
 	if p.AdvancedOptions[string(flags.Tailwind)] {
-		fmt.Println("Tailwind selected. Configuring with React...")
-		cmd := exec.Command("npm", "install", "-D", "tailwindcss", "postcss", "autoprefixer")
+		fmt.Println("Installing Tailwind dependencies (using cache if available)...")
+		cmd := exec.Command("npm", "install", "-D",
+			"--prefer-offline",
+			"--no-audit",
+			"--no-fund",
+			"tailwindcss", "postcss", "autoprefixer")
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
 			return fmt.Errorf("failed to install Tailwind: %w", err)
 		}
-		cmd = exec.Command("npx", "tailwindcss", "init", "-p")
+
+		fmt.Println("Initializing Tailwind...")
+		cmd = exec.Command("npx", "--prefer-offline", "tailwindcss", "init", "-p")
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
@@ -930,7 +947,6 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 
 	return nil
 }
-
 func (p *Project) CreateHtmxTemplates() {
 	routesPlaceHolder := ""
 	importsPlaceHolder := ""
