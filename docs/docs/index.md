@@ -88,6 +88,7 @@ Here's an overview of the project structure created by Go Blueprint when all opt
 ├── go.sum                        # Go module file containing checksums for dependencies.
 ├── Makefile                      # Makefile for defining and running commands.
 ├── tailwind.config.js            # Tailwind CSS configuration file for HTMX.
+├── nginx.conf                    # Nginx configuration for serving a React frontend when used with the Docker advanced flag.
 └── README.md                     # Project's README file containing essential information about the project.
 
 ```
