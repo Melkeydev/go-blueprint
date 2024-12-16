@@ -7,6 +7,7 @@ The React advanced flag can be combined with the Tailwind flag for enhanced styl
 ```bash
 / (Root)
 ├── frontend/                     # React advanced flag. Excludes HTMX.
+│   ├── .env                      # Frontend environment configuration
 │   ├── node_modules/             # Node dependencies.
 │   ├── public/
 │   │   ├── index.html
@@ -209,3 +210,7 @@ volumes:
 networks:
   blueprint:
 ```
+
+## Environment Variables
+
+The `VITE_PORT` in .env refers `PORT` from .env in project root ( for backend ). If value of `PORT` is changed than `VITE_PORT` must also be changed so that requests to backend work fine and have no conflicts.
