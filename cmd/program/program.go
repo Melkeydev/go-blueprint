@@ -610,6 +610,21 @@ func (p *Project) CreateMainFile() error {
 			return err
 		}
 
+		if p.AdvancedOptions[string(flags.React)] {
+			NginxConf, err := os.Create(filepath.Join(projectPath, "nginx.conf"))
+			if err != nil {
+				return err
+			}
+			defer NginxConf.Close()
+
+			// inject nginx.conf template
+			NginxConfTemplate := template.Must(template.New("nginx.conf").Parse(string(advanced.NginxConf())))
+			err = NginxConfTemplate.Execute(NginxConf, p)
+			if err != nil {
+				return err
+			}
+		}
+
 		if p.DBDriver == "none" || p.DBDriver == "sqlite" {
 
 			Dockercompose, err := os.Create(filepath.Join(projectPath, "docker-compose.yml"))

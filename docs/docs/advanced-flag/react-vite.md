@@ -56,7 +56,7 @@ npm install
 npm run dev
 ```
 
-   You should now be able to access the React application by opening a browser and navigating to `http://localhost:5173`.
+   You should now be able to access the React application by opening a browser and navigating to `http://localhost`.
 
 
 You can extend the `vite.config.ts` to include additional configurations as needed, such as adding plugins for optimizing the build process, enabling TypeScript support, or configuring Tailwind CSS.
@@ -113,11 +113,10 @@ RUN npm install
 COPY frontend/. .
 RUN npm run build
 
-FROM node:20-slim AS frontend
-RUN npm install -g serve
-COPY --from=frontend_builder /frontend/dist /app/dist
-EXPOSE 5173
-CMD ["serve", "-s", "/app/dist", "-l", "5173"]
+FROM nginx:alpine AS frontend
+COPY --from=frontend_builder /frontend/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
 ```
 
 ### Docker compose without db
@@ -142,7 +141,7 @@ services:
       target: frontend
     restart: unless-stopped
     ports:
-      - 5173:5173
+      - 80:80
     depends_on:
       - app
 ```
@@ -182,7 +181,7 @@ services:
     depends_on:
       - app
     ports:
-      - 5173:5173
+      - 80:80
     networks:
       - blueprint
   psql_bp:
@@ -214,3 +213,42 @@ networks:
 ## Environment Variables
 
 The `VITE_PORT` in .env refers `PORT` from .env in project root ( for backend ). If value of `PORT` is changed than `VITE_PORT` must also be changed so that requests to backend work fine and have no conflicts.
+
+## Nginx configuration
+
+In our second iteration, we moved from [serve](https://www.npmjs.com/package/serve) to using Nginx configuration for serving the Vite React frontend when the React advanced flag is paired with Docker.
+
+[Nginx](https://nginx.org/en/) is a highly efficient, fast, secure, and production-ready web server.
+The frontend and backend are separated, which provides granular control over resources, autoscaling, rolling updates, and fault isolation. This separation also simplifies scaling specific components and removes the need to redeploy the backend if only the frontend changes, and vice versa.
+
+```bash
+server {
+    listen 80;
+    server_name _;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    location ~* \.(?:css|js|jpg|jpeg|gif|png|ico|cur|gz|svg|svgz|mp4|ogg|ogv|webm|htc)$ {
+	expires 1M;
+	access_log off;
+	add_header Cache-Control "public";
+    }
+
+    location / {
+        try_files $uri $uri/ /index.html;
+        add_header Cache-Control "no-store, no-cache, must-revalidate";
+    }
+
+    location /health {
+        access_log off;
+        return 200 'healthy\n';
+    }
+
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 10240;
+    gzip_proxied expired no-cache no-store private auth;
+    gzip_types text/plain text/css text/xml text/javascript application/x-javascript application/xml;
+    gzip_disable "MSIE [1-6]\.";
+}
+```

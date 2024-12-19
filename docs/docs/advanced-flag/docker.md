@@ -59,11 +59,10 @@ RUN npm install
 COPY frontend/. .
 RUN npm run build
 
-FROM node:20-slim AS frontend
-RUN npm install -g serve
-COPY --from=frontend_builder /frontend/dist /app/dist
-EXPOSE 5173
-CMD ["serve", "-s", "/app/dist", "-l", "5173"]
+FROM nginx:alpine AS frontend
+COPY --from=frontend_builder /frontend/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
 ```
 ## Docker compose
 Docker and docker-compose.yml pull environment variables from the .env file.
