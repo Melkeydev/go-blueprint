@@ -214,3 +214,22 @@ networks:
 ## Environment Variables
 
 The `VITE_PORT` in .env refers `PORT` from .env in project root ( for backend ). If value of `PORT` is changed than `VITE_PORT` must also be changed so that requests to backend work fine and have no conflicts.
+
+## Notes
+
+- First time running the project creation with Tailwind can take longer (~10 mins) as npm needs to download and cache all packages
+
+- Subsequent runs will be faster as they utilize npm's cache, which we enforce during project creation.
+
+- If encountering issues with package installation, try these npm commands:
+
+```bash
+# Check cache status
+npm cache verify
+
+# View cache contents
+npm cache ls
+
+# Clean cache if needed
+npm cache clean --force
+```
