@@ -45,6 +45,10 @@ These targets manage a database container:
 
 Runs unit tests for the application using `go test`.
 
+***`coverage`***
+
+Runs unit tests for the application using `go test` and open browser showing code coverage.
+
 ***`itest`***
 
 Runs integration tests if a database Lite) is used.
