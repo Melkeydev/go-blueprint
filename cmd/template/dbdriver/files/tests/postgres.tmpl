@@ -11,7 +11,7 @@ import (
 	"github.com/testcontainers/testcontainers-go/wait"
 )
 
-func mustStartPostgresContainer() (func(context.Context) error, error) {
+func mustStartPostgresContainer() (func(context.Context, ...testcontainers.TerminateOption) error, error) {
 	var (
 		dbName = "database"
 		dbPwd  = "password"
