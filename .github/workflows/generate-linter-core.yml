@@ -22,7 +22,7 @@ jobs:
           go-version: '1.22.x'
 
       - name: Install golangci-lint
-        run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.57.2
+        run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.63.4
 
       - name: Commit report
         run: |

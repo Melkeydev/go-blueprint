@@ -9,7 +9,7 @@ on:
     branches-ignore:
       - main
   pull_request:
-  
+
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -41,7 +41,7 @@ jobs:
         run: |
           go mod tidy
           go mod download
-          go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.57.2
+          go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.63.4
 
       - name: Run golangci-lint
         run: golangci-lint run
