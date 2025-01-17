@@ -30,7 +30,7 @@ func HelloWebHandler(c *fiber.Ctx) error {
 		if innerErr != nil {
 			log.Fatalf("Could not send error in HelloWebHandler: %e", innerErr)
 		}
-		log.Fatalf(errorString)
+		log.Fatalf("%s", errorString)
 	}
 
 	// Send the response
