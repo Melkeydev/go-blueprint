@@ -5,10 +5,11 @@ import (
 	"log"
 	"testing"
 
+	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/mongodb"
 )
 
-func mustStartMongoContainer() (func(context.Context) error, error) {
+func mustStartMongoContainer() (func(context.Context, ...testcontainers.TerminateOption) error, error) {
 	dbContainer, err := mongodb.Run(context.Background(), "mongo:latest")
 	if err != nil {
 		return nil, err
