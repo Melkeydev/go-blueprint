@@ -21,7 +21,7 @@ theme:
   palette: 
     - scheme: default
       toggle:
-        icon: material/brightness-7 
+        icon: material/brightness-7
         name: Switch to dark mode
     - scheme: slate
       toggle:
@@ -73,4 +73,4 @@ extra:
         name: Twitter
     generator: false
 
-copyright: Copyright &copy; 2024 Melkey
+copyright: Copyright &copy; 2025 Melkey
