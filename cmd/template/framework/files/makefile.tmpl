@@ -96,6 +96,12 @@ test:
 	@echo "Testing..."
 	@go test ./... -v
 
+# Get tests coverage
+coverage:
+	@echo "Calculating test coverage..."
+	@go test ./... -coverprofile=coverage.out
+	@go tool cover -html=coverage.out
+
 {{- if and (ne .DBDriver "none") (ne .DBDriver "sqlite") }}
 # Integrations Tests for the application
 itest:
@@ -138,4 +144,4 @@ watch:
 	}"
 {{- end }}
 
-.PHONY: all build run test clean watch{{- if and (not .AdvancedOptions.react) .AdvancedOptions.tailwind }} tailwind-install{{- end }}{{- if and (ne .DBDriver "none") (ne .DBDriver "sqlite") }} docker-run docker-down itest{{- end }}{{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }} templ-install{{- end }}
+.PHONY: all build run test coverage clean watch{{- if and (not .AdvancedOptions.react) .AdvancedOptions.tailwind }} tailwind-install{{- end }}{{- if and (ne .DBDriver "none") (ne .DBDriver "sqlite") }} docker-run docker-down itest{{- end }}{{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }} templ-install{{- end }}
