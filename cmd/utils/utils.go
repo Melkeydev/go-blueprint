@@ -138,7 +138,7 @@ func CheckGitConfig(key string) (bool, error) {
 // ValidateModuleName returns true if it's a valid module name.
 // It allows any number of / and . characters in between.
 func ValidateModuleName(moduleName string) bool {
-	matched, _ := regexp.Match("^[a-zA-Z0-9_-]+(?:[\\/.][a-zA-Z0-9_-]+)*$", []byte(moduleName))
+	matched, _ := regexp.MatchString("^[a-zA-Z0-9_-]+(?:[\\/.][a-zA-Z0-9_-]+)*$", moduleName)
 	return matched
 }
 
