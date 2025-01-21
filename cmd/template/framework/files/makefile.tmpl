@@ -1,10 +1,13 @@
 # Simple Makefile for a Go project
+{{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }}
+include .env
+{{- end }}
 
 # Build the application
 all: build test
-
 {{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }}
 {{- if .OSCheck.UnixBased }}
+
 templ-install:
 	@if ! command -v templ > /dev/null; then \
 		read -p "Go's 'templ' is not installed on your machine. Do you want to install it? [Y/n] " choice; \
@@ -20,6 +23,7 @@ templ-install:
 		fi; \
 	fi
 {{- else }}
+
 templ-install:
 	@powershell -ExecutionPolicy Bypass -Command "if (Get-Command templ -ErrorAction SilentlyContinue) { \
 		; \
@@ -35,14 +39,15 @@ templ-install:
 	}"
 {{- end }}
 {{- end }}
-
 {{- if and .AdvancedOptions.tailwind (not .AdvancedOptions.react) }}
 {{- if .OSCheck.UnixBased}}
+
 tailwind-install:
 	{{ if .OSCheck.linux }}@if [ ! -f tailwindcss ]; then curl -sL https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64 -o tailwindcss; fi{{- end }}
 	{{ if .OSCheck.darwin }}@if [ ! -f tailwindcss ]; then curl -sL https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-macos-x64 -o tailwindcss; fi{{- end }}
 	@chmod +x tailwindcss
 {{- else }}
+
 tailwind-install:
 	@if not exist tailwindcss.exe powershell -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri 'https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-windows-x64.exe' -OutFile 'tailwindcss.exe'"{{- end }}
 {{- end }}
@@ -60,9 +65,9 @@ run:
 	@npm run dev --prefix ./frontend
 	{{- end }}
 
-
 {{- if or .AdvancedOptions.docker (and (ne .DBDriver "none") (ne .DBDriver "sqlite")) }}
 {{- if .OSCheck.UnixBased }}
+
 # Create DB container
 docker-run:
 	@if docker compose up --build 2>/dev/null; then \
@@ -97,6 +102,7 @@ test:
 	@go test ./... -v
 
 {{- if and (ne .DBDriver "none") (ne .DBDriver "sqlite") }}
+
 # Integrations Tests for the application
 itest:
 	@echo "Running integration tests..."
@@ -109,8 +115,14 @@ clean:
 	@rm -f main
 
 # Live Reload
-{{- if .OSCheck.UnixBased }}
 watch:
+{{- if .OSCheck.UnixBased }}
+{{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }}
+{{- if not .AdvancedOptions.tailwind }}
+	@$(MAKE) -j2 watch/air watch/templ
+{{- end }}
+
+watch/air:
 	@if command -v air > /dev/null; then \
             air; \
             echo "Watching...";\
@@ -125,8 +137,27 @@ watch:
                 exit 1; \
             fi; \
         fi
+
+watch/templ: templ-install
+	@templ generate --watch --proxy="http://localhost:${PORT}" \
+		--proxyport="8000" --open-browser=false -v
 {{- else }}
-watch:
+	@if command -v air > /dev/null; then \
+            air; \
+            echo "Watching...";\
+        else \
+            read -p "Go's 'air' is not installed on your machine. Do you want to install it? [Y/n] " choice; \
+            if [ "$$choice" != "n" ] && [ "$$choice" != "N" ]; then \
+                go install github.com/air-verse/air@latest; \
+                air; \
+                echo "Watching...";\
+            else \
+                echo "You chose not to install air. Exiting..."; \
+                exit 1; \
+            fi; \
+        fi
+{{- end }}
+{{- else }}
 	@powershell -ExecutionPolicy Bypass -Command "if (Get-Command air -ErrorAction SilentlyContinue) { \
 		air; \
 		Write-Output 'Watching...'; \
@@ -138,4 +169,4 @@ watch:
 	}"
 {{- end }}
 
-.PHONY: all build run test clean watch{{- if and (not .AdvancedOptions.react) .AdvancedOptions.tailwind }} tailwind-install{{- end }}{{- if and (ne .DBDriver "none") (ne .DBDriver "sqlite") }} docker-run docker-down itest{{- end }}{{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }} templ-install{{- end }}
+.PHONY: all build run test clean watch{{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }} watch/templ watch/air{{- if .AdvancedOptions.tailwind}} watch/tailwind{{- end }}{{- end }}{{- if and (ne .DBDriver "none") (ne .DBDriver "sqlite") }} docker-run docker-down itest{{- end }}{{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }} templ-install{{- if .AdvancedOptions.tailwind }} tailwind-install{{- end }}{{- end }}

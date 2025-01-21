@@ -27,13 +27,16 @@ tmp/
 
 # Project build
 main
+{{- if .AdvancedOptions.htmx }}
 *templ.go
+*templ.txt
+{{- end }}
 
 # OS X generated file
 .DS_Store
-{{if ( .AdvancedOptions.tailwind )}}
+{{- if .AdvancedOptions.tailwind }}
 
 # Tailwind CSS
 cmd/web/assets/css/output.css
 tailwindcss
-{{end}}
+{{- end }}
