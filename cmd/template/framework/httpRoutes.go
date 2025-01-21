@@ -4,6 +4,7 @@ import (
 	_ "embed"
 
 	"github.com/melkeydev/go-blueprint/cmd/template/advanced"
+	"github.com/melkeydev/go-blueprint/cmd/template/frontend"
 )
 
 //go:embed files/routes/standard_library.go.tmpl
@@ -36,11 +37,11 @@ func (s StandardLibTemplate) TestHandler() []byte {
 }
 
 func (s StandardLibTemplate) HtmxTemplImports() []byte {
-	return advanced.StdLibHtmxTemplImportsTemplate()
+	return frontend.StdLibHtmxTemplImportsTemplate()
 }
 
 func (s StandardLibTemplate) HtmxTemplRoutes() []byte {
-	return advanced.StdLibHtmxTemplRoutesTemplate()
+	return frontend.StdLibHtmxTemplRoutesTemplate()
 }
 
 func (s StandardLibTemplate) WebsocketImports() []byte {

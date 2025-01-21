@@ -20,6 +20,7 @@ import (
 	"github.com/melkeydev/go-blueprint/cmd/template/dbdriver"
 	"github.com/melkeydev/go-blueprint/cmd/template/docker"
 	"github.com/melkeydev/go-blueprint/cmd/template/framework"
+	"github.com/melkeydev/go-blueprint/cmd/template/frontend"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
 )
 
@@ -35,10 +36,17 @@ type Project struct {
 	FrameworkMap      map[flags.Framework]Framework
 	DBDriverMap       map[flags.Database]Driver
 	DockerMap         map[flags.Database]Docker
-	AdvancedOptions   map[string]bool
+	FrontendTemplates FrontendTemplates
+	FrontendOptions   map[string]bool
 	AdvancedTemplates AdvancedTemplates
+	AdvancedOptions   map[string]bool
 	GitOptions        flags.Git
 	OSCheck           map[string]bool
+}
+
+type FrontendTemplates struct {
+	TemplateRoutes  string
+	TemplateImports string
 }
 
 type AdvancedTemplates struct {
@@ -406,28 +414,20 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	if p.AdvancedOptions[string(flags.React)] {
-		// deselect htmx option automatically since react is selected
-		p.AdvancedOptions[string(flags.Htmx)] = false
+	if p.FrontendOptions[string(flags.React)] {
 		if err := p.CreateViteReactProject(projectPath); err != nil {
 			return fmt.Errorf("failed to set up React project: %w", err)
 		}
-
-		// if everything went smoothly, remove tailwing flag option
-		p.AdvancedOptions[string(flags.Tailwind)] = false
 	}
 
-	if p.AdvancedOptions[string(flags.Tailwind)] {
-		// select htmx option automatically since tailwind is selected
-		p.AdvancedOptions[string(flags.Htmx)] = true
-
+	if p.FrontendOptions[string(flags.Tailwind)] && p.FrontendOptions[string(flags.Htmx)] {
 		tailwindConfigFile, err := os.Create(fmt.Sprintf("%s/tailwind.config.js", projectPath))
 		if err != nil {
 			return err
 		}
 		defer tailwindConfigFile.Close()
 
-		tailwindConfigTemplate := advanced.TailwindConfigTemplate()
+		tailwindConfigTemplate := frontend.TailwindConfigTemplate()
 		err = os.WriteFile(fmt.Sprintf("%s/tailwind.config.js", projectPath), tailwindConfigTemplate, 0o644)
 		if err != nil {
 			return err
@@ -449,7 +449,7 @@ func (p *Project) CreateMainFile() error {
 		}
 		defer inputCssFile.Close()
 
-		inputCssTemplate := advanced.InputCssTemplate()
+		inputCssTemplate := frontend.InputCssTemplate()
 		err = os.WriteFile(fmt.Sprintf("%s/%s/styles/input.css", projectPath, cmdWebPath), inputCssTemplate, 0o644)
 		if err != nil {
 			return err
@@ -461,14 +461,14 @@ func (p *Project) CreateMainFile() error {
 		}
 		defer outputCssFile.Close()
 
-		outputCssTemplate := advanced.OutputCssTemplate()
+		outputCssTemplate := frontend.OutputCssTemplate()
 		err = os.WriteFile(fmt.Sprintf("%s/%s/assets/css/output.css", projectPath, cmdWebPath), outputCssTemplate, 0o644)
 		if err != nil {
 			return err
 		}
 	}
 
-	if p.AdvancedOptions[string(flags.Htmx)] {
+	if p.FrontendOptions[string(flags.Htmx)] {
 		// create folders and hello world file
 		err = p.CreatePath(cmdWebPath, projectPath)
 		if err != nil {
@@ -481,7 +481,7 @@ func (p *Project) CreateMainFile() error {
 		defer helloTemplFile.Close()
 
 		// inject hello.templ template
-		helloTemplTemplate := template.Must(template.New("hellotempl").Parse((string(advanced.HelloTemplTemplate()))))
+		helloTemplTemplate := template.Must(template.New("hellotempl").Parse((string(frontend.HelloTemplTemplate()))))
 		err = helloTemplTemplate.Execute(helloTemplFile, p)
 		if err != nil {
 			return err
@@ -493,7 +493,7 @@ func (p *Project) CreateMainFile() error {
 		}
 		defer baseTemplFile.Close()
 
-		baseTemplTemplate := template.Must(template.New("basetempl").Parse((string(advanced.BaseTemplTemplate()))))
+		baseTemplTemplate := template.Must(template.New("basetempl").Parse((string(frontend.BaseTemplTemplate()))))
 		err = baseTemplTemplate.Execute(baseTemplFile, p)
 		if err != nil {
 			return err
@@ -510,7 +510,7 @@ func (p *Project) CreateMainFile() error {
 		}
 		defer htmxMinJsFile.Close()
 
-		htmxMinJsTemplate := advanced.HtmxJSTemplate()
+		htmxMinJsTemplate := frontend.HtmxJSTemplate()
 		err = os.WriteFile(fmt.Sprintf("%s/%s/assets/js/htmx.min.js", projectPath, cmdWebPath), htmxMinJsTemplate, 0o644)
 		if err != nil {
 			return err
@@ -522,7 +522,7 @@ func (p *Project) CreateMainFile() error {
 		}
 		defer efsFile.Close()
 
-		efsTemplate := template.Must(template.New("efs").Parse((string(advanced.EfsTemplate()))))
+		efsTemplate := template.Must(template.New("efs").Parse((string(frontend.EfsTemplate()))))
 		err = efsTemplate.Execute(efsFile, p)
 		if err != nil {
 			return err
@@ -540,7 +540,7 @@ func (p *Project) CreateMainFile() error {
 		defer efsFile.Close()
 
 		if p.ProjectType == "fiber" {
-			helloGoTemplate := template.Must(template.New("efs").Parse((string(advanced.HelloFiberGoTemplate()))))
+			helloGoTemplate := template.Must(template.New("efs").Parse((string(frontend.HelloFiberGoTemplate()))))
 			err = helloGoTemplate.Execute(helloGoFile, p)
 			if err != nil {
 				return err
@@ -551,7 +551,7 @@ func (p *Project) CreateMainFile() error {
 				return err
 			}
 		} else {
-			helloGoTemplate := template.Must(template.New("efs").Parse((string(advanced.HelloGoTemplate()))))
+			helloGoTemplate := template.Must(template.New("efs").Parse((string(frontend.HelloGoTemplate()))))
 			err = helloGoTemplate.Execute(helloGoFile, p)
 			if err != nil {
 				return err
@@ -854,7 +854,7 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 		return fmt.Errorf("failed to create src directory: %w", err)
 	}
 
-	if err := os.WriteFile(filepath.Join(srcDir, "App.tsx"), advanced.ReactAppfile(), 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(srcDir, "App.tsx"), frontend.ReactAppfile(), 0644); err != nil {
 		return fmt.Errorf("failed to write App.tsx template: %w", err)
 	}
 
@@ -886,7 +886,7 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 	}
 
 	// Handle Tailwind configuration if selected
-	if p.AdvancedOptions[string(flags.Tailwind)] {
+	if p.FrontendOptions[string(flags.Tailwind)] && p.FrontendOptions[string(flags.React)] {
 		fmt.Println("Installing Tailwind dependencies (using cache if available)...")
 		cmd := exec.Command("npm", "install",
 			"--prefer-offline",
@@ -907,7 +907,7 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 		}
 
 		// use the tailwind config file
-		err = os.WriteFile("tailwind.config.js", advanced.ReactTailwindConfigTemplate(), 0644)
+		err = os.WriteFile("tailwind.config.js", frontend.ReactTailwindConfigTemplate(), 0644)
 		if err != nil {
 			return fmt.Errorf("failed to write tailwind config: %w", err)
 		}
@@ -917,12 +917,12 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 			return fmt.Errorf("failed to create src directory: %w", err)
 		}
 
-		err = os.WriteFile(filepath.Join(srcDir, "index.css"), advanced.InputCssTemplateReact(), 0644)
+		err = os.WriteFile(filepath.Join(srcDir, "index.css"), frontend.InputCssTemplateReact(), 0644)
 		if err != nil {
 			return fmt.Errorf("failed to update index.css: %w", err)
 		}
 
-		if err := os.WriteFile(filepath.Join(srcDir, "App.tsx"), advanced.ReactTailwindAppfile(), 0644); err != nil {
+		if err := os.WriteFile(filepath.Join(srcDir, "App.tsx"), frontend.ReactTailwindAppfile(), 0644); err != nil {
 			return fmt.Errorf("failed to write App.tsx template: %w", err)
 		}
 
@@ -932,9 +932,6 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 				return fmt.Errorf("failed to remove App.css: %w", err)
 			}
 		}
-
-		// set to false to not re-do in next step
-		p.AdvancedOptions[string(flags.Tailwind)] = false
 	}
 
 	return nil
@@ -965,8 +962,8 @@ func (p *Project) CreateHtmxTemplates() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	p.AdvancedTemplates.TemplateRoutes = routeBuffer.String()
-	p.AdvancedTemplates.TemplateImports = importBuffer.String()
+	p.FrontendTemplates.TemplateRoutes = routeBuffer.String()
+	p.FrontendTemplates.TemplateImports = importBuffer.String()
 }
 
 func (p *Project) CreateWebsocketImports(appDir string) {

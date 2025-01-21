@@ -4,6 +4,7 @@ import (
 	_ "embed"
 
 	"github.com/melkeydev/go-blueprint/cmd/template/advanced"
+	"github.com/melkeydev/go-blueprint/cmd/template/frontend"
 )
 
 //go:embed files/routes/chi.go.tmpl
@@ -33,11 +34,11 @@ func (c ChiTemplates) TestHandler() []byte {
 }
 
 func (c ChiTemplates) HtmxTemplImports() []byte {
-	return advanced.StdLibHtmxTemplImportsTemplate()
+	return frontend.StdLibHtmxTemplImportsTemplate()
 }
 
 func (c ChiTemplates) HtmxTemplRoutes() []byte {
-	return advanced.ChiHtmxTemplRoutesTemplate()
+	return frontend.ChiHtmxTemplRoutesTemplate()
 }
 
 func (c ChiTemplates) WebsocketImports() []byte {

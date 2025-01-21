@@ -4,6 +4,7 @@ import (
 	_ "embed"
 
 	"github.com/melkeydev/go-blueprint/cmd/template/advanced"
+	"github.com/melkeydev/go-blueprint/cmd/template/frontend"
 )
 
 //go:embed files/routes/fiber.go.tmpl
@@ -38,11 +39,11 @@ func (f FiberTemplates) TestHandler() []byte {
 }
 
 func (f FiberTemplates) HtmxTemplImports() []byte {
-	return advanced.FiberHtmxTemplImportsTemplate()
+	return frontend.FiberHtmxTemplImportsTemplate()
 }
 
 func (f FiberTemplates) HtmxTemplRoutes() []byte {
-	return advanced.FiberHtmxTemplRoutesTemplate()
+	return frontend.FiberHtmxTemplRoutesTemplate()
 }
 
 func (f FiberTemplates) WebsocketImports() []byte {

@@ -22,14 +22,14 @@ import (
 
 const logo = `
 
- ____  _                       _       _   
-|  _ \| |                     (_)     | |  
-| |_) | |_   _  ___ _ __  _ __ _ _ __ | |_ 
+ ____  _                       _       _
+|  _ \| |                     (_)     | |
+| |_) | |_   _  ___ _ __  _ __ _ _ __ | |_
 |  _ <| | | | |/ _ \ '_ \| '__| | '_ \| __|
-| |_) | | |_| |  __/ |_) | |  | | | | | |_ 
+| |_) | | |_| |  __/ |_) | |  | | | | | |
 |____/|_|\__,_|\___| .__/|_|  |_|_| |_|\__|
-				   | |                     
-				   |_|                     
+				   | |
+				   |_|
 
 `
 
@@ -42,25 +42,31 @@ var (
 func init() {
 	var flagFramework flags.Framework
 	var flagDBDriver flags.Database
+	var frontendFrameworks flags.FrontendFramework
+	var frontendAdvanced flags.FrontendAdvanced
 	var advancedFeatures flags.AdvancedFeatures
 	var flagGit flags.Git
 	rootCmd.AddCommand(createCmd)
 
 	createCmd.Flags().StringP("name", "n", "", "Name of project to create")
-	createCmd.Flags().VarP(&flagFramework, "framework", "f", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(flags.AllowedProjectTypes, ", ")))
+	createCmd.Flags().VarP(&flagFramework, "framework", "b", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(flags.AllowedProjectTypes, ", ")))
 	createCmd.Flags().VarP(&flagDBDriver, "driver", "d", fmt.Sprintf("Database drivers to use. Allowed values: %s", strings.Join(flags.AllowedDBDrivers, ", ")))
+	createCmd.Flags().BoolP("frontendframework", "f", false, "Get prompts for frontend frameworks")
+	createCmd.Flags().Var(&frontendFrameworks, "frontend", fmt.Sprintf("Frontend framework to use. Allowed values: %s", strings.Join(flags.AllowedFrontendTypes, ", ")))
+	createCmd.Flags().Var(&frontendAdvanced, "fadvanced", fmt.Sprintf("Frontend framework advanced features to use. Allowed values: %s", strings.Join(flags.AllowedFrontendAdvanced, ", ")))
 	createCmd.Flags().BoolP("advanced", "a", false, "Get prompts for advanced features")
 	createCmd.Flags().Var(&advancedFeatures, "feature", fmt.Sprintf("Advanced feature to use. Allowed values: %s", strings.Join(flags.AllowedAdvancedFeatures, ", ")))
 	createCmd.Flags().VarP(&flagGit, "git", "g", fmt.Sprintf("Git to use. Allowed values: %s", strings.Join(flags.AllowedGitsOptions, ", ")))
 }
 
 type Options struct {
-	ProjectName *textinput.Output
-	ProjectType *multiInput.Selection
-	DBDriver    *multiInput.Selection
-	Advanced    *multiSelect.Selection
-	Workflow    *multiInput.Selection
-	Git         *multiInput.Selection
+	ProjectName        *textinput.Output
+	ProjectType        *multiInput.Selection
+	DBDriver           *multiInput.Selection
+	FrontendFrameworks *multiInput.Selection
+	FrontendAdvanced   *multiSelect.Selection
+	Advanced           *multiSelect.Selection
+	Git                *multiInput.Selection
 }
 
 // createCmd defines the "create" command for the CLI
@@ -94,9 +100,13 @@ var createCmd = &cobra.Command{
 		flagGit := flags.Git(cmd.Flag("git").Value.String())
 
 		options := Options{
-			ProjectName: &textinput.Output{},
-			ProjectType: &multiInput.Selection{},
-			DBDriver:    &multiInput.Selection{},
+			ProjectName:        &textinput.Output{},
+			ProjectType:        &multiInput.Selection{},
+			DBDriver:           &multiInput.Selection{},
+			FrontendFrameworks: &multiInput.Selection{},
+			FrontendAdvanced: &multiSelect.Selection{
+				Choices: make(map[string]bool),
+			},
 			Advanced: &multiSelect.Selection{
 				Choices: make(map[string]bool),
 			},
@@ -109,11 +119,12 @@ var createCmd = &cobra.Command{
 			DBDriver:        flagDBDriver,
 			FrameworkMap:    make(map[flags.Framework]program.Framework),
 			DBDriverMap:     make(map[flags.Database]program.Driver),
+			FrontendOptions: make(map[string]bool),
 			AdvancedOptions: make(map[string]bool),
 			GitOptions:      flagGit,
 		}
 
-		steps := steps.InitSteps(flagFramework, flagDBDriver)
+		steps := steps.InitSteps(flagFramework, flagDBDriver, flagGit)
 		fmt.Printf("%s\n", logoStyle.Render(logo))
 
 		// Advanced option steps:

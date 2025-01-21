@@ -2,7 +2,9 @@
 // each step of the CLI
 package steps
 
-import "github.com/melkeydev/go-blueprint/cmd/flags"
+import (
+	"github.com/melkeydev/go-blueprint/cmd/flags"
+)
 
 // A StepSchema contains the data that is used
 // for an individual step of the CLI
@@ -25,7 +27,7 @@ type Item struct {
 }
 
 // InitSteps initializes and returns the *Steps to be used in the CLI program
-func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps {
+func InitSteps(projectType flags.Framework, databaseType flags.Database, gitType flags.Git) *Steps {
 	steps := &Steps{
 		map[string]StepSchema{
 			"framework": {
@@ -92,9 +94,8 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 				Headers: "What database driver do you want to use in your Go project?",
 				Field:   databaseType.String(),
 			},
-			"advanced": {
-				StepName: "Advanced Features",
-				Headers:  "Which advanced features do you want?",
+			"frontend-frameworks": {
+				StepName: "Go Project Database Driver",
 				Options: []Item{
 					{
 						Flag:  "React",
@@ -106,6 +107,23 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 						Title: "HTMX/Templ",
 						Desc:  "Add starter HTMX and Templ files. This disables selecting React",
 					},
+				},
+				Headers: "What frontend framework do you want to use in your Go project?",
+			},
+			"frontend-advanced": {
+				StepName: "Go Project Database Driver",
+				Options: []Item{
+					{
+						Flag:  "Tailwind",
+						Title: "TailwindCSS",
+						Desc:  "A utility-first CSS framework",
+					},
+				},
+				Headers: "What frontend framework do you want to use in your Go project?",
+			},
+			"advanced": {
+				StepName: "Advanced Features",
+				Options: []Item{
 					{
 						Flag:  "GitHubAction",
 						Title: "Go Project Workflow",
@@ -117,20 +135,15 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 						Desc:  "Add a websocket endpoint",
 					},
 					{
-						Flag:  "Tailwind",
-						Title: "TailwindCSS",
-						Desc:  "A utility-first CSS framework (selecting this will automatically add HTMX unless React is specified)",
-					},
-					{
 						Flag:  "Docker",
 						Title: "Docker",
 						Desc:  "Dockerfile and docker-compose generic configuration for go project",
 					},
 				},
+				Headers: "Which advanced features do you want?",
 			},
 			"git": {
 				StepName: "Git Repository",
-				Headers:  "Which git option would you like to select for your project?",
 				Options: []Item{
 					{
 						Title: "Commit",
@@ -145,6 +158,8 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 						Desc:  "Proceed without initializing a git repository",
 					},
 				},
+				Headers: "Which git option would you like to select for your project?",
+				Field:   gitType.String(),
 			},
 		},
 	}
