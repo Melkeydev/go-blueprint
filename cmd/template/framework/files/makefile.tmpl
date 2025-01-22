@@ -8,9 +8,9 @@ PROXY_PORT := 8000
 # Build the application
 all: build test
 {{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }}
-{{- if .OSCheck.UnixBased }}
 
 templ-install:
+{{- if .OSCheck.UnixBased }}
 	@if ! command -v templ > /dev/null; then \
 		read -p "Go's 'templ' is not installed on your machine. Do you want to install it? [Y/n] " choice; \
 		if [ "$$choice" != "n" ] && [ "$$choice" != "N" ]; then \
@@ -25,8 +25,6 @@ templ-install:
 		fi; \
 	fi
 {{- else }}
-
-templ-install:
 	@powershell -ExecutionPolicy Bypass -Command "if (Get-Command templ -ErrorAction SilentlyContinue) { \
 		; \
 	} else { \
@@ -42,9 +40,9 @@ templ-install:
 {{- end }}
 {{- end }}
 {{- if and .AdvancedOptions.tailwind (not .AdvancedOptions.react) }}
-{{- if .OSCheck.UnixBased }}
 
 tailwind-install:
+{{- if .OSCheck.UnixBased }}
 {{- if .OSCheck.linux }}
 	@if [ ! -f tailwindcss ]; then curl -sL https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64 -o tailwindcss; fi
 {{- end }}
@@ -53,12 +51,10 @@ tailwind-install:
 {{- end }}
 	@chmod +x tailwindcss
 {{- else }}
-
-tailwind-install:
 	@if not exist tailwindcss.exe powershell -ExecutionPolicy Bypass -Command "Invoke-WebRequest -Uri 'https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-windows-x64.exe' -OutFile 'tailwindcss.exe'"{{- end }}
 {{- end }}
 
-build:{{- if and .AdvancedOptions.tailwind (not .AdvancedOptions.react) }} tailwind-install{{- end }}{{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }} templ-install{{- end }}
+build:{{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }} templ-install{{- if .AdvancedOptions.tailwind }} tailwind-install{{- end }}{{- end }}
 	@echo "Building..."
 {{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }}
 	@templ generate
@@ -124,55 +120,26 @@ clean:
 	@rm -f main
 
 # Live Reload
-watch:
-{{- if .OSCheck.UnixBased }}
 {{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }}
-{{- if .AdvancedOptions.tailwind }}
-	@$(MAKE) -j3 watch/tailwind watch/air watch/templ
-{{- else }}
-	@$(MAKE) -j2 watch/air watch/templ
-{{- end }}
-
 watch/air:
-	@if command -v air > /dev/null; then \
-            air; \
-            echo "Watching...";\
-        else \
-            read -p "Go's 'air' is not installed on your machine. Do you want to install it? [Y/n] " choice; \
-            if [ "$$choice" != "n" ] && [ "$$choice" != "N" ]; then \
-                go install github.com/air-verse/air@latest; \
-                air; \
-                echo "Watching...";\
-            else \
-                echo "You chose not to install air. Exiting..."; \
-                exit 1; \
-            fi; \
-        fi
-
-watch/templ: templ-install
-	@templ generate --watch --proxy="http://localhost:${PORT}" \
-		--proxyport=$(PROXY_PORT) --open-browser=false -v
-{{- if .AdvancedOptions.tailwind }}
-
-watch/tailwind: tailwind-install
-	@tailwindcss -i cmd/web/styles/input.css -o cmd/web/assets/css/output.css --watch
-{{- end }}
 {{- else }}
-	@if command -v air > /dev/null; then \
-            air; \
-            echo "Watching...";\
-        else \
-            read -p "Go's 'air' is not installed on your machine. Do you want to install it? [Y/n] " choice; \
-            if [ "$$choice" != "n" ] && [ "$$choice" != "N" ]; then \
-                go install github.com/air-verse/air@latest; \
-                air; \
-                echo "Watching...";\
-            else \
-                echo "You chose not to install air. Exiting..."; \
-                exit 1; \
-            fi; \
-        fi
+watch:
 {{- end }}
+{{- if .OSCheck.UnixBased }}
+	@if command -v air > /dev/null; then \
+		air; \
+		echo "Watching...";\
+	else \
+		read -p "Go's 'air' is not installed on your machine. Do you want to install it? [Y/n] " choice; \
+		if [ "$$choice" != "n" ] && [ "$$choice" != "N" ]; then \
+			go install github.com/air-verse/air@latest; \
+			air; \
+			echo "Watching...";\
+		else \
+			echo "You chose not to install air. Exiting..."; \
+			exit 1; \
+		fi; \
+	fi
 {{- else }}
 	@powershell -ExecutionPolicy Bypass -Command "if (Get-Command air -ErrorAction SilentlyContinue) { \
 		air; \
@@ -184,5 +151,23 @@ watch/tailwind: tailwind-install
 		Write-Output 'Watching...'; \
 	}"
 {{- end }}
+{{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }}
 
-.PHONY: all build run test clean watch{{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }} watch/templ watch/air{{- if .AdvancedOptions.tailwind}} watch/tailwind{{- end }}{{- end }}{{- if and (ne .DBDriver "none") (ne .DBDriver "sqlite") }} docker-run docker-down itest{{- end }}{{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }} templ-install{{- if .AdvancedOptions.tailwind }} tailwind-install{{- end }}{{- end }}
+watch/templ: templ-install
+	@templ generate --watch --proxy="http://localhost:${PORT}" \
+		--proxyport=$(PROXY_PORT) --open-browser=false -v
+{{- if .AdvancedOptions.tailwind }}
+
+watch/tailwind: tailwind-install
+	@{{- if .OSCheck.UnixBased }}./tailwindcss{{- else }}.\tailwindcss.exe{{- end }} -i cmd/web/styles/input.css -o cmd/web/assets/css/output.css --watch
+{{- end }}
+
+watch:
+{{- if .AdvancedOptions.tailwind }}
+	@$(MAKE) -j3 watch/tailwind watch/templ watch/air
+{{- else }}
+	@$(MAKE) -j2 watch/templ watch/air
+{{- end }}
+{{- end }}
+
+.PHONY: all build run test clean watch{{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }} watch/air watch/templ{{- if .AdvancedOptions.tailwind}} watch/tailwind{{- end }}{{- end }}{{- if and (ne .DBDriver "none") (ne .DBDriver "sqlite") }} docker-run docker-down itest{{- end }}{{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }} templ-install{{- if .AdvancedOptions.tailwind }} tailwind-install{{- end }}{{- end }}
