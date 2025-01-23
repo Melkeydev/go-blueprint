@@ -53,10 +53,29 @@ Runs integration tests if a database Lite) is used.
 
 Removes the compiled binary (`main` or `main.exe` depending on the OS).
 
-***`watch`***
+***`watch`*** and ***`watch/air`***
+
+This rule will behave in 2 different ways depending whether `templ` is being used or not.
+
+If `templ` is being used, `watch` starts the live reloading, in parallel, for `air`, `templ`, and `tailwindcss` (if selected).
+
+In the case of `templ` not being used, `watch` will behave the same as `watch/air`, which is described below.
 
 Enables live reload for the project using the `air` tool:
 
 - **Unix-based systems**: Checks if `air` is installed and prompts for installation if missing.
 - **Windows**: Uses PowerShell to manage `air` installation and execution.
 
+***`watch/templ`***
+
+Enables `templ` live reload, making a proxy of the `air` one on the port 8000. This provides faster reloading and removes the necessity of manual reloads (`F5` or `Ctrl + R`):
+
+- **Unix-based systems**: Checks if `templ` is installed and prompts for installation if missing.
+- **Windows**: Uses PowerShell to manage `templ` installation and execution.
+
+***`watch/tailwind`***
+
+Enables `tailwindcss` live reload by notifying the `templ` proxy on changes, which will automatically trigger a page reload with the new styles:
+
+- **Unix-based systems**: Checks if `tailwindcss` is installed and installs it if missing.
+- **Windows**: Uses PowerShell to manage `tailwindcss` installation and execution.
