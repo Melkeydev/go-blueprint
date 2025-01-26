@@ -45,7 +45,7 @@ type model struct {
 
 // sanitizeInput verifies that an input text string gets validated
 func sanitizeInput(input string) error {
-	matched, err := regexp.Match("^[a-zA-Z0-9_\\/.-]+$", []byte(input))
+	matched, err := regexp.MatchString("^[a-zA-Z0-9_\\/.-]+$", input)
 	if !matched {
 		return fmt.Errorf("string violates the input regex pattern, err: %v", err)
 	}
