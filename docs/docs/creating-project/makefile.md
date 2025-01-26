@@ -47,7 +47,7 @@ Runs unit tests for the application using `go test`.
 
 ***`itest`***
 
-Runs integration tests if a database Lite) is used.
+Runs integration tests if a database, with the exception of SQLite, is used.
 
 ***`clean`***
 
