@@ -114,7 +114,7 @@ var (
 	redisDriver    = []string{"github.com/redis/go-redis/v9"}
 	mongoDriver    = []string{"go.mongodb.org/mongo-driver"}
 	gocqlDriver    = []string{"github.com/gocql/gocql"}
-	scyllaDriver   = "github.com/scylladb/gocql@v1.14.4" // Replacement for GoCQL
+	scyllaDriver   = []string{"github.com/scylladb/gocql@v1.14.4"} // Replacement for GoCQL
 
 	godotenvPackage = []string{"github.com/joho/godotenv"}
 	templPackage    = []string{"github.com/a-h/templ"}
@@ -252,6 +252,9 @@ func (p *Project) createDockerMap() {
 // CreateMainFile creates the project folders and files,
 // and writes to them depending on the selected options
 func (p *Project) CreateMainFile() error {
+
+	var err error
+
 	// check if AbsolutePath exists
 	if _, err := os.Stat(p.AbsolutePath); os.IsNotExist(err) {
 		// create directory
@@ -259,18 +262,6 @@ func (p *Project) CreateMainFile() error {
 			log.Printf("Could not create directory: %v", err)
 			return err
 		}
-	}
-
-	// Check if user.email is set.
-	emailSet, err := utils.CheckGitConfig("user.email")
-	if err != nil {
-		return err
-	}
-
-	if !emailSet && p.GitOptions.String() != flags.Skip {
-		fmt.Println("user.email is not set in git config.")
-		fmt.Println("Please set up git config before trying again.")
-		panic("\nGIT CONFIG ISSUE: user.email is not set in git config.\n")
 	}
 
 	p.ProjectName = strings.TrimSpace(p.ProjectName)
@@ -692,17 +683,24 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	nameSet, err := utils.CheckGitConfig("user.name")
-	if err != nil {
-		return err
-	}
-
 	if p.GitOptions != flags.Skip {
+		nameSet, err := utils.CheckGitConfig("user.name")
+		if err != nil {
+			return err
+		}
+		emailSet, err := utils.CheckGitConfig("user.email")
+		if err != nil {
+			return err
+		}
+
 		if !nameSet {
-			fmt.Println("user.name is not set in git config.")
-			fmt.Println("Please set up git config before trying again.")
 			panic("\nGIT CONFIG ISSUE: user.name is not set in git config.\n")
 		}
+
+		if !emailSet {
+			panic("\nGIT CONFIG ISSUE: user.email is not set in git config.\n")
+		}
+
 		// Initialize git repo
 		err = utils.ExecuteCmd("git", []string{"init"}, projectPath)
 		if err != nil {

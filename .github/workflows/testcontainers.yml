@@ -3,6 +3,9 @@ name: Integrations Test for the Generated Blueprints
 on:
   pull_request: {}
   workflow_dispatch: {}
+  push:
+    branches:
+      - cli-refactor
 
 jobs:
   itests_matrix:
