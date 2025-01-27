@@ -1,6 +1,6 @@
 FROM golang:1.23-alpine AS build
-{{- if or (.AdvancedOptions.tailwind) (eq .DBDriver "sqlite") }}
-RUN apk add --no-cache{{- if .AdvancedOptions.tailwind }} curl{{ end }}{{- if (eq .DBDriver "sqlite") }} alpine-sdk{{ end }}
+{{- if or (and .FrontendOptions.tailwind (eq .FrontendFramework "htmx")) (eq .DBDriver "sqlite") }}
+RUN apk add --no-cache{{- if and .FrontendOptions.tailwind (eq .FrontendFramework "htmx") }} curl{{ end }}{{- if (eq .DBDriver "sqlite") }} alpine-sdk{{ end }}
 {{- end }}
 
 WORKDIR /app
@@ -10,12 +10,12 @@ RUN go mod download
 
 COPY . .
 
-{{- if or .AdvancedOptions.htmx .AdvancedOptions.tailwind }}
+{{- if eq .FrontendFramework "htmx" }}
 RUN go install github.com/a-h/templ/cmd/templ@latest && \
-    templ generate{{- if .AdvancedOptions.tailwind}} && \{{- end}}
+    templ generate{{- if .FrontendOptions.tailwind}} && \{{- end}}
 {{- end}}
 
-{{- if .AdvancedOptions.tailwind}}
+{{- if .FrontendOptions.tailwind}}
     curl -sL https://github.com/tailwindlabs/tailwindcss/releases/download/v3.4.10/tailwindcss-linux-x64 -o tailwindcss && \
     chmod +x tailwindcss && \
     ./tailwindcss -i cmd/web/styles/input.css -o cmd/web/assets/css/output.css
@@ -29,7 +29,7 @@ COPY --from=build /app/main /app/main
 EXPOSE ${PORT}
 CMD ["./main"]
 
-{{ if .AdvancedOptions.react}}
+{{ if eq .FrontendFramework "react"}}
 FROM node:20 AS frontend_builder
 WORKDIR /frontend
 

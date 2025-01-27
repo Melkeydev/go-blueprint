@@ -9,6 +9,7 @@ import (
 	"time"
   {{end}}
 
+  {{.FrontendTemplates.TemplateImports}}
   {{.AdvancedTemplates.TemplateImports}}
 )
 
@@ -23,6 +24,7 @@ func (s *Server) RegisterRoutes() http.Handler {
   {{if .AdvancedOptions.websocket}}
 	mux.HandleFunc("/websocket", s.websocketHandler)
   {{end}}
+  {{.FrontendTemplates.TemplateRoutes}}
   {{.AdvancedTemplates.TemplateRoutes}}
 
 	// Wrap the mux with CORS middleware

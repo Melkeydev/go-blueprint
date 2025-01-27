@@ -10,6 +10,7 @@ import (
   {{end}}
 
 	"github.com/julienschmidt/httprouter"
+  {{.FrontendTemplates.TemplateImports}}
   {{.AdvancedTemplates.TemplateImports}}
 )
 
@@ -26,6 +27,7 @@ func (s *Server) RegisterRoutes() http.Handler {
   {{if .AdvancedOptions.websocket}}
 	r.HandlerFunc(http.MethodGet, "/websocket", s.websocketHandler)
   {{end}}
+  {{.FrontendTemplates.TemplateRoutes}}
   {{.AdvancedTemplates.TemplateRoutes}}
 
 	return corsWrapper

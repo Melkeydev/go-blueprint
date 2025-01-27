@@ -27,7 +27,7 @@ type Item struct {
 }
 
 // InitSteps initializes and returns the *Steps to be used in the CLI program
-func InitSteps(projectType flags.Framework, databaseType flags.Database, gitType flags.Git) *Steps {
+func InitSteps(projectType flags.Framework, databaseType flags.Database, frontendFrameworkType flags.FrontendFramework, gitType flags.Git) *Steps {
 	steps := &Steps{
 		map[string]StepSchema{
 			"framework": {
@@ -94,7 +94,7 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database, gitType
 				Headers: "What database driver do you want to use in your Go project?",
 				Field:   databaseType.String(),
 			},
-			"frontend-frameworks": {
+			"frontend-framework": {
 				StepName: "Go Project Database Driver",
 				Options: []Item{
 					{
@@ -104,11 +104,12 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database, gitType
 					},
 					{
 						Flag:  "Htmx",
-						Title: "HTMX/Templ",
+						Title: "Htmx",
 						Desc:  "Add starter HTMX and Templ files. This disables selecting React",
 					},
 				},
 				Headers: "What frontend framework do you want to use in your Go project?",
+				Field:   frontendFrameworkType.String(),
 			},
 			"frontend-advanced": {
 				StepName: "Go Project Database Driver",

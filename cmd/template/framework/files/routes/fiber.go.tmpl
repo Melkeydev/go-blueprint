@@ -9,6 +9,7 @@ import (
   {{end}}
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+  {{.FrontendTemplates.TemplateImports}}
   {{.AdvancedTemplates.TemplateImports}}
 )
 
@@ -30,6 +31,7 @@ func (s *FiberServer) RegisterFiberRoutes() {
 	s.App.Get("/websocket", websocket.New(s.websocketHandler))
   {{end}}
 
+  {{.FrontendTemplates.TemplateRoutes}}
   {{.AdvancedTemplates.TemplateRoutes}}
 }
 

@@ -10,6 +10,7 @@ import (
   {{end}}
 
 	"github.com/gorilla/mux"
+  {{.FrontendTemplates.TemplateImports}}
   {{.AdvancedTemplates.TemplateImports}}
 )
 
@@ -27,6 +28,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	r.HandleFunc("/websocket", s.websocketHandler)
   {{end}}
 
+  {{.FrontendTemplates.TemplateRoutes}}
   {{.AdvancedTemplates.TemplateRoutes}}
 
 	return r

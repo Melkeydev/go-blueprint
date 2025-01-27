@@ -16,8 +16,8 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.22.x'
-{{if or ( .AdvancedOptions.htmx ) ( .AdvancedOptions.tailwind )}}
+          go-version: '1.23.x'
+{{if or (eq .FrontendFramework "htmx") (.FrontendOptions.tailwind)}}
       - name: Install templ
         shell: bash
         run: go install github.com/a-h/templ/cmd/templ@latest

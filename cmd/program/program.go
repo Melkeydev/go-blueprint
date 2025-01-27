@@ -33,6 +33,7 @@ type Project struct {
 	ProjectType       flags.Framework
 	DBDriver          flags.Database
 	Docker            flags.Database
+	FrontendFramework flags.FrontendFramework
 	FrameworkMap      map[flags.Framework]Framework
 	DBDriverMap       map[flags.Database]Driver
 	DockerMap         map[flags.Database]Docker
@@ -414,13 +415,13 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	if p.FrontendOptions[string(flags.React)] {
+	if p.FrontendFramework == flags.React {
 		if err := p.CreateViteReactProject(projectPath); err != nil {
 			return fmt.Errorf("failed to set up React project: %w", err)
 		}
 	}
 
-	if p.FrontendOptions[string(flags.Tailwind)] && p.FrontendOptions[string(flags.Htmx)] {
+	if p.FrontendOptions[string(flags.Tailwind)] && p.FrontendFramework == flags.Htmx {
 		tailwindConfigFile, err := os.Create(fmt.Sprintf("%s/tailwind.config.js", projectPath))
 		if err != nil {
 			return err
@@ -468,7 +469,7 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
-	if p.FrontendOptions[string(flags.Htmx)] {
+	if p.FrontendFramework == flags.Htmx {
 		// create folders and hello world file
 		err = p.CreatePath(cmdWebPath, projectPath)
 		if err != nil {
@@ -886,7 +887,7 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 	}
 
 	// Handle Tailwind configuration if selected
-	if p.FrontendOptions[string(flags.Tailwind)] && p.FrontendOptions[string(flags.React)] {
+	if p.FrontendOptions[string(flags.Tailwind)] && p.FrontendFramework == flags.React {
 		fmt.Println("Installing Tailwind dependencies (using cache if available)...")
 		cmd := exec.Command("npm", "install",
 			"--prefer-offline",
@@ -939,7 +940,7 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 func (p *Project) CreateHtmxTemplates() {
 	routesPlaceHolder := ""
 	importsPlaceHolder := ""
-	if p.AdvancedOptions[string(flags.Htmx)] {
+	if p.FrontendFramework == flags.Htmx {
 		routesPlaceHolder += string(p.FrameworkMap[p.ProjectType].templater.HtmxTemplRoutes())
 		importsPlaceHolder += string(p.FrameworkMap[p.ProjectType].templater.HtmxTemplImports())
 	}

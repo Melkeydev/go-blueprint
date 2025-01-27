@@ -10,6 +10,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+    {{.FrontendTemplates.TemplateImports}}
     {{.AdvancedTemplates.TemplateImports}}
 )
 func (s *Server) RegisterRoutes() http.Handler {
@@ -25,6 +26,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 		MaxAge:           300,
 	}))
 
+  {{.FrontendTemplates.TemplateRoutes}}
   {{.AdvancedTemplates.TemplateRoutes}}
 
 	e.GET("/", s.HelloWorldHandler)
