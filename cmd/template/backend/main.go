@@ -1,6 +1,6 @@
 // Package template provides utility functions that
 // help with the templating of created files.
-package framework
+package backend
 
 import (
 	_ "embed"

@@ -40,7 +40,7 @@ var (
 )
 
 func init() {
-	var flagFramework flags.Framework
+	var flagBackend flags.Backend
 	var flagDBDriver flags.Database
 	var frontendFrameworks flags.FrontendFramework
 	var frontendAdvanced flags.FrontendAdvanced
@@ -48,15 +48,26 @@ func init() {
 	var flagGit flags.Git
 	rootCmd.AddCommand(createCmd)
 
+	// Main flags
 	createCmd.Flags().StringP("name", "n", "", "Name of project to create")
-	createCmd.Flags().VarP(&flagFramework, "framework", "b", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(flags.AllowedProjectTypes, ", ")))
+	createCmd.Flags().VarP(&flagBackend, "backend", "b", fmt.Sprintf("Backend to use. Allowed values: %s", strings.Join(flags.AllowedBackedTypes, ", ")))
 	createCmd.Flags().VarP(&flagDBDriver, "driver", "d", fmt.Sprintf("Database drivers to use. Allowed values: %s", strings.Join(flags.AllowedDBDrivers, ", ")))
+	createCmd.Flags().VarP(&flagGit, "git", "g", fmt.Sprintf("Git to use. Allowed values: %s", strings.Join(flags.AllowedGitsOptions, ", ")))
+
+	// Frontend flags group
 	createCmd.Flags().BoolP("frontend", "f", false, "Get prompts for frontend frameworks")
 	createCmd.Flags().Var(&frontendFrameworks, "frontend-framework", fmt.Sprintf("Frontend framework to use. Allowed values: %s", strings.Join(flags.AllowedFrontendTypes, ", ")))
 	createCmd.Flags().Var(&frontendAdvanced, "frontend-advanced", fmt.Sprintf("Frontend framework advanced features to use. Allowed values: %s", strings.Join(flags.AllowedFrontendAdvanced, ", ")))
+
+	// Advanced features group
 	createCmd.Flags().BoolP("advanced", "a", false, "Get prompts for advanced features")
 	createCmd.Flags().Var(&advancedFeatures, "feature", fmt.Sprintf("Advanced feature to use. Allowed values: %s", strings.Join(flags.AllowedAdvancedFeatures, ", ")))
-	createCmd.Flags().VarP(&flagGit, "git", "g", fmt.Sprintf("Git to use. Allowed values: %s", strings.Join(flags.AllowedGitsOptions, ", ")))
+
+	// Mark dependencies for frontend flags
+	createCmd.MarkFlagsRequiredTogether("frontend", "frontend-framework")
+
+	// Mark feature flag as requiring --advanced
+	createCmd.MarkFlagsRequiredTogether("advanced", "feature")
 }
 
 type Options struct {
@@ -95,7 +106,7 @@ var createCmd = &cobra.Command{
 
 		// VarP already validates the contents of the framework flag.
 		// If this flag is filled, it is always valid
-		flagFramework := flags.Framework(cmd.Flag("framework").Value.String())
+		flagBackend := flags.Backend(cmd.Flag("backend").Value.String())
 		flagDBDriver := flags.Database(cmd.Flag("driver").Value.String())
 		flagFrontendFremwork := flags.FrontendFramework(cmd.Flag("frontend-framework").Value.String())
 		flagGit := flags.Git(cmd.Flag("git").Value.String())
@@ -116,9 +127,9 @@ var createCmd = &cobra.Command{
 
 		project := &program.Project{
 			ProjectName:       flagName,
-			ProjectType:       flagFramework,
+			ProjectType:       flagBackend,
 			DBDriver:          flagDBDriver,
-			FrameworkMap:      make(map[flags.Framework]program.Framework),
+			BackendMap:        make(map[flags.Backend]program.Backend),
 			DBDriverMap:       make(map[flags.Database]program.Driver),
 			FrontendFramework: flagFrontendFremwork,
 			FrontendOptions:   make(map[string]bool),
@@ -126,7 +137,7 @@ var createCmd = &cobra.Command{
 			GitOptions:        flagGit,
 		}
 
-		steps := steps.InitSteps(flagFramework, flagDBDriver, flagFrontendFremwork, flagGit)
+		steps := steps.InitSteps(flagBackend, flagDBDriver, flagFrontendFremwork, flagGit)
 		fmt.Printf("%s\n", logoStyle.Render(logo))
 
 		// Advanced option steps:
@@ -177,7 +188,7 @@ var createCmd = &cobra.Command{
 
 		if project.ProjectType == "" {
 			isInteractive = true
-			step := steps.Steps["framework"]
+			step := steps.Steps["backend"]
 			tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, options.ProjectType, step.Headers, project))
 			if _, err := tprogram.Run(); err != nil {
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
@@ -187,11 +198,11 @@ var createCmd = &cobra.Command{
 			step.Field = options.ProjectType.Choice
 
 			// this type casting is always safe since the user interface can
-			// only pass strings that can be cast to a flags.Framework instance
-			project.ProjectType = flags.Framework(strings.ToLower(options.ProjectType.Choice))
-			err := cmd.Flag("framework").Value.Set(project.ProjectType.String())
+			// only pass strings that can be cast to a flags.Backend instance
+			project.ProjectType = flags.Backend(strings.ToLower(options.ProjectType.Choice))
+			err := cmd.Flag("backend").Value.Set(project.ProjectType.String())
 			if err != nil {
-				log.Fatal("failed to set the framework flag value", err)
+				log.Fatal("failed to set the backend flag value", err)
 			}
 		}
 
@@ -357,13 +368,13 @@ var createCmd = &cobra.Command{
 		}
 
 		if options.FrontendAdvanced.Choices["Tailwind"] && options.FrontendFramework.Choice == "Htmx" {
-			fmt.Println(endingMsgStyle.Render("• Download the tailwind standalone cli wiht Makefile target\n"))
+			fmt.Println(endingMsgStyle.Render("• Download the tailwind standalone cli with Makefile target\n"))
 			fmt.Println(endingMsgStyle.Render("• More info about the Tailwind CLI: https://tailwindcss.com/blog/standalone-cli\n"))
 		}
 
 		if options.FrontendFramework.Choice == "Htmx" {
-			fmt.Println(endingMsgStyle.Render("• Install the templ cli `go install github.com/a-h/templ/cmd/templ@latest` or use Makefile\n"))
-			fmt.Println(endingMsgStyle.Render("• Generate templ function files by running `templ generate`\n"))
+			fmt.Println(endingMsgStyle.Render("• Install the templ cli `go install github.com/a-h/templ/cmd/templ@latest`\n"))
+			fmt.Println(endingMsgStyle.Render("• Generate templ function files by running `templ generate` or use Makefile for both steps\n"))
 		}
 
 		if isInteractive {

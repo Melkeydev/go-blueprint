@@ -27,11 +27,11 @@ type Item struct {
 }
 
 // InitSteps initializes and returns the *Steps to be used in the CLI program
-func InitSteps(projectType flags.Framework, databaseType flags.Database, frontendFrameworkType flags.FrontendFramework, gitType flags.Git) *Steps {
+func InitSteps(projectType flags.Backend, databaseType flags.Database, frontendFrameworkType flags.FrontendFramework, gitType flags.Git) *Steps {
 	steps := &Steps{
 		map[string]StepSchema{
-			"framework": {
-				StepName: "Go Project Framework",
+			"backend": {
+				StepName: "Go Project Backend",
 				Options: []Item{
 					{
 						Title: "Standard-library",
@@ -62,7 +62,7 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database, fronten
 						Desc:  "High performance, extensible, minimalist Go web framework",
 					},
 				},
-				Headers: "What framework do you want to use in your Go project?",
+				Headers: "What backend do you want to use in your Go project?",
 				Field:   projectType.String(),
 			},
 			"driver": {

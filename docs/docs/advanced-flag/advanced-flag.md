@@ -24,18 +24,18 @@ Frontend written in TypeScript, including an example fetch request to the backen
 To utilize the `--advanced` flag, use the following command:
 
 ```bash
-go-blueprint create --name <project_name> --framework <selected_framework> --driver <selected_driver> --advanced
+go-blueprint create --name <project_name> --backend <selected_backend> --driver <selected_driver> --advanced
 ```
 
 By including the `--advanced` flag, users can choose one or all of the advanced features. The flag enhances the simplicity of Blueprint while offering flexibility for users who require additional functionality.
 
 To recreate the project using the same configuration semi-interactively, use the following command:
 ```bash
-go-blueprint create --name my-project --framework chi --driver mysql --advanced
+go-blueprint create --name my-project --backend chi --driver mysql --advanced
 ```
 
 Non-Interactive Setup is also possible:
 
 ```bash
-go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind
+go-blueprint create --name my-project --backend chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind
 ```

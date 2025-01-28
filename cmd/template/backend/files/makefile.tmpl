@@ -54,12 +54,22 @@ build:{{- if and .FrontendOptions.tailwind (not (eq .FrontendFramework "react"))
 	{{ if .OSCheck.UnixBased }}@{{- if and (.AdvancedOptions.docker) (eq .DBDriver "sqlite") }}CGO_ENABLED=1 GOOS=linux {{ end }}go build -o main cmd/api/main.go{{- else }}@go build -o main.exe cmd/api/main.go{{- end }}
 
 # Run the application
-run:
-	@go run cmd/api/main.go{{- if (eq .FrontendFramework "react") }} &
-	@npm install --prefer-offline --no-fund --prefix ./frontend
-	@npm run dev --prefix ./frontend
+run: build
+	@echo "Starting server..."
+	@./main{{- if (eq .FrontendFramework "react") }} & \
+	SERVER_PID=$$!; \
+	sleep 2; \
+	if ps -p $$SERVER_PID > /dev/null; then \
+		echo "Server started successfully"; \
+		cd frontend && \
+		npm install --prefer-offline --no-fund && \
+		npm run dev; \
+		kill $$SERVER_PID; \
+	else \
+		echo "Server failed to start. Check the logs."; \
+		exit 1; \
+	fi
 	{{- end }}
-
 
 {{- if or .AdvancedOptions.docker (and (ne .DBDriver "none") (ne .DBDriver "sqlite")) }}
 {{- if .OSCheck.UnixBased }}
@@ -106,6 +116,7 @@ itest:
 # Clean the binary
 clean:
 	@echo "Cleaning..."
+	@pkill main || true
 	@rm -f main
 
 # Live Reload

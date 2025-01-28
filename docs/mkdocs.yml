@@ -37,7 +37,7 @@ nav:
     - Makefile: creating-project/makefile.md
     - Air: creating-project/air.md
   - Blueprint Core:
-    - Frameworks: blueprint-core/frameworks.md
+    - backends: blueprint-core/backends.md
     - DB Drivers: blueprint-core/db-drivers.md
   - Advanced Flag:
     - AF Usage: advanced-flag/advanced-flag.md

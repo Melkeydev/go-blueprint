@@ -6,7 +6,7 @@ After installing the Go-Blueprint CLI tool, you can create a new project with th
 go-blueprint create
 ```
 
-This command will interactively guide you through the project setup process, allowing you to choose the project name, framework, and database driver.
+This command will interactively guide you through the project setup process, allowing you to choose the project name, backend, and database driver.
 
 ![BlueprintInteractive](../public/blueprint_1.png)
 
@@ -15,13 +15,13 @@ This command will interactively guide you through the project setup process, all
 For a non-interactive setup, you can use flags to provide the necessary information during project creation. Here's an example:
 
 ```
-go-blueprint create --name my-project --framework gin --driver postgres --git commit
+go-blueprint create --name my-project --backend gin --driver postgres --git commit
 ```
 
 In this example:
 
 - `--name`: Specifies the name of the project (replace "my-project" with your desired project name).
-- `--framework`: Specifies the Go framework to be used (e.g., "gin").
+- `--backend`: Specifies the Go backend to be used (e.g., "gin").
 - `--driver`: Specifies the database driver to be integrated (e.g., "postgres").
 - `--git`: Specifies the git configuration option of the project (e.g., "commit").
 
@@ -37,7 +37,7 @@ go-blueprint create --advanced
 
 To recreate the project using the same configuration semi-interactively, use the following command:
 ```bash
-go-blueprint create --name my-project --framework chi --driver mysql --git commit --advanced
+go-blueprint create --name my-project --backend chi --driver mysql --git commit --advanced
 ```
 This approach opens interactive mode only for advanced features, which allow you to choose the one or combination of available features.
 
@@ -72,5 +72,5 @@ go-blueprint create --advanced --feature docker
 
 Or all features at once:
 ```bash
-go-blueprint create --name my-project --framework chi --driver mysql --git commit --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --feature docker
+go-blueprint create --name my-project --backend chi --driver mysql --git commit --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --feature docker
 ```

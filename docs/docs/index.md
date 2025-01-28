@@ -7,7 +7,7 @@ hide:
 ![logo](./public/logo.png)
 
 
-Powerful CLI tool designed to streamline the process of creating Go projects with a robust and standardized structure. Not only does Go Blueprint facilitate project initialization, but it also offers seamless integration with popular Go frameworks, allowing you to focus on your application's code from the very beginning.
+Powerful CLI tool designed to streamline the process of creating Go projects with a robust and standardized structure. Not only does Go Blueprint facilitate project initialization, but it also offers seamless integration with popular Go backends, allowing you to focus on your application's code from the very beginning.
 
 ## Why Choose Go Blueprint?
 

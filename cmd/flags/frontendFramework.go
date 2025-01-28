@@ -9,7 +9,7 @@ type FrontendFramework string
 
 // These are all the current frameworks supported. If you want to add one, you
 // can simply copy and paste a line here. Do not forget to also add it into the
-// AllowedProjectTypes slice too!
+// AllowedFrontedTypes slice too!
 const (
 	Htmx  FrontendFramework = "htmx"
 	React FrontendFramework = "react"
@@ -27,7 +27,7 @@ func (f *FrontendFramework) Type() string {
 
 func (f *FrontendFramework) Set(value string) error {
 	// Contains isn't available in 1.20 yet
-	// if AllowedProjectTypes.Contains(value) {
+	// if AllowedFrontedTypes.Contains(value) {
 	for _, frontendFrameworks := range AllowedFrontendTypes {
 		if frontendFrameworks == value {
 			*f = FrontendFramework(value)

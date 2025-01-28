@@ -7,20 +7,20 @@
 </div>
 
 Go Blueprint is a CLI tool that allows users to spin up a Go project with the corresponding structure seamlessly. It also
-gives the option to integrate with one of the more popular Go frameworks (and the list is growing with new features)!
+gives the option to integrate with one of the more popular Go backends (and the list is growing with new features)!
 
 ### Why Would I use this?
 
 - Easy to set up and install
 - Have the entire Go structure already established
 - Setting up a Go HTTP server (or Fasthttp with Fiber)
-- Integrate with a popular frameworks
+- Integrate with a popular backends
 - Focus on the actual code of your application
 
 ## Table of Contents
 
 - [Install](#install)
-- [Frameworks Supported](#frameworks-supported)
+- [backends Supported](#backends-supported)
 - [Database Support](#database-support)
 - [Advanced Features](#advanced-features)
 - [Blueprint UI](#blueprint-ui)
@@ -64,18 +64,18 @@ go-blueprint create
 You can also use the provided flags to set up a project without interacting with the UI.
 
 ```bash
-go-blueprint create --name my-project --framework gin --driver postgres --git commit
+go-blueprint create --name my-project --backend gin --driver postgres --git commit
 ```
 
 See `go-blueprint create -h` for all the options and shorthands.
 
-<a id="frameworks-supported"></a>
+<a id="backends-supported"></a>
 
 <h2>
   <picture>
-    <img src="./public/frameworks.gif?raw=true" width="60px" style="margin-right: 1px;">
+    <img src="./public/backends.gif?raw=true" width="60px" style="margin-right: 1px;">
   </picture>
-  Frameworks Supported
+  backends Supported
 </h2>
 
 - [Chi](https://github.com/go-chi/chi)
@@ -152,7 +152,7 @@ Blueprint UI is a web application that allows you to create commands for the CLI
 Here's an example of setting up a project with a specific database driver:
 
 ```bash
-go-blueprint create --name my-project --framework gin --driver postgres --git commit
+go-blueprint create --name my-project --backend gin --driver postgres --git commit
 ```
 
 <p align="center">
@@ -206,7 +206,7 @@ go-blueprint create --advanced --feature react
 Or all features at once:
 
 ```bash
-go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --feature docker --git commit --feature react
+go-blueprint create --name my-project --backend chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --feature docker --git commit --feature react
 ```
 
 <p align="center">

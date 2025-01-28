@@ -19,31 +19,53 @@ const ProgramName = "go-blueprint"
 func NonInteractiveCommand(use string, flagSet *pflag.FlagSet) string {
 	nonInteractiveCommand := fmt.Sprintf("%s %s", ProgramName, use)
 
+	// Track if frontend was enabled
+	frontendEnabled := false
+	if f := flagSet.Lookup("frontend"); f != nil && f.Value.String() == "true" {
+		frontendEnabled = true
+	}
+
 	visitFn := func(flag *pflag.Flag) {
-		if flag.Name != "help" {
-			if flag.Name == "feature" {
-				featureFlagsString := ""
-				// Creates string representation for the feature flags to be
-				// concatenated with the nonInteractiveCommand
-				for _, k := range strings.Split(flag.Value.String(), ",") {
-					if k != "" {
-						featureFlagsString += fmt.Sprintf(" --feature %s", k)
-					}
-				}
-				nonInteractiveCommand += featureFlagsString
-			} else if flag.Value.Type() == "bool" {
-				if flag.Value.String() == "true" {
-					nonInteractiveCommand = fmt.Sprintf("%s --%s", nonInteractiveCommand, flag.Name)
-				}
-			} else {
-				nonInteractiveCommand = fmt.Sprintf("%s --%s %s", nonInteractiveCommand, flag.Name, flag.Value.String())
-			}
+		if flag.Name == "help" {
+			return
 		}
+
+		// Skip frontend-related flags if frontend wasn't enabled
+		if !frontendEnabled && (flag.Name == "frontend-framework" || flag.Name == "frontend-advanced") {
+			return
+		}
+
+		// Handle feature flags specially
+		if flag.Name == "feature" {
+			featureFlagsString := ""
+			for _, k := range strings.Split(flag.Value.String(), ",") {
+				if k != "" {
+					featureFlagsString += fmt.Sprintf(" --feature %s", k)
+				}
+			}
+			nonInteractiveCommand += featureFlagsString
+			return
+		}
+
+		// Handle boolean flags
+		if flag.Value.Type() == "bool" {
+			if flag.Value.String() == "true" {
+				nonInteractiveCommand = fmt.Sprintf("%s --%s", nonInteractiveCommand, flag.Name)
+			}
+			return
+		}
+
+		// Skip empty string values
+		if flag.Value.String() == "" {
+			return
+		}
+
+		// Handle all other flags
+		nonInteractiveCommand = fmt.Sprintf("%s --%s %s", nonInteractiveCommand, flag.Name, flag.Value.String())
 	}
 
 	flagSet.SortFlags = false
 	flagSet.VisitAll(visitFn)
-
 	return nonInteractiveCommand
 }
 

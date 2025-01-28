@@ -17,9 +17,9 @@ import (
 	"github.com/melkeydev/go-blueprint/cmd/flags"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
 	"github.com/melkeydev/go-blueprint/cmd/template/advanced"
+	"github.com/melkeydev/go-blueprint/cmd/template/backend"
 	"github.com/melkeydev/go-blueprint/cmd/template/dbdriver"
 	"github.com/melkeydev/go-blueprint/cmd/template/docker"
-	"github.com/melkeydev/go-blueprint/cmd/template/framework"
 	"github.com/melkeydev/go-blueprint/cmd/template/frontend"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
 )
@@ -30,11 +30,11 @@ type Project struct {
 	ProjectName       string
 	Exit              bool
 	AbsolutePath      string
-	ProjectType       flags.Framework
+	ProjectType       flags.Backend
 	DBDriver          flags.Database
 	Docker            flags.Database
 	FrontendFramework flags.FrontendFramework
-	FrameworkMap      map[flags.Framework]Framework
+	BackendMap        map[flags.Backend]Backend
 	DBDriverMap       map[flags.Database]Driver
 	DockerMap         map[flags.Database]Docker
 	FrontendTemplates FrontendTemplates
@@ -55,9 +55,9 @@ type AdvancedTemplates struct {
 	TemplateImports string
 }
 
-// A Framework contains the name and templater for a
-// given Framework
-type Framework struct {
+// A Backend contains the name and templater for a
+// given Backend
+type Backend struct {
 	packageName []string
 	templater   Templater
 }
@@ -73,7 +73,7 @@ type Docker struct {
 }
 
 // A Templater has the methods that help build the files
-// in the Project folder, and is specific to a Framework
+// in the Project folder, and is specific to a Backend
 type Templater interface {
 	Main() []byte
 	Server() []byte
@@ -114,7 +114,7 @@ var (
 	redisDriver    = []string{"github.com/redis/go-redis/v9"}
 	mongoDriver    = []string{"go.mongodb.org/mongo-driver"}
 	gocqlDriver    = []string{"github.com/gocql/gocql"}
-	scyllaDriver   = []string{"github.com/scylladb/gocql@v1.14.4"} // Replacement for GoCQL
+	scyllaDriver   = "github.com/scylladb/gocql@v1.14.4" // Replacement for GoCQL
 
 	godotenvPackage = []string{"github.com/joho/godotenv"}
 	templPackage    = []string{"github.com/a-h/templ"}
@@ -158,41 +158,41 @@ func (p *Project) ExitCLI(tprogram *tea.Program) {
 }
 
 // createFrameWorkMap adds the current supported
-// Frameworks into a Project's FrameworkMap
-func (p *Project) createFrameworkMap() {
-	p.FrameworkMap[flags.Chi] = Framework{
+// Backends into a Project's BackendMap
+func (p *Project) createBackendMap() {
+	p.BackendMap[flags.Chi] = Backend{
 		packageName: chiPackage,
-		templater:   framework.ChiTemplates{},
+		templater:   backend.ChiTemplates{},
 	}
 
-	p.FrameworkMap[flags.StandardLibrary] = Framework{
+	p.BackendMap[flags.StandardLibrary] = Backend{
 		packageName: []string{},
-		templater:   framework.StandardLibTemplate{},
+		templater:   backend.StandardLibTemplate{},
 	}
 
-	p.FrameworkMap[flags.Gin] = Framework{
+	p.BackendMap[flags.Gin] = Backend{
 		packageName: ginPackage,
-		templater:   framework.GinTemplates{},
+		templater:   backend.GinTemplates{},
 	}
 
-	p.FrameworkMap[flags.Fiber] = Framework{
+	p.BackendMap[flags.Fiber] = Backend{
 		packageName: fiberPackage,
-		templater:   framework.FiberTemplates{},
+		templater:   backend.FiberTemplates{},
 	}
 
-	p.FrameworkMap[flags.GorillaMux] = Framework{
+	p.BackendMap[flags.GorillaMux] = Backend{
 		packageName: gorillaPackage,
-		templater:   framework.GorillaTemplates{},
+		templater:   backend.GorillaTemplates{},
 	}
 
-	p.FrameworkMap[flags.HttpRouter] = Framework{
+	p.BackendMap[flags.HttpRouter] = Backend{
 		packageName: routerPackage,
-		templater:   framework.RouterTemplates{},
+		templater:   backend.RouterTemplates{},
 	}
 
-	p.FrameworkMap[flags.Echo] = Framework{
+	p.BackendMap[flags.Echo] = Backend{
 		packageName: echoPackage,
-		templater:   framework.EchoTemplates{},
+		templater:   backend.EchoTemplates{},
 	}
 }
 
@@ -280,7 +280,7 @@ func (p *Project) CreateMainFile() error {
 	p.CheckOS()
 
 	// Create the map for our program
-	p.createFrameworkMap()
+	p.createBackendMap()
 
 	// Create go.mod
 	err = utils.InitGoMod(p.ProjectName, projectPath)
@@ -289,11 +289,11 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	// Install the correct package for the selected framework
+	// Install the correct package for the selected backend
 	if p.ProjectType != flags.StandardLibrary {
-		err = utils.GoGetPackage(projectPath, p.FrameworkMap[p.ProjectType].packageName)
+		err = utils.GoGetPackage(projectPath, p.BackendMap[p.ProjectType].packageName)
 		if err != nil {
-			log.Printf("Could not install go dependency for the chosen framework %v\n", err)
+			log.Printf("Could not install go dependency for the chosen backend %v\n", err)
 			return err
 		}
 	}
@@ -381,7 +381,7 @@ func (p *Project) CreateMainFile() error {
 	defer makeFile.Close()
 
 	// inject makefile template
-	makeFileTemplate := template.Must(template.New("makefile").Parse(string(framework.MakeTemplate())))
+	makeFileTemplate := template.Must(template.New("makefile").Parse(string(backend.MakeTemplate())))
 	err = makeFileTemplate.Execute(makeFile, p)
 	if err != nil {
 		return err
@@ -394,7 +394,7 @@ func (p *Project) CreateMainFile() error {
 	defer readmeFile.Close()
 
 	// inject readme template
-	readmeFileTemplate := template.Must(template.New("readme").Parse(string(framework.ReadmeTemplate())))
+	readmeFileTemplate := template.Must(template.New("readme").Parse(string(backend.ReadmeTemplate())))
 	err = readmeFileTemplate.Execute(readmeFile, p)
 	if err != nil {
 		return err
@@ -581,7 +581,7 @@ func (p *Project) CreateMainFile() error {
 	}
 
 	// if the websocket option is checked, a websocket dependency needs to
-	// be added to the routes depending on the framework choosen.
+	// be added to the routes depending on the backend choosen.
 	// Only fiber uses a different websocket library, the other frameworks
 	// all work with the same one
 	if p.AdvancedOptions[string(flags.Websocket)] {
@@ -650,7 +650,7 @@ func (p *Project) CreateMainFile() error {
 	defer gitignoreFile.Close()
 
 	// inject gitignore template
-	gitignoreTemplate := template.Must(template.New(".gitignore").Parse(string(framework.GitIgnoreTemplate())))
+	gitignoreTemplate := template.Must(template.New(".gitignore").Parse(string(backend.GitIgnoreTemplate())))
 	err = gitignoreTemplate.Execute(gitignoreFile, p)
 	if err != nil {
 		return err
@@ -665,7 +665,7 @@ func (p *Project) CreateMainFile() error {
 	defer airTomlFile.Close()
 
 	// inject air.toml template
-	airTomlTemplate := template.Must(template.New("airtoml").Parse(string(framework.AirTomlTemplate())))
+	airTomlTemplate := template.Must(template.New("airtoml").Parse(string(backend.AirTomlTemplate())))
 	err = airTomlTemplate.Execute(airTomlFile, p)
 	if err != nil {
 		return err
@@ -753,13 +753,13 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 
 	switch methodName {
 	case "main":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Main())))
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.BackendMap[p.ProjectType].templater.Main())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "server":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Server())))
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.BackendMap[p.ProjectType].templater.Server())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "routes":
-		routeFileBytes := p.FrameworkMap[p.ProjectType].templater.Routes()
+		routeFileBytes := p.BackendMap[p.ProjectType].templater.Routes()
 		createdTemplate := template.Must(template.New(fileName).Parse(string(routeFileBytes)))
 		err = createdTemplate.Execute(createdFile, p)
 	case "releaser":
@@ -781,7 +781,7 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.Tests())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "tests":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.TestHandler())))
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.BackendMap[p.ProjectType].templater.TestHandler())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "env":
 		if p.DBDriver != "none" {
@@ -939,8 +939,8 @@ func (p *Project) CreateHtmxTemplates() {
 	routesPlaceHolder := ""
 	importsPlaceHolder := ""
 	if p.FrontendFramework == flags.Htmx {
-		routesPlaceHolder += string(p.FrameworkMap[p.ProjectType].templater.HtmxTemplRoutes())
-		importsPlaceHolder += string(p.FrameworkMap[p.ProjectType].templater.HtmxTemplImports())
+		routesPlaceHolder += string(p.BackendMap[p.ProjectType].templater.HtmxTemplRoutes())
+		importsPlaceHolder += string(p.BackendMap[p.ProjectType].templater.HtmxTemplImports())
 	}
 
 	routeTmpl, err := template.New("routes").Parse(routesPlaceHolder)
@@ -971,7 +971,7 @@ func (p *Project) CreateWebsocketImports(appDir string) {
 		websocketDependency = []string{"github.com/gofiber/contrib/websocket"}
 	}
 
-	// Websockets require a different package depending on what framework is
+	// Websockets require a different package depending on what backend is
 	// choosen. The application calls go mod tidy at the end so we don't
 	// have to here
 	err := utils.GoGetPackage(appDir, websocketDependency)
@@ -979,7 +979,7 @@ func (p *Project) CreateWebsocketImports(appDir string) {
 		log.Fatal(err)
 	}
 
-	importsPlaceHolder := string(p.FrameworkMap[p.ProjectType].templater.WebsocketImports())
+	importsPlaceHolder := string(p.BackendMap[p.ProjectType].templater.WebsocketImports())
 
 	importTmpl, err := template.New("imports").Parse(importsPlaceHolder)
 	if err != nil {

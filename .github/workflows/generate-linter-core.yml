@@ -3,9 +3,9 @@ name: Linting Generated Blueprints Core
 on:
   pull_request: {}
   workflow_dispatch: {}
-  push:
-    branches:
-      - cli-refactor
+  # push:
+  #   branches:
+  #     - cli-refactor
 
 jobs:
   framework_matrix:

@@ -23,7 +23,7 @@ Sample Output:
 {"message": "Hello World"}
 ```
 If the server is running and it is healthy, you should see the message 'Hello World' in the response.
-Also, depending on the framework you are using, there will be logs in the terminal:
+Also, depending on the backend you are using, there will be logs in the terminal:
 
 ```bash
 make run

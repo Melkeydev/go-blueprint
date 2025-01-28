@@ -1,4 +1,4 @@
-package framework
+package backend
 
 import (
 	_ "embed"
