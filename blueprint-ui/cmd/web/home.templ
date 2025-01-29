@@ -1,0 +1,29 @@
+package web
+
+import "bluepront-ui/cmd/web/components"
+
+templ Home() {
+	@Base() {
+		<main
+ 			class="flex min-h-screen flex-col items-center justify-between px-4 md:px-16 lg:px-24 lg:py-16"
+ 			x-data="{ 
+        projectName: '',
+        selectedBackend: 'standard-library',
+        selectedDatabase: 'none', 
+	selectGit: 'commit',
+        }"
+		>
+			<div class="mx-auto max-w-7xl px-6 lg:px-8 w-full">
+				<div class="mx-auto max-w-2xl text-center">
+					<h2 class="text-2xl font-bold leading-10 tracking-tight text-gray-900">
+						Go Blueprint
+					</h2>
+					<p class="mt-6 text-base leading-7 text-gray-600">
+						Choose your desired features, and we'll generate the command you can use to create your project.
+					</p>
+				</div>
+				@components.Form()
+			</div>
+		</main>
+	}
+}

@@ -1,2 +1,8 @@
 go-blueprint
+main
+
 site
+
+*templ.go
+output.css
+tailwindcss
