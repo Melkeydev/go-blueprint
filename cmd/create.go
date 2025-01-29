@@ -63,11 +63,11 @@ func init() {
 	createCmd.Flags().BoolP("advanced", "a", false, "Get prompts for advanced features")
 	createCmd.Flags().Var(&advancedFeatures, "feature", fmt.Sprintf("Advanced feature to use. Allowed values: %s", strings.Join(flags.AllowedAdvancedFeatures, ", ")))
 
-	// Mark dependencies for frontend flags
-	createCmd.MarkFlagsRequiredTogether("frontend", "frontend-framework")
-
-	// Mark feature flag as requiring --advanced
-	createCmd.MarkFlagsRequiredTogether("advanced", "feature")
+	// // Mark dependencies for frontend flags
+	// createCmd.MarkFlagsRequiredTogether("frontend", "frontend-framework")
+	//
+	// // Mark feature flag as requiring --advanced
+	// createCmd.MarkFlagsRequiredTogether("advanced", "feature")
 }
 
 type Options struct {
