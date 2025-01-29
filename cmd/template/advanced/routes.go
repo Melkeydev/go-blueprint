@@ -13,6 +13,9 @@ var baseTemplTemplate []byte
 //go:embed files/react/tailwind/index.css.tmpl
 var inputCssTemplateReact []byte
 
+//go:embed files/react/tailwind/vite.config.ts.tmpl
+var viteTailwindConfigFile []byte
+
 //go:embed files/react/tailwind/app.tsx.tmpl
 var reactTailwindAppFile []byte
 
@@ -123,6 +126,10 @@ func ReactAppfile() []byte {
 
 func InputCssTemplateReact() []byte {
 	return inputCssTemplateReact
+}
+
+func ViteTailwindConfigFile() []byte {
+	return viteTailwindConfigFile
 }
 
 func InputCssTemplate() []byte {
