@@ -8,9 +8,7 @@ on:
 jobs:
   build-deploy:
     name: Build and deploy docs
-
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4

@@ -3,15 +3,12 @@ name: Linting Generated Blueprints Advanced
 on:
   pull_request: {}
   workflow_dispatch: {}
-  # push:
-  #   branches:
-  #     - cli-refactor
 
 jobs:
-  framework_matrix:
+  blueprint_matrix:
     strategy:
       matrix:
-        framework: [chi, gin, fiber, gorilla/mux, httprouter, standard-library, echo]
+        backend: [chi, gin, fiber, gorilla/mux, httprouter, standard-library, echo]
         driver: [postgres]
         git: [commit]
         advanced: [docker]
@@ -35,12 +32,12 @@ jobs:
           git config --global user.name 'testname'
           git config --global user.email 'testemail@users.noreply.github.com'
 
-      - name: Set framework variable
-        id: set-proejct-directory
-        run: echo "PROJECT_DIRECTORY=${{ matrix.framework }}" | sed 's/\//-/g' >> $GITHUB_ENV
+      - name: Set dir variable
+        id: set-project-directory
+        run: echo "PROJECT_DIRECTORY=${{ matrix.backend }}" | sed 's/\//-/g' >> $GITHUB_ENV
 
       - name: build templates
-        run: script -q /dev/null -c "go run main.go create -n ${{ env.PROJECT_DIRECTORY }} -b ${{ matrix.framework}} -d ${{ matrix.driver }} -g ${{ matrix.git}} -a --feature ${{ matrix.advanced }} -f ${{ matrix.frontendFramework }} --frontend-advanced ${{ matrix.frontendAdvanced}}"
+        run: script -q /dev/null -c "go run main.go create -n ${{ env.PROJECT_DIRECTORY }} -b ${{ matrix.backend}} -d ${{ matrix.driver }} -g ${{ matrix.git}} -a --feature ${{ matrix.advanced }} -f ${{ matrix.frontendFramework }} --frontend-advanced ${{ matrix.frontendAdvanced}}"
 
       - if: ${{ matrix.frontendFramework == 'htmx'}}
         name: Install Templ & gen templates
