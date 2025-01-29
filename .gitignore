@@ -6,3 +6,4 @@ site
 *templ.go
 output.css
 tailwindcss
+tmp/

@@ -1,7 +1,7 @@
 # Simple Makefile for a Go project
 
 # Build the application
-all: build
+all: run
 templ-install:
 	@if ! command -v templ > /dev/null; then \
 		read -p "Go's 'templ' is not installed on your machine. Do you want to install it? [Y/n] " choice; \
