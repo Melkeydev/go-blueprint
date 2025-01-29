@@ -1,7 +1,7 @@
 package server
 
 import (
-	"bluepront-ui/cmd/web"
+	"blueprint-ui/cmd/web"
 	"github.com/a-h/templ"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"

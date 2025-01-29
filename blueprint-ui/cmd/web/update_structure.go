@@ -1,7 +1,7 @@
 package web
 
 import (
-	"bluepront-ui/cmd/web/components"
+	"blueprint-ui/cmd/web/components"
 	"net/http"
 )
 
@@ -27,16 +27,21 @@ func UpdateStructureHandler(w http.ResponseWriter, r *http.Request) {
 		advancedOptions = []string{}
 	}
 
-	if contains(advancedOptions, "tailwind") && !contains(advancedOptions, "htmx") {
-		advancedOptions = append(advancedOptions, "htmx")
+	advancedFrontend, ok := r.Form["advancedFrontend"]
+
+	if !ok {
+		// Handle the case where no checkbox was checked
+		advancedFrontend = []string{}
 	}
 
 	options := components.OptionsStruct{
-		ProjectName:     r.FormValue("projectName"),
-		SelectedBackend: r.FormValue("backend"),
-		SelectedDB:      r.FormValue("database"),
-		SelectGit:       r.FormValue("git"),
-		AdvancedOptions: advancedOptions,
+		ProjectName:      r.FormValue("projectName"),
+		SelectedBackend:  r.FormValue("backend"),
+		SelectedDB:       r.FormValue("database"),
+		SelectGit:        r.FormValue("git"),
+		SelectFrontend:   r.FormValue("frontend"),
+		AdvancedFrontend: advancedFrontend,
+		AdvancedOptions:  advancedOptions,
 	}
 	commandStr := components.GetCommandString(options)
 
