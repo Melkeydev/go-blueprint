@@ -1,0 +1,126 @@
+package components
+import "strings"
+
+type FeatureTuple struct {
+    Key   string
+    Value string
+}
+
+func GetCommandString(options OptionsStruct) string {
+    projectName := strings.ReplaceAll(options.ProjectName, " ", "_")
+    if projectName == "" {
+        projectName = "SET_YOUR_PROJECT_NAME"
+    }
+    command := "go-blueprint create -n " + projectName + " -b " + options.SelectedBackend
+    if options.SelectedDB != "none" {
+        command += " -d " + options.SelectedDB
+    } else {
+        command += " -d none"
+    }
+    if len(options.AdvancedOptions) > 0 {
+        command += " -a"
+    }
+    for _, opt := range options.AdvancedOptions {
+        command += " --feature " + opt
+    }
+
+    command += " -g " + options.SelectGit
+
+    return command
+}
+
+var backend = []FeatureTuple{
+    {"standard-library", "Standard Library"},
+    {"chi", "Chi"},
+    {"echo", "Echo"},
+    {"fiber", "Fiber"},
+    {"gin", "Gin"},
+    {"gorilla/mux", "Gorilla"},
+    {"httprouter", "HttpRouter"},
+}
+
+var databases = []FeatureTuple{
+    {"none", "None"},
+    {"mysql", "MySQL"},
+    {"postgres", "Postgres"},
+    {"sqlite", "SQLite"},
+    {"mongo", "MongoDB"},
+}
+
+var git = []FeatureTuple{
+    {"commit", "Commit"},
+    {"stage", "Stage"},
+    {"skip", "Skip"},
+}
+
+var options = OptionsStruct{
+    ProjectName:       "my_project",
+    SelectedBackend:   "standard-library",
+    SelectedDB:        "none",
+    SelectGit:         "commit",
+}
+
+templ Form() {
+    <form class="space-y-2" hx-boost="true" action="/update_structure" method="post">
+        <div class="mt-4">
+            <label
+                for="projectName"
+                class="block text-sm font-medium leading-6 text-gray-900">
+                Project Name
+            </label>
+            <div class="mt-2">
+                <input
+                    type="text"
+                    name="projectName"
+                    id="projectName"
+                    class="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    placeholder="my_project"
+                    hx-trigger="keyup changed delay:500ms"
+                    hx-post="/update_structure"
+                    hx-target="#results"
+                    required
+                />
+            </div>
+        </div>
+        <div class="space-y-6">
+            <div class="flex justify-between px-4">
+                <div class="w-1/4">
+                    @FeatureBlock(FeatureBlockProps{
+                        Title:          "Backend",
+                        FeatureOptions: backend,
+                        GroupName:      "backend",
+                    })
+                </div>
+                <div class="w-1/4">
+                    @FeatureBlock(FeatureBlockProps{
+                        Title:          "Database",
+                        FeatureOptions: databases,
+                        GroupName:      "database",
+                    })
+                </div>
+                <div class="w-1/4">
+                    @FeatureBlock(FeatureBlockProps{
+                        Title:          "Git",
+                        FeatureOptions: git,
+                        GroupName:      "git",
+                    })
+                </div>
+            </div>
+            <div class="max-w-4xl mx-auto px-4">
+                @FeatureBlockCheckbox(FeatureBlockProps{
+                    Title: "Advanced",
+                    FeatureOptions: []FeatureTuple{
+                        {"htmx", "HTMX support using Templ."},
+                        {"githubaction", "CI/CD workflow setup using Github Actions."},
+                        {"websocket", "Adds a Websocket endpoint."},
+                        {"tailwind", "Adds Tailwind config and allows for using the Tailwind CLI to compile css based on classes used."},
+                    },
+                    GroupName: "advancedOptions",
+                })
+            </div>
+        </div>
+    </form>
+    <div id="results">
+        @FolderStructure(options, GetCommandString(options))
+    </div>
+}

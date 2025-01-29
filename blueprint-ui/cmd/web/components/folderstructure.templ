@@ -1,0 +1,245 @@
+package components
+
+import "bluepront-ui/cmd/web/components/icons"
+import "strings"
+
+type OptionsStruct struct {
+	ProjectName       string
+	SelectedBackend   string
+	SelectedDB        string
+	SelectGit         string
+	AdvancedOptions   []string
+}
+
+func contains(slice []string, value string) bool {
+	for _, item := range slice {
+		if item == value {
+			return true
+		}
+	}
+	return false
+}
+
+templ FolderStructure(options OptionsStruct, commandStr string) {
+	<div class="prose prose-slate mt-6 max-w-none">
+		<p class="mb-1">Use this command to create a new project with the following folder structure. </p>
+		<pre class="!mt-2 overflow-x-scroll">
+			<code id="command">
+				{ commandStr }
+			</code>
+		</pre>
+	</div>
+	<script>
+    let text = document.getElementById('command').innerHTML;
+    const copyContent = async () => {
+      try {
+        await navigator.clipboard.writeText(text);
+        console.log('Content copied to clipboard');
+      } catch (err) {
+        console.error('Failed to copy: ', err);
+      }
+    }
+  </script>
+	<div class="bg-white mt-2 shadow sm:rounded-lg">
+		<div class="px-4 py-5 sm:p-6">
+			<div class="flex items-center">
+				@icons.FolderIcon()
+				<p
+					class={ "inline italic", templ.KV("text-gray-500", options.ProjectName == "") }
+				>
+					if options.ProjectName == "" {
+						my_project
+					} else {
+						{ strings.ReplaceAll(options.ProjectName, " ", "_") }
+					}
+				</p>
+			</div>
+			<ul class="ml-4 space-y-1">
+				if contains(options.AdvancedOptions, "githubaction") {
+					<li>
+						@icons.FolderIcon()
+						<p class="inline">.github</p>
+						<ul class="ml-4 border-l border-gray-200 pl-2 space-y-1">
+							<li>
+								@icons.FolderIcon()
+								<p class="inline">workflows</p>
+								<ul class="ml-4 border-l border-gray-200 pl-2 space-y-1">
+									<li>
+										@icons.GenericIcon()
+										<p class="inline">go-test.yml</p>
+									</li>
+									<li>
+										@icons.GenericIcon()
+										<p class="inline">release.yml</p>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+				}
+				<li>
+					@icons.FolderIcon()
+					<p class="inline ml-2">cmd</p>
+					<ul class="ml-4 border-l border-gray-200 pl-2 space-y-1">
+						<li>
+							@icons.FolderIcon()
+							<p class="inline ml-2">api</p>
+							<ul class="ml-4 border-l border-gray-200 pl-2 space-y-1">
+								<li>
+									@icons.GenericIcon()
+									<p class="inline ml-2">main.go</p>
+								</li>
+							</ul>
+						</li>
+						if contains(options.AdvancedOptions, "htmx") {
+							<li>
+								@icons.FolderIcon()
+								<p class="inline ml-2">web</p>
+								<ul class="ml-4 border-l border-gray-200 pl-2 space-y-1">
+									<li>
+										@icons.FolderIcon()
+										<p class="inline ml-2">assets</p>
+										<ul class="ml-4 border-l border-gray-200 pl-2 space-y-1">
+											if contains(options.AdvancedOptions, "tailwind") {
+												<li>
+													@icons.FolderIcon()
+													<p class="inline ml-2">css</p>
+													<ul class="ml-4 border-l border-gray-200 pl-2 space-y-1">
+														<li>
+															@icons.GenericIcon()
+															<p class="inline ml-2">input.css</p>
+														</li>
+														<li>
+															@icons.GenericIcon()
+															<p class="inline ml-2">output.css</p>
+														</li>
+													</ul>
+												</li>
+											}
+											<li>
+												@icons.FolderIcon()
+												<p class="inline ml-2">js</p>
+												<ul class="ml-4 border-l border-gray-200 pl-2 space-y-1">
+													<li>
+														@icons.GenericIcon()
+														<p class="inline ml-2">htmx.min.js</p>
+													</li>
+												</ul>
+											</li>
+										</ul>
+										<li>
+											@icons.GenericIcon()
+											<p class="inline ml-2">base.templ</p>
+										</li>
+										<li>
+											@icons.GenericIcon()
+											<p class="inline ml-2">efs.go</p>
+										</li>
+										<li>
+											@icons.GenericIcon()
+											<p class="inline ml-2">hello.go</p>
+										</li>
+										<li>
+											@icons.GenericIcon()
+											<p class="inline ml-2">hello.templ</p>
+										</li>
+									</li>
+								</ul>
+							</li>
+						}
+					</ul>
+				</li>
+				<li>
+					@icons.FolderIcon()
+					<p class="inline">internal</p>
+					if options.SelectedDB != "none" {
+						<ul class="ml-4 border-l border-gray-200 pl-2 space-y-1">
+							<li>
+								@icons.FolderIcon()
+								<p class="inline">database</p>
+								<ul class="ml-4 border-l border-gray-200 pl-2 space-y-1">
+									<li>
+										@icons.GenericIcon()
+										<p class="inline">database.go</p>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					}
+					<ul class="ml-4 border-l border-gray-200 pl-2 space-y-1">
+						<li>
+							@icons.FolderIcon()
+							<p class="inline">server</p>
+							<ul class="ml-4 border-l border-gray-200 pl-2 space-y-1">
+								<li>
+									@icons.GenericIcon()
+									<p class="inline">routes.go</p>
+								</li>
+								<li>
+									@icons.GenericIcon()
+									<p class="inline">server.go</p>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+				<li>
+					@icons.FolderIcon()
+					<p class="inline">tests</p>
+					<ul class="ml-4 border-l border-gray-200 pl-2 space-y-1">
+						<li>
+							@icons.GenericIcon()
+							handler_test.go
+						</li>
+					</ul>
+				</li>
+				<li>
+					@icons.GenericIcon()
+					<p class="inline">go.mod</p>
+				</li>
+				if contains(options.AdvancedOptions, "githubaction") {
+					<li>
+						@icons.GenericIcon()
+						<p class="inline">goreleaser.yml</p>
+					</li>
+				}
+				<li>
+					@icons.GenericIcon()
+					<p class="inline">go.sum</p>
+				</li>
+				<li>
+					@icons.GenericIcon()
+					<p class="inline">.env</p>
+				</li>
+				<li>
+					@icons.GenericIcon()
+					<p class="inline">air.toml</p>
+				</li>
+				<li>
+					@icons.GenericIcon()
+					<p class="inline">.gitignore</p>
+				</li>
+				<li>
+					@icons.GenericIcon()
+					<p class="inline">Makefile</p>
+				</li>
+				<li>
+					<i class="fa-brands fa-markdown mr-2"></i>
+					<p class="inline">README.md</p>
+				</li>
+				if options.SelectedDB != "none" && options.SelectedDB != "sqlite" {
+					<li class="flex items-center">
+						@icons.DockerYamlIcon()
+						<p class="inline">docker-compose.yaml</p>
+					</li>
+				}
+				if contains(options.AdvancedOptions, "tailwind") {
+					<li>
+						@icons.GenericIcon()
+						<p class="inline">tailwind.config.js</p>
+					</li>
+				}
+			</ul>
+		</div>
+	</div>
+}
