@@ -53,6 +53,21 @@ var git = []FeatureTuple{
     {"skip", "Skip"},
 }
 
+var frontend = []FeatureTuple{
+    {"htmx", "HTMX"},
+    {"react", "React"},
+}
+
+var frontendAdvanced = []FeatureTuple{
+    {"tailwind", "Tailwind CSS"},
+}
+
+var advanced = []FeatureTuple{
+    {"githubaction", "CI/CD workflow setup using Github Actions."},
+    {"websocket", "Adds a Websocket endpoint."},
+    {"docker", "Docker configuration for go project."},
+}
+
 var options = OptionsStruct{
     ProjectName:       "my_project",
     SelectedBackend:   "standard-library",
@@ -83,40 +98,64 @@ templ Form() {
             </div>
         </div>
         <div class="space-y-6">
-            <div class="flex justify-between px-4">
-                <div class="w-1/4">
-                    @FeatureBlock(FeatureBlockProps{
-                        Title:          "Backend",
-                        FeatureOptions: backend,
-                        GroupName:      "backend",
-                    })
-                </div>
-                <div class="w-1/4">
-                    @FeatureBlock(FeatureBlockProps{
-                        Title:          "Database",
-                        FeatureOptions: databases,
-                        GroupName:      "database",
-                    })
-                </div>
-                <div class="w-1/4">
-                    @FeatureBlock(FeatureBlockProps{
-                        Title:          "Git",
-                        FeatureOptions: git,
-                        GroupName:      "git",
-                    })
+            // First row with Backend, Database, and Git
+            <div class="bg-white shadow sm:rounded-lg">
+                <div class="flex justify-center gap-32 px-4">
+                    <div class="w-1/4">
+                        @FeatureBlock(FeatureBlockProps{
+                            Title:          "Backend",
+                            FeatureOptions: backend,
+                            GroupName:      "backend",
+                        })
+                    </div>
+                    <div class="w-1/4">
+                        @FeatureBlock(FeatureBlockProps{
+                            Title:          "Database",
+                            FeatureOptions: databases,
+                            GroupName:      "database",
+                        })
+                    </div>
+                    <div class="w-1/4">
+                        @FeatureBlock(FeatureBlockProps{
+                            Title:          "Git",
+                            FeatureOptions: git,
+                            GroupName:      "git",
+                        })
+                    </div>
                 </div>
             </div>
-            <div class="max-w-4xl mx-auto px-4">
-                @FeatureBlockCheckbox(FeatureBlockProps{
-                    Title: "Advanced",
-                    FeatureOptions: []FeatureTuple{
-                        {"htmx", "HTMX support using Templ."},
-                        {"githubaction", "CI/CD workflow setup using Github Actions."},
-                        {"websocket", "Adds a Websocket endpoint."},
-                        {"tailwind", "Adds Tailwind config and allows for using the Tailwind CLI to compile css based on classes used."},
-                    },
-                    GroupName: "advancedOptions",
-                })
+
+            // Second row with Frontend and Frontend Advanced
+            <div class="bg-white shadow sm:rounded-lg">
+                <div class="flex justify-center gap-32 px-4">
+                    <div class="w-1/4">
+                        @FeatureBlock(FeatureBlockProps{
+                            Title:          "Frontend",
+                            FeatureOptions: frontend,
+                            GroupName:      "frontend",
+                        })
+                    </div>
+                    <div class="w-1/4">
+                        @FeatureBlockCheckbox(FeatureBlockProps{
+                            Title: "Frontend Advanced",
+                            FeatureOptions: frontendAdvanced,
+                            GroupName: "frontedAdvancedOptions",
+                        })
+                    </div>
+                </div>
+            </div>
+
+            // Third row with Advanced
+            <div class="bg-white shadow sm:rounded-lg">
+                <div class="flex justify-center px-4">
+                    <div class="w-1/4">
+                        @FeatureBlockCheckbox(FeatureBlockProps{
+                            Title: "Advanced",
+                            FeatureOptions: advanced,
+                            GroupName: "advancedOptions",
+                        })
+                    </div>
+                </div>
             </div>
         </div>
     </form>
