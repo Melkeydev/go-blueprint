@@ -3,6 +3,7 @@ Tailwind is closely coupled with the advanced HTMX flag, and HTMX will be automa
 We do not introduce outside dependencies automatically, and you need compile output.css (file is empty by default) with the Tailwind CLI tool.
 
 The project tree would look like this:
+
 ```bash
 / (Root)
 ├── cmd/
@@ -30,8 +31,7 @@ The project tree would look like this:
 ├── go.mod
 ├── go.sum
 ├── Makefile
-├── README.md
-└── tailwind.config.js
+└── README.md
 ```
 
 ## Standalone Tailwind CLI
@@ -41,6 +41,7 @@ The The idea is to avoid using Node.js and npm to build output.css.
 The Makefile will have entries for downloading and compiling CSS. It will automatically detect the OS and download the latest release from the [official repository](https://github.com/tailwindlabs/tailwindcss/releases).
 
 ## Linux Makefile Example
+
 ```bash
 all: build
 templ-install:
@@ -75,5 +76,3 @@ By default, simple CSS examples are included in the codebase.
 Update base.templ and hello.templ, then rerun templ generate to see the changes at the `localhost:PORT/web` endpoint.
 
 ![Tailwind](../public/tailwind.png)
-
-
