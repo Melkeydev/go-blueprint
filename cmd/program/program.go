@@ -421,18 +421,6 @@ func (p *Project) CreateMainFile() error {
 		// select htmx option automatically since tailwind is selected
 		p.AdvancedOptions[string(flags.Htmx)] = true
 
-		tailwindConfigFile, err := os.Create(fmt.Sprintf("%s/tailwind.config.js", projectPath))
-		if err != nil {
-			return err
-		}
-		defer tailwindConfigFile.Close()
-
-		tailwindConfigTemplate := advanced.TailwindConfigTemplate()
-		err = os.WriteFile(fmt.Sprintf("%s/tailwind.config.js", projectPath), tailwindConfigTemplate, 0o644)
-		if err != nil {
-			return err
-		}
-
 		err = os.MkdirAll(fmt.Sprintf("%s/%s/assets/css", projectPath, cmdWebPath), 0o755)
 		if err != nil {
 			return err
@@ -891,7 +879,7 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 		cmd := exec.Command("npm", "install",
 			"--prefer-offline",
 			"--no-fund",
-			"tailwindcss", "postcss", "autoprefixer")
+			"tailwindcss")
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
@@ -904,12 +892,6 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
 			return fmt.Errorf("failed to initialize Tailwind: %w", err)
-		}
-
-		// use the tailwind config file
-		err = os.WriteFile("tailwind.config.js", advanced.ReactTailwindConfigTemplate(), 0644)
-		if err != nil {
-			return fmt.Errorf("failed to write tailwind config: %w", err)
 		}
 
 		srcDir := filepath.Join(frontendPath, "src")
