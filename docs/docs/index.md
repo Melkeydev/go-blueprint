@@ -2,10 +2,10 @@
 hide:
   - toc
 ---
+
 ## Go Blueprint - Ultimate Golang Blueprint Library
 
 ![logo](./public/logo.png)
-
 
 Powerful CLI tool designed to streamline the process of creating Go projects with a robust and standardized structure. Not only does Go Blueprint facilitate project initialization, but it also offers seamless integration with popular Go frameworks, allowing you to focus on your application's code from the very beginning.
 
@@ -87,7 +87,6 @@ Here's an overview of the project structure created by Go Blueprint when all opt
 ├── .goreleaser.yml               # Configuration file for GoReleaser, a tool for building and releasing binaries.
 ├── go.sum                        # Go module file containing checksums for dependencies.
 ├── Makefile                      # Makefile for defining and running commands.
-├── tailwind.config.js            # Tailwind CSS configuration file for HTMX.
 └── README.md                     # Project's README file containing essential information about the project.
 
 ```
