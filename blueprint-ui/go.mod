@@ -1,4 +1,4 @@
-module bluepront-ui
+module blueprint-ui
 
 go 1.23
 

@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"time"
 
-	"bluepront-ui/internal/server"
+	"blueprint-ui/internal/server"
 )
 
 func gracefulShutdown(apiServer *http.Server, done chan bool) {
