@@ -67,12 +67,12 @@ templ FolderStructure(options OptionsStruct, commandStr string) {
 								<p class="inline">workflows</p>
 								<ul class="ml-4 border-l border-gray-200 pl-2 space-y-1">
 									<li>
-										@icons.GenericIcon()
-										<p class="inline">go-test.yml</p>
+										@icons.YamlIcon()
+										<p class="inline ml-2">go-test.yml</p>
 									</li>
 									<li>
-										@icons.GenericIcon()
-										<p class="inline">release.yml</p>
+										@icons.YamlIcon()
+										<p class="inline ml-2">release.yml</p>
 									</li>
 								</ul>
 							</li>
@@ -88,12 +88,12 @@ templ FolderStructure(options OptionsStruct, commandStr string) {
 							<p class="inline ml-2">api</p>
 							<ul class="ml-4 border-l border-gray-200 pl-2 space-y-1">
 								<li>
-									@icons.GenericIcon()
+									@icons.GolangIcon()
 									<p class="inline ml-2">main.go</p>
 								</li>
 							</ul>
 						</li>
-						if contains(options.AdvancedOptions, "htmx") {
+						if options.SelectFrontend == "htmx" {
 							<li>
 								@icons.FolderIcon()
 								<p class="inline ml-2">web</p>
@@ -123,26 +123,26 @@ templ FolderStructure(options OptionsStruct, commandStr string) {
 												<p class="inline ml-2">js</p>
 												<ul class="ml-4 border-l border-gray-200 pl-2 space-y-1">
 													<li>
-														@icons.GenericIcon()
+														@icons.JavaScriptIcon()
 														<p class="inline ml-2">htmx.min.js</p>
 													</li>
 												</ul>
 											</li>
 										</ul>
 										<li>
-											@icons.GenericIcon()
+											@icons.TemplIcon()
 											<p class="inline ml-2">base.templ</p>
 										</li>
 										<li>
-											@icons.GenericIcon()
+											@icons.GolangIcon()
 											<p class="inline ml-2">efs.go</p>
 										</li>
 										<li>
-											@icons.GenericIcon()
+											@icons.GolangIcon()
 											<p class="inline ml-2">hello.go</p>
 										</li>
 										<li>
-											@icons.GenericIcon()
+											@icons.TemplIcon()
 											<p class="inline ml-2">hello.templ</p>
 										</li>
 									</li>
@@ -161,8 +161,12 @@ templ FolderStructure(options OptionsStruct, commandStr string) {
 								<p class="inline">database</p>
 								<ul class="ml-4 border-l border-gray-200 pl-2 space-y-1">
 									<li>
-										@icons.GenericIcon()
-										<p class="inline">database.go</p>
+										@icons.GolangIcon()
+										<p class="inline ml-2">database.go</p>
+									</li>
+									<li>
+										@icons.GolangIcon()
+										<p class="inline ml-2">database_test.go</p>
 									</li>
 								</ul>
 							</li>
@@ -171,59 +175,53 @@ templ FolderStructure(options OptionsStruct, commandStr string) {
 					<ul class="ml-4 border-l border-gray-200 pl-2 space-y-1">
 						<li>
 							@icons.FolderIcon()
-							<p class="inline">server</p>
+							<p class="inline ml-2">server</p>
 							<ul class="ml-4 border-l border-gray-200 pl-2 space-y-1">
 								<li>
-									@icons.GenericIcon()
-									<p class="inline">routes.go</p>
+									@icons.GolangIcon()
+									<p class="inline ml-2">routes.go</p>
 								</li>
 								<li>
-									@icons.GenericIcon()
-									<p class="inline">server.go</p>
+									@icons.GolangIcon()
+									<p class="inline ml-2">routes_test.go</p>
+								</li>
+								<li>
+									@icons.GolangIcon()
+									<p class="inline ml-2">server.go</p>
 								</li>
 							</ul>
 						</li>
 					</ul>
 				</li>
 				<li>
-					@icons.FolderIcon()
-					<p class="inline">tests</p>
-					<ul class="ml-4 border-l border-gray-200 pl-2 space-y-1">
-						<li>
-							@icons.GenericIcon()
-							handler_test.go
-						</li>
-					</ul>
-				</li>
-				<li>
-					@icons.GenericIcon()
-					<p class="inline">go.mod</p>
+					@icons.GolangIcon()
+					<p class="inline ml-2">go.mod</p>
 				</li>
 				if contains(options.AdvancedOptions, "githubaction") {
 					<li>
-						@icons.GenericIcon()
-						<p class="inline">goreleaser.yml</p>
+						@icons.YamlIcon()
+						<p class="inline ml-2">goreleaser.yml</p>
 					</li>
 				}
 				<li>
-					@icons.GenericIcon()
-					<p class="inline">go.sum</p>
+					@icons.GolangIcon()
+					<p class="inline ml-2">go.sum</p>
 				</li>
 				<li>
-					@icons.GenericIcon()
-					<p class="inline">.env</p>
+					@icons.EnvIcon()
+					<p class="inline ml-2">.env</p>
 				</li>
 				<li>
-					@icons.GenericIcon()
-					<p class="inline">air.toml</p>
+					@icons.TomlIcon()
+					<p class="inline ml-2">air.toml</p>
 				</li>
 				<li>
-					@icons.GenericIcon()
-					<p class="inline">.gitignore</p>
+					@icons.GitIcon()
+					<p class="inline ml-2">.gitignore</p>
 				</li>
 				<li>
-					@icons.GenericIcon()
-					<p class="inline">Makefile</p>
+					@icons.MakefileIcon()
+					<p class="inline ml-2">Makefile</p>
 				</li>
 				<li>
 					<i class="fa-brands fa-markdown mr-2"></i>
@@ -235,9 +233,9 @@ templ FolderStructure(options OptionsStruct, commandStr string) {
 						<p class="inline">docker-compose.yaml</p>
 					</li>
 				}
-				if contains(options.AdvancedOptions, "tailwind") {
+				if contains(options.AdvancedFrontend, "tailwind") {
 					<li>
-						@icons.GenericIcon()
+						@icons.TailwindIcon()
 						<p class="inline">tailwind.config.js</p>
 					</li>
 				}
