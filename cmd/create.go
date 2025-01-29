@@ -224,37 +224,6 @@ var createCmd = &cobra.Command{
 			}
 		}
 
-		if flagAdvanced {
-
-			featureFlags := cmd.Flag("feature").Value.String()
-
-			if featureFlags != "" {
-				featuresFlagValues := strings.Split(featureFlags, ",")
-				for _, key := range featuresFlagValues {
-					project.AdvancedOptions[key] = true
-				}
-			} else {
-				isInteractive = true
-				step := steps.Steps["advanced"]
-				tprogram = tea.NewProgram((multiSelect.InitialModelMultiSelect(step.Options, options.Advanced, step.Headers, project)))
-				if _, err := tprogram.Run(); err != nil {
-					cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
-				}
-				project.ExitCLI(tprogram)
-				for key, opt := range options.Advanced.Choices {
-					project.AdvancedOptions[strings.ToLower(key)] = opt
-					err := cmd.Flag("feature").Value.Set(strings.ToLower(key))
-					if err != nil {
-						log.Fatal("failed to set the feature flag value", err)
-					}
-				}
-				if err != nil {
-					log.Fatal(err)
-				}
-			}
-
-		}
-
 		if flagFrontend {
 
 			if project.FrontendFramework == "" {
@@ -293,6 +262,37 @@ var createCmd = &cobra.Command{
 					err := cmd.Flag("frontend-advanced").Value.Set(strings.ToLower(key))
 					if err != nil {
 						log.Fatal("failed to set the advanced fronted features flag value", err)
+					}
+				}
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+
+		}
+
+		if flagAdvanced {
+
+			featureFlags := cmd.Flag("feature").Value.String()
+
+			if featureFlags != "" {
+				featuresFlagValues := strings.Split(featureFlags, ",")
+				for _, key := range featuresFlagValues {
+					project.AdvancedOptions[key] = true
+				}
+			} else {
+				isInteractive = true
+				step := steps.Steps["advanced"]
+				tprogram = tea.NewProgram((multiSelect.InitialModelMultiSelect(step.Options, options.Advanced, step.Headers, project)))
+				if _, err := tprogram.Run(); err != nil {
+					cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
+				}
+				project.ExitCLI(tprogram)
+				for key, opt := range options.Advanced.Choices {
+					project.AdvancedOptions[strings.ToLower(key)] = opt
+					err := cmd.Flag("feature").Value.Set(strings.ToLower(key))
+					if err != nil {
+						log.Fatal("failed to set the feature flag value", err)
 					}
 				}
 				if err != nil {
