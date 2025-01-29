@@ -879,19 +879,16 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 		cmd := exec.Command("npm", "install",
 			"--prefer-offline",
 			"--no-fund",
-			"tailwindcss")
+			"tailwindcss", "@tailwindcss/vite")
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
 			return fmt.Errorf("failed to install Tailwind: %w", err)
 		}
 
-		fmt.Println("Initializing Tailwind...")
-		cmd = exec.Command("npx", "--prefer-offline", "tailwindcss", "init", "-p")
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		if err := cmd.Run(); err != nil {
-			return fmt.Errorf("failed to initialize Tailwind: %w", err)
+		// Create the vite + react + Tailwind v4 configuration
+		if err := os.WriteFile(filepath.Join(frontendPath, "vite.config.ts"), advanced.ViteTailwindConfigFile(), 0644); err != nil {
+			return fmt.Errorf("failed to write vite.config.ts: %w", err)
 		}
 
 		srcDir := filepath.Join(frontendPath, "src")
