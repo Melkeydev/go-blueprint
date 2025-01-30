@@ -140,6 +140,16 @@ var createCmd = &cobra.Command{
 		steps := steps.InitSteps(flagBackend, flagDBDriver, flagFrontendFremwork, flagGit)
 		fmt.Printf("%s\n", logoStyle.Render(logo))
 
+		// Frontend option steps:
+		flagFrontend, err := cmd.Flags().GetBool("frontend")
+		if err != nil {
+			log.Fatal("failed to retrieve frontend flag")
+		}
+
+		if flagFrontend {
+			fmt.Println(tipMsgStyle.Render("*** You are in Frontend mode ***\n\n"))
+		}
+
 		// Advanced option steps:
 		flagAdvanced, err := cmd.Flags().GetBool("advanced")
 		if err != nil {
@@ -148,15 +158,6 @@ var createCmd = &cobra.Command{
 
 		if flagAdvanced {
 			fmt.Println(tipMsgStyle.Render("*** You are in advanced mode ***\n\n"))
-		}
-
-		flagFrontend, err := cmd.Flags().GetBool("frontend")
-		if err != nil {
-			log.Fatal("failed to retrieve frontend flag")
-		}
-
-		if flagFrontend {
-			fmt.Println(tipMsgStyle.Render("*** You are in Frontend mode ***\n\n"))
 		}
 
 		if project.ProjectName == "" {
@@ -364,7 +365,7 @@ var createCmd = &cobra.Command{
 			fmt.Println(endingMsgStyle.Render("• cd into frontend\n"))
 			fmt.Println(endingMsgStyle.Render("• npm install\n"))
 			fmt.Println(endingMsgStyle.Render("• npm run dev\n"))
-			fmt.Println(endingMsgStyle.Render("or use make run\n"))
+			fmt.Println(endingMsgStyle.Render("• or use makefile targents\n"))
 		}
 
 		if options.FrontendAdvanced.Choices["Tailwind"] && options.FrontendFramework.Choice == "Htmx" {
