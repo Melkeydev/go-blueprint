@@ -289,10 +289,12 @@ templ FolderStructure(options OptionsStruct, commandStr string) {
 					@icons.GolangIcon()
 					<p class="inline ml-2">database.go</p>
 				    </li>
-				    <li>
-					@icons.GolangIcon()
-					<p class="inline ml-2">database_test.go</p>
-				    </li>
+				    if options.SelectedDB != "sqlite" {
+					<li>
+					    @icons.GolangIcon()
+					    <p class="inline ml-2">database_test.go</p>
+					</li>
+				    }
 				</ul>
 			    </li>
 			</ul>
