@@ -116,7 +116,7 @@ func InitSteps(projectType flags.Backend, databaseType flags.Database, frontendF
 						Desc:  "A utility-first CSS framework",
 					},
 				},
-				Headers: "What frontend framework do you want to use in your Go project?",
+				Headers: "What frontend advanced feature do you want to use in your Go project?",
 			},
 			"advanced": {
 				StepName: "Advanced Features",
