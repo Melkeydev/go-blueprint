@@ -54,10 +54,6 @@ func InitSteps(projectType flags.Backend, databaseType flags.Database, frontendF
 						Desc:  "Package gorilla/mux implements a request router and dispatcher for matching incoming requests to their respective handler",
 					},
 					{
-						Title: "HttpRouter",
-						Desc:  "HttpRouter is a lightweight high performance HTTP request router for Go",
-					},
-					{
 						Title: "Echo",
 						Desc:  "High performance, extensible, minimalist Go web framework",
 					},

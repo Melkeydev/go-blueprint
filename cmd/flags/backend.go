@@ -15,12 +15,11 @@ const (
 	Gin             Backend = "gin"
 	Fiber           Backend = "fiber"
 	GorillaMux      Backend = "gorilla/mux"
-	HttpRouter      Backend = "httprouter"
 	StandardLibrary Backend = "standard-library"
 	Echo            Backend = "echo"
 )
 
-var AllowedBackedTypes = []string{string(Chi), string(Gin), string(Fiber), string(GorillaMux), string(HttpRouter), string(StandardLibrary), string(Echo)}
+var AllowedBackedTypes = []string{string(Chi), string(Gin), string(Fiber), string(GorillaMux), string(StandardLibrary), string(Echo)}
 
 func (f Backend) String() string {
 	return string(f)

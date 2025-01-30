@@ -99,7 +99,6 @@ type WorkflowTemplater interface {
 var (
 	chiPackage     = []string{"github.com/go-chi/chi/v5"}
 	gorillaPackage = []string{"github.com/gorilla/mux"}
-	routerPackage  = []string{"github.com/julienschmidt/httprouter"}
 	ginPackage     = []string{"github.com/gin-gonic/gin"}
 	fiberPackage   = []string{"github.com/gofiber/fiber/v2"}
 	echoPackage    = []string{"github.com/labstack/echo/v4", "github.com/labstack/echo/v4/middleware"}
@@ -163,11 +162,6 @@ func (p *Project) createBackendMap() {
 	p.BackendMap[flags.GorillaMux] = Backend{
 		packageName: gorillaPackage,
 		templater:   backend.GorillaTemplates{},
-	}
-
-	p.BackendMap[flags.HttpRouter] = Backend{
-		packageName: routerPackage,
-		templater:   backend.RouterTemplates{},
 	}
 
 	p.BackendMap[flags.Echo] = Backend{
