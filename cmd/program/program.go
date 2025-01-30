@@ -622,20 +622,6 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	// Create gitignore
-	gitignoreFile, err := os.Create(filepath.Join(projectPath, ".gitignore"))
-	if err != nil {
-		return err
-	}
-	defer gitignoreFile.Close()
-
-	// inject gitignore template
-	gitignoreTemplate := template.Must(template.New(".gitignore").Parse(string(backend.GitIgnoreTemplate())))
-	err = gitignoreTemplate.Execute(gitignoreFile, p)
-	if err != nil {
-		return err
-	}
-
 	// Create .air.toml file
 	airTomlFile, err := os.Create(filepath.Join(projectPath, ".air.toml"))
 	if err != nil {
@@ -692,6 +678,20 @@ func (p *Project) CreateMainFile() error {
 		err = utils.ExecuteCmd("git", []string{"add", "."}, projectPath)
 		if err != nil {
 			log.Printf("Error adding files to git repo: %v", err)
+			return err
+		}
+
+		// Create gitignore
+		gitignoreFile, err := os.Create(filepath.Join(projectPath, ".gitignore"))
+		if err != nil {
+			return err
+		}
+		defer gitignoreFile.Close()
+
+		// inject gitignore template
+		gitignoreTemplate := template.Must(template.New(".gitignore").Parse(string(backend.GitIgnoreTemplate())))
+		err = gitignoreTemplate.Execute(gitignoreFile, p)
+		if err != nil {
 			return err
 		}
 
