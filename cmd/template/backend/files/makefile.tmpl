@@ -1,7 +1,6 @@
 # Simple Makefile for a Go project
-
-# Build the application
-all: build test
+# Build, test and run the application
+all: build test run
 
 {{- if (eq .FrontendFramework "htmx")}}
 {{- if .OSCheck.UnixBased }}

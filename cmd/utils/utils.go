@@ -85,7 +85,7 @@ func NonInteractiveCommand(use string, flagSet *pflag.FlagSet) string {
 		})
 	}
 
-	// git flag last
+	// git flag
 	flagSet.VisitAll(func(flag *pflag.Flag) {
 		if flag.Name == "git" && flag.Value.String() != "" {
 			nonInteractiveCommand = fmt.Sprintf("%s %s %s", nonInteractiveCommand,
