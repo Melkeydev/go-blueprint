@@ -113,56 +113,6 @@ The `Sample Output` is dynamic and unstructured since it depends on the raw map.
 }
 ```
 
-- `XML serialization/deserialization`
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<redis_health>
-  <status>up</status>
-  <message>Redis connection pool utilization is high</message>
-  <stats>
-    <version>7.0.15</version>
-    <mode>standalone</mode>
-    <connected_clients>10</connected_clients>
-    <memory>
-      <used>
-        <mb>22.38</mb>
-        <gb>0.02</gb>
-      </used>
-      <peak>
-        <mb>46.57</mb>
-        <gb>0.05</gb>
-      </peak>
-      <free>
-        <mb>1130.00</mb>
-        <gb>1.10</gb>
-      </free>
-      <percentage>1.98%</percentage>
-    </memory>
-    <uptime_stats>6 days, 3 hours, 37 minutes, 20 seconds</uptime_stats>
-    <uptime>
-      <day>6</day>
-      <hour>3</hour>
-      <minute>37</minute>
-      <second>20</second>
-    </uptime>
-    <pooling>
-      <figures>
-        <hits>10</hits>
-        <misses>2</misses>
-        <timeouts>0</timeouts>
-        <total>4</total>
-        <stale>9</stale>
-        <idle>5</idle>
-        <active>0</active>
-        <percentage>62.50%</percentage>
-      </figures>
-      <observed_total>26</observed_total>
-    </pooling>
-  </stats>
-</redis_health>
-```
-
 ## Code Implementation
 
 ```go

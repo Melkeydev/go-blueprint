@@ -1,6 +1,6 @@
 This template provides a minimal setup for getting React working with Vite for the frontend and go on the backend. It allows you to easily integrate React with Tailwind CSS and Vite for fast development.
 
-The React advanced flag can be combined with the Tailwind flag for enhanced styling capabilities.
+The React fronted flag can be combined with the Tailwind flag for enhanced styling capabilities.
 
 ## Project Structure
 
@@ -66,10 +66,21 @@ You can extend the `vite.config.ts` to include additional configurations as need
 The make run target will start the Go server in the backend, install frontend dependencies, and run the Vite development server for the frontend.
 
 ```bash
-run:
-	@go run cmd/api/main.go &
-	@npm install --prefix ./frontend
-	@npm run dev --prefix ./frontend
+run: build
+	@echo "Starting server..."
+	@./main & \
+	SERVER_PID=$$!; \
+	sleep 2; \
+	if ps -p $$SERVER_PID > /dev/null; then \
+		echo "Server started successfully"; \
+		cd frontend && \
+		npm install --prefer-offline --no-fund && \
+		npm run dev; \
+		kill $$SERVER_PID; \
+	else \
+		echo "Server failed to start. Check the logs."; \
+		exit 1; \
+	fi
 ```
 
 After running this command, you can verify the connection between the frontend and backend by checking the console. You can also fetch data from the backend to test the integration.
@@ -78,7 +89,7 @@ After running this command, you can verify the connection between the frontend a
 
 ## Dockerfile
 
-Combine React advanced flag with Docker flag to get Docker and docker-compose configuration and run them with:
+Combine React flag with advanced Docker flag to get Docker and docker-compose configuration and run them with:
 
 ```bash
 make docker-run
@@ -217,7 +228,7 @@ The `VITE_PORT` in .env refers `PORT` from .env in project root ( for backend ).
 
 ## Notes
 
-- First time running the project creation with Tailwind can take longer (~10 mins) as npm needs to download and cache all packages
+- The first time running project creation with Tailwind may take longer as npm needs to download and cache all packages.
 
 - Subsequent runs will be faster as they utilize npm's cache, which we enforce during project creation.
 

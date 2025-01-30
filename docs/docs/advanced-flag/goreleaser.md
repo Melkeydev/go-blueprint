@@ -32,7 +32,7 @@ The job outlined in this workflow includes the following steps:
    Fetches the project's codebase from the repository.
 
 2. **Go Setup:**
-   Configures the Go environment with version 1.21.x.
+   Configures the Go environment with version 1.23.x.
 
 3. **Build and Test:**
    Builds the project using `go build` and runs tests across all packages (`./...`) using `go test`. 

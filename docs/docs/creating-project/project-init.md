@@ -15,62 +15,48 @@ This command will interactively guide you through the project setup process, all
 For a non-interactive setup, you can use flags to provide the necessary information during project creation. Here's an example:
 
 ```
-go-blueprint create --name my-project --backend gin --driver postgres --git commit
+go-blueprint create -n my-project -b chi -d postgres -g commit
 ```
 
 In this example:
 
-- `--name`: Specifies the name of the project (replace "my-project" with your desired project name).
-- `--backend`: Specifies the Go backend to be used (e.g., "gin").
-- `--driver`: Specifies the database driver to be integrated (e.g., "postgres").
-- `--git`: Specifies the git configuration option of the project (e.g., "commit").
+- `-n` or  `--name`: Specifies the name of the project (replace "my-project" with your desired project name).
+- `-b` or `--backend`: Specifies the Go backend to be used (e.g., "gin").
+- `-d` or `--driver`: Specifies the database driver to be integrated (e.g., "postgres").
+- `-g` or `--git`: Specifies the git configuration option of the project (e.g., "commit").
 
 Customize the flags according to your project requirements.
 
+## Frontend Frameworks and Features
+
+To include frontend frameworks and features in your project, you can use the `-f` flag to trigger the prompt:
+
+```bash
+go-blueprint create -f
+```
+
+![FrontendFlag](../public/blueprint_frontend.png)
+
 ## Advanced Flag
 
-By including the `--advanced` flag, users can choose one or all of the advanced features, HTMX, GitHub Actions for CI/CD, Websocket, Docker and TailwindCSS support, during the project creation process. The flag enhances the simplicity of Blueprint while offering flexibility for users who require additional functionality.
+By including the `-a` or `--advanced` flag, users can choose one or all of the advanced features, GitHub Actions for CI/CD, Websocket and Docker, during the project creation process. The flag enhances the simplicity of Blueprint while offering flexibility for users who require additional functionality.
 
 ```bash
-go-blueprint create --advanced
+go-blueprint create -a
 ```
-
-To recreate the project using the same configuration semi-interactively, use the following command:
-```bash
-go-blueprint create --name my-project --backend chi --driver mysql --git commit --advanced
-```
-This approach opens interactive mode only for advanced features, which allow you to choose the one or combination of available features.
 
 ![AdvancedFlag](../public/blueprint_advanced.png)
 
-## Non-Interactive Setup
+## Combining Flags
 
-Advanced features can be enabled using the `--feature` flag along with the `--advanced` flag:
+Frontend and Advanced features can be combined with the `-f` and `-a` flags
 
-HTMX:
 ```bash
-go-blueprint create --advanced --feature htmx
+go-blueprint create -af
 ```
 
-CI/CD workflow:
-```bash
-go-blueprint create --advanced --feature githubaction
-```
+or
 
-Websocket:
 ```bash
-go-blueprint create --advanced --feature websocket
-```
-TailwindCSS:
-```bash
-go-blueprint create --advanced --feature tailwind
-```
-Docker:
-```bash
-go-blueprint create --advanced --feature docker
-```
-
-Or all features at once:
-```bash
-go-blueprint create --name my-project --backend chi --driver mysql --git commit --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --feature docker
+go-blueprint create -n my_project -b fiber -d mysql -f --frontend-framework htmx --frontend-advanced tailwind -a --feature docker --feature githubaction -g commit
 ```

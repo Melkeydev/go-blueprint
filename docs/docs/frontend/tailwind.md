@@ -1,6 +1,6 @@
-Tailwind is closely coupled with the advanced HTMX flag, and HTMX will be automatically used if you select Tailwind in your project.
+Tailwind is closely coupled with the fronted HTMX and React flags.
 
-We do not introduce outside dependencies automatically, and you need compile output.css (file is empty by default) with the Tailwind CLI tool.
+For HTMX we do not introduce outside dependencies automatically, and you need compile output.css (file is empty by default) with the Tailwind CLI tool.
 
 The project tree would look like this:
 ```bash
