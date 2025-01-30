@@ -56,6 +56,12 @@ templ FolderStructure(options OptionsStruct, commandStr string) {
 		</p>
 	    </div>
 	    <ul class="ml-4 space-y-1">
+		if options.SelectGit != "skip" {
+		    <li>
+			@icons.FolderIcon()
+			<p class="inline">.git</p>
+		    </li>
+		}
 		if contains(options.AdvancedOptions, "githubaction") {
 		    <li>
 			@icons.FolderIcon()
@@ -343,10 +349,12 @@ templ FolderStructure(options OptionsStruct, commandStr string) {
 		    @icons.EnvIcon()
 		    <p class="inline ml-2">.env</p>
 		</li>
-		<li>
-		    @icons.GitIcon()
-		    <p class="inline ml-2">.gitignore</p>
-		</li>
+		if options.SelectGit != "skip" {
+		    <li>
+			@icons.GitIcon()
+			<p class="inline ml-2">.gitignore</p>
+		    </li>
+		}
 		<li>
 		    @icons.MarkdownIcon()
 		    <p class="inline ml-2">Readme.md</p>
