@@ -132,14 +132,14 @@ Choose from a variety of supported database drivers:
   Frontend Frameworks
 </h2>
 
+Frontend frameworks and features can be added to your project using the `-f` flag. This will trigger a prompt to select the desired options.
+
 - [HTMX](https://htmx.org/) support using [Templ](https://templ.guide/)
 - [React](https://react.dev/) frontend written in TypeScript, including an example fetch request to the backend
 
-Use  `--frontend-advanced` flag when running the `-f` command to get access to the aditional features:
+Aditional features is a multi-option prompt; one or more features can be used at the same time (Currently, Tailwind is the only one that is integrated).
 
 - [Tailwind](https://tailwindcss.com/) css framework
-
-This is a multi-option prompt; one or more features can be used at the same time (Currently, Tailwind is the only one that is integrated).
 
 <a id="advanced-features"></a>
 
