@@ -8,8 +8,6 @@ type OptionsStruct struct {
 	SelectedBackend   string
 	SelectedDB        string
 	SelectGit         string
-	SelectFrontend    string
-	AdvancedFrontend  []string
 	AdvancedOptions   []string
 }
 
@@ -98,12 +96,12 @@ templ FolderStructure(options OptionsStruct, commandStr string) {
 				</li>
 			    </ul>
 			</li>
-			if options.SelectFrontend == "htmx" {
+			if contains(options.AdvancedOptions, "htmx") {
 			    <li>
 				@icons.FolderIcon()
 				<p class="inline ml-2">web</p>
 				<ul class="ml-4 border-l border-gray-200 pl-2 space-y-1">
-				    if contains(options.AdvancedFrontend, "tailwind") {
+				    if contains(options.AdvancedOptions, "tailwind") {
 					<li>
 					    @icons.FolderIcon()
 					    <p class="inline ml-2">styles</p>
@@ -119,7 +117,7 @@ templ FolderStructure(options OptionsStruct, commandStr string) {
 					@icons.FolderIcon()
 					<p class="inline ml-2">assets</p>
 					<ul class="ml-4 border-l border-gray-200 pl-2 space-y-1">
-					    if contains(options.AdvancedFrontend, "tailwind") {
+					    if contains(options.AdvancedOptions, "tailwind") {
 						<li>
 						    @icons.FolderIcon()
 						    <p class="inline ml-2">css</p>
@@ -172,7 +170,7 @@ templ FolderStructure(options OptionsStruct, commandStr string) {
 			}
 		    </ul>
 		</li>
-		if options.SelectFrontend == "react" {
+		if contains(options.AdvancedOptions, "react") {
 		    <li>
 			@icons.FolderIcon()
 			<p class="inline ml-2">frontend</p>
@@ -201,7 +199,7 @@ templ FolderStructure(options OptionsStruct, commandStr string) {
 					    </li>
 					</ul>
 				    </li>
-				    if !contains(options.AdvancedFrontend, "tailwind") {
+				    if !contains(options.AdvancedOptions, "tailwind") {
 					<li>
 					    @icons.CSSIcon()
 					    <p class="inline ml-2">App.css</p>
@@ -237,7 +235,7 @@ templ FolderStructure(options OptionsStruct, commandStr string) {
 				@icons.JSONIcon()
 				<p class="inline ml-2">package.json</p>
 			    </li>
-			    if contains(options.AdvancedFrontend, "tailwind") {
+			    if contains(options.AdvancedOptions, "tailwind") {
 				<li>
 				    @icons.JSONIcon()
 				    <p class="inline ml-2">package-lock.json</p>
@@ -251,7 +249,7 @@ templ FolderStructure(options OptionsStruct, commandStr string) {
 				@icons.MarkdownIcon()
 				<p class="inline ml-2">README.md</p>
 			    </li>
-			    if contains(options.AdvancedFrontend, "tailwind") {
+			    if contains(options.AdvancedOptions, "tailwind") {
 				<li>
 				    @icons.JavaScriptIcon()
 				    <p class="inline ml-2">tailwind.config.js</p>
@@ -367,7 +365,7 @@ templ FolderStructure(options OptionsStruct, commandStr string) {
 		    @icons.GolangIcon()
 		    <p class="inline ml-2">go.sum</p>
 		</li>
-		if options.SelectFrontend == "htmx" {
+		if contains(options.AdvancedOptions, "tailwind") &&  contains(options.AdvancedOptions, "htmx") {
 		<li>
 		    @icons.TailwindIcon()
 		    <p class="inline ml-2">tailwind.config.js</p>

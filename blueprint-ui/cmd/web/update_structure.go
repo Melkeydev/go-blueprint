@@ -21,30 +21,56 @@ func UpdateStructureHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get all advanced options
 	advancedOptions, ok := r.Form["advancedOptions"]
 	if !ok {
-		// Handle the case where no checkbox was checked
 		advancedOptions = []string{}
 	}
 
-	advancedFrontend, ok := r.Form["advancedFrontend"]
+	// Handle mutual exclusivity and dependencies
+	hasReact := false
+	hasTailwind := false
+	hasHtmx := false
+	filteredOptions := []string{}
 
-	if !ok {
-		// Handle the case where no checkbox was checked
-		advancedFrontend = []string{}
+	// First pass to check what we have
+	for _, opt := range advancedOptions {
+		switch opt {
+		case "react":
+			hasReact = true
+		case "htmx":
+			hasHtmx = true
+		case "tailwind":
+			hasTailwind = true
+		}
+	}
+
+	for _, opt := range advancedOptions {
+		// Skip React if HTMX is selected or will be auto-selected
+		if opt == "react" && (hasHtmx || (hasTailwind && !hasReact)) {
+			continue
+		}
+		// Skip HTMX if React is selected
+		if opt == "htmx" && hasReact {
+			continue
+		}
+		filteredOptions = append(filteredOptions, opt)
+	}
+
+	// Auto-add HTMX if Tailwind is selected and React is not
+	if hasTailwind && !hasReact && !hasHtmx {
+		filteredOptions = append(filteredOptions, "htmx")
 	}
 
 	options := components.OptionsStruct{
-		ProjectName:      r.FormValue("projectName"),
-		SelectedBackend:  r.FormValue("backend"),
-		SelectedDB:       r.FormValue("database"),
-		SelectGit:        r.FormValue("git"),
-		SelectFrontend:   r.FormValue("frontend"),
-		AdvancedFrontend: advancedFrontend,
-		AdvancedOptions:  advancedOptions,
+		ProjectName:     r.FormValue("projectName"),
+		SelectedBackend: r.FormValue("backend"),
+		SelectedDB:      r.FormValue("database"),
+		SelectGit:       r.FormValue("git"),
+		AdvancedOptions: filteredOptions,
 	}
-	commandStr := components.GetCommandString(options)
 
+	commandStr := components.GetCommandString(options)
 	err = components.FolderStructure(options, commandStr).Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)

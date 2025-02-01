@@ -23,6 +23,15 @@ templ FeatureBlockCheckbox(props FeatureBlockProps) {
                                 class="mr-2 mt-1"
                                 hx-post="/update_structure"
                                 hx-target="#results"
+                                if feature.Key == "htmx" || feature.Key == "react" {
+                                    data-tech-checkbox={ feature.Key }
+                                }
+                                if feature.Key == "tailwind" {
+                                    onclick="handleTailwindSelection(this)"
+                                }
+                                if feature.Key == "htmx" || feature.Key == "react" {
+                                    onclick="handleTechSelection(this)"
+                                }
                             />
                             { feature.Value }
                         </label>
@@ -31,4 +40,41 @@ templ FeatureBlockCheckbox(props FeatureBlockProps) {
             </div>
         </div>
     </div>
+    <script>
+        function handleTechSelection(checkbox) {
+            if (checkbox.checked) {
+                const techType = checkbox.getAttribute('data-tech-checkbox');
+                const otherTech = techType === 'react' ? 'htmx' : 'react';
+                const otherCheckbox = document.querySelector(`[data-tech-checkbox="${otherTech}"]`);
+                if (otherCheckbox) {
+                    otherCheckbox.checked = false;
+                }
+            }
+        }
+
+        function handleTailwindSelection(checkbox) {
+            if (checkbox.checked) {
+                const reactCheckbox = document.querySelector('[data-tech-checkbox="react"]');
+                const htmxCheckbox = document.querySelector('[data-tech-checkbox="htmx"]');
+                if (reactCheckbox && !reactCheckbox.checked) {
+                    htmxCheckbox.checked = true;
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const reactCheckbox = document.querySelector('[data-tech-checkbox="react"]');
+            if (reactCheckbox) {
+                reactCheckbox.addEventListener('change', function() {
+                    const tailwindCheckbox = document.querySelector('[value="tailwind"]');
+                    const htmxCheckbox = document.querySelector('[data-tech-checkbox="htmx"]');
+                    if (this.checked && tailwindCheckbox && tailwindCheckbox.checked) {
+                        if (htmxCheckbox) {
+                            htmxCheckbox.checked = false;
+                        }
+                    }
+                });
+            }
+        });
+    </script>
 }

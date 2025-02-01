@@ -11,28 +11,20 @@ func GetCommandString(options OptionsStruct) string {
     if projectName == "" {
         projectName = "my_project"
     }
-    command := "go-blueprint create -n " + projectName + " -b " + options.SelectedBackend
+    command := "go-blueprint create --name " + projectName + " --framework " + options.SelectedBackend
     if options.SelectedDB != "none" {
-        command += " -d " + options.SelectedDB
+        command += " --driver " + options.SelectedDB
     } else {
-        command += " -d none"
-    }
-    if options.SelectFrontend != "" {
-        command += " -f --frontend-framework " + options.SelectFrontend
-            if len(options.AdvancedFrontend) > 0 {
-                for _, opt := range options.AdvancedFrontend {
-                    command += " --frontend-advanced " + opt
-            }
-        }
+        command += " --driver none"
     }
     if len(options.AdvancedOptions) > 0 {
-        command += " -a"
+        command += " --advanced"
     }
     for _, opt := range options.AdvancedOptions {
         command += " --feature " + opt
     }
 
-    command += " -g " + options.SelectGit
+    command += " --git " + options.SelectGit
 
     return command
 }
@@ -61,19 +53,13 @@ var git = []FeatureTuple{
     {"skip", "Skip"},
 }
 
-var frontend = []FeatureTuple{
+var advanced = []FeatureTuple{
     {"htmx", "HTMX"},
     {"react", "React"},
-}
-
-var advancedFrontend = []FeatureTuple{
-    {"tailwind", "Tailwind CSS"},
-}
-
-var advanced = []FeatureTuple{
     {"githubaction", "CI/CD Github Actions"},
     {"websocket", "Adds a Websocket endpoint"},
     {"docker", "Docker configuration for go project"},
+    {"tailwind", "Tailwind CSS"},
 }
 
 var options = OptionsStruct{
@@ -132,27 +118,6 @@ templ Form() {
                     </div>
                 </div>
             </div>
-
-            // Frontend and Frontend Advanced
-            <div class="bg-white shadow sm:rounded-lg">
-                <div class="flex justify-center gap-32 px-4">
-                    <div class="w-1/4">
-                        @FeatureBlock(FeatureBlockProps{
-                            Title:          "Frontend",
-                            FeatureOptions: frontend,
-                            GroupName:      "frontend",
-                        })
-                    </div>
-                    <div class="w-1/4">
-                        @FeatureBlockCheckbox(FeatureBlockProps{
-                            Title: "Frontend Advanced",
-                            FeatureOptions: advancedFrontend,
-                            GroupName: "advancedFrontend",
-                        })
-                    </div>
-                </div>
-            </div>
-
             // Advanced
             <div class="bg-white shadow sm:rounded-lg">
                 <div class="flex justify-center px-4">

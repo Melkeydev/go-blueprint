@@ -21,7 +21,7 @@ templ FeatureBlock(props FeatureBlockProps) {
                                 name={ props.GroupName }
                                 value={ feature.Key }
                                 class="mr-2"
-                                checked?={ props.GroupName != "frontend" && i == 0 }
+                                checked?={ i == 0 }
                                 hx-post="/update_structure"
                                 hx-target="#results"
                             />
