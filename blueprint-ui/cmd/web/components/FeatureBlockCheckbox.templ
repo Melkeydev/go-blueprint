@@ -43,20 +43,29 @@ templ FeatureBlockCheckbox(props FeatureBlockProps) {
     <script>
         function handleTechSelection(checkbox) {
             if (checkbox.checked) {
+                // When a tech (HTMX/React) is selected, uncheck the other one
                 const techType = checkbox.getAttribute('data-tech-checkbox');
                 const otherTech = techType === 'react' ? 'htmx' : 'react';
                 const otherCheckbox = document.querySelector(`[data-tech-checkbox="${otherTech}"]`);
                 if (otherCheckbox) {
                     otherCheckbox.checked = false;
                 }
+            } else {
+                // Prevent unchecking HTMX if Tailwind is selected
+                const tailwindCheckbox = document.querySelector('[value="tailwind"]');
+                if (tailwindCheckbox && tailwindCheckbox.checked && checkbox.getAttribute('data-tech-checkbox') === 'htmx') {
+                    checkbox.checked = true;
+                    return;
+                }
             }
         }
 
         function handleTailwindSelection(checkbox) {
+            const htmxCheckbox = document.querySelector('[data-tech-checkbox="htmx"]');
+            const reactCheckbox = document.querySelector('[data-tech-checkbox="react"]');
             if (checkbox.checked) {
-                const reactCheckbox = document.querySelector('[data-tech-checkbox="react"]');
-                const htmxCheckbox = document.querySelector('[data-tech-checkbox="htmx"]');
-                if (reactCheckbox && !reactCheckbox.checked) {
+                // When Tailwind is selected
+                if (reactCheckbox && !reactCheckbox.checked && htmxCheckbox) {
                     htmxCheckbox.checked = true;
                 }
             }
