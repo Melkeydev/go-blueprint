@@ -32,17 +32,6 @@ templ FolderStructure(options OptionsStruct, commandStr string) {
 	    </code>
 	</pre>
     </div>
-    <script>
-	let text = document.getElementById('command').innerHTML;
-	const copyContent = async () => {
-	    try {
-		await navigator.clipboard.writeText(text);
-		console.log('Content copied to clipboard');
-	    } catch (err) {
-		console.error('Failed to copy: ', err);
-	    }
-	}
-    </script>
     <div class="bg-white mt-2 shadow sm:rounded-lg">
 	<div class="px-4 py-5 sm:p-6">
 	    <div class="flex items-center">
