@@ -41,6 +41,7 @@ func UpdateStructureHandler(w http.ResponseWriter, r *http.Request) {
 		SelectFrontend:   r.FormValue("frontend"),
 		AdvancedFrontend: advancedFrontend,
 		AdvancedOptions:  advancedOptions,
+		LongFlags:        r.FormValue("longFlags") == "on",
 	}
 
 	commandStr := components.GetCommandString(options)

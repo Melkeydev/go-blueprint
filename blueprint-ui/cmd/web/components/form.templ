@@ -1,5 +1,9 @@
 package components
-import "strings"
+
+import (
+    "strings"
+    "fmt"
+)
 
 type FeatureTuple struct {
     Key   string
@@ -7,33 +11,61 @@ type FeatureTuple struct {
 }
 
 func GetCommandString(options OptionsStruct) string {
+    var command string
+
     projectName := strings.ReplaceAll(options.ProjectName, " ", "_")
     if projectName == "" {
-        projectName = "my_project"
+        projectName = "myproject"
     }
-    command := "go-blueprint create -n " + projectName + " -b " + options.SelectedBackend
-    if options.SelectedDB != "none" {
-        command += " -d " + options.SelectedDB
-    } else {
-        command += " -d none"
-    }
-    if options.SelectFrontend != "" {
-        command += " -f --frontend-framework " + options.SelectFrontend
+
+    if options.LongFlags {
+        command = fmt.Sprintf("go-blueprint create --name %s --backend--framework %s", projectName, options.SelectedBackend)
+        if options.SelectedDB != "none" {
+            command += fmt.Sprintf(" --database %s", options.SelectedDB)
+        } else {
+            command += " --database none"
+        }
+        if options.SelectFrontend != "" {
+            command += " --frontend"
+            command += fmt.Sprintf(" --frontend-framework %s", options.SelectFrontend)
             if len(options.AdvancedFrontend) > 0 {
                 for _, opt := range options.AdvancedFrontend {
-                    command += " --frontend-advanced " + opt
+                    command += fmt.Sprintf(" --frontend-advanced %s", opt)
+                }
             }
         }
+        if len(options.AdvancedOptions) > 0 {
+            command += " --advanced"
+            for _, opt := range options.AdvancedOptions {
+                command += fmt.Sprintf(" --feature %s", opt)
+            }
+        }
+        command += fmt.Sprintf(" --git %s", options.SelectGit)
+    } else {
+        // short format
+        command = fmt.Sprintf("go-blueprint create -n %s -b %s", projectName, options.SelectedBackend)
+        if options.SelectedDB != "none" {
+            command += fmt.Sprintf(" -d %s", options.SelectedDB)
+        } else {
+            command += " -d none"
+        }
+        if options.SelectFrontend != "" {
+            command += " -f"
+            command += fmt.Sprintf(" --frontend-framework %s", options.SelectFrontend)
+            if len(options.AdvancedFrontend) > 0 {
+                for _, opt := range options.AdvancedFrontend {
+                    command += fmt.Sprintf(" --frontend-advanced %s", opt)
+                }
+            }
+        }
+        if len(options.AdvancedOptions) > 0 {
+            command += " -a"
+            for _, opt := range options.AdvancedOptions {
+                command += fmt.Sprintf(" --feature %s", opt)
+            }
+        }
+        command += fmt.Sprintf(" -g %s", options.SelectGit)
     }
-    if len(options.AdvancedOptions) > 0 {
-        command += " -a"
-    }
-    for _, opt := range options.AdvancedOptions {
-        command += " --feature " + opt
-    }
-
-    command += " -g " + options.SelectGit
-
     return command
 }
 
@@ -84,6 +116,20 @@ var options = OptionsStruct{
 
 templ Form() {
     <form class="space-y-2" hx-boost="true" action="/update_structure" method="submit" hx-target="#results" >
+        <div class="flex justify-end mb-4">
+            <label class="inline-flex items-center cursor-pointer">
+                <input
+                    type="checkbox"
+                    id="longFlags"
+                    name="longFlags"
+                    class="sr-only peer"
+                    hx-post="/update_structure"
+                    hx-target="#results"
+                />
+                <div class="relative w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-200 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                <span class="ms-3 text-sm font-medium text-gray-900">Long CLI Flags</span>
+            </label>
+        </div>
         <div class="mt-4">
             <label
                 for="projectName"
