@@ -15,6 +15,8 @@ func contains(slice []string, value string) bool {
 }
 
 func UpdateStructureHandler(w http.ResponseWriter, r *http.Request) {
+	// Set HTMX response headers
+	w.Header().Set("HX-Trigger", "updateComplete")
 	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
@@ -23,14 +25,11 @@ func UpdateStructureHandler(w http.ResponseWriter, r *http.Request) {
 
 	advancedOptions, ok := r.Form["advancedOptions"]
 	if !ok {
-		// Handle the case where no checkbox was checked
 		advancedOptions = []string{}
 	}
 
 	advancedFrontend, ok := r.Form["advancedFrontend"]
-
 	if !ok {
-		// Handle the case where no checkbox was checked
 		advancedFrontend = []string{}
 	}
 
@@ -43,8 +42,8 @@ func UpdateStructureHandler(w http.ResponseWriter, r *http.Request) {
 		AdvancedFrontend: advancedFrontend,
 		AdvancedOptions:  advancedOptions,
 	}
-	commandStr := components.GetCommandString(options)
 
+	commandStr := components.GetCommandString(options)
 	err = components.FolderStructure(options, commandStr).Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
