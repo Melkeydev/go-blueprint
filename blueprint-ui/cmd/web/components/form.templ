@@ -1,4 +1,5 @@
 package components
+
 import "strings"
 
 type FeatureTuple struct {
@@ -7,24 +8,42 @@ type FeatureTuple struct {
 }
 
 func GetCommandString(options OptionsStruct) string {
+    var command string
+
     projectName := strings.ReplaceAll(options.ProjectName, " ", "_")
     if projectName == "" {
         projectName = "my_project"
     }
-    command := "go-blueprint create --name " + projectName + " --framework " + options.SelectedBackend
-    if options.SelectedDB != "none" {
-        command += " --driver " + options.SelectedDB
-    } else {
-        command += " --driver none"
-    }
-    if len(options.AdvancedOptions) > 0 {
-        command += " --advanced"
-    }
-    for _, opt := range options.AdvancedOptions {
-        command += " --feature " + opt
-    }
+    if options.ShortFlags { // Short format when toggle is checked
+        command = "go-blueprint create -n " + projectName + " -f " + options.SelectedBackend
+        if options.SelectedDB != "none" {
+            command += " -d " + options.SelectedDB
+        } else {
+            command += " -d none"
+        }
+        if len(options.AdvancedOptions) > 0 {
+            command += " -a"
+        }
+        for _, opt := range options.AdvancedOptions {
+            command += " --feature " + opt
+        }
+        command += " -g " + options.SelectGit
 
-    command += " --git " + options.SelectGit
+    } else { // Long format (default)
+        command = "go-blueprint create --name " + projectName + " --framework " + options.SelectedBackend
+        if options.SelectedDB != "none" {
+            command += " --driver " + options.SelectedDB
+        } else {
+            command += " --driver none"
+        }
+        if len(options.AdvancedOptions) > 0 {
+            command += " --advanced"
+        }
+        for _, opt := range options.AdvancedOptions {
+            command += " --feature " + opt
+        }
+        command += " --git " + options.SelectGit
+    }
 
     return command
 }
@@ -71,6 +90,20 @@ var options = OptionsStruct{
 
 templ Form() {
     <form class="space-y-2" hx-boost="true" action="/update_structure" hx-trigger="submit" hx-target="#results">
+        <div class="flex justify-end mb-4">
+            <label class="inline-flex items-center cursor-pointer">
+                <input
+                    type="checkbox"
+                    id="shortFlags"
+                    name="shortFlags"
+                    class="sr-only peer"
+                    hx-post="/update_structure"
+                    hx-target="#results"
+                />
+                <div class="relative w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-200 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                <span class="ms-3 text-sm font-medium text-gray-900">Short CLI Flags</span>
+            </label>
+        </div>
         <div class="mt-4">
             <label
                 for="projectName"

@@ -71,6 +71,7 @@ func UpdateStructureHandler(w http.ResponseWriter, r *http.Request) {
 		SelectedDB:      r.FormValue("database"),
 		SelectGit:       r.FormValue("git"),
 		AdvancedOptions: filteredOptions,
+		ShortFlags:      r.FormValue("shortFlags") == "on",
 	}
 
 	commandStr := components.GetCommandString(options)
