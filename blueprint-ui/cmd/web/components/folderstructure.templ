@@ -369,7 +369,7 @@ templ FolderStructure(options OptionsStruct, commandStr string) {
 		    @icons.GolangIcon()
 		    <p class="inline ml-2">go.sum</p>
 		</li>
-		if options.SelectFrontend == "htmx" {
+		if options.SelectFrontend == "htmx" && contains(options.AdvancedFrontend, "tailwind") {
 		<li>
 		    @icons.TailwindIcon()
 		    <p class="inline ml-2">tailwind.config.js</p>
