@@ -8,7 +8,7 @@ jobs:
   blueprint_matrix:
     strategy:
       matrix:
-        backend: [chi, gin, fiber, gorilla/mux, httprouter, standard-library, echo]
+        backend: [chi, gin, fiber, gorilla/mux, standard-library, echo]
         driver: [mysql, postgres, sqlite, mongo, redis, scylla, none]
         git: [commit, stage, skip]
 
