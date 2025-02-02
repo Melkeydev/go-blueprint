@@ -15,6 +15,9 @@ func contains(slice []string, value string) bool {
 }
 
 func UpdateStructureHandler(w http.ResponseWriter, r *http.Request) {
+	// Set HTMX response headers
+	w.Header().Set("HX-Trigger", "updateComplete")
+
 	err := r.ParseForm()
 	if err != nil {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
