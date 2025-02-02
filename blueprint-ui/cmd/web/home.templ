@@ -25,5 +25,15 @@ templ Home() {
 				@components.Form()
 			</div>
 		</main>
+		<script>
+			function copyCommandContent() {
+			    const commandEl = document.getElementById('command');
+			    if (commandEl) {
+				navigator.clipboard.writeText(commandEl.innerText)
+				    .then(() => console.log('Content copied to clipboard'))
+				    .catch(err => console.error('Failed to copy: ', err));
+			    }
+			}
+		</script>
 	}
 }
