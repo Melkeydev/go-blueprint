@@ -20,7 +20,7 @@ gives the option to integrate with one of the more popular backend and fronted f
 ## Table of Contents
 
 - [Install](#install)
-- [BackendFramework Frameworks](#backends)
+- [Backend Frameworks](#backends)
 - [Database Support](#database-support)
 - [Frontend Frameworks](#frontend)
 - [Advanced Features](#advanced-features)
@@ -113,8 +113,6 @@ Flags:
 
 Go Blueprint now offers enhanced database support, allowing you to choose your preferred database driver during project setup. Use the `-d ` or --driver flag to specify the database driver you want to integrate into your project.
 
-### Supported Database Drivers
-
 Choose from a variety of supported database drivers:
 
 - [Mysql](https://github.com/go-sql-driver/mysql)
@@ -133,7 +131,7 @@ Choose from a variety of supported database drivers:
   Frontend Frameworks
 </h2>
 
-Frontend frameworks and features can be added to your project using the `-f` flag. This will trigger a prompt to select the desired options.
+Frontend frameworks and features can be added to your project using the `-f` or `--frontend` flag. This will trigger a prompt to select the desired options.
 
 - [HTMX](https://htmx.org/) support using [Templ](https://templ.guide/)
 - [React](https://react.dev/) frontend written in TypeScript, including an example fetch request to the backend
