@@ -7,7 +7,7 @@
 </div>
 
 Go Blueprint is a CLI tool that allows users to spin up a structured Go project. It also
-gives the option to integrate with one of the more popular backend and fronted framewors!
+gives the option to integrate with one of the more popular backend and fronted frameworks!
 
 ### Why Would I use this?
 
