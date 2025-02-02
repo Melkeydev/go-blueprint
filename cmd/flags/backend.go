@@ -5,39 +5,39 @@ import (
 	"strings"
 )
 
-type Backend string
+type BackendFramework string
 
 // These are all the current backends supported. If you want to add one, you
 // can simply copy and paste a line here. Do not forget to also add it into the
-// AllowedBackedTypes slice too!
+// AllowedBackendTypes slice too!
 const (
-	Chi             Backend = "chi"
-	Gin             Backend = "gin"
-	Fiber           Backend = "fiber"
-	GorillaMux      Backend = "gorilla/mux"
-	StandardLibrary Backend = "standard-library"
-	Echo            Backend = "echo"
+	Chi             BackendFramework = "chi"
+	Gin             BackendFramework = "gin"
+	Fiber           BackendFramework = "fiber"
+	GorillaMux      BackendFramework = "gorilla/mux"
+	StandardLibrary BackendFramework = "standard-library"
+	Echo            BackendFramework = "echo"
 )
 
-var AllowedBackedTypes = []string{string(Chi), string(Gin), string(Fiber), string(GorillaMux), string(StandardLibrary), string(Echo)}
+var AllowedBackendFrameworkTypes = []string{string(Chi), string(Gin), string(Fiber), string(GorillaMux), string(StandardLibrary), string(Echo)}
 
-func (f Backend) String() string {
+func (f BackendFramework) String() string {
 	return string(f)
 }
 
-func (f *Backend) Type() string {
-	return "Backend"
+func (f *BackendFramework) Type() string {
+	return "BackendFramework"
 }
 
-func (f *Backend) Set(value string) error {
+func (f *BackendFramework) Set(value string) error {
 	// Contains isn't available in 1.20 yet
-	// if AllowedBackedTypes.Contains(value) {
-	for _, project := range AllowedBackedTypes {
+	// if AllowedBackendTypes.Contains(value) {
+	for _, project := range AllowedBackendFrameworkTypes {
 		if project == value {
-			*f = Backend(value)
+			*f = BackendFramework(value)
 			return nil
 		}
 	}
 
-	return fmt.Errorf("Backend to use. Allowed values: %s", strings.Join(AllowedBackedTypes, ", "))
+	return fmt.Errorf("BackendFramework to use. Allowed values: %s", strings.Join(AllowedBackendFrameworkTypes, ", "))
 }

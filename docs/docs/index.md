@@ -34,7 +34,7 @@ Usage:
 Flags:
   -a, --advanced                               Get prompts for advanced features
       --feature AdvancedFeatures               Advanced feature to use. Allowed values: githubaction, websocket, docker
-  -b, --backend Backend                        Backend to use. Allowed values: chi, gin, fiber, gorilla/mux, standard-library, echo
+  -b, --backend-framework BackendFramework     Backend framework to use. Allowed values: chi, gin, fiber, gorilla/mux, standard-library, echo
   -d, --driver Database                        Database drivers to use. Allowed values: mysql, postgres, sqlite, mongo, redis, scylla, none
   -f, --frontend                               Get prompts for frontend frameworks
       --frontend-framework Frontendframework   Frontend framework to use. Allowed values: htmx, react

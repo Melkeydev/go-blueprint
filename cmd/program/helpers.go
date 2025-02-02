@@ -64,13 +64,13 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 
 	switch methodName {
 	case "main":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.BackendMap[p.ProjectType].templater.Main())))
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.BackendFrameworkMap[p.BackendFramework].templater.Main())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "server":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.BackendMap[p.ProjectType].templater.Server())))
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.BackendFrameworkMap[p.BackendFramework].templater.Server())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "routes":
-		routeFileBytes := p.BackendMap[p.ProjectType].templater.Routes()
+		routeFileBytes := p.BackendFrameworkMap[p.BackendFramework].templater.Routes()
 		createdTemplate := template.Must(template.New(fileName).Parse(string(routeFileBytes)))
 		err = createdTemplate.Execute(createdFile, p)
 	case "releaser":
@@ -92,7 +92,7 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.Tests())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "tests":
-		createdTemplate := template.Must(template.New(fileName).Parse(string(p.BackendMap[p.ProjectType].templater.TestHandler())))
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.BackendFrameworkMap[p.BackendFramework].templater.TestHandler())))
 		err = createdTemplate.Execute(createdFile, p)
 	case "env":
 		if p.DBDriver != "none" {

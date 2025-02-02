@@ -14,12 +14,13 @@ gives the option to integrate with one of the more popular backend and fronted f
 - Easy to set up and install
 - Have the entire Go structure already established
 - Setting up a Go HTTP server (or Fasthttp with Fiber)
+- Integrates with a popular backend and frontend frameworks
 - Focus on the actual code of your application
 
 ## Table of Contents
 
 - [Install](#install)
-- [Backend Frameworks](#backends)
+- [BackendFramework Frameworks](#backends)
 - [Database Support](#database-support)
 - [Frontend Frameworks](#frontend)
 - [Advanced Features](#advanced-features)
@@ -76,7 +77,7 @@ Usage:
 Flags:
   -a, --advanced                               Get prompts for advanced features
       --feature AdvancedFeatures               Advanced feature to use. Allowed values: githubaction, websocket, docker
-  -b, --backend Backend                        Backend to use. Allowed values: chi, gin, fiber, gorilla/mux, standard-library, echo
+  -b, --backend-framework BackendFramework     Backend framework to use. Allowed values: chi, gin, fiber, gorilla/mux, standard-library, echo
   -d, --driver Database                        Database drivers to use. Allowed values: mysql, postgres, sqlite, mongo, redis, scylla, none
   -f, --frontend                               Get prompts for frontend frameworks
       --frontend-framework Frontendframework   Frontend framework to use. Allowed values: htmx, react

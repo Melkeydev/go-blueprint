@@ -148,8 +148,8 @@ func (p *Project) CreateHtmxTemplates() {
 	routesPlaceHolder := ""
 	importsPlaceHolder := ""
 	if p.FrontendFramework == flags.Htmx {
-		routesPlaceHolder += string(p.BackendMap[p.ProjectType].templater.HtmxTemplRoutes())
-		importsPlaceHolder += string(p.BackendMap[p.ProjectType].templater.HtmxTemplImports())
+		routesPlaceHolder += string(p.BackendFrameworkMap[p.BackendFramework].templater.HtmxTemplRoutes())
+		importsPlaceHolder += string(p.BackendFrameworkMap[p.BackendFramework].templater.HtmxTemplImports())
 	}
 
 	routeTmpl, err := template.New("routes").Parse(routesPlaceHolder)

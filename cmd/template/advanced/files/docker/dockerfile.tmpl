@@ -14,8 +14,7 @@ COPY . .
 RUN go install github.com/a-h/templ/cmd/templ@latest && \
     templ generate{{- if .FrontendOptions.tailwind}} && \{{- end}}
 {{- end}}
-
-{{- if .FrontendOptions.tailwind}}
+{{- if and (.FrontendOptions.tailwind) (eq .FrontendFramework "htmx") }}
     curl -sL https://github.com/tailwindlabs/tailwindcss/releases/download/v3.4.10/tailwindcss-linux-x64 -o tailwindcss && \
     chmod +x tailwindcss && \
     ./tailwindcss -i cmd/web/styles/input.css -o cmd/web/assets/css/output.css

@@ -36,7 +36,7 @@ nav:
     - Makefile: creating-project/makefile.md
     - Air: creating-project/air.md
   - Blueprint Core:
-    - Backend: blueprint-core/backend.md
+    - Backend Frameworks: blueprint-core/backend-frameworks.md
     - DB Drivers: blueprint-core/db-drivers.md
   - Frontend:
     - HTMX and Templ: frontend/htmx-templ.md

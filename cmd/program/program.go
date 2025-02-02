@@ -23,22 +23,22 @@ import (
 // A Project contains the data for the project folder
 // being created, and methods that help with that process
 type Project struct {
-	ProjectName       string
-	Exit              bool
-	AbsolutePath      string
-	ProjectType       flags.Backend
-	DBDriver          flags.Database
-	Docker            flags.Database
-	FrontendFramework flags.FrontendFramework
-	BackendMap        map[flags.Backend]Backend
-	DBDriverMap       map[flags.Database]Driver
-	DockerMap         map[flags.Database]Docker
-	FrontendTemplates FrontendTemplates
-	FrontendOptions   map[string]bool
-	AdvancedTemplates AdvancedTemplates
-	AdvancedOptions   map[string]bool
-	GitOptions        flags.Git
-	OSCheck           map[string]bool
+	ProjectName         string
+	Exit                bool
+	AbsolutePath        string
+	BackendFramework    flags.BackendFramework
+	DBDriver            flags.Database
+	Docker              flags.Database
+	FrontendFramework   flags.FrontendFramework
+	BackendFrameworkMap map[flags.BackendFramework]BackendFramework
+	DBDriverMap         map[flags.Database]Driver
+	DockerMap           map[flags.Database]Docker
+	FrontendTemplates   FrontendTemplates
+	FrontendOptions     map[string]bool
+	AdvancedTemplates   AdvancedTemplates
+	AdvancedOptions     map[string]bool
+	GitOptions          flags.Git
+	OSCheck             map[string]bool
 }
 
 type FrontendTemplates struct {
@@ -51,9 +51,9 @@ type AdvancedTemplates struct {
 	TemplateImports string
 }
 
-// A Backend contains the name and templater for a
-// given Backend
-type Backend struct {
+// A Backend Framework contains the name and templater for a
+// given Backend Framework
+type BackendFramework struct {
 	packageName []string
 	templater   Templater
 }
@@ -69,7 +69,7 @@ type Docker struct {
 }
 
 // A Templater has the methods that help build the files
-// in the Project folder, and is specific to a Backend
+// in the Project folder, and is specific to a BackendFramework
 type Templater interface {
 	Main() []byte
 	Server() []byte
@@ -137,34 +137,34 @@ func (p *Project) ExitCLI(tprogram *tea.Program) {
 }
 
 // createFrameWorkMap adds the current supported
-// Backends into a Project's BackendMap
-func (p *Project) createBackendMap() {
-	p.BackendMap[flags.Chi] = Backend{
+// BackendFrameworks into a Project's BackendFrameworkMap
+func (p *Project) createBackendFrameworkMap() {
+	p.BackendFrameworkMap[flags.Chi] = BackendFramework{
 		packageName: chiPackage,
 		templater:   backend.ChiTemplates{},
 	}
 
-	p.BackendMap[flags.StandardLibrary] = Backend{
+	p.BackendFrameworkMap[flags.StandardLibrary] = BackendFramework{
 		packageName: []string{},
 		templater:   backend.StandardLibTemplate{},
 	}
 
-	p.BackendMap[flags.Gin] = Backend{
+	p.BackendFrameworkMap[flags.Gin] = BackendFramework{
 		packageName: ginPackage,
 		templater:   backend.GinTemplates{},
 	}
 
-	p.BackendMap[flags.Fiber] = Backend{
+	p.BackendFrameworkMap[flags.Fiber] = BackendFramework{
 		packageName: fiberPackage,
 		templater:   backend.FiberTemplates{},
 	}
 
-	p.BackendMap[flags.GorillaMux] = Backend{
+	p.BackendFrameworkMap[flags.GorillaMux] = BackendFramework{
 		packageName: gorillaPackage,
 		templater:   backend.GorillaTemplates{},
 	}
 
-	p.BackendMap[flags.Echo] = Backend{
+	p.BackendFrameworkMap[flags.Echo] = BackendFramework{
 		packageName: echoPackage,
 		templater:   backend.EchoTemplates{},
 	}
@@ -254,7 +254,7 @@ func (p *Project) CreateMainFile() error {
 	p.CheckOS()
 
 	// Create the map for our program
-	p.createBackendMap()
+	p.createBackendFrameworkMap()
 
 	// Create go.mod
 	err = utils.InitGoMod(p.ProjectName, projectPath)
@@ -264,8 +264,8 @@ func (p *Project) CreateMainFile() error {
 	}
 
 	// Install the correct package for the selected backend
-	if p.ProjectType != flags.StandardLibrary {
-		err = utils.GoGetPackage(projectPath, p.BackendMap[p.ProjectType].packageName)
+	if p.BackendFramework != flags.StandardLibrary {
+		err = utils.GoGetPackage(projectPath, p.BackendFrameworkMap[p.BackendFramework].packageName)
 		if err != nil {
 			log.Printf("Could not install go dependency for the chosen backend %v\n", err)
 			return err
@@ -505,7 +505,7 @@ func (p *Project) CreateMainFile() error {
 		}
 		defer efsFile.Close()
 
-		if p.ProjectType == "fiber" {
+		if p.BackendFramework == "fiber" {
 			helloGoTemplate := template.Must(template.New("efs").Parse((string(frontend.HelloFiberGoTemplate()))))
 			err = helloGoTemplate.Execute(helloGoFile, p)
 			if err != nil {

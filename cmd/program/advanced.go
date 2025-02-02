@@ -12,7 +12,7 @@ import (
 
 func (p *Project) CreateWebsocketImports(appDir string) {
 	websocketDependency := []string{"github.com/coder/websocket"}
-	if p.ProjectType == flags.Fiber {
+	if p.BackendFramework == flags.Fiber {
 		websocketDependency = []string{"github.com/gofiber/contrib/websocket"}
 	}
 
@@ -24,7 +24,7 @@ func (p *Project) CreateWebsocketImports(appDir string) {
 		log.Fatal(err)
 	}
 
-	importsPlaceHolder := string(p.BackendMap[p.ProjectType].templater.WebsocketImports())
+	importsPlaceHolder := string(p.BackendFrameworkMap[p.BackendFramework].templater.WebsocketImports())
 
 	importTmpl, err := template.New("imports").Parse(importsPlaceHolder)
 	if err != nil {

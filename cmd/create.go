@@ -40,7 +40,7 @@ var (
 )
 
 func init() {
-	var flagBackend flags.Backend
+	var flagBackendFramework flags.BackendFramework
 	var flagDBDriver flags.Database
 	var frontendFrameworks flags.FrontendFramework
 	var frontendAdvanced flags.FrontendAdvanced
@@ -50,7 +50,7 @@ func init() {
 
 	// Main flags
 	createCmd.Flags().StringP("name", "n", "", "Name of project to create")
-	createCmd.Flags().VarP(&flagBackend, "backend", "b", fmt.Sprintf("Backend to use. Allowed values: %s", strings.Join(flags.AllowedBackedTypes, ", ")))
+	createCmd.Flags().VarP(&flagBackendFramework, "backend-framework", "b", fmt.Sprintf("Backend framework to use. Allowed values: %s", strings.Join(flags.AllowedBackendFrameworkTypes, ", ")))
 	createCmd.Flags().VarP(&flagDBDriver, "driver", "d", fmt.Sprintf("Database drivers to use. Allowed values: %s", strings.Join(flags.AllowedDBDrivers, ", ")))
 	createCmd.Flags().VarP(&flagGit, "git", "g", fmt.Sprintf("Git to use. Allowed values: %s", strings.Join(flags.AllowedGitsOptions, ", ")))
 
@@ -62,17 +62,11 @@ func init() {
 	// Advanced features group
 	createCmd.Flags().BoolP("advanced", "a", false, "Get prompts for advanced features")
 	createCmd.Flags().Var(&advancedFeatures, "feature", fmt.Sprintf("Advanced feature to use. Allowed values: %s", strings.Join(flags.AllowedAdvancedFeatures, ", ")))
-
-	// // Mark dependencies for frontend flags
-	// createCmd.MarkFlagsRequiredTogether("frontend", "frontend-framework")
-	//
-	// // Mark feature flag as requiring --advanced
-	// createCmd.MarkFlagsRequiredTogether("advanced", "feature")
 }
 
 type Options struct {
 	ProjectName       *textinput.Output
-	ProjectType       *multiInput.Selection
+	BackendFramework  *multiInput.Selection
 	DBDriver          *multiInput.Selection
 	FrontendFramework *multiInput.Selection
 	FrontendAdvanced  *multiSelect.Selection
@@ -106,14 +100,14 @@ var createCmd = &cobra.Command{
 
 		// VarP already validates the contents of the framework flag.
 		// If this flag is filled, it is always valid
-		flagBackend := flags.Backend(cmd.Flag("backend").Value.String())
+		flagBackendFramework := flags.BackendFramework(cmd.Flag("backend-framework").Value.String())
 		flagDBDriver := flags.Database(cmd.Flag("driver").Value.String())
 		flagFrontendFremwork := flags.FrontendFramework(cmd.Flag("frontend-framework").Value.String())
 		flagGit := flags.Git(cmd.Flag("git").Value.String())
 
 		options := Options{
 			ProjectName:       &textinput.Output{},
-			ProjectType:       &multiInput.Selection{},
+			BackendFramework:  &multiInput.Selection{},
 			DBDriver:          &multiInput.Selection{},
 			FrontendFramework: &multiInput.Selection{},
 			FrontendAdvanced: &multiSelect.Selection{
@@ -126,18 +120,18 @@ var createCmd = &cobra.Command{
 		}
 
 		project := &program.Project{
-			ProjectName:       flagName,
-			ProjectType:       flagBackend,
-			DBDriver:          flagDBDriver,
-			BackendMap:        make(map[flags.Backend]program.Backend),
-			DBDriverMap:       make(map[flags.Database]program.Driver),
-			FrontendFramework: flagFrontendFremwork,
-			FrontendOptions:   make(map[string]bool),
-			AdvancedOptions:   make(map[string]bool),
-			GitOptions:        flagGit,
+			ProjectName:         flagName,
+			BackendFramework:    flagBackendFramework,
+			DBDriver:            flagDBDriver,
+			BackendFrameworkMap: make(map[flags.BackendFramework]program.BackendFramework),
+			DBDriverMap:         make(map[flags.Database]program.Driver),
+			FrontendFramework:   flagFrontendFremwork,
+			FrontendOptions:     make(map[string]bool),
+			AdvancedOptions:     make(map[string]bool),
+			GitOptions:          flagGit,
 		}
 
-		steps := steps.InitSteps(flagBackend, flagDBDriver, flagFrontendFremwork, flagGit)
+		steps := steps.InitSteps(flagBackendFramework, flagDBDriver, flagFrontendFremwork, flagGit)
 		fmt.Printf("%s\n", logoStyle.Render(logo))
 
 		// Frontend option steps:
@@ -187,23 +181,23 @@ var createCmd = &cobra.Command{
 			}
 		}
 
-		if project.ProjectType == "" {
+		if project.BackendFramework == "" {
 			isInteractive = true
-			step := steps.Steps["backend"]
-			tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, options.ProjectType, step.Headers, project))
+			step := steps.Steps["backend-framework"]
+			tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, options.BackendFramework, step.Headers, project))
 			if _, err := tprogram.Run(); err != nil {
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
 			project.ExitCLI(tprogram)
 
-			step.Field = options.ProjectType.Choice
+			step.Field = options.BackendFramework.Choice
 
 			// this type casting is always safe since the user interface can
-			// only pass strings that can be cast to a flags.Backend instance
-			project.ProjectType = flags.Backend(strings.ToLower(options.ProjectType.Choice))
-			err := cmd.Flag("backend").Value.Set(project.ProjectType.String())
+			// only pass strings that can be cast to a flags.BackendFramework instance
+			project.BackendFramework = flags.BackendFramework(strings.ToLower(options.BackendFramework.Choice))
+			err := cmd.Flag("backend-framework").Value.Set(project.BackendFramework.String())
 			if err != nil {
-				log.Fatal("failed to set the backend flag value", err)
+				log.Fatal("failed to set the backendFramework flag value", err)
 			}
 		}
 

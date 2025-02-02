@@ -21,7 +21,7 @@ go-blueprint create -n my-project -b chi -d postgres -g commit
 In this example:
 
 - `-n` or  `--name`: Specifies the name of the project (replace "my-project" with your desired project name).
-- `-b` or `--backend`: Specifies the Go backend to be used (e.g., "gin").
+- `-b` or `--backend-framework`: Specifies the Go backend to be used (e.g., "gin").
 - `-d` or `--driver`: Specifies the database driver to be integrated (e.g., "postgres").
 - `-g` or `--git`: Specifies the git configuration option of the project (e.g., "commit").
 
