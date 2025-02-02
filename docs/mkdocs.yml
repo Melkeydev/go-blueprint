@@ -31,22 +31,22 @@ theme:
 nav:
   - Home: index.md
   - Installation: installation.md
-  - Blueprint UI: blueprint-ui.md
   - Project creation & default config:
     - Project init: creating-project/project-init.md
     - Makefile: creating-project/makefile.md
     - Air: creating-project/air.md
   - Blueprint Core:
-    - Frameworks: blueprint-core/frameworks.md
+    - Backend Frameworks: blueprint-core/backend-frameworks.md
     - DB Drivers: blueprint-core/db-drivers.md
+  - Frontend:
+    - HTMX and Templ: frontend/htmx-templ.md
+    - React & Vite (TypeScript): frontend/react-vite.md
+    - Tailwind CSS: frontend/tailwind.md
   - Advanced Flag:
     - AF Usage: advanced-flag/advanced-flag.md
-    - HTMX and Templ: advanced-flag/htmx-templ.md
-    - Tailwind CSS: advanced-flag/tailwind.md
     - GoReleaser & GoTest CI: advanced-flag/goreleaser.md
     - Websocket: advanced-flag/websocket.md
     - Docker: advanced-flag/docker.md
-    - React & Vite (TypeScript): advanced-flag/react-vite.md
   - Testing endpoints: 
     - Server: endpoints-test/server.md
     - DB Health Endpoints: 

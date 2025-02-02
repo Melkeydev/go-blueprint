@@ -22,14 +22,14 @@ import (
 
 const logo = `
 
- ____  _                       _       _   
-|  _ \| |                     (_)     | |  
-| |_) | |_   _  ___ _ __  _ __ _ _ __ | |_ 
+ ____  _                       _       _
+|  _ \| |                     (_)     | |
+| |_) | |_   _  ___ _ __  _ __ _ _ __ | |_
 |  _ <| | | | |/ _ \ '_ \| '__| | '_ \| __|
-| |_) | | |_| |  __/ |_) | |  | | | | | |_ 
+| |_) | | |_| |  __/ |_) | |  | | | | | |
 |____/|_|\__,_|\___| .__/|_|  |_|_| |_|\__|
-				   | |                     
-				   |_|                     
+				   | |
+				   |_|
 
 `
 
@@ -40,27 +40,38 @@ var (
 )
 
 func init() {
-	var flagFramework flags.Framework
+	var flagBackendFramework flags.BackendFramework
 	var flagDBDriver flags.Database
+	var frontendFrameworks flags.FrontendFramework
+	var frontendAdvanced flags.FrontendAdvanced
 	var advancedFeatures flags.AdvancedFeatures
 	var flagGit flags.Git
 	rootCmd.AddCommand(createCmd)
 
+	// Main flags
 	createCmd.Flags().StringP("name", "n", "", "Name of project to create")
-	createCmd.Flags().VarP(&flagFramework, "framework", "f", fmt.Sprintf("Framework to use. Allowed values: %s", strings.Join(flags.AllowedProjectTypes, ", ")))
+	createCmd.Flags().VarP(&flagBackendFramework, "backend-framework", "b", fmt.Sprintf("Backend framework to use. Allowed values: %s", strings.Join(flags.AllowedBackendFrameworkTypes, ", ")))
 	createCmd.Flags().VarP(&flagDBDriver, "driver", "d", fmt.Sprintf("Database drivers to use. Allowed values: %s", strings.Join(flags.AllowedDBDrivers, ", ")))
+	createCmd.Flags().VarP(&flagGit, "git", "g", fmt.Sprintf("Git to use. Allowed values: %s", strings.Join(flags.AllowedGitsOptions, ", ")))
+
+	// Frontend flags group
+	createCmd.Flags().BoolP("frontend", "f", false, "Get prompts for frontend frameworks")
+	createCmd.Flags().Var(&frontendFrameworks, "frontend-framework", fmt.Sprintf("Frontend framework to use. Allowed values: %s", strings.Join(flags.AllowedFrontendTypes, ", ")))
+	createCmd.Flags().Var(&frontendAdvanced, "frontend-advanced", fmt.Sprintf("Frontend framework advanced features to use. Allowed values: %s", strings.Join(flags.AllowedFrontendAdvanced, ", ")))
+
+	// Advanced features group
 	createCmd.Flags().BoolP("advanced", "a", false, "Get prompts for advanced features")
 	createCmd.Flags().Var(&advancedFeatures, "feature", fmt.Sprintf("Advanced feature to use. Allowed values: %s", strings.Join(flags.AllowedAdvancedFeatures, ", ")))
-	createCmd.Flags().VarP(&flagGit, "git", "g", fmt.Sprintf("Git to use. Allowed values: %s", strings.Join(flags.AllowedGitsOptions, ", ")))
 }
 
 type Options struct {
-	ProjectName *textinput.Output
-	ProjectType *multiInput.Selection
-	DBDriver    *multiInput.Selection
-	Advanced    *multiSelect.Selection
-	Workflow    *multiInput.Selection
-	Git         *multiInput.Selection
+	ProjectName       *textinput.Output
+	BackendFramework  *multiInput.Selection
+	DBDriver          *multiInput.Selection
+	FrontendFramework *multiInput.Selection
+	FrontendAdvanced  *multiSelect.Selection
+	Advanced          *multiSelect.Selection
+	Git               *multiInput.Selection
 }
 
 // createCmd defines the "create" command for the CLI
@@ -89,14 +100,19 @@ var createCmd = &cobra.Command{
 
 		// VarP already validates the contents of the framework flag.
 		// If this flag is filled, it is always valid
-		flagFramework := flags.Framework(cmd.Flag("framework").Value.String())
+		flagBackendFramework := flags.BackendFramework(cmd.Flag("backend-framework").Value.String())
 		flagDBDriver := flags.Database(cmd.Flag("driver").Value.String())
+		flagFrontendFremwork := flags.FrontendFramework(cmd.Flag("frontend-framework").Value.String())
 		flagGit := flags.Git(cmd.Flag("git").Value.String())
 
 		options := Options{
-			ProjectName: &textinput.Output{},
-			ProjectType: &multiInput.Selection{},
-			DBDriver:    &multiInput.Selection{},
+			ProjectName:       &textinput.Output{},
+			BackendFramework:  &multiInput.Selection{},
+			DBDriver:          &multiInput.Selection{},
+			FrontendFramework: &multiInput.Selection{},
+			FrontendAdvanced: &multiSelect.Selection{
+				Choices: make(map[string]bool),
+			},
 			Advanced: &multiSelect.Selection{
 				Choices: make(map[string]bool),
 			},
@@ -104,17 +120,29 @@ var createCmd = &cobra.Command{
 		}
 
 		project := &program.Project{
-			ProjectName:     flagName,
-			ProjectType:     flagFramework,
-			DBDriver:        flagDBDriver,
-			FrameworkMap:    make(map[flags.Framework]program.Framework),
-			DBDriverMap:     make(map[flags.Database]program.Driver),
-			AdvancedOptions: make(map[string]bool),
-			GitOptions:      flagGit,
+			ProjectName:         flagName,
+			BackendFramework:    flagBackendFramework,
+			DBDriver:            flagDBDriver,
+			BackendFrameworkMap: make(map[flags.BackendFramework]program.BackendFramework),
+			DBDriverMap:         make(map[flags.Database]program.Driver),
+			FrontendFramework:   flagFrontendFremwork,
+			FrontendOptions:     make(map[string]bool),
+			AdvancedOptions:     make(map[string]bool),
+			GitOptions:          flagGit,
 		}
 
-		steps := steps.InitSteps(flagFramework, flagDBDriver)
+		steps := steps.InitSteps(flagBackendFramework, flagDBDriver, flagFrontendFremwork, flagGit)
 		fmt.Printf("%s\n", logoStyle.Render(logo))
+
+		// Frontend option steps:
+		flagFrontend, err := cmd.Flags().GetBool("frontend")
+		if err != nil {
+			log.Fatal("failed to retrieve frontend flag")
+		}
+
+		if flagFrontend {
+			fmt.Println(tipMsgStyle.Render("*** You are in Frontend mode ***\n\n"))
+		}
 
 		// Advanced option steps:
 		flagAdvanced, err := cmd.Flags().GetBool("advanced")
@@ -153,23 +181,23 @@ var createCmd = &cobra.Command{
 			}
 		}
 
-		if project.ProjectType == "" {
+		if project.BackendFramework == "" {
 			isInteractive = true
-			step := steps.Steps["framework"]
-			tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, options.ProjectType, step.Headers, project))
+			step := steps.Steps["backend-framework"]
+			tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, options.BackendFramework, step.Headers, project))
 			if _, err := tprogram.Run(); err != nil {
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 			}
 			project.ExitCLI(tprogram)
 
-			step.Field = options.ProjectType.Choice
+			step.Field = options.BackendFramework.Choice
 
 			// this type casting is always safe since the user interface can
-			// only pass strings that can be cast to a flags.Framework instance
-			project.ProjectType = flags.Framework(strings.ToLower(options.ProjectType.Choice))
-			err := cmd.Flag("framework").Value.Set(project.ProjectType.String())
+			// only pass strings that can be cast to a flags.BackendFramework instance
+			project.BackendFramework = flags.BackendFramework(strings.ToLower(options.BackendFramework.Choice))
+			err := cmd.Flag("backend-framework").Value.Set(project.BackendFramework.String())
 			if err != nil {
-				log.Fatal("failed to set the framework flag value", err)
+				log.Fatal("failed to set the backendFramework flag value", err)
 			}
 		}
 
@@ -189,6 +217,53 @@ var createCmd = &cobra.Command{
 			if err != nil {
 				log.Fatal("failed to set the driver flag value", err)
 			}
+		}
+
+		if flagFrontend {
+
+			if project.FrontendFramework == "" {
+				isInteractive = true
+				step := steps.Steps["frontend-framework"]
+				tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, options.FrontendFramework, step.Headers, project))
+				if _, err := tprogram.Run(); err != nil {
+					cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
+				}
+				project.ExitCLI(tprogram)
+
+				project.FrontendFramework = flags.FrontendFramework(strings.ToLower(options.FrontendFramework.Choice))
+				err := cmd.Flag("frontend-framework").Value.Set(project.FrontendFramework.String())
+				if err != nil {
+					log.Fatal("failed to set the frontend flag value", err)
+				}
+			}
+
+			featureFrontend := cmd.Flag("frontend-advanced").Value.String()
+
+			if featureFrontend != "" {
+				featuresFrontendFlagValues := strings.Split(featureFrontend, ",")
+				for _, key := range featuresFrontendFlagValues {
+					project.AdvancedOptions[key] = true
+				}
+			} else {
+				isInteractive = true
+				step := steps.Steps["frontend-advanced"]
+				tprogram = tea.NewProgram((multiSelect.InitialModelMultiSelect(step.Options, options.FrontendAdvanced, step.Headers, project)))
+				if _, err := tprogram.Run(); err != nil {
+					cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
+				}
+				project.ExitCLI(tprogram)
+				for key, opt := range options.FrontendAdvanced.Choices {
+					project.FrontendOptions[strings.ToLower(key)] = opt
+					err := cmd.Flag("frontend-advanced").Value.Set(strings.ToLower(key))
+					if err != nil {
+						log.Fatal("failed to set the advanced fronted features flag value", err)
+					}
+				}
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+
 		}
 
 		if flagAdvanced {
@@ -216,7 +291,7 @@ var createCmd = &cobra.Command{
 					}
 				}
 				if err != nil {
-					log.Fatal("failed to set the htmx option", err)
+					log.Fatal(err)
 				}
 			}
 
@@ -280,24 +355,21 @@ var createCmd = &cobra.Command{
 		fmt.Println(endingMsgStyle.Render("\nNext steps:"))
 		fmt.Println(endingMsgStyle.Render(fmt.Sprintf("• cd into the newly created project with: `cd %s`\n", utils.GetRootDir(project.ProjectName))))
 
-		if options.Advanced.Choices["React"] {
-			options.Advanced.Choices["Htmx"] = false
-			options.Advanced.Choices["Tailwind"] = false
+		if options.FrontendFramework.Choice == "React" {
 			fmt.Println(endingMsgStyle.Render("• cd into frontend\n"))
 			fmt.Println(endingMsgStyle.Render("• npm install\n"))
 			fmt.Println(endingMsgStyle.Render("• npm run dev\n"))
+			fmt.Println(endingMsgStyle.Render("• or use makefile targents\n"))
 		}
 
-		if options.Advanced.Choices["Tailwind"] {
-			options.Advanced.Choices["Htmx"] = true
-			fmt.Println(endingMsgStyle.Render("• Install the tailwind standalone cli if you haven't already, grab the executable for your platform from the latest release on GitHub\n"))
+		if options.FrontendAdvanced.Choices["Tailwind"] && options.FrontendFramework.Choice == "Htmx" {
+			fmt.Println(endingMsgStyle.Render("• Download the tailwind standalone cli with Makefile target\n"))
 			fmt.Println(endingMsgStyle.Render("• More info about the Tailwind CLI: https://tailwindcss.com/blog/standalone-cli\n"))
 		}
 
-		if options.Advanced.Choices["Htmx"] {
-			options.Advanced.Choices["react"] = false
-			fmt.Println(endingMsgStyle.Render("• Install the templ cli if you haven't already by running `go install github.com/a-h/templ/cmd/templ@latest`\n"))
-			fmt.Println(endingMsgStyle.Render("• Generate templ function files by running `templ generate`\n"))
+		if options.FrontendFramework.Choice == "Htmx" {
+			fmt.Println(endingMsgStyle.Render("• Install the templ cli `go install github.com/a-h/templ/cmd/templ@latest`\n"))
+			fmt.Println(endingMsgStyle.Render("• Generate templ function files by running `templ generate` or use Makefile for both steps\n"))
 		}
 
 		if isInteractive {

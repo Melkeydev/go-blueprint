@@ -6,22 +6,23 @@
   </h1>
 </div>
 
-Go Blueprint is a CLI tool that allows users to spin up a Go project with the corresponding structure seamlessly. It also
-gives the option to integrate with one of the more popular Go frameworks (and the list is growing with new features)!
+Go Blueprint is a CLI tool that allows users to spin up a structured Go project. It also
+gives the option to integrate with one of the more popular backend and fronted frameworks!
 
 ### Why Would I use this?
 
 - Easy to set up and install
 - Have the entire Go structure already established
 - Setting up a Go HTTP server (or Fasthttp with Fiber)
-- Integrate with a popular frameworks
+- Integrates with a popular backend and frontend frameworks
 - Focus on the actual code of your application
 
 ## Table of Contents
 
 - [Install](#install)
-- [Frameworks Supported](#frameworks-supported)
+- [Backend Frameworks](#backends)
 - [Database Support](#database-support)
+- [Frontend Frameworks](#frontend)
 - [Advanced Features](#advanced-features)
 - [Blueprint UI](#blueprint-ui)
 - [Usage Example](#usage-example)
@@ -64,24 +65,40 @@ go-blueprint create
 You can also use the provided flags to set up a project without interacting with the UI.
 
 ```bash
-go-blueprint create --name my-project --framework gin --driver postgres --git commit
+go-blueprint create -n my-project -b gin -d postgres -g commit
 ```
 
 See `go-blueprint create -h` for all the options and shorthands.
 
-<a id="frameworks-supported"></a>
+```bash
+Usage:
+  go-blueprint create [flags]
+
+Flags:
+  -a, --advanced                               Get prompts for advanced features
+      --feature AdvancedFeatures               Advanced feature to use. Allowed values: githubaction, websocket, docker
+  -b, --backend-framework BackendFramework     Backend framework to use. Allowed values: chi, gin, fiber, gorilla/mux, standard-library, echo
+  -d, --driver Database                        Database drivers to use. Allowed values: mysql, postgres, sqlite, mongo, redis, scylla, none
+  -f, --frontend                               Get prompts for frontend frameworks
+      --frontend-framework Frontendframework   Frontend framework to use. Allowed values: htmx, react
+      --frontend-advanced FrontendAdvanced     Frontend framework advanced features to use. Allowed values: tailwind
+  -g, --git Git                                Git to use. Allowed values: commit, stage, skip
+  -h, --help                                   help for create
+  -n, --name string                            Name of project to create
+```
+
+<a id="backends"></a>
 
 <h2>
   <picture>
-    <img src="./public/frameworks.gif?raw=true" width="60px" style="margin-right: 1px;">
+    <img src="./public/backends.gif?raw=true" width="60px" style="margin-right: 1px;">
   </picture>
-  Frameworks Supported
+  Backend Frameworks
 </h2>
 
 - [Chi](https://github.com/go-chi/chi)
 - [Gin](https://github.com/gin-gonic/gin)
 - [Fiber](https://github.com/gofiber/fiber)
-- [HttpRouter](https://github.com/julienschmidt/httprouter)
 - [Gorilla/mux](https://github.com/gorilla/mux)
 - [Echo](https://github.com/labstack/echo)
 
@@ -94,9 +111,7 @@ See `go-blueprint create -h` for all the options and shorthands.
   Database Support
 </h2>
 
-Go Blueprint now offers enhanced database support, allowing you to choose your preferred database driver during project setup. Use the `--driver` or `-d` flag to specify the database driver you want to integrate into your project.
-
-### Supported Database Drivers
+Go Blueprint now offers enhanced database support, allowing you to choose your preferred database driver during project setup. Use the `-d ` or --driver flag to specify the database driver you want to integrate into your project.
 
 Choose from a variety of supported database drivers:
 
@@ -107,6 +122,24 @@ Choose from a variety of supported database drivers:
 - [Redis](https://github.com/redis/go-redis)
 - [ScyllaDB GoCQL](https://github.com/scylladb/gocql)
 
+<a id="frontend"></a>
+
+<h2>
+  <picture>
+    <img src="./public/frontend.gif?raw=true" width="60px" style="margin-right: 1px;">
+  </picture>
+  Frontend Frameworks
+</h2>
+
+Frontend frameworks and features can be added to your project using the `-f` or `--frontend` flag. This will trigger a prompt to select the desired options.
+
+- [HTMX](https://htmx.org/) support using [Templ](https://templ.guide/)
+- [React](https://react.dev/) frontend written in TypeScript, including an example fetch request to the backend
+
+Aditional features is a multi-option prompt; one or more features can be used at the same time (Currently, Tailwind is the only one that is integrated).
+
+- [Tailwind](https://tailwindcss.com/) css framework
+
 <a id="advanced-features"></a>
 
 <h2>
@@ -116,18 +149,13 @@ Choose from a variety of supported database drivers:
   Advanced Features
 </h2>
 
-Blueprint is focused on being as minimalistic as possible. That being said, we wanted to offer the ability to add other features people may want without bloating the overall experience.
+You can now use the `-a` or `--advanced` flag when running the `create` command to get access to the following features: 
 
-You can now use the `--advanced` flag when running the `create` command to get access to the following features. This is a multi-option prompt; one or more features can be used at the same time:
-
-- [HTMX](https://htmx.org/) support using [Templ](https://templ.guide/)
 - CI/CD workflow setup using [Github Actions](https://docs.github.com/en/actions)
 - [Websocket](https://pkg.go.dev/github.com/coder/websocket) sets up a websocket endpoint
-- [Tailwind](https://tailwindcss.com/) css framework
 - Docker configuration for go project
-- [React](https://react.dev/) frontend written in TypeScript, including an example fetch request to the backend
 
-Note: Selecting Tailwind option will automatically select HTMX unless React is explicitly selected
+This is a multi-option prompt; one or more features can be used at the same time.
 
 <a id="blueprint-ui"></a>
 
@@ -152,66 +180,55 @@ Blueprint UI is a web application that allows you to create commands for the CLI
 Here's an example of setting up a project with a specific database driver:
 
 ```bash
-go-blueprint create --name my-project --framework gin --driver postgres --git commit
+go-blueprint create -n my-project -b gin -d postgres -g commit
 ```
 
 <p align="center">
   <img src="./public/blueprint_1.png" alt="Starter Image" width="800"/>
 </p>
 
-Advanced features are accessible with the --advanced flag
+Prompts for Frontend frameworks and features can be triggered with the `-f` flag
 
 ```bash
-go-blueprint create --advanced
+go-blueprint create -f
+```
+or created directly with the `--frontend-framework` and `--frontend-advanced` flags
+
+```bash
+go-blueprint create -n my-project -b chi -d none -f --frontend-framework react --frontend-advanced tailwind -g commit
 ```
 
-Advanced features can be enabled using the `--feature` flag along with the `--advanced` flag.
+<p align="center">
+  <img src="./public/blueprint_frontend.png" alt="Frontend" width="800"/>
+</p>
 
-HTMX:
+Advanced features are accessible with the `-a` flag
 
 ```bash
-go-blueprint create --advanced --feature htmx
+go-blueprint create -a
 ```
 
-CI/CD workflow:
+Advanced features can be enabled using the `--feature` flag along with the `-a` flag.
 
 ```bash
-go-blueprint create --advanced --feature githubaction
-```
-
-Websocket:
-
-```bash
-go-blueprint create --advanced --feature websocket
-```
-
-Tailwind:
-
-```bash
-go-blueprint create --advanced --feature tailwind
-```
-
-Docker:
-
-```bash
-go-blueprint create --advanced --feature docker
-```
-
-React:
-
-```bash
-go-blueprint create --advanced --feature react
-```
-
-Or all features at once:
-
-```bash
-go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --feature docker --git commit --feature react
+go-blueprint create -n my_project -b standard-library -d mongo -a --feature docker --feature websocket -g commit
 ```
 
 <p align="center">
   <img src="./public/blueprint_advanced.png" alt="Advanced Options" width="800"/>
 </p>
+
+Frontend and Advanced features can be combined with the `-f` and `-a` flags
+
+```bash
+go-blueprint create -af
+```
+
+or
+
+```bash
+go-blueprint create -n my_project -b fiber -d mysql -f --frontend-framework htmx --frontend-advanced tailwind -a --feature docker --feature githubaction -g commit
+```
 
 **Visit [documentation](https://docs.go-blueprint.dev) to learn more about blueprint and its features.**
 

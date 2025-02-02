@@ -4,7 +4,7 @@ import (
 	_ "embed"
 )
 
-//go:embed framework/files/globalenv.tmpl
+//go:embed backend/files/globalenv.tmpl
 var globalEnvTemplate []byte
 
 func GlobalEnvTemplate() []byte {

@@ -13,7 +13,7 @@ jobs:
       - name: Get version from file
         id: get_version_file
         run: |
-          VERSION_FILE=$(curl -s https://raw.githubusercontent.com/Melkeydev/go-blueprint/main/cmd/template/advanced/files/htmx/htmx.min.js.tmpl | grep version | awk -F'"' '{print "v" $2}')
+          VERSION_FILE=$(curl -s https://raw.githubusercontent.com/Melkeydev/go-blueprint/main/cmd/template/frontend/files/htmx/htmx.min.js.tmpl | grep version | awk -F'"' '{print "v" $2}')
           echo "version file: $VERSION_FILE"
           if [[ "$VERSION_FILE" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "version_file=$VERSION_FILE" >> $GITHUB_OUTPUT
@@ -47,27 +47,27 @@ jobs:
 
       - name: dump latest htmx version
         if: steps.compare_versions.outputs.release_changed == 'true'
-        run: curl -L https://github.com/bigskysoftware/htmx/releases/latest/download/htmx.min.js -o cmd/template/advanced/files/htmx/htmx.min.js
+        run: curl -L https://github.com/bigskysoftware/htmx/releases/latest/download/htmx.min.js -o cmd/template/frontend/files/htmx/htmx.min.js
 
       - name: Prettify code
         if: steps.compare_versions.outputs.release_changed == 'true'
         run: |
           npm install --save-dev --save-exact prettier
-          npx prettier --write cmd/template/advanced/files/htmx/htmx.min.js
+          npx prettier --write cmd/template/frontend/files/htmx/htmx.min.js
           rm -rf node_modules
           rm package-lock.json
           rm package.json
 
       - name: Create tmpl after Prettify
         if: steps.compare_versions.outputs.release_changed == 'true'
-        run: mv cmd/template/advanced/files/htmx/htmx.min.js cmd/template/advanced/files/htmx/htmx.min.js.tmpl
+        run: mv cmd/template/frontend/files/htmx/htmx.min.js cmd/template/frontend/files/htmx/htmx.min.js.tmpl
 
       - name: Create Pull Request
         if: steps.compare_versions.outputs.release_changed == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
-          commit-message: update htmx version ${{ steps.get_version_api.outputs.version_api }}
+          commit-message: update htmx ${{ steps.get_version_api.outputs.version_api }}
           title: Update htmx to version ${{ steps.get_version_api.outputs.version_api }} [Bot]
-          body: New htmx ${{ steps.get_version_api.outputs.version_api }} version is available. This is an automatic PR to update changes.
+          body: New htmx ${{ steps.get_version_api.outputs.version_api }} is available. This is an automatic PR to update changes.
           branch: htmx-version-update
           base: main

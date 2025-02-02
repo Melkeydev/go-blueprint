@@ -5,13 +5,13 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  framework_matrix:
+  blueprint_matrix:
     strategy:
       matrix:
-        framework: [chi, gin, fiber, gorilla/mux, httprouter, standard-library, echo]
+        backend: [chi, gin, fiber, gorilla/mux, standard-library, echo]
         driver: [postgres]
         git: [commit]
-        advanced: [htmx, githubaction, websocket, tailwind, docker, react]
+        advanced: [githubaction, websocket, docker]
 
     runs-on: ubuntu-latest
     steps:
@@ -30,18 +30,12 @@ jobs:
           git config --global user.name 'testname'
           git config --global user.email 'testemail@users.noreply.github.com'
 
-      - name: Set framework variable
-        id: set-proejct-directory
-        run: echo "PROJECT_DIRECTORY=${{ matrix.framework }}" | sed 's/\//-/g' >> $GITHUB_ENV
+      - name: Set dir variable
+        id: set-project-directory
+        run: echo "PROJECT_DIRECTORY=${{ matrix.backend }}" | sed 's/\//-/g' >> $GITHUB_ENV
 
       - name: build templates
-        run: script -q /dev/null -c "go run main.go create -n ${{ env.PROJECT_DIRECTORY }} -f ${{ matrix.framework}} -d ${{ matrix.driver }} -g ${{ matrix.git}} --advanced --feature ${{ matrix.advanced }}"
-
-      - if: ${{ matrix.advanced == 'htmx' || matrix.advanced == 'tailwind' }}
-        name: Install Templ & gen templates
-        run: | 
-          go install github.com/a-h/templ/cmd/templ@latest
-          /home/runner/go/bin/templ generate -path ${{ env.PROJECT_DIRECTORY }}
+        run: script -q /dev/null -c "go run main.go create -n ${{ env.PROJECT_DIRECTORY }} -b ${{ matrix.backend}} -d ${{ matrix.driver }} -g ${{ matrix.git}} -a --feature ${{ matrix.advanced }}"
 
       - name: golangci-lint
         run: | 

@@ -19,30 +19,79 @@ const ProgramName = "go-blueprint"
 func NonInteractiveCommand(use string, flagSet *pflag.FlagSet) string {
 	nonInteractiveCommand := fmt.Sprintf("%s %s", ProgramName, use)
 
-	visitFn := func(flag *pflag.Flag) {
-		if flag.Name != "help" {
-			if flag.Name == "feature" {
-				featureFlagsString := ""
-				// Creates string representation for the feature flags to be
-				// concatenated with the nonInteractiveCommand
-				for _, k := range strings.Split(flag.Value.String(), ",") {
-					if k != "" {
-						featureFlagsString += fmt.Sprintf(" --feature %s", k)
-					}
-				}
-				nonInteractiveCommand += featureFlagsString
-			} else if flag.Value.Type() == "bool" {
-				if flag.Value.String() == "true" {
-					nonInteractiveCommand = fmt.Sprintf("%s --%s", nonInteractiveCommand, flag.Name)
-				}
-			} else {
-				nonInteractiveCommand = fmt.Sprintf("%s --%s %s", nonInteractiveCommand, flag.Name, flag.Value.String())
-			}
+	// Helper function to get flag prefix (-n or --name)
+	getFlagPrefix := func(flag *pflag.Flag) string {
+		if flag.Shorthand != "" {
+			return fmt.Sprintf("-%s", flag.Shorthand)
 		}
+		return fmt.Sprintf("--%s", flag.Name)
 	}
 
-	flagSet.SortFlags = false
-	flagSet.VisitAll(visitFn)
+	// name flag
+	flagSet.VisitAll(func(flag *pflag.Flag) {
+		if flag.Name == "name" && flag.Value.String() != "" {
+			nonInteractiveCommand = fmt.Sprintf("%s %s %s", nonInteractiveCommand,
+				getFlagPrefix(flag), flag.Value.String())
+		}
+	})
+
+	// main flags (excluding name, git, feature, frontend-advanced, and advanced)
+	flagSet.VisitAll(func(flag *pflag.Flag) {
+		if flag.Name != "help" && flag.Name != "feature" &&
+			flag.Name != "frontend-advanced" && flag.Name != "git" &&
+			flag.Name != "name" && flag.Name != "advanced" {
+			if flag.Value.Type() == "bool" {
+				if flag.Value.String() == "true" {
+					nonInteractiveCommand = fmt.Sprintf("%s %s", nonInteractiveCommand,
+						getFlagPrefix(flag))
+				}
+			} else {
+				if flag.Value.String() != "" {
+					nonInteractiveCommand = fmt.Sprintf("%s %s %s", nonInteractiveCommand,
+						getFlagPrefix(flag), flag.Value.String())
+				}
+			}
+		}
+	})
+
+	// frontend-advanced flags
+	flagSet.VisitAll(func(flag *pflag.Flag) {
+		if flag.Name == "frontend-advanced" && flag.Value.String() != "" {
+			nonInteractiveCommand = fmt.Sprintf("%s %s %s", nonInteractiveCommand,
+				getFlagPrefix(flag), flag.Value.String())
+		}
+	})
+
+	// advanced flag and features together
+	var hasAdvanced bool
+	flagSet.VisitAll(func(flag *pflag.Flag) {
+		if flag.Name == "advanced" && flag.Value.String() == "true" {
+			hasAdvanced = true
+			nonInteractiveCommand = fmt.Sprintf("%s %s", nonInteractiveCommand,
+				getFlagPrefix(flag))
+		}
+	})
+
+	if hasAdvanced {
+		flagSet.VisitAll(func(flag *pflag.Flag) {
+			if flag.Name == "feature" {
+				featureFlags := strings.Split(flag.Value.String(), ",")
+				for _, k := range featureFlags {
+					if k != "" {
+						nonInteractiveCommand = fmt.Sprintf("%s --feature %s", nonInteractiveCommand, k)
+					}
+				}
+			}
+		})
+	}
+
+	// git flag
+	flagSet.VisitAll(func(flag *pflag.Flag) {
+		if flag.Name == "git" && flag.Value.String() != "" {
+			nonInteractiveCommand = fmt.Sprintf("%s %s %s", nonInteractiveCommand,
+				getFlagPrefix(flag), flag.Value.String())
+		}
+	})
 
 	return nonInteractiveCommand
 }

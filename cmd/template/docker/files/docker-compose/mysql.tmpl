@@ -22,7 +22,7 @@ services:
     networks:
       - blueprint
 {{- end }}
-{{- if and .AdvancedOptions.react .AdvancedOptions.docker }}
+{{- if and (eq .FrontendFramework "react") (.AdvancedOptions.docker) }}
   frontend:
     build:
       context: .
