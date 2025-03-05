@@ -100,7 +100,7 @@ var (
 	echoPackage    = []string{"github.com/labstack/echo/v4", "github.com/labstack/echo/v4/middleware"}
 
 	mysqlDriver    = []string{"github.com/go-sql-driver/mysql"}
-	postgresDriver = []string{"github.com/lib/pq"}
+	postgresDriver = []string{"github.com/jackc/pgx/v5/stdlib"}
 	sqliteDriver   = []string{"github.com/mattn/go-sqlite3"}
 	redisDriver    = []string{"github.com/redis/go-redis/v9"}
 	mongoDriver    = []string{"go.mongodb.org/mongo-driver"}
