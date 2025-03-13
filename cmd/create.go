@@ -273,7 +273,7 @@ var createCmd = &cobra.Command{
 			if releaseErr := spinner.ReleaseTerminal(); releaseErr != nil {
 				log.Printf("Problem releasing terminal: %v", releaseErr)
 			}
-			log.Printf("Problem creating files for project. %v", err)
+			log.Printf("Problem creating files for project.")
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
 

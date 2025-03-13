@@ -293,7 +293,7 @@ func (p *Project) CreateMainFile() error {
 	if p.ProjectType != flags.StandardLibrary {
 		err = utils.GoGetPackage(projectPath, p.FrameworkMap[p.ProjectType].packageName)
 		if err != nil {
-			log.Printf("Could not install go dependency for the chosen framework %v\n", err)
+			log.Println("Could not install go dependency for the chosen framework")
 			return err
 		}
 	}
@@ -303,7 +303,7 @@ func (p *Project) CreateMainFile() error {
 		p.createDBDriverMap()
 		err = utils.GoGetPackage(projectPath, p.DBDriverMap[p.DBDriver].packageName)
 		if err != nil {
-			log.Printf("Could not install go dependency for chosen driver %v\n", err)
+			log.Println("Could not install go dependency for chosen driver")
 			return err
 		}
 
@@ -348,7 +348,7 @@ func (p *Project) CreateMainFile() error {
 	err = utils.GoGetPackage(projectPath, godotenvPackage)
 
 	if err != nil {
-		log.Printf("Could not install go dependency %v\n", err)
+		log.Println("Could not install go dependency")
 
 		return err
 	}
@@ -517,7 +517,7 @@ func (p *Project) CreateMainFile() error {
 		}
 		err = utils.GoGetPackage(projectPath, templPackage)
 		if err != nil {
-			log.Printf("Could not install go dependency %v\n", err)
+			log.Println("Could not install go dependency")
 			return err
 		}
 
@@ -535,7 +535,7 @@ func (p *Project) CreateMainFile() error {
 			}
 			err = utils.GoGetPackage(projectPath, []string{"github.com/gofiber/fiber/v2/middleware/adaptor"})
 			if err != nil {
-				log.Printf("Could not install go dependency %v\n", err)
+				log.Println("Could not install go dependency")
 				return err
 			}
 		} else {
