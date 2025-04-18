@@ -829,10 +829,9 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 	}
 
 	// the interactive vite command will not work as we can't interact with it
-	fmt.Println("Installing create-vite (using cache if available)...")
+	fmt.Println("Installing create-vite...")
 	cmd := exec.Command("npm", "create", "vite@latest", "frontend", "--",
 		"--template", "react-ts",
-		"--prefer-offline",
 		"--no-fund")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -887,11 +886,10 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 
 	// Handle Tailwind configuration if selected
 	if p.AdvancedOptions[string(flags.Tailwind)] {
-		fmt.Println("Installing Tailwind dependencies (using cache if available)...")
+		fmt.Println("Installing Tailwind dependencies...")
 		cmd := exec.Command("npm", "install",
-			"--prefer-offline",
 			"--no-fund",
-			"tailwindcss", "postcss", "autoprefixer")
+			"tailwindcss@3.4.17", "postcss", "autoprefixer")
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
@@ -899,7 +897,7 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 		}
 
 		fmt.Println("Initializing Tailwind...")
-		cmd = exec.Command("npx", "--prefer-offline", "tailwindcss", "init", "-p")
+		cmd = exec.Command("npx", "tailwindcss", "init", "-p")
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
