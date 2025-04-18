@@ -230,21 +230,11 @@ templ FolderStructure(options OptionsStruct, commandStr string) {
 				    @icons.JSONIcon()
 				    <p class="inline ml-2">package-lock.json</p>
 				</li>
-				<li>
-				    @icons.JavaScriptIcon()
-				    <p class="inline ml-2">postcss.config.js</p>
-				</li>
 			    }
 			    <li>
 				@icons.MarkdownIcon()
 				<p class="inline ml-2">README.md</p>
 			    </li>
-			    if contains(options.AdvancedOptions, "tailwind") {
-				<li>
-				    @icons.JavaScriptIcon()
-				    <p class="inline ml-2">tailwind.config.js</p>
-				</li>
-			    }
 			    <li>
 				@icons.JSONIcon()
 				<p class="inline ml-2">tsconfig.app.json</p>
@@ -355,12 +345,6 @@ templ FolderStructure(options OptionsStruct, commandStr string) {
 		    @icons.GolangIcon()
 		    <p class="inline ml-2">go.sum</p>
 		</li>
-		if contains(options.AdvancedOptions, "tailwind") &&  contains(options.AdvancedOptions, "htmx") {
-		<li>
-		    @icons.TailwindIcon()
-		    <p class="inline ml-2">tailwind.config.js</p>
-		</li>
-		}
 	    </ul>
        </div>
   </div>
