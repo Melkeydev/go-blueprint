@@ -346,7 +346,6 @@ func (p *Project) CreateMainFile() error {
 
 	// Install the godotenv package
 	err = utils.GoGetPackage(projectPath, godotenvPackage)
-
 	if err != nil {
 		log.Println("Could not install go dependency")
 
@@ -879,7 +878,7 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 		cmd := exec.Command("npm", "install",
 			"--prefer-offline",
 			"--no-fund",
-			"tailwindcss", "@tailwindcss/vite")
+			"tailwindcss@^4", "@tailwindcss/vite")
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
@@ -918,6 +917,7 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 
 	return nil
 }
+
 func (p *Project) CreateHtmxTemplates() {
 	routesPlaceHolder := ""
 	importsPlaceHolder := ""
