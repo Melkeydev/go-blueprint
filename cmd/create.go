@@ -53,21 +53,10 @@ func init() {
 	createCmd.Flags().Var(&advancedFeatures, "feature", fmt.Sprintf("Advanced feature to use. Allowed values: %s", strings.Join(flags.AllowedAdvancedFeatures, ", ")))
 	createCmd.Flags().VarP(&flagGit, "git", "g", fmt.Sprintf("Git to use. Allowed values: %s", strings.Join(flags.AllowedGitsOptions, ", ")))
 
-	createCmd.RegisterFlagCompletionFunc("framework", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return flags.AllowedProjectTypes, cobra.ShellCompDirectiveNoFileComp
-	})
-
-	createCmd.RegisterFlagCompletionFunc("driver", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return flags.AllowedDBDrivers, cobra.ShellCompDirectiveNoFileComp
-	})
-
-	createCmd.RegisterFlagCompletionFunc("feature", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return flags.AllowedAdvancedFeatures, cobra.ShellCompDirectiveNoFileComp
-	})
-
-	createCmd.RegisterFlagCompletionFunc("git", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return flags.AllowedGitsOptions, cobra.ShellCompDirectiveNoFileComp
-	})
+	utils.RegisterStaticCompletions(createCmd, "framework", flags.AllowedProjectTypes)
+	utils.RegisterStaticCompletions(createCmd, "driver", flags.AllowedDBDrivers)
+	utils.RegisterStaticCompletions(createCmd, "feature", flags.AllowedAdvancedFeatures)
+	utils.RegisterStaticCompletions(createCmd, "git", flags.AllowedGitsOptions)
 }
 
 type Options struct {

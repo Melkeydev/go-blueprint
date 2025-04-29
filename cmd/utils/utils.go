@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
 
@@ -45,6 +46,12 @@ func NonInteractiveCommand(use string, flagSet *pflag.FlagSet) string {
 	flagSet.VisitAll(visitFn)
 
 	return nonInteractiveCommand
+}
+
+func RegisterStaticCompletions(cmd *cobra.Command, flag string, options []string) {
+	cmd.RegisterFlagCompletionFunc(flag, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return options, cobra.ShellCompDirectiveNoFileComp
+	})
 }
 
 // ExecuteCmd provides a shorthand way to run a shell command
