@@ -5,6 +5,7 @@ package utils
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"os/exec"
 	"regexp"
 	"strings"
@@ -49,9 +50,13 @@ func NonInteractiveCommand(use string, flagSet *pflag.FlagSet) string {
 }
 
 func RegisterStaticCompletions(cmd *cobra.Command, flag string, options []string) {
-	cmd.RegisterFlagCompletionFunc(flag, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	err := cmd.RegisterFlagCompletionFunc(flag, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return options, cobra.ShellCompDirectiveNoFileComp
 	})
+
+	if err != nil {
+		log.Printf("warning: could not register completion for --%s: %v", flag, err)
+	}
 }
 
 // ExecuteCmd provides a shorthand way to run a shell command
