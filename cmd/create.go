@@ -52,6 +52,11 @@ func init() {
 	createCmd.Flags().BoolP("advanced", "a", false, "Get prompts for advanced features")
 	createCmd.Flags().Var(&advancedFeatures, "feature", fmt.Sprintf("Advanced feature to use. Allowed values: %s", strings.Join(flags.AllowedAdvancedFeatures, ", ")))
 	createCmd.Flags().VarP(&flagGit, "git", "g", fmt.Sprintf("Git to use. Allowed values: %s", strings.Join(flags.AllowedGitsOptions, ", ")))
+
+	utils.RegisterStaticCompletions(createCmd, "framework", flags.AllowedProjectTypes)
+	utils.RegisterStaticCompletions(createCmd, "driver", flags.AllowedDBDrivers)
+	utils.RegisterStaticCompletions(createCmd, "feature", flags.AllowedAdvancedFeatures)
+	utils.RegisterStaticCompletions(createCmd, "git", flags.AllowedGitsOptions)
 }
 
 type Options struct {
