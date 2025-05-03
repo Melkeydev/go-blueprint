@@ -39,7 +39,7 @@ To recreate the project using the same configuration semi-interactively, use the
 ```bash
 go-blueprint create --name my-project --framework chi --driver mysql --git commit --advanced
 ```
-This approach opens interactive mode only for advanced features, which allow you to choose the one or combination of available features.
+This approach opens interactive mode only for advanced features, which allows you to choose the one or combination of available features.
 
 ![AdvancedFlag](../public/blueprint_advanced.png)
 
