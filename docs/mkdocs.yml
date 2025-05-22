@@ -18,7 +18,7 @@ theme:
     - navigation.sections
     - navigation.footer
     - toc.flow
-  palette: 
+  palette:
     - scheme: default
       toggle:
         icon: material/brightness-7
@@ -33,44 +33,45 @@ nav:
   - Installation: installation.md
   - Blueprint UI: blueprint-ui.md
   - Project creation & default config:
-    - Project init: creating-project/project-init.md
-    - Makefile: creating-project/makefile.md
-    - Air: creating-project/air.md
+      - Project init: creating-project/project-init.md
+      - Makefile: creating-project/makefile.md
+      - Justfile: creating-project/justfile.md
+      - Air: creating-project/air.md
   - Blueprint Core:
-    - Frameworks: blueprint-core/frameworks.md
-    - DB Drivers: blueprint-core/db-drivers.md
+      - Frameworks: blueprint-core/frameworks.md
+      - DB Drivers: blueprint-core/db-drivers.md
   - Advanced Flag:
-    - AF Usage: advanced-flag/advanced-flag.md
-    - HTMX and Templ: advanced-flag/htmx-templ.md
-    - Tailwind CSS: advanced-flag/tailwind.md
-    - GoReleaser & GoTest CI: advanced-flag/goreleaser.md
-    - Websocket: advanced-flag/websocket.md
-    - Docker: advanced-flag/docker.md
-    - React & Vite (TypeScript): advanced-flag/react-vite.md
-  - Testing endpoints: 
-    - Server: endpoints-test/server.md
-    - DB Health Endpoints: 
-       - SQL DBs: endpoints-test/sql.md
-       - Redis: endpoints-test/redis.md
-       - MongoDB: endpoints-test/mongo.md
-       - ScyllaDB: endpoints-test/scylladb.md
-    - Websocket: endpoints-test/websocket.md
-    - Web Endpoint: endpoints-test/web.md
+      - AF Usage: advanced-flag/advanced-flag.md
+      - HTMX and Templ: advanced-flag/htmx-templ.md
+      - Tailwind CSS: advanced-flag/tailwind.md
+      - GoReleaser & GoTest CI: advanced-flag/goreleaser.md
+      - Websocket: advanced-flag/websocket.md
+      - Docker: advanced-flag/docker.md
+      - React & Vite (TypeScript): advanced-flag/react-vite.md
+  - Testing endpoints:
+      - Server: endpoints-test/server.md
+      - DB Health Endpoints:
+          - SQL DBs: endpoints-test/sql.md
+          - Redis: endpoints-test/redis.md
+          - MongoDB: endpoints-test/mongo.md
+          - ScyllaDB: endpoints-test/scylladb.md
+      - Websocket: endpoints-test/websocket.md
+      - Web Endpoint: endpoints-test/web.md
 
 extra:
-    social:
-      - icon: fontawesome/brands/discord
-        link: https://discord.com/invite/HHZMSCu
-        name: Discord
-      - icon: fontawesome/brands/twitch
-        link: https://www.twitch.tv/melkey
-        name: Twitch
-      - icon: fontawesome/brands/youtube
-        link: https://www.youtube.com/@MelkeyDev
-        name: YouTube
-      - icon: fontawesome/brands/twitter
-        link: https://x.com/MelkeyDev
-        name: Twitter
-    generator: false
+  social:
+    - icon: fontawesome/brands/discord
+      link: https://discord.com/invite/HHZMSCu
+      name: Discord
+    - icon: fontawesome/brands/twitch
+      link: https://www.twitch.tv/melkey
+      name: Twitch
+    - icon: fontawesome/brands/youtube
+      link: https://www.youtube.com/@MelkeyDev
+      name: YouTube
+    - icon: fontawesome/brands/twitter
+      link: https://x.com/MelkeyDev
+      name: Twitter
+  generator: false
 
 copyright: Copyright &copy; 2025 Melkey

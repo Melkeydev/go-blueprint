@@ -23,6 +23,6 @@ The project is structured with a simple layout, focusing on the cmd, internal, a
 │       └── server.go
 ├── go.mod
 ├── go.sum
-├── Makefile
+├── Makefile/justfile
 └── README.md
 ```

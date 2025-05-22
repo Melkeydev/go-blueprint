@@ -85,6 +85,18 @@ See `go-blueprint create -h` for all the options and shorthands.
 - [Gorilla/mux](https://github.com/gorilla/mux)
 - [Echo](https://github.com/labstack/echo)
 
+<a id="builders-supported"></a>
+
+<h2>
+  <picture>
+    <img src="./public/build.gif?raw=true" width="60px" style="margin-right: 1px;">
+  </picture>
+  Builders Supported
+</h2>
+
+- [GNU Make](https://www.gnu.org/software/make/)
+- [Just](https://github.com/casey/just)
+
 <a id="database-support"></a>
 
 <h2>
@@ -152,7 +164,7 @@ Blueprint UI is a web application that allows you to create commands for the CLI
 Here's an example of setting up a project with a specific database driver:
 
 ```bash
-go-blueprint create --name my-project --framework gin --driver postgres --git commit
+go-blueprint create --name my-project --framework gin --driver postgres --git commit --builder just
 ```
 
 <p align="center">
@@ -206,7 +218,7 @@ go-blueprint create --advanced --feature react
 Or all features at once:
 
 ```bash
-go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --feature docker --git commit --feature react
+go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --feature docker --git commit --builder just --feature react
 ```
 
 <p align="center">
