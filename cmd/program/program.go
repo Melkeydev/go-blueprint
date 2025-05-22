@@ -38,6 +38,7 @@ type Project struct {
 	AdvancedOptions   map[string]bool
 	AdvancedTemplates AdvancedTemplates
 	GitOptions        flags.Git
+	BuilderOptions    flags.Builder
 	OSCheck           map[string]bool
 }
 

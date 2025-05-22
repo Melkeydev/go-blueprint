@@ -146,6 +146,20 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 					},
 				},
 			},
+			"builder": {
+				StepName: "Builder",
+				Headers:  "Which builder would you like to select for your project?",
+				Options: []Item{
+					{
+						Title: "GNU Make",
+						Desc:  "Automates building software from source code files",
+					},
+					{
+						Title: "Just",
+						Desc:  "Modern, task-focused command runner with simpler syntax.",
+					},
+				},
+			},
 		},
 	}
 
