@@ -17,6 +17,7 @@ import (
 	"github.com/melkeydev/go-blueprint/cmd/flags"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
 	"github.com/melkeydev/go-blueprint/cmd/template/advanced"
+	"github.com/melkeydev/go-blueprint/cmd/template/builder"
 	"github.com/melkeydev/go-blueprint/cmd/template/dbdriver"
 	"github.com/melkeydev/go-blueprint/cmd/template/docker"
 	"github.com/melkeydev/go-blueprint/cmd/template/framework"
@@ -34,10 +35,12 @@ type Project struct {
 	Docker            flags.Database
 	FrameworkMap      map[flags.Framework]Framework
 	DBDriverMap       map[flags.Database]Driver
+	BuilderMap        map[flags.Builder]Builder
 	DockerMap         map[flags.Database]Docker
 	AdvancedOptions   map[string]bool
 	AdvancedTemplates AdvancedTemplates
 	GitOptions        flags.Git
+	Builder           flags.Builder
 	OSCheck           map[string]bool
 }
 
@@ -61,6 +64,12 @@ type Driver struct {
 type Docker struct {
 	packageName []string
 	templater   DockerTemplater
+}
+
+type Builder struct {
+	filename string
+	commandName string
+	templater func() []byte
 }
 
 // A Templater has the methods that help build the files
@@ -90,7 +99,6 @@ type WorkflowTemplater interface {
 	Test() []byte
 	ReleaserConfig() []byte
 }
-
 var (
 	chiPackage     = []string{"github.com/go-chi/chi/v5"}
 	gorillaPackage = []string{"github.com/gorilla/mux"}
@@ -120,7 +128,7 @@ const (
 	gitHubActionPath     = ".github/workflows"
 )
 
-// CheckOs checks Operation system and generates MakeFile and `go build` command
+// CheckOs checks Operation system and generates MakeFile/justfile and `go build` command
 // Based on Project.Unixbase
 func (p *Project) CheckOS() {
 	p.OSCheck = make(map[string]bool)
@@ -215,6 +223,11 @@ func (p *Project) createDBDriverMap() {
 	}
 }
 
+func (p *Project) createBuilderMap() {
+	p.BuilderMap[flags.Make] = Builder{"Makefile", "make", builder.MakeTemplate}
+	p.BuilderMap[flags.Just] = Builder{"justfile", "just", builder.JustTemplate}
+}
+
 func (p *Project) createDockerMap() {
 	p.DockerMap = make(map[flags.Database]Docker)
 
@@ -253,15 +266,17 @@ func (p *Project) CreateMainFile() error {
 	}
 
 	// Check if user.email is set.
-	emailSet, err := utils.CheckGitConfig("user.email")
-	if err != nil {
-		return err
-	}
+	if p.GitOptions.String() != flags.Skip {
 
-	if !emailSet && p.GitOptions.String() != flags.Skip {
-		fmt.Println("user.email is not set in git config.")
-		fmt.Println("Please set up git config before trying again.")
-		panic("\nGIT CONFIG ISSUE: user.email is not set in git config.\n")
+		emailSet, err := utils.CheckGitConfig("user.email")
+		if err != nil {
+			return err
+		}
+		if !emailSet {
+			fmt.Println("user.email is not set in git config.")
+			fmt.Println("Please set up git config before trying again.")
+			panic("\nGIT CONFIG ISSUE: user.email is not set in git config.\n")
+		}
 	}
 
 	p.ProjectName = strings.TrimSpace(p.ProjectName)
@@ -283,7 +298,7 @@ func (p *Project) CreateMainFile() error {
 	p.createFrameworkMap()
 
 	// Create go.mod
-	err = utils.InitGoMod(p.ProjectName, projectPath)
+	err := utils.InitGoMod(p.ProjectName, projectPath)
 	if err != nil {
 		log.Printf("Could not initialize go.mod in new project %v\n", err)
 		return err
@@ -346,7 +361,6 @@ func (p *Project) CreateMainFile() error {
 
 	// Install the godotenv package
 	err = utils.GoGetPackage(projectPath, godotenvPackage)
-
 	if err != nil {
 		log.Println("Could not install go dependency")
 
@@ -373,16 +387,18 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	makeFile, err := os.Create(filepath.Join(projectPath, "Makefile"))
+
+	p.createBuilderMap()
+	builderFile, err := os.Create(filepath.Join(projectPath, p.BuilderMap[p.Builder].filename))
 	if err != nil {
 		return err
 	}
 
-	defer makeFile.Close()
+	defer builderFile.Close()
 
-	// inject makefile template
-	makeFileTemplate := template.Must(template.New("makefile").Parse(string(framework.MakeTemplate())))
-	err = makeFileTemplate.Execute(makeFile, p)
+	// inject builderfile template
+	builderFileTemplate := template.Must(template.New(p.BuilderMap[p.Builder].filename).Parse(string(p.BuilderMap[p.Builder].templater())))
+	err = builderFileTemplate.Execute(builderFile, p)
 	if err != nil {
 		return err
 	}
@@ -679,12 +695,12 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	nameSet, err := utils.CheckGitConfig("user.name")
-	if err != nil {
-		return err
-	}
-
 	if p.GitOptions != flags.Skip {
+		nameSet, err := utils.CheckGitConfig("user.name")
+		if err != nil {
+			return err
+		}
+
 		if !nameSet {
 			fmt.Println("user.name is not set in git config.")
 			fmt.Println("Please set up git config before trying again.")
@@ -918,6 +934,7 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 
 	return nil
 }
+
 func (p *Project) CreateHtmxTemplates() {
 	routesPlaceHolder := ""
 	importsPlaceHolder := ""
