@@ -7,7 +7,7 @@ Go-Blueprint provides a convenient CLI tool to effortlessly set up your Go proje
 
 ## Binary Installation
 
-To install the Go-Blueprint CLI tool as a binary, Run the following command:
+To install the Go-Blueprint CLI tool as a binary, run the following command:
 
 ```sh
 go install github.com/melkeydev/go-blueprint@latest
@@ -15,7 +15,7 @@ go install github.com/melkeydev/go-blueprint@latest
 
 This command installs the Go-Blueprint binary, automatically binding it to your `$GOPATH`.
 
-> if you’re using Zsh, you’ll need to add it manually to `~/.zshrc`.
+> If you’re using Zsh, you’ll need to add it manually to `~/.zshrc`.
 
 > After running the installation command, you need to update your `PATH` environment variable. To do this, you need to find out the correct `GOPATH` for your system. You can do this by running the following command:
 > Check your `GOPATH`

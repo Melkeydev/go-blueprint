@@ -7,14 +7,14 @@ The React advanced flag can be combined with the Tailwind flag for enhanced styl
 ```bash
 / (Root)
 ├── frontend/                     # React advanced flag. Excludes HTMX.
-│   ├── .env                      # Frontend environment configuration
+│   ├── .env                      # Frontend environment configuration.
 │   ├── node_modules/             # Node dependencies.
 │   ├── public/
 │   │   ├── index.html
 │   │   └── favicon.ico
 │   ├── src/                      # React source files.
 │   │   ├── App.tsx               # Main React component.
-│   │   ├── assets/               # React assets directory
+│   │   ├── assets/               # React assets directory.
 │   │   │   └── logo.svg
 │   │   ├── components/           # React components directory.
 │   │   │   ├── Header.tsx
@@ -36,40 +36,51 @@ The React advanced flag can be combined with the Tailwind flag for enhanced styl
 ## Usage
 
 - **Navigate to the `frontend` directory**:
-   First, navigate to the `frontend` directory where the React project resides.
+  First, navigate to the `frontend` directory where the React project resides.
 
 ```bash
 cd frontend
 ```
 
 - **Install Dependencies**:
-   Use npm to install all necessary dependencies.
+  Use npm to install all necessary dependencies.
 
 ```bash
 npm install
 ```
 
 - **Run the Development Server**:
-   Start the Vite development server for local development. This will launch a live-reloading server on a default port.
+  Start the Vite development server for local development. This will launch a live-reloading server on a default port.
 
 ```bash
 npm run dev
 ```
 
-   You should now be able to access the React application by opening a browser and navigating to `http://localhost:5173`.
-
+You should now be able to access the React application by opening a browser and navigating to `http://localhost:5173`.
 
 You can extend the `vite.config.ts` to include additional configurations as needed, such as adding plugins for optimizing the build process, enabling TypeScript support, or configuring Tailwind CSS.
 
-## Makefile
+## Makefile/justfile
 
-The make run target will start the Go server in the backend, install frontend dependencies, and run the Vite development server for the frontend.
+The make/just run target will start the Go server in the backend, install frontend dependencies, and run the Vite development server for the frontend.
+
+# Makefile
 
 ```bash
 run:
 	@go run cmd/api/main.go &
 	@npm install --prefix ./frontend
 	@npm run dev --prefix ./frontend
+```
+
+# justfile
+
+```bash
+run:
+	go run cmd/api/main.go &
+	npm install --prefix ./frontend
+	npm run dev --prefix ./frontend
+
 ```
 
 After running this command, you can verify the connection between the frontend and backend by checking the console. You can also fetch data from the backend to test the integration.
@@ -197,7 +208,11 @@ services:
     volumes:
       - psql_volume_bp:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${BLUEPRINT_DB_USERNAME} -d ${BLUEPRINT_DB_DATABASE}'"]
+      test:
+        [
+          "CMD-SHELL",
+          "sh -c 'pg_isready -U ${BLUEPRINT_DB_USERNAME} -d ${BLUEPRINT_DB_DATABASE}'",
+        ]
       interval: 5s
       timeout: 5s
       retries: 3

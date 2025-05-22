@@ -44,6 +44,7 @@ func init() {
 	var flagDBDriver flags.Database
 	var advancedFeatures flags.AdvancedFeatures
 	var flagGit flags.Git
+	var flagBuilder flags.Builder
 	rootCmd.AddCommand(createCmd)
 
 	createCmd.Flags().StringP("name", "n", "", "Name of project to create")
@@ -52,6 +53,13 @@ func init() {
 	createCmd.Flags().BoolP("advanced", "a", false, "Get prompts for advanced features")
 	createCmd.Flags().Var(&advancedFeatures, "feature", fmt.Sprintf("Advanced feature to use. Allowed values: %s", strings.Join(flags.AllowedAdvancedFeatures, ", ")))
 	createCmd.Flags().VarP(&flagGit, "git", "g", fmt.Sprintf("Git to use. Allowed values: %s", strings.Join(flags.AllowedGitsOptions, ", ")))
+	createCmd.Flags().VarP(&flagBuilder, "builder", "br", fmt.Sprintf("Builder to use. Allowed values: %s", strings.Join(flags.AllowedBuilders, ", ")))
+
+	utils.RegisterStaticCompletions(createCmd, "framework", flags.AllowedProjectTypes)
+	utils.RegisterStaticCompletions(createCmd, "driver", flags.AllowedDBDrivers)
+	utils.RegisterStaticCompletions(createCmd, "feature", flags.AllowedAdvancedFeatures)
+	utils.RegisterStaticCompletions(createCmd, "git", flags.AllowedGitsOptions)
+	utils.RegisterStaticCompletions(createCmd, "builder", flags.AllowedBuilders)
 }
 
 type Options struct {
@@ -61,6 +69,7 @@ type Options struct {
 	Advanced    *multiSelect.Selection
 	Workflow    *multiInput.Selection
 	Git         *multiInput.Selection
+	Builder     *multiInput.Selection
 }
 
 // createCmd defines the "create" command for the CLI
@@ -92,6 +101,7 @@ var createCmd = &cobra.Command{
 		flagFramework := flags.Framework(cmd.Flag("framework").Value.String())
 		flagDBDriver := flags.Database(cmd.Flag("driver").Value.String())
 		flagGit := flags.Git(cmd.Flag("git").Value.String())
+		flagBuilder := flags.Builder(cmd.Flag("builder").Value.String())
 
 		options := Options{
 			ProjectName: &textinput.Output{},
@@ -101,6 +111,7 @@ var createCmd = &cobra.Command{
 				Choices: make(map[string]bool),
 			},
 			Git: &multiInput.Selection{},
+			Builder: &multiInput.Selection{},
 		}
 
 		project := &program.Project{
@@ -109,8 +120,10 @@ var createCmd = &cobra.Command{
 			DBDriver:        flagDBDriver,
 			FrameworkMap:    make(map[flags.Framework]program.Framework),
 			DBDriverMap:     make(map[flags.Database]program.Driver),
+			BuilderMap:     make(map[flags.Builder]program.Builder),
 			AdvancedOptions: make(map[string]bool),
 			GitOptions:      flagGit,
+			Builder:	 flagBuilder,
 		}
 
 		steps := steps.InitSteps(flagFramework, flagDBDriver)
@@ -238,6 +251,21 @@ var createCmd = &cobra.Command{
 			}
 		}
 
+		if project.Builder == "" {
+			isInteractive = true
+			step := steps.Steps["builder"]
+			tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, options.Builder, step.Headers, project))
+			if _, err := tprogram.Run(); err != nil {
+				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
+			}
+			project.ExitCLI(tprogram)
+
+			project.Builder = flags.Builder(strings.ToLower(options.Builder.Choice))
+			err := cmd.Flag("builder").Value.Set(project.Builder.String())
+			if err != nil {
+				log.Fatal("failed to set the builder flag value: ", err)
+			}
+		}
 		currentWorkingDir, err := os.Getwd()
 		if err != nil {
 			log.Printf("could not get current working directory: %v", err)

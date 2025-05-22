@@ -1,4 +1,4 @@
-Created project can utilizes several Go web frameworks to handle HTTP routing and server functionality. The chosen frameworks are:
+Created projects can utilize several Go web frameworks to handle HTTP routing and server functionality. The chosen frameworks are:
 
 1. [**Chi**](https://github.com/go-chi/chi): Lightweight and flexible router for building Go HTTP services.
 2. [**Echo**](https://github.com/labstack/echo): High-performance, extensible, minimalist Go web framework.
@@ -23,6 +23,6 @@ The project is structured with a simple layout, focusing on the cmd, internal, a
 │       └── server.go
 ├── go.mod
 ├── go.sum
-├── Makefile
+├── Makefile/justfile
 └── README.md
 ```

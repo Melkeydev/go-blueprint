@@ -6,51 +6,51 @@ One Paragraph of project description goes here
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-## MakeFile
+## {{if eq .Builder "make"}}Makefile{{else if eq .Builder "just"}}Justfile{{end}}
 
 Run build make command with tests
 ```bash
-make all
+{{.Builder}} all
 ```
 
 Build the application
 ```bash
-make build
+{{.Builder}} build
 ```
 
 Run the application
 ```bash
-make run
+{{.Builder}} run
 ```
 
 {{- if or .AdvancedOptions.docker (and (ne .DBDriver "none") (ne .DBDriver "sqlite")) }}
 Create DB container
 ```bash
-make docker-run
+{{.Builder}} docker-run
 ```
 
 Shutdown DB Container
 ```bash
-make docker-down
+{{.Builder}} docker-down
 ```
 
 DB Integrations Test:
 ```bash
-make itest
+{{.Builder}} itest
 ```
 {{- end }}
 
 Live reload the application:
 ```bash
-make watch
+{{.Builder}} watch
 ```
 
 Run the test suite:
 ```bash
-make test
+{{.Builder}} test
 ```
 
 Clean up binary from the last build:
 ```bash
-make clean
+{{.Builder}} clean
 ```
