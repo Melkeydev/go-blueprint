@@ -12,7 +12,7 @@ jobs:
           [chi, gin, fiber, gorilla/mux, httprouter, standard-library, echo]
         driver: [mysql, postgres, sqlite, mongo, redis, scylla, none]
         git: [commit, stage, skip]
-        builder: [just, make]
+        builder: [just]
 
     runs-on: ubuntu-latest
     steps:
