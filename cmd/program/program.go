@@ -389,7 +389,6 @@ func (p *Project) CreateMainFile() error {
 
 
 	p.createBuilderMap()
-
 	builderFile, err := os.Create(filepath.Join(projectPath, p.BuilderMap[p.Builder].filename))
 	if err != nil {
 		return err
