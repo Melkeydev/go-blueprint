@@ -111,6 +111,7 @@ var createCmd = &cobra.Command{
 				Choices: make(map[string]bool),
 			},
 			Git: &multiInput.Selection{},
+			Builder: &multiInput.Selection{},
 		}
 
 		project := &program.Project{
@@ -119,9 +120,10 @@ var createCmd = &cobra.Command{
 			DBDriver:        flagDBDriver,
 			FrameworkMap:    make(map[flags.Framework]program.Framework),
 			DBDriverMap:     make(map[flags.Database]program.Driver),
+			BuilderMap:     make(map[flags.Builder]program.Builder),
 			AdvancedOptions: make(map[string]bool),
 			GitOptions:      flagGit,
-			BuilderOptions:	 flagBuilder,
+			Builder:	 flagBuilder,
 		}
 
 		steps := steps.InitSteps(flagFramework, flagDBDriver)
@@ -249,7 +251,7 @@ var createCmd = &cobra.Command{
 			}
 		}
 
-		if project.BuilderOptions == "" {
+		if project.Builder == "" {
 			isInteractive = true
 			step := steps.Steps["builder"]
 			tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, options.Builder, step.Headers, project))
@@ -258,10 +260,10 @@ var createCmd = &cobra.Command{
 			}
 			project.ExitCLI(tprogram)
 
-			project.BuilderOptions = flags.Builder(strings.ToLower(options.Builder.Choice))
-			err := cmd.Flag("builder").Value.Set(project.BuilderOptions.String())
+			project.Builder = flags.Builder(strings.ToLower(options.Builder.Choice))
+			err := cmd.Flag("builder").Value.Set(project.Builder.String())
 			if err != nil {
-				log.Fatal("failed to set the git flag value", err)
+				log.Fatal("failed to set the builder flag value: ", err)
 			}
 		}
 		currentWorkingDir, err := os.Getwd()

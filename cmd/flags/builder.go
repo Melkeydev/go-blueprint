@@ -33,5 +33,5 @@ func (f *Builder) Set(value string) error {
 		}
 	}
 
-	return fmt.Errorf("Builder to use. Allowed values: %s", strings.Join(AllowedDBDrivers, ", "))
+	return fmt.Errorf("Builder to use. Allowed values: %s", strings.Join(AllowedBuilders, ", "))
 }

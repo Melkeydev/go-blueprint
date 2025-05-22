@@ -5,7 +5,7 @@ tmp_dir = "tmp"
 [build]
   args_bin = []
   bin = {{if .OSCheck.UnixBased }}"./main"{{ else }}".\\main.exe"{{ end }}
-  cmd = "make build"
+  cmd = "{{.Builder}} build"
   delay = 1000
   exclude_dir = ["assets", "tmp", "vendor", "testdata", "node_modules"]
   exclude_file = []

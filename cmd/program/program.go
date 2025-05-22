@@ -17,6 +17,7 @@ import (
 	"github.com/melkeydev/go-blueprint/cmd/flags"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
 	"github.com/melkeydev/go-blueprint/cmd/template/advanced"
+	"github.com/melkeydev/go-blueprint/cmd/template/builder"
 	"github.com/melkeydev/go-blueprint/cmd/template/dbdriver"
 	"github.com/melkeydev/go-blueprint/cmd/template/docker"
 	"github.com/melkeydev/go-blueprint/cmd/template/framework"
@@ -34,11 +35,12 @@ type Project struct {
 	Docker            flags.Database
 	FrameworkMap      map[flags.Framework]Framework
 	DBDriverMap       map[flags.Database]Driver
+	BuilderMap        map[flags.Builder]Builder
 	DockerMap         map[flags.Database]Docker
 	AdvancedOptions   map[string]bool
 	AdvancedTemplates AdvancedTemplates
 	GitOptions        flags.Git
-	BuilderOptions    flags.Builder
+	Builder           flags.Builder
 	OSCheck           map[string]bool
 }
 
@@ -62,6 +64,12 @@ type Driver struct {
 type Docker struct {
 	packageName []string
 	templater   DockerTemplater
+}
+
+type Builder struct {
+	filename string
+	commandName string
+	templater func() []byte
 }
 
 // A Templater has the methods that help build the files
@@ -91,7 +99,6 @@ type WorkflowTemplater interface {
 	Test() []byte
 	ReleaserConfig() []byte
 }
-
 var (
 	chiPackage     = []string{"github.com/go-chi/chi/v5"}
 	gorillaPackage = []string{"github.com/gorilla/mux"}
@@ -214,6 +221,11 @@ func (p *Project) createDBDriverMap() {
 		packageName: gocqlDriver,
 		templater:   dbdriver.ScyllaTemplate{},
 	}
+}
+
+func (p *Project) createBuilderMap() {
+	p.BuilderMap[flags.Make] = Builder{"Makefile", "make", builder.MakeTemplate}
+	p.BuilderMap[flags.Just] = Builder{"justfile", "just", builder.JustTemplate}
 }
 
 func (p *Project) createDockerMap() {
@@ -375,16 +387,19 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	makeFile, err := os.Create(filepath.Join(projectPath, "Makefile"))
+
+	p.createBuilderMap()
+
+	builderFile, err := os.Create(filepath.Join(projectPath, p.BuilderMap[p.Builder].filename))
 	if err != nil {
 		return err
 	}
 
-	defer makeFile.Close()
+	defer builderFile.Close()
 
 	// inject makefile template
-	makeFileTemplate := template.Must(template.New("makefile").Parse(string(framework.MakeTemplate())))
-	err = makeFileTemplate.Execute(makeFile, p)
+	builderFileTemplate := template.Must(template.New(p.BuilderMap[p.Builder].filename).Parse(string(p.BuilderMap[p.Builder].templater())))
+	err = builderFileTemplate.Execute(builderFile, p)
 	if err != nil {
 		return err
 	}
