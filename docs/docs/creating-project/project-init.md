@@ -15,7 +15,7 @@ This command will interactively guide you through the project setup process, all
 For a non-interactive setup, you can use flags to provide the necessary information during project creation. Here's an example:
 
 ```
-go-blueprint create --name my-project --framework gin --driver postgres --git commit
+go-blueprint create --name my-project --framework gin --driver postgres --git commit --builder just
 ```
 
 In this example:
@@ -24,6 +24,7 @@ In this example:
 - `--framework`: Specifies the Go framework to be used (e.g., "gin").
 - `--driver`: Specifies the database driver to be integrated (e.g., "postgres").
 - `--git`: Specifies the git configuration option of the project (e.g., "commit").
+- `--builder`: Specifies the builder to be used (e.g., "just").
 
 Customize the flags according to your project requirements.
 
@@ -36,9 +37,11 @@ go-blueprint create --advanced
 ```
 
 To recreate the project using the same configuration semi-interactively, use the following command:
+
 ```bash
 go-blueprint create --name my-project --framework chi --driver mysql --git commit --advanced
 ```
+
 This approach opens interactive mode only for advanced features, which allows you to choose the one or combination of available features.
 
 ![AdvancedFlag](../public/blueprint_advanced.png)
@@ -48,29 +51,37 @@ This approach opens interactive mode only for advanced features, which allows yo
 Advanced features can be enabled using the `--feature` flag along with the `--advanced` flag:
 
 HTMX:
+
 ```bash
 go-blueprint create --advanced --feature htmx
 ```
 
 CI/CD workflow:
+
 ```bash
 go-blueprint create --advanced --feature githubaction
 ```
 
 Websocket:
+
 ```bash
 go-blueprint create --advanced --feature websocket
 ```
+
 TailwindCSS:
+
 ```bash
 go-blueprint create --advanced --feature tailwind
 ```
+
 Docker:
+
 ```bash
 go-blueprint create --advanced --feature docker
 ```
 
 Or all features at once:
+
 ```bash
-go-blueprint create --name my-project --framework chi --driver mysql --git commit --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --feature docker
+go-blueprint create --name my-project --framework chi --driver mysql --git commit --builder just --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --feature docker
 ```
