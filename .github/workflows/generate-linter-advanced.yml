@@ -8,9 +8,11 @@ jobs:
   framework_matrix:
     strategy:
       matrix:
-        framework: [chi, gin, fiber, gorilla/mux, httprouter, standard-library, echo]
+        framework:
+          [chi, gin, fiber, gorilla/mux, httprouter, standard-library, echo]
         driver: [postgres]
         git: [commit]
+        builder: [just]
         advanced: [htmx, githubaction, websocket, tailwind, docker, react]
 
     runs-on: ubuntu-latest
@@ -20,7 +22,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.23.x'
+          go-version: "1.23.x"
 
       - name: Install golangci-lint
         run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.63.4
@@ -35,16 +37,16 @@ jobs:
         run: echo "PROJECT_DIRECTORY=${{ matrix.framework }}" | sed 's/\//-/g' >> $GITHUB_ENV
 
       - name: build templates
-        run: script -q /dev/null -c "go run main.go create -n ${{ env.PROJECT_DIRECTORY }} -f ${{ matrix.framework}} -d ${{ matrix.driver }} -g ${{ matrix.git}} --advanced --feature ${{ matrix.advanced }}"
+        run: script -q /dev/null -c "go run main.go create -n ${{ env.PROJECT_DIRECTORY }} -f ${{ matrix.framework}} -d ${{ matrix.driver }} -g ${{ matrix.git}} -b ${{ matrix.builder}} --advanced --feature ${{ matrix.advanced }}"
 
       - if: ${{ matrix.advanced == 'htmx' || matrix.advanced == 'tailwind' }}
         name: Install Templ & gen templates
-        run: | 
+        run: |
           go install github.com/a-h/templ/cmd/templ@latest
           /home/runner/go/bin/templ generate -path ${{ env.PROJECT_DIRECTORY }}
 
       - name: golangci-lint
-        run: | 
+        run: |
           cd ${{ env.PROJECT_DIRECTORY }}
           golangci-lint run
 
