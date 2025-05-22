@@ -156,7 +156,7 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 					},
 					{
 						Title: "Just",
-						Desc:  "Modern, task-focused command runner with simpler syntax.",
+						Desc:  "Modern, task-focused command runner with simpler syntax",
 					},
 				},
 			},
