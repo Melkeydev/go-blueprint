@@ -15,12 +15,8 @@ var airTomlTemplate []byte
 //go:embed files/README.md.tmpl
 var readmeTemplate []byte
 
-
 //go:embed files/gitignore.tmpl
 var gitIgnoreTemplate []byte
-
-// MakeTemplate returns a byte slice that represents
-// the default Makefile template.
 
 func GitIgnoreTemplate() []byte {
 	return gitIgnoreTemplate

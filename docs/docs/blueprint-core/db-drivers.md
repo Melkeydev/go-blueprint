@@ -26,7 +26,7 @@ Integrating a database adds a new layer to the project structure, primarily in t
 │       └── server.go
 ├── go.mod
 ├── go.sum
-├── Makefile
+├── Makefile/justfile
 └── README.md
 ```
 
@@ -39,7 +39,6 @@ Users can select the desired database driver based on their project's specific n
 For all the database drivers but `Sqlite`, integration tests are automatically generated to ensure that the database connection is working correctly. It uses [Testcontainers for Go](https://golang.testcontainers.org/) to spin up a containerized instance of the database server, run the tests, and then tear down the container.
 
 [Testcontainers for Go](https://golang.testcontainers.org/) is a Go package that makes it simple to create and clean up container-based dependencies for automated integration/smoke tests. The clean, easy-to-use API enables developers to programmatically define containers that should be run as part of a test and clean up those resources when the test is done.
-
 
 ### Requirements
 

@@ -86,7 +86,7 @@ Here's an overview of the project structure created by Go Blueprint when all opt
 ├── go.mod                        # Go module file for managing dependencies.
 ├── .goreleaser.yml               # Configuration file for GoReleaser, a tool for building and releasing binaries.
 ├── go.sum                        # Go module file containing checksums for dependencies.
-├── Makefile                      # Makefile for defining and running commands.
+├── Makefile/justfile                      # Makefile for defining and running commands.
 └── README.md                     # Project's README file containing essential information about the project.
 
 ```

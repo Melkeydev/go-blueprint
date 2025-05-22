@@ -12,7 +12,7 @@ jobs:
           [chi, gin, fiber, gorilla/mux, httprouter, standard-library, echo]
         driver: [postgres]
         git: [commit]
-        builder: [just]
+        builder: [just, make]
         advanced: [htmx, githubaction, websocket, tailwind, docker, react]
 
     runs-on: ubuntu-latest
@@ -37,7 +37,7 @@ jobs:
         run: echo "PROJECT_DIRECTORY=${{ matrix.framework }}" | sed 's/\//-/g' >> $GITHUB_ENV
 
       - name: build templates
-        run: script -q /dev/null -c "go run main.go create -n ${{ env.PROJECT_DIRECTORY }} -f ${{ matrix.framework}} -d ${{ matrix.driver }} -g ${{ matrix.git}} -b ${{ matrix.builder}} --advanced --feature ${{ matrix.advanced }}"
+        run: script -q /dev/null -c "go run main.go create -n ${{ env.PROJECT_DIRECTORY }} -f ${{ matrix.framework}} -d ${{ matrix.driver }} -g ${{ matrix.git}} -br ${{ matrix.builder}} --advanced --feature ${{ matrix.advanced }}"
 
       - if: ${{ matrix.advanced == 'htmx' || matrix.advanced == 'tailwind' }}
         name: Install Templ & gen templates

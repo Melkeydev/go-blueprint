@@ -128,7 +128,7 @@ const (
 	gitHubActionPath     = ".github/workflows"
 )
 
-// CheckOs checks Operation system and generates MakeFile and `go build` command
+// CheckOs checks Operation system and generates MakeFile/justfile and `go build` command
 // Based on Project.Unixbase
 func (p *Project) CheckOS() {
 	p.OSCheck = make(map[string]bool)
@@ -396,7 +396,7 @@ func (p *Project) CreateMainFile() error {
 
 	defer builderFile.Close()
 
-	// inject makefile template
+	// inject builderfile template
 	builderFileTemplate := template.Must(template.New(p.BuilderMap[p.Builder].filename).Parse(string(p.BuilderMap[p.Builder].templater())))
 	err = builderFileTemplate.Execute(builderFile, p)
 	if err != nil {

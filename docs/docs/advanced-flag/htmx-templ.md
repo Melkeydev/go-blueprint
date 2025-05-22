@@ -22,28 +22,32 @@ web/
 ## Usage
 
 - **Navigate to Project Directory:**
+
 ```bash
 cd my-project
 ```
 
 - **Install Templ CLI:**
+
 ```bash
 go install github.com/a-h/templ/cmd/templ@latest
 ```
 
 - **Generate Templ Function Files:**
+
 ```bash
 templ generate
 ```
 
 - **Start Server:**
+
 ```bash
 make run
 ```
 
-## Makefile
+## Makefile/justfile
 
-Automates templ with Makefile entries, which are automatically created if the htmx advanced flag is used.
+Automates templ with Makefile/justfile entries, which are automatically created if the htmx advanced flag is used.
 It detects if templ is installed or not and generates templates with the make build command.
 Both Windows and Unix-like OS are supported.
 
@@ -51,7 +55,7 @@ Both Windows and Unix-like OS are supported.
 all: build
 
 templ-install:
-	@if ! command -v templ > /dev/null; then \
+	if ! command -v templ > /dev/null; then \
 		read -p "Go's 'templ' is not installed on your machine. Do you want to install it? [Y/n] " choice; \
 		if [ "$$choice" != "n" ] && [ "$$choice" != "N" ]; then \
 			go install github.com/a-h/templ/cmd/templ@latest; \
@@ -66,9 +70,9 @@ templ-install:
 	fi
 
 build: templ-install
-	@echo "Building..."
-	@templ generate
-	@go build -o main cmd/api/main.go
+	echo "Building..."
+	templ generate
+	go build -o main cmd/api/main.go
 ```
 
 ## Templating
