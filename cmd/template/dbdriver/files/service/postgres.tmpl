@@ -131,6 +131,8 @@ func (s *service) Close() error {
 	log.Printf("Disconnected from database: %s", database)
 	return s.db.Close()
 }
+{{- if .AdvancedOptions.sqlc}}
 func (s *service) Queries() *repository.Queries {
 	return s.queries
 }
+{{- end}}
