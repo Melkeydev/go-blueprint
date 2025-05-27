@@ -9,6 +9,10 @@ import (
 	"strconv"
 	"time"
 
+	{{- if .AdvancedOptions.sqlc}}
+	"{{.ProjectName}}/internal/database/repository"
+	{{- end}}
+
 	_ "github.com/mattn/go-sqlite3"
 	_ "github.com/joho/godotenv/autoload"
 )
@@ -26,6 +30,9 @@ type Service interface {
 
 type service struct {
 	db *sql.DB
+	{{- if .AdvancedOptions.sqlc}}
+	Queries *repository.Queries
+	{{- end}}
 }
 
 var (
@@ -46,8 +53,14 @@ func New() Service {
 		log.Fatal(err)
 	}
 
+	{{- if .AdvancedOptions.sqlc}}
+	queries := repository.New(db)
+	{{- end}}
 	dbInstance = &service{
 		db: db,
+		{{- if .AdvancedOptions.sqlc}}
+		Queries: queries,
+		{{- end}}
 	}
 	return dbInstance
 }

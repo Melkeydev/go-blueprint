@@ -1,0 +1,9 @@
+-- Create a simple users table
+CREATE TABLE users (
+    id UUID PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL
+);
+
+-- Add an index for faster lookups on email
+CREATE INDEX users_email_idx ON users (email);

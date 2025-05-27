@@ -54,7 +54,7 @@ type Framework struct {
 }
 
 type Driver struct {
-	packageName []string
+	PackageName []string
 	templater   DBDriverTemplater
 }
 
@@ -189,28 +189,28 @@ func (p *Project) createFrameworkMap() {
 
 func (p *Project) createDBDriverMap() {
 	p.DBDriverMap[flags.MySql] = Driver{
-		packageName: mysqlDriver,
+		PackageName: mysqlDriver,
 		templater:   dbdriver.MysqlTemplate{},
 	}
 	p.DBDriverMap[flags.Postgres] = Driver{
-		packageName: postgresDriver,
+		PackageName: postgresDriver,
 		templater:   dbdriver.PostgresTemplate{},
 	}
 	p.DBDriverMap[flags.Sqlite] = Driver{
-		packageName: sqliteDriver,
+		PackageName: sqliteDriver,
 		templater:   dbdriver.SqliteTemplate{},
 	}
 	p.DBDriverMap[flags.Mongo] = Driver{
-		packageName: mongoDriver,
+		PackageName: mongoDriver,
 		templater:   dbdriver.MongoTemplate{},
 	}
 	p.DBDriverMap[flags.Redis] = Driver{
-		packageName: redisDriver,
+		PackageName: redisDriver,
 		templater:   dbdriver.RedisTemplate{},
 	}
 
 	p.DBDriverMap[flags.Scylla] = Driver{
-		packageName: gocqlDriver,
+		PackageName: gocqlDriver,
 		templater:   dbdriver.ScyllaTemplate{},
 	}
 }
@@ -301,7 +301,10 @@ func (p *Project) CreateMainFile() error {
 	// Install the correct package for the selected driver
 	if p.DBDriver != "none" {
 		p.createDBDriverMap()
-		err = utils.GoGetPackage(projectPath, p.DBDriverMap[p.DBDriver].packageName)
+		if p.AdvancedOptions[string(flags.Sqlc)] && (p.DBDriver != flags.Postgres && p.DBDriver != flags.MySql && p.DBDriver != flags.Sqlite) {
+			p.AdvancedOptions[string(flags.Sqlc)] = false
+		}
+		err = utils.GoGetPackage(projectPath, p.DBDriverMap[p.DBDriver].PackageName)
 		if err != nil {
 			log.Println("Could not install go dependency for chosen driver")
 			return err
@@ -454,6 +457,50 @@ func (p *Project) CreateMainFile() error {
 		if err != nil {
 			return err
 		}
+	}
+
+	if p.AdvancedOptions[string(flags.Sqlc)] {
+		yamlFile, err := os.Create(fmt.Sprintf("%s/sqlc.yaml", projectPath))
+		if err != nil {
+			return err
+		}
+		defer yamlFile.Close()
+
+		yamlTemplate := template.Must(template.New("sqlcyaml").Parse((string(advanced.SqlcYamlTemplate()))))
+		err = yamlTemplate.Execute(yamlFile, p)
+		if err != nil {
+			return err
+		}
+
+		err = os.MkdirAll(fmt.Sprintf("%s/%s/sql", projectPath, internalDatabasePath), 0o755)
+		if err != nil {
+			return err
+		}
+
+		schemaFile, err := os.Create(fmt.Sprintf("%s/%s/sql/schema.sql", projectPath, internalDatabasePath))
+		if err != nil {
+			return err
+		}
+		defer schemaFile.Close()
+
+		queryFile, err := os.Create(fmt.Sprintf("%s/%s/sql/query.sql", projectPath, internalDatabasePath))
+		if err != nil {
+			return err
+		}
+		defer queryFile.Close()
+
+		schamaTemplate := advanced.SqlcSchemaTemplate()
+		_, err = schemaFile.Write(schamaTemplate)
+		if err != nil {
+			return err
+		}
+
+		queryTemplate := advanced.SqlcQueryTemplate()
+		_, err = queryFile.Write(queryTemplate)
+		if err != nil {
+			return err
+		}
+
 	}
 
 	if p.AdvancedOptions[string(flags.Htmx)] {
