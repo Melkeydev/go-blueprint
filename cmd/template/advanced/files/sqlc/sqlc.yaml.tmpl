@@ -7,7 +7,6 @@ sql:
       go:
         package: "repository"
         out: "internal/database/repository"
-        sql_package: "{{ index (index .DBDriverMap .DBDriver).PackageName 0 }}"
         emit_json_tags: true
         emit_prepared_queries: false
         emit_interface: true

@@ -489,12 +489,6 @@ func (p *Project) CreateMainFile() error {
 		}
 		defer queryFile.Close()
 
-		schamaTemplate := advanced.SqlcSchemaTemplate()
-		_, err = schemaFile.Write(schamaTemplate)
-		if err != nil {
-			return err
-		}
-
 		queryTemplate := advanced.SqlcQueryTemplate()
 		_, err = queryFile.Write(queryTemplate)
 		if err != nil {

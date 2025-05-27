@@ -79,9 +79,6 @@ var fiberWebsocketTemplImports []byte
 //go:embed files/sqlc/sqlc.yaml.tmpl
 var sqlcYamlTemplate []byte
 
-//go:embed files/sqlc/schema.sql.tmpl
-var sqlcSchemaTemplate []byte
-
 //go:embed files/sqlc/query.sql.tmpl
 var sqlcQueryTemplate []byte
 
@@ -183,10 +180,6 @@ func GinHtmxTemplImportsTemplate() []byte {
 
 func SqlcYamlTemplate() []byte {
 	return sqlcYamlTemplate
-}
-
-func SqlcSchemaTemplate() []byte {
-	return sqlcSchemaTemplate
 }
 
 func SqlcQueryTemplate() []byte {

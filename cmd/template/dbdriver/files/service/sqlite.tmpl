@@ -31,7 +31,7 @@ type Service interface {
 type service struct {
 	db *sql.DB
 	{{- if .AdvancedOptions.sqlc}}
-	Queries *repository.Queries
+	queries *repository.Queries
 	{{- end}}
 }
 
@@ -59,7 +59,7 @@ func New() Service {
 	dbInstance = &service{
 		db: db,
 		{{- if .AdvancedOptions.sqlc}}
-		Queries: queries,
+		queries: queries,
 		{{- end}}
 	}
 	return dbInstance
@@ -123,4 +123,7 @@ func (s *service) Health() map[string]string {
 func (s *service) Close() error {
 	log.Printf("Disconnected from database: %s", dburl)
 	return s.db.Close()
+}
+func (s *service) Quiries() *repository.Queries {
+	return s.queries
 }
