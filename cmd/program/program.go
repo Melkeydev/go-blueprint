@@ -54,7 +54,7 @@ type Framework struct {
 }
 
 type Driver struct {
-	PackageName []string
+	packageName []string
 	templater   DBDriverTemplater
 }
 
@@ -189,28 +189,28 @@ func (p *Project) createFrameworkMap() {
 
 func (p *Project) createDBDriverMap() {
 	p.DBDriverMap[flags.MySql] = Driver{
-		PackageName: mysqlDriver,
+		packageName: mysqlDriver,
 		templater:   dbdriver.MysqlTemplate{},
 	}
 	p.DBDriverMap[flags.Postgres] = Driver{
-		PackageName: postgresDriver,
+		packageName: postgresDriver,
 		templater:   dbdriver.PostgresTemplate{},
 	}
 	p.DBDriverMap[flags.Sqlite] = Driver{
-		PackageName: sqliteDriver,
+		packageName: sqliteDriver,
 		templater:   dbdriver.SqliteTemplate{},
 	}
 	p.DBDriverMap[flags.Mongo] = Driver{
-		PackageName: mongoDriver,
+		packageName: mongoDriver,
 		templater:   dbdriver.MongoTemplate{},
 	}
 	p.DBDriverMap[flags.Redis] = Driver{
-		PackageName: redisDriver,
+		packageName: redisDriver,
 		templater:   dbdriver.RedisTemplate{},
 	}
 
 	p.DBDriverMap[flags.Scylla] = Driver{
-		PackageName: gocqlDriver,
+		packageName: gocqlDriver,
 		templater:   dbdriver.ScyllaTemplate{},
 	}
 }
@@ -304,7 +304,7 @@ func (p *Project) CreateMainFile() error {
 		if p.AdvancedOptions[string(flags.Sqlc)] && (p.DBDriver != flags.Postgres && p.DBDriver != flags.MySql && p.DBDriver != flags.Sqlite) {
 			p.AdvancedOptions[string(flags.Sqlc)] = false
 		}
-		err = utils.GoGetPackage(projectPath, p.DBDriverMap[p.DBDriver].PackageName)
+		err = utils.GoGetPackage(projectPath, p.DBDriverMap[p.DBDriver].packageName)
 		if err != nil {
 			log.Println("Could not install go dependency for chosen driver")
 			return err
