@@ -76,6 +76,12 @@ var fiberHtmxTemplImports []byte
 //go:embed files/websocket/imports/fiber.tmpl
 var fiberWebsocketTemplImports []byte
 
+//go:embed files/sqlc/sqlc.yaml.tmpl
+var sqlcYamlTemplate []byte
+
+//go:embed files/sqlc/query.sql.tmpl
+var sqlcQueryTemplate []byte
+
 func EchoHtmxTemplRoutesTemplate() []byte {
 	return echoHtmxTemplRoutes
 }
@@ -170,4 +176,12 @@ func FiberWebsocketTemplImportsTemplate() []byte {
 
 func GinHtmxTemplImportsTemplate() []byte {
 	return ginHtmxTemplImports
+}
+
+func SqlcYamlTemplate() []byte {
+	return sqlcYamlTemplate
+}
+
+func SqlcQueryTemplate() []byte {
+	return sqlcQueryTemplate
 }

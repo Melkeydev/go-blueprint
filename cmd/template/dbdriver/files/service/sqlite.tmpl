@@ -9,6 +9,10 @@ import (
 	"strconv"
 	"time"
 
+	{{- if .AdvancedOptions.sqlc}}
+	"{{.ProjectName}}/internal/database/repository"
+	{{- end}}
+
 	_ "github.com/mattn/go-sqlite3"
 	_ "github.com/joho/godotenv/autoload"
 )
@@ -22,10 +26,18 @@ type Service interface {
 	// Close terminates the database connection.
 	// It returns an error if the connection cannot be closed.
 	Close() error
+	{{- if .AdvancedOptions.sqlc}}
+
+	// Returns the query used to interact with sqlc
+	Queries() *repository.Queries
+	{{- end}}
 }
 
 type service struct {
 	db *sql.DB
+	{{- if .AdvancedOptions.sqlc}}
+	queries *repository.Queries
+	{{- end}}
 }
 
 var (
@@ -46,8 +58,14 @@ func New() Service {
 		log.Fatal(err)
 	}
 
+	{{- if .AdvancedOptions.sqlc}}
+	queries := repository.New(db)
+	{{- end}}
 	dbInstance = &service{
 		db: db,
+		{{- if .AdvancedOptions.sqlc}}
+		queries: queries,
+		{{- end}}
 	}
 	return dbInstance
 }
@@ -111,3 +129,8 @@ func (s *service) Close() error {
 	log.Printf("Disconnected from database: %s", dburl)
 	return s.db.Close()
 }
+{{- if .AdvancedOptions.sqlc}}
+func (s *service) Queries() *repository.Queries {
+	return s.queries
+}
+{{- end}}
