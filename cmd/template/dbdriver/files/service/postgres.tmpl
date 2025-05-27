@@ -26,6 +26,11 @@ type Service interface {
 	// Close terminates the database connection.
 	// It returns an error if the connection cannot be closed.
 	Close() error
+	{{- if .AdvancedOptions.sqlc}}
+
+	// Returns the query used to interact with sqlc
+	Queries() *repository.Queries
+	{{- end}}
 }
 
 type service struct {
@@ -126,6 +131,6 @@ func (s *service) Close() error {
 	log.Printf("Disconnected from database: %s", database)
 	return s.db.Close()
 }
-func (s *service) Quiries() *repository.Queries {
+func (s *service) Queries() *repository.Queries {
 	return s.queries
 }
