@@ -44,3 +44,10 @@ tmp_dir = "tmp"
 [screen]
   clear_on_rebuild = false
   keep_scroll = true
+{{- if .AdvancedOptions.htmx}}
+
+[proxy]
+  proxy_port = 3000
+  app_port = 8080
+  enabled = true
+{{- end}}

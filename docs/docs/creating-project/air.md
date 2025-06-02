@@ -28,6 +28,7 @@ watching internal/server
 watching tests
 !exclude tmp
 building...
+Proxy server listening on http://localhost:3000
 make[1]: Entering directory '/home/ujstor/code/blueprint-version-test/ws-test4'
 Building...
 Processing path: /home/ujstor/code/blueprint-version-test/ws-test4
