@@ -1,4 +1,4 @@
-FROM golang:1.23-alpine AS build
+FROM golang:1.24.4-alpine AS build
 {{- if or (.AdvancedOptions.tailwind) (eq .DBDriver "sqlite") }}
 RUN apk add --no-cache{{- if .AdvancedOptions.tailwind }} curl{{ end }}{{- if (eq .DBDriver "sqlite") }} alpine-sdk{{ end }}
 {{- end }}

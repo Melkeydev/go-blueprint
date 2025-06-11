@@ -4,7 +4,7 @@ The Dockerfile includes a two-stage build, and the final config depends on the u
 ## Dockerfile
 
 ```dockerfile
-FROM golang:1.23-alpine AS build
+FROM golang:1.24.4-alpine AS build
 
 RUN apk add --no-cache curl
 
@@ -33,7 +33,7 @@ CMD ["./main"]
 Docker config if React flag is used:
 
 ```dockerfile
-FROM golang:1.23-alpine AS build
+FROM golang:1.24.4-alpine AS build
 
 WORKDIR /app
 
