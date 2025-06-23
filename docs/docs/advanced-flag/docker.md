@@ -6,7 +6,7 @@ The Dockerfile includes a two-stage build, and the final config depends on the u
 ```dockerfile
 FROM golang:1.24.4-alpine AS build
 
-RUN apk add --no-cache curl
+RUN apk add --no-cache curl libstdc++ libgcc
 
 WORKDIR /app
 
@@ -15,8 +15,7 @@ RUN go mod download
 
 COPY . .
 
-RUN apk add --no-cache libstdc++ libgcc && \
-    go install github.com/a-h/templ/cmd/templ@latest && \
+RUN go install github.com/a-h/templ/cmd/templ@latest && \
     templ generate && \
     curl -sL https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64-musl -o tailwindcss && \
     chmod +x tailwindcss && \
