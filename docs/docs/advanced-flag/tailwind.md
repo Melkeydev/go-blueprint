@@ -30,7 +30,7 @@ The project tree would look like this:
 │       └── server.go
 ├── go.mod
 ├── go.sum
-├── Makefile
+├── Makefile/justfile
 └── README.md
 ```
 
@@ -38,7 +38,7 @@ The project tree would look like this:
 
 The The idea is to avoid using Node.js and npm to build output.css.
 
-The Makefile will have entries for downloading and compiling CSS. It will automatically detect the OS and download the latest release from the [official repository](https://github.com/tailwindlabs/tailwindcss/releases).
+The Makefile/justfile will have entries for downloading and compiling CSS. It will automatically detect the OS and download the latest release from the [official repository](https://github.com/tailwindlabs/tailwindcss/releases).
 
 ## Linux Makefile Example
 
