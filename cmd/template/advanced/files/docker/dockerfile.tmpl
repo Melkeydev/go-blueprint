@@ -1,6 +1,6 @@
 FROM golang:1.24.4-alpine AS build
 {{- if or (.AdvancedOptions.tailwind) (eq .DBDriver "sqlite") }}
-RUN apk add --no-cache{{- if .AdvancedOptions.tailwind }} curl{{ end }}{{- if (eq .DBDriver "sqlite") }} alpine-sdk{{ end }}
+RUN apk add --no-cache{{- if .AdvancedOptions.tailwind }} curl libstdc++ libgcc{{ end }}{{- if (eq .DBDriver "sqlite") }} alpine-sdk{{ end }}
 {{- end }}
 
 WORKDIR /app
@@ -16,7 +16,7 @@ RUN go install github.com/a-h/templ/cmd/templ@latest && \
 {{- end}}
 
 {{- if .AdvancedOptions.tailwind}}
-    curl -sL https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64 -o tailwindcss && \
+    curl -sL https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64-musl -o tailwindcss && \
     chmod +x tailwindcss && \
     ./tailwindcss -i cmd/web/styles/input.css -o cmd/web/assets/css/output.css
 {{- end }}
