@@ -8,15 +8,14 @@ jobs:
   itests_matrix:
     strategy:
       matrix:
-        driver:
-          [mysql, postgres, mongo, redis, scylla]
+        driver: [mysql, postgres, mongo, redis, scylla]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.23.x'
+          go-version: "1.23.x"
 
       - name: Commit report
         run: |
@@ -24,7 +23,7 @@ jobs:
           git config --global user.email 'testemail@users.noreply.github.com'
 
       - name: build ${{ matrix.driver }} template
-        run: script -q /dev/null -c "go run main.go create -n ${{ matrix.driver }} -g commit -f fiber -d ${{matrix.driver}}"
+        run: script -q /dev/null -c "go run main.go create -n ${{ matrix.driver }} -g commit -b just -f fiber -d ${{matrix.driver}}"
 
       - name: run ${{ matrix.driver }} integration tests
         working-directory: ${{ matrix.driver }}
