@@ -21,7 +21,7 @@ type Server struct {
 }
 
 func NewServer() *http.Server {
-	port, _ := strconv.Atoi(os.Getenv("PORT"))
+	port, _ := strconv.Atoi(os.Getenv("{{.EnvPrefix}}_PORT"))
 	NewServer := &Server{
 		port: port,
   {{if ne .DBDriver "none"}}

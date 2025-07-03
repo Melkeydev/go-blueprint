@@ -246,6 +246,12 @@ func (p *Project) createDockerMap() {
 	}
 }
 
+// EnvPrefix returns the TITLE in all CAPS for use
+// as part of envvars
+func (p *Project) EnvPrefix() string {
+	return strings.ToUpper(utils.GetRootDir(p.ProjectName))
+}
+
 // CreateMainFile creates the project folders and files,
 // and writes to them depending on the selected options
 func (p *Project) CreateMainFile() error {

@@ -29,7 +29,7 @@ type service struct {
 }
 
 var (
-	dburl = os.Getenv("BLUEPRINT_DB_URL")
+	dburl = os.Getenv("{{.EnvPrefix}}_DB_URL")
 	dbInstance *service
 )
 

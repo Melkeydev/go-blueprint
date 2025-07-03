@@ -1,5 +1,6 @@
 package main
 
+
 import (
 	"{{.ProjectName}}/internal/server"
 	"log"
@@ -13,7 +14,7 @@ func main() {
 		log.Println("No .env file found")
 	}
 
-	appPort := os.Getenv("PORT")
+	appPort := os.Getenv("{{.EnvPrefix}}_PORT")
 	if appPort == "" {
 		appPort = "8080"
 	}

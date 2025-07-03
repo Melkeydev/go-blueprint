@@ -9,12 +9,12 @@ services:
     ports:
       - ${PORT}:${PORT}
     environment:
-      APP_ENV: ${APP_ENV}
+      APP_ENV: ${ {{.EnvPrefix}}_APP_ENV}
       PORT: ${PORT}
-      BLUEPRINT_DB_PORT: ${BLUEPRINT_DB_PORT}
-      BLUEPRINT_DB_ADDRESS: ${BLUEPRINT_DB_ADDRESS}
-      BLUEPRINT_DB_PASSWORD: ${BLUEPRINT_DB_PASSWORD}
-      BLUEPRINT_DB_DATABASE: ${BLUEPRINT_DB_DATABASE}
+      {{.EnvPrefix}}_DB_PORT: ${ {{.EnvPrefix}}_DB_PORT}
+      {{.EnvPrefix}}_DB_ADDRESS: ${ {{.EnvPrefix}}_DB_ADDRESS}
+      {{.EnvPrefix}}_DB_PASSWORD: ${ {{.EnvPrefix}}_DB_PASSWORD}
+      {{.EnvPrefix}}_DB_DATABASE: ${ {{.EnvPrefix}}_DB_DATABASE}
     depends_on:
       redis_bp:
         condition: service_healthy
@@ -39,7 +39,7 @@ services:
     image: redis:7.2.4
     restart: unless-stopped
     ports:
-      - "${BLUEPRINT_DB_PORT}:6379"
+      - "${ {{.EnvPrefix}}_DB_PORT}:6379"
     {{- if .AdvancedOptions.docker }}
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]

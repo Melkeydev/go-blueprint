@@ -21,9 +21,9 @@ type service struct {
 }
 
 var (
-	host     = os.Getenv("BLUEPRINT_DB_HOST")
-	port     = os.Getenv("BLUEPRINT_DB_PORT")
-	//database = os.Getenv("BLUEPRINT_DB_DATABASE")
+	host     = os.Getenv("{{.EnvPrefix}}_DB_HOST")
+	port     = os.Getenv("{{.EnvPrefix}}_DB_PORT")
+	//database = os.Getenv("{{.EnvPrefix}}_DB_DATABASE")
 )
 
 func New() Service {

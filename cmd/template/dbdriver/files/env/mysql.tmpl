@@ -1,10 +1,10 @@
 {{- if .AdvancedOptions.docker }}
-BLUEPRINT_DB_HOST=mysql_bp
+{{.EnvPrefix}}_DB_HOST=mysql_bp
 {{- else }}
-BLUEPRINT_DB_HOST=localhost
+{{.EnvPrefix}}_DB_HOST=localhost
 {{- end }}
-BLUEPRINT_DB_PORT=3306
-BLUEPRINT_DB_DATABASE=blueprint
-BLUEPRINT_DB_USERNAME=melkey
-BLUEPRINT_DB_PASSWORD=password1234
-BLUEPRINT_DB_ROOT_PASSWORD=password4321
+{{.EnvPrefix}}_DB_PORT=3306
+{{.EnvPrefix}}_DB_DATABASE=blueprint
+{{.EnvPrefix}}_DB_USERNAME=melkey
+{{.EnvPrefix}}_DB_PASSWORD=password1234
+{{.EnvPrefix}}_DB_ROOT_PASSWORD=password4321

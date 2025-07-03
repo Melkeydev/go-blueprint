@@ -9,15 +9,15 @@ services:
     ports:
       - ${PORT}:${PORT}
     environment:
-      APP_ENV: ${APP_ENV}
+      APP_ENV: ${ {{.EnvPrefix}}_APP_ENV}
       PORT: ${PORT}
-      BLUEPRINT_DB_HOSTS: ${BLUEPRINT_DB_HOSTS}
-      BLUEPRINT_DB_PORT: ${BLUEPRINT_DB_PORT}
-      BLUEPRINT_DB_CONSISTENCY: ${BLUEPRINT_DB_CONSISTENCY}
-      BLUEPRINT_DB_KEYSPACE: ${BLUEPRINT_DB_KEYSPACE}
-      BLUEPRINT_DB_USERNAME: ${BLUEPRINT_DB_USERNAME}
-      BLUEPRINT_DB_PASSWORD: ${BLUEPRINT_DB_PASSWORD}
-      BLUEPRINT_DB_CONNECTIONS: ${BLUEPRINT_DB_CONNECTIONS}
+      {{.EnvPrefix}}_DB_HOSTS: ${ {{.EnvPrefix}}_DB_HOSTS}
+      {{.EnvPrefix}}_DB_PORT: ${ {{.EnvPrefix}}_DB_PORT}
+      {{.EnvPrefix}}_DB_CONSISTENCY: ${ {{.EnvPrefix}}_DB_CONSISTENCY}
+      {{.EnvPrefix}}_DB_KEYSPACE: ${ {{.EnvPrefix}}_DB_KEYSPACE}
+      {{.EnvPrefix}}_DB_USERNAME: ${ {{.EnvPrefix}}_DB_USERNAME}
+      {{.EnvPrefix}}_DB_PASSWORD: ${ {{.EnvPrefix}}_DB_PASSWORD}
+      {{.EnvPrefix}}_DB_CONNECTIONS: ${ {{.EnvPrefix}}_DB_CONNECTIONS}
     depends_on:
       scylla_bp:
         condition: service_healthy

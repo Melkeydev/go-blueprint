@@ -9,14 +9,14 @@ services:
     ports:
       - ${PORT}:${PORT}
     environment:
-      APP_ENV: ${APP_ENV}
+      APP_ENV: ${ {{.EnvPrefix}}_APP_ENV}
       PORT: ${PORT}
-      BLUEPRINT_DB_HOST: ${BLUEPRINT_DB_HOST}
-      BLUEPRINT_DB_PORT: ${BLUEPRINT_DB_PORT}
-      BLUEPRINT_DB_DATABASE: ${BLUEPRINT_DB_DATABASE}
-      BLUEPRINT_DB_USERNAME: ${BLUEPRINT_DB_USERNAME}
-      BLUEPRINT_DB_PASSWORD: ${BLUEPRINT_DB_PASSWORD}
-      BLUEPRINT_DB_SCHEMA: ${BLUEPRINT_DB_SCHEMA}
+      {{.EnvPrefix}}_DB_HOST: ${ {{.EnvPrefix}}_DB_HOST}
+      {{.EnvPrefix}}_DB_PORT: ${ {{.EnvPrefix}}_DB_PORT}
+      {{.EnvPrefix}}_DB_DATABASE: ${ {{.EnvPrefix}}_DB_DATABASE}
+      {{.EnvPrefix}}_DB_USERNAME: ${ {{.EnvPrefix}}_DB_USERNAME}
+      {{.EnvPrefix}}_DB_PASSWORD: ${ {{.EnvPrefix}}_DB_PASSWORD}
+      {{.EnvPrefix}}_DB_SCHEMA: ${ {{.EnvPrefix}}_DB_SCHEMA}
     depends_on:
       psql_bp:
         condition: service_healthy
@@ -41,16 +41,16 @@ services:
     image: postgres:latest
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${BLUEPRINT_DB_DATABASE}
-      POSTGRES_USER: ${BLUEPRINT_DB_USERNAME}
-      POSTGRES_PASSWORD: ${BLUEPRINT_DB_PASSWORD}
+      POSTGRES_DB: ${ {{.EnvPrefix}}_DB_DATABASE}
+      POSTGRES_USER: ${ {{.EnvPrefix}}_DB_USERNAME}
+      POSTGRES_PASSWORD: ${ {{.EnvPrefix}}_DB_PASSWORD}
     ports:
-      - "${BLUEPRINT_DB_PORT}:5432"
+      - "${ {{.EnvPrefix}}_DB_PORT}:5432"
     volumes:
       - psql_volume_bp:/var/lib/postgresql/data
     {{- if .AdvancedOptions.docker }}
     healthcheck:
-      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${BLUEPRINT_DB_USERNAME} -d ${BLUEPRINT_DB_DATABASE}'"]
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${ {{.EnvPrefix}}_DB_USERNAME} -d ${ {{.EnvPrefix}}_DB_DATABASE}'"]
       interval: 5s
       timeout: 5s
       retries: 3

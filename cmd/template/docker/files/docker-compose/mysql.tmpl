@@ -9,13 +9,13 @@ services:
     ports:
       - ${PORT}:${PORT}
     environment:
-      APP_ENV: ${APP_ENV}
+      APP_ENV: ${ {{.EnvPrefix}}_APP_ENV}
       PORT: ${PORT}
-      BLUEPRINT_DB_HOST: ${BLUEPRINT_DB_HOST}
-      BLUEPRINT_DB_PORT: ${BLUEPRINT_DB_PORT}
-      BLUEPRINT_DB_DATABASE: ${BLUEPRINT_DB_DATABASE}
-      BLUEPRINT_DB_USERNAME: ${BLUEPRINT_DB_USERNAME}
-      BLUEPRINT_DB_PASSWORD: ${BLUEPRINT_DB_PASSWORD}
+      {{.EnvPrefix}}_DB_HOST: ${ {{.EnvPrefix}}_DB_HOST}
+      {{.EnvPrefix}}_DB_PORT: ${ {{.EnvPrefix}}_DB_PORT}
+      {{.EnvPrefix}}_DB_DATABASE: ${ {{.EnvPrefix}}_DB_DATABASE}
+      {{.EnvPrefix}}_DB_USERNAME: ${ {{.EnvPrefix}}_DB_USERNAME}
+      {{.EnvPrefix}}_DB_PASSWORD: ${ {{.EnvPrefix}}_DB_PASSWORD}
     depends_on:
       mysql_bp:
         condition: service_healthy
@@ -40,17 +40,17 @@ services:
     image: mysql:latest
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: ${BLUEPRINT_DB_DATABASE}
-      MYSQL_USER: ${BLUEPRINT_DB_USERNAME}
-      MYSQL_PASSWORD: ${BLUEPRINT_DB_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${BLUEPRINT_DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${ {{.EnvPrefix}}_DB_DATABASE}
+      MYSQL_USER: ${ {{.EnvPrefix}}_DB_USERNAME}
+      MYSQL_PASSWORD: ${ {{.EnvPrefix}}_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${ {{.EnvPrefix}}_DB_ROOT_PASSWORD}
     ports:
-      - "${BLUEPRINT_DB_PORT}:3306"
+      - "${ {{.EnvPrefix}}_DB_PORT}:3306"
     volumes:
       - mysql_volume_bp:/var/lib/mysql
     {{- if .AdvancedOptions.docker }}
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "${BLUEPRINT_DB_HOST}", "-u", "${BLUEPRINT_DB_USERNAME}", "--password=${BLUEPRINT_DB_PASSWORD}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "${ {{.EnvPrefix}}_DB_HOST}", "-u", "${ {{.EnvPrefix}}_DB_USERNAME}", "--password=${ {{.EnvPrefix}}_DB_PASSWORD}"]
       interval: 5s
       timeout: 5s
       retries: 3
