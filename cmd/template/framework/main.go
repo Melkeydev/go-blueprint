@@ -18,6 +18,9 @@ var readmeTemplate []byte
 //go:embed files/makefile.tmpl
 var makeTemplate []byte
 
+//go:embed files/Taskfile.yml.tmpl
+var taskTemplate []byte
+
 //go:embed files/gitignore.tmpl
 var gitIgnoreTemplate []byte
 
@@ -25,6 +28,12 @@ var gitIgnoreTemplate []byte
 // the default Makefile template.
 func MakeTemplate() []byte {
 	return makeTemplate
+}
+
+// TaskTemplate returns a byte slice that represents
+// the default Taskfile.yml template.
+func TaskTemplate() []byte {
+	return taskTemplate
 }
 
 func GitIgnoreTemplate() []byte {

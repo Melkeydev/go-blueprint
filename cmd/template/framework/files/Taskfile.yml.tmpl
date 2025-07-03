@@ -1,0 +1,315 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  BINARY_NAME: "{{if .OSCheck.UnixBased}}main{{else}}main.exe{{end}}"
+
+# Taskfile for Go project
+# More information: https://taskfile.dev
+#
+# This file is a template and will be processed by Go templates.
+#
+# Example usage:
+# task build
+# task run
+# task test
+# task watch
+
+tasks:
+  default:
+    desc: "Builds and tests the application."
+    deps: [build, test]
+
+  templ-install:
+    desc: "Checks if templ is installed and installs it if missing (prompts user)."
+    # This task is only relevant if htmx or tailwind (without react) are selected.
+    # We'll wrap the core logic in a Go template condition.
+    cmds:
+      - |
+        {{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }}
+        {{- if .OSCheck.UnixBased }}
+        if ! command -v templ > /dev/null; then
+          echo "Go's 'templ' is not installed on your machine."
+          read -p "Do you want to install it? [Y/n] " choice
+          if [ "$choice" != "n" ] && [ "$choice" != "N" ]; then
+            echo "Installing templ..."
+            go install github.com/a-h/templ/cmd/templ@latest
+            if [ ! -x "$(command -v templ)" ]; then
+              echo "templ installation failed. Exiting..."
+              exit 1
+            else
+              echo "templ installed successfully."
+            fi
+          else
+            echo "You chose not to install templ. Exiting..."
+            exit 1
+          fi
+        else
+          echo "templ is already installed."
+        fi
+        {{- else }}
+        powershell -ExecutionPolicy Bypass -Command "
+          if (-not (Get-Command templ -ErrorAction SilentlyContinue)) {
+            Write-Host \"Go's 'templ' is not installed on your machine.\"
+            \$choice = Read-Host \"Do you want to install it? [Y/n]\"
+            if (\$choice -ne 'n' -and \$choice -ne 'N') {
+              Write-Host 'Installing templ...'
+              go install github.com/a-h/templ/cmd/templ@latest
+              if (-not (Get-Command templ -ErrorAction SilentlyContinue)) {
+                Write-Host 'templ installation failed. Exiting...'
+                exit 1
+              } else {
+                Write-Host 'templ installed successfully.'
+              }
+            } else {
+              Write-Host 'You chose not to install templ. Exiting...'
+              exit 1
+            }
+          } else {
+            Write-Host 'templ is already installed.'
+          }
+        "
+        {{- end }}
+        {{- else }}
+        # templ-install is not needed for the current configuration.
+        echo "templ-install: skipped"
+        {{- end }}
+    status:
+      # Check if templ is installed to prevent running the install logic every time.
+      # This is a basic check; the script itself has more robust checking.
+      - command -v templ > /dev/null # Unix
+      - powershell -Command "Get-Command templ -ErrorAction SilentlyContinue" # Windows
+    preconditions:
+      # This is an attempt to make the task skip if not needed,
+      # but the main logic is inside the cmd with Go templates.
+      # Taskfile preconditions are evaluated before Go templating of the Taskfile itself if not careful.
+      # The cmds block handles the conditional logic more directly.
+      - sh: "{{if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react)}}true{{else}}false{{end}}"
+        msg: "Templ is not required for this project configuration."
+
+  tailwind-install:
+    desc: "Downloads Tailwind CSS executable if not present."
+    cmds:
+      - |
+        {{- if and .AdvancedOptions.tailwind (not .AdvancedOptions.react) }}
+        {{- if .OSCheck.UnixBased }}
+        {{- if .OSCheck.linux }}
+        if [ ! -f tailwindcss ]; then
+          echo "Downloading tailwindcss for Linux..."
+          curl -sL https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64 -o tailwindcss
+          chmod +x tailwindcss
+        else
+          echo "tailwindcss executable already exists or not on Linux."
+        fi
+        {{- end }}
+        {{- if .OSCheck.darwin }}
+        if [ ! -f tailwindcss ]; then
+          echo "Downloading tailwindcss for macOS..."
+          curl -sL https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-macos-x64 -o tailwindcss
+          chmod +x tailwindcss
+        else
+          echo "tailwindcss executable already exists or not on macOS."
+        fi
+        {{- end }}
+        {{- else }}
+        # Windows
+        powershell -ExecutionPolicy Bypass -Command "
+          if (-not (Test-Path -Path '.\tailwindcss.exe' -PathType Leaf)) {
+            Write-Host 'Downloading tailwindcss for Windows...'
+            Invoke-WebRequest -Uri 'https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-windows-x64.exe' -OutFile 'tailwindcss.exe'
+          } else {
+            Write-Host 'tailwindcss.exe already exists.'
+          }
+        "
+        {{- end }}
+        {{- else }}
+        echo "tailwind-install: skipped"
+        {{- end }}
+    sources: # Define what triggers a re-run. If tailwindcss is missing, it should run.
+      # This is a simple check. The script handles the actual download.
+      - "{{if and .AdvancedOptions.tailwind (not .AdvancedOptions.react)}}{{if .OSCheck.UnixBased}}tailwindcss{{else}}tailwindcss.exe{{end}}{{else}}Taskfile.yml.tmpl{{end}}" # Dummy file if not needed to avoid error
+    generates:
+      - "{{if and .AdvancedOptions.tailwind (not .AdvancedOptions.react)}}{{if .OSCheck.UnixBased}}tailwindcss{{else}}tailwindcss.exe{{end}}{{else}}dummy_never_exists{{end}}" # Make Task think it generates this
+    preconditions:
+      - sh: "{{if and .AdvancedOptions.tailwind (not .AdvancedOptions.react)}}true{{else}}false{{end}}"
+        msg: "Tailwind CSS is not required for this project configuration."
+
+  build:
+    desc: "Builds the Go application."
+    deps:
+      {{- if and .AdvancedOptions.tailwind (not .AdvancedOptions.react) }}
+      - task: tailwind-install
+      {{- end }}
+      {{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }}
+      - task: templ-install
+      {{- end }}
+    cmds:
+      - echo "Building..."
+      {{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }}
+      - templ generate
+      {{- end }}
+      {{- if and .AdvancedOptions.tailwind (not .AdvancedOptions.react) }}
+      - "{{if .OSCheck.UnixBased}}./tailwindcss{{else}}.\\tailwindcss.exe{{end}} -i cmd/web/styles/input.css -o cmd/web/assets/css/output.css"
+      {{- end }}
+      - "{{if .OSCheck.UnixBased}}{{- if and (.AdvancedOptions.docker) (eq .DBDriver "sqlite") }}CGO_ENABLED=1 GOOS=linux {{ end }}go build -o {{ "{{" }}BINARY_NAME{{ "}}" }} cmd/main.go{{- else }}go build -o {{ "{{" }}BINARY_NAME{{ "}}" }} cmd/main.go{{- end }}"
+    # Sources and generates help Task determine if a rebuild is needed.
+    # This is a simplified version; more granular tracking could be added.
+    sources:
+      - cmd/main.go
+      - go.mod
+      - "**/*.go"
+      {{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }}
+      - "**/*.templ"
+      {{- end }}
+      {{- if and .AdvancedOptions.tailwind (not .AdvancedOptions.react) }}
+      - cmd/web/styles/input.css
+      {{- end }}
+    generates:
+      - "{{ "{{" }}BINARY_NAME{{ "}}" }}"
+      {{- if and .AdvancedOptions.tailwind (not .AdvancedOptions.react) }}
+      - cmd/web/assets/css/output.css
+      {{- end }}
+
+  run:
+    desc: "Runs the Go application (and frontend if React is enabled)."
+    # By default, 'run' might depend on 'build' to ensure the binary is fresh.
+    # However, the Makefile's 'run' directly uses 'go run', which recompiles.
+    # To match that, 'run' won't explicitly depend on 'build' here.
+    # If a separate compiled run is desired, a different task or dependency could be added.
+    cmds:
+      {{- if .AdvancedOptions.react }}
+      # The Makefile runs `go run` in the background (`&`) and then npm commands.
+      # For a better dev experience, `task watch` (using Air) is recommended for the backend.
+      # Then, run the frontend commands in a separate terminal if needed.
+      # This `run` task, when React is enabled, will list commands sequentially.
+      # It's recommended to use `task watch` for the Go backend during development.
+      - cmd: echo "INFO: Running Go application and React frontend setup sequentially."
+      - cmd: echo "INFO: For concurrent development, use 'task watch' for the Go backend and run frontend commands (e.g., 'npm run dev --prefix ./frontend') in a separate terminal."
+      - cmd: go run cmd/main.go
+        desc: "Runs the Go backend application. This command will block this sequence."
+      - cmd: |
+          echo "Setting up and running React frontend (if not already running elsewhere)..."
+          if [ -d "./frontend" ]; then
+            cd ./frontend
+            npm install --prefer-offline --no-fund
+            npm run dev
+          else
+            echo "INFO: ./frontend directory not found, skipping frontend commands."
+          fi
+        desc: "Installs frontend dependencies and starts the frontend dev server."
+      {{- else }}
+      - cmd: go run cmd/main.go
+      {{- end }}
+
+{{- if or .AdvancedOptions.docker (and (ne .DBDriver "none") (ne .DBDriver "sqlite")) }}
+  docker-run:
+    desc: "Starts Docker containers (e.g., for database) using docker compose."
+    cmds:
+      - |
+        {{- if .OSCheck.UnixBased }}
+        if docker compose version >/dev/null 2>&1; then
+          docker compose up --build
+        else
+          echo "Falling back to Docker Compose V1 (docker-compose)"
+          docker-compose up --build
+        fi
+        {{- else }}
+        docker compose up --build
+        {{- end }}
+    preconditions:
+      - sh: "command -v docker >/dev/null"
+        msg: "Docker command not found. Please install Docker."
+
+  docker-down:
+    desc: "Stops Docker containers started with docker-run."
+    cmds:
+      - |
+        {{- if .OSCheck.UnixBased }}
+        if docker compose version >/dev/null 2>&1; then
+          docker compose down
+        else
+          echo "Falling back to Docker Compose V1 (docker-compose)"
+          docker-compose down
+        fi
+        {{- else }}
+        docker compose down
+        {{- end }}
+    preconditions:
+      - sh: "command -v docker >/dev/null"
+        msg: "Docker command not found. Please install Docker."
+{{- end }}
+
+  test:
+    desc: "Runs Go unit tests."
+    cmds:
+      - echo "Testing..."
+      - go test ./... -v
+
+{{- if and (ne .DBDriver "none") (ne .DBDriver "sqlite") }}
+  itest:
+    desc: "Runs Go integration tests (typically for database interactions)."
+    cmds:
+      - echo "Running integration tests..."
+      - go test ./internal/database -v
+{{- end }}
+
+  clean:
+    desc: "Removes the compiled binary."
+    cmds:
+      - echo "Cleaning..."
+      # Use the BINARY_NAME var which is OS-aware
+      - "{{if .OSCheck.UnixBased}}rm -f {{ "{{" }}BINARY_NAME{{ "}}" }}{{else}}powershell -Command \"Remove-Item -Path {{ "{{" }}BINARY_NAME{{ "}}" }} -ErrorAction SilentlyContinue\"{{end}}"
+
+  watch:
+    desc: "Watches for file changes and rebuilds/reruns the application using Air."
+    cmds:
+      - |
+        {{- if .OSCheck.UnixBased }}
+        if ! command -v air > /dev/null; then
+          echo "Go's 'air' is not installed on your machine."
+          read -p "Do you want to install it? [Y/n] " choice
+          if [ "$choice" != "n" ] && [ "$choice" != "N" ]; then
+            echo "Installing air..."
+            go install github.com/air-verse/air@latest
+            if [ ! -x "$(command -v air)" ]; then
+              echo "air installation failed. Exiting..."
+              exit 1
+            fi
+            echo "Starting air..."
+            air
+          else
+            echo "You chose not to install air. Exiting..."
+            exit 1
+          fi
+        else
+          echo "Starting air..."
+          air
+        fi
+        {{- else }}
+        # Windows
+        powershell -ExecutionPolicy Bypass -Command "
+          if (-not (Get-Command air -ErrorAction SilentlyContinue)) {
+            Write-Host \"Go's 'air' is not installed on your machine.\"
+            \$choice = Read-Host \"Do you want to install it? [Y/n]\"
+            if (\$choice -ne 'n' -and \$choice -ne 'N') {
+              Write-Host 'Installing air...'
+              go install github.com/air-verse/air@latest
+              if (-not (Get-Command air -ErrorAction SilentlyContinue)) {
+                Write-Host 'air installation failed. Exiting...'
+                exit 1
+              }
+              Write-Host 'Starting air...'
+              air
+            } else {
+              Write-Host 'You chose not to install air. Exiting...'
+              exit 1
+            }
+          } else {
+            Write-Host 'Starting air...'
+            air
+          }
+        "
+        {{- end }}
+    # `air` is a long-running process. Taskfile will run it directly.
+    # No specific sources/generates needed as air handles its own watching.

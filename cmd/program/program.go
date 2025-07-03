@@ -400,6 +400,20 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
+	taskFile, err := os.Create(filepath.Join(projectPath, "Taskfile.yml"))
+	if err != nil {
+		return err
+	}
+
+	defer taskFile.Close()
+
+	// inject makefile template
+	taskFileTemplate := template.Must(template.New("taskfile").Parse(string(framework.TaskTemplate())))
+	err = taskFileTemplate.Execute(taskFile, p)
+	if err != nil {
+		return err
+	}
+
 	readmeFile, err := os.Create(filepath.Join(projectPath, "README.md"))
 	if err != nil {
 		return err
