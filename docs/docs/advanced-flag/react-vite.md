@@ -67,7 +67,7 @@ The make run target will start the Go server in the backend, install frontend de
 
 ```bash
 run:
-	@go run cmd/api/main.go &
+	@go run cmd/main.go &
 	@npm install --prefix ./frontend
 	@npm run dev --prefix ./frontend
 ```
@@ -96,7 +96,7 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o main cmd/api/main.go
+RUN go build -o main cmd/main.go
 
 FROM alpine:3.20.1 AS prod
 WORKDIR /app

@@ -21,7 +21,7 @@ RUN go install github.com/a-h/templ/cmd/templ@latest && \
     ./tailwindcss -i cmd/web/styles/input.css -o cmd/web/assets/css/output.css
 {{- end }}
 
-RUN {{ if (eq .DBDriver "sqlite") }}CGO_ENABLED=1 GOOS=linux {{ end }}go build -o main cmd/api/main.go
+RUN {{ if (eq .DBDriver "sqlite") }}CGO_ENABLED=1 GOOS=linux {{ end }}go build -o main cmd/main.go
 
 FROM alpine:3.20.1 AS prod
 WORKDIR /app

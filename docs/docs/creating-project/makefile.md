@@ -32,7 +32,7 @@ Builds the Go application and generates assets with `templ` and `tailwind`, if t
 
 ***`run`***
 
-Runs the Go application by executing the `cmd/api/main.go` file and npm install with run dev if React flag is used.
+Runs the Go application by executing the `cmd/main.go` file and npm install with run dev if React flag is used.
 
 ***`docker-run`*** and ***`docker-down`***
 

@@ -114,7 +114,7 @@ var (
 
 const (
 	root                 = "/"
-	cmdApiPath           = "cmd/api"
+	cmdApiPath           = "cmd"
 	cmdWebPath           = "cmd/web"
 	internalServerPath   = "internal/server"
 	internalDatabasePath = "internal/database"

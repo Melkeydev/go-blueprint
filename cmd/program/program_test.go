@@ -31,10 +31,10 @@ func TestCreateHumaProject(t *testing.T) {
 		ProjectName:  projectName,
 		AbsolutePath: filepath.Join(os.TempDir(), "blueprint-tests"),
 		ProjectType:  flags.Huma,
-		DBDriver:     "none", // Or a specific driver if Huma needs one by default
+		DBDriver:     "none",                                      // Or a specific driver if Huma needs one by default
 		FrameworkMap: make(map[flags.Framework]program.Framework), // Initialize FrameworkMap
-		DBDriverMap:  make(map[flags.Database]program.Driver),    // Initialize DBDriverMap
-		DockerMap:    make(map[flags.Database]program.Docker),    // Initialize DockerMap
+		DBDriverMap:  make(map[flags.Database]program.Driver),     // Initialize DBDriverMap
+		DockerMap:    make(map[flags.Database]program.Docker),     // Initialize DockerMap
 		AdvancedOptions: map[string]bool{
 			"websocket": false, // Set advanced options as needed for the test
 			"htmx":      false,
@@ -55,7 +55,7 @@ func TestCreateHumaProject(t *testing.T) {
 	// 2. Check for key Huma-specific files
 	expectedFiles := []string{
 		"go.mod",
-		"cmd/api/main.go",
+		"cmd/main.go",
 		"internal/server/server.go",
 		"internal/server/routes.go",
 		".env",

@@ -51,11 +51,11 @@ build:{{- if and .AdvancedOptions.tailwind (not .AdvancedOptions.react) }} tailw
 	@echo "Building..."
 	{{ if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }}@templ generate{{- end }}
 	{{ if and .AdvancedOptions.tailwind (not .AdvancedOptions.react) }}@{{ if .OSCheck.UnixBased }}./tailwindcss{{ else }}.\tailwindcss.exe{{ end }} -i cmd/web/styles/input.css -o cmd/web/assets/css/output.css{{ end }}
-	{{ if .OSCheck.UnixBased }}@{{- if and (.AdvancedOptions.docker) (eq .DBDriver "sqlite") }}CGO_ENABLED=1 GOOS=linux {{ end }}go build -o main cmd/api/main.go{{- else }}@go build -o main.exe cmd/api/main.go{{- end }}
+	{{ if .OSCheck.UnixBased }}@{{- if and (.AdvancedOptions.docker) (eq .DBDriver "sqlite") }}CGO_ENABLED=1 GOOS=linux {{ end }}go build -o main cmd/main.go{{- else }}@go build -o main.exe cmd/main.go{{- end }}
 
 # Run the application
 run:
-	@go run cmd/api/main.go{{- if .AdvancedOptions.react }} &
+	@go run cmd/main.go{{- if .AdvancedOptions.react }} &
 	@npm install --prefer-offline --no-fund --prefix ./frontend
 	@npm run dev --prefix ./frontend
 	{{- end }}

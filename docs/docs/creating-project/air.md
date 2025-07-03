@@ -18,7 +18,7 @@ make watch
 mkdir /home/ujstor/code/blueprint-version-test/ws-test4/tmp
 watching .
 watching cmd
-watching cmd/api
+watching cmd
 watching cmd/web
 watching cmd/web/assets
 watching cmd/web/assets/js

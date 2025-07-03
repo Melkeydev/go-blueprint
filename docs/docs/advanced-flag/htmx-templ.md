@@ -68,7 +68,7 @@ templ-install:
 build: templ-install
 	@echo "Building..."
 	@templ generate
-	@go build -o main cmd/api/main.go
+	@go build -o main cmd/main.go
 ```
 
 ## Templating

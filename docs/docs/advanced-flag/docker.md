@@ -22,7 +22,7 @@ RUN apk add --no-cache libstdc++ libgcc && \
     chmod +x tailwindcss && \
     ./tailwindcss -i cmd/web/styles/input.css -o cmd/web/assets/css/output.css
 
-RUN go build -o main cmd/api/main.go
+RUN go build -o main cmd/main.go
 
 FROM alpine:3.20.1 AS prod
 WORKDIR /app
@@ -43,7 +43,7 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o main cmd/api/main.go
+RUN go build -o main cmd/main.go
 
 FROM alpine:3.20.1 AS prod
 WORKDIR /app
