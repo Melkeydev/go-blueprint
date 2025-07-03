@@ -98,6 +98,7 @@ var (
 	ginPackage     = []string{"github.com/gin-gonic/gin"}
 	fiberPackage   = []string{"github.com/gofiber/fiber/v2"}
 	echoPackage    = []string{"github.com/labstack/echo/v4", "github.com/labstack/echo/v4/middleware"}
+	humaPackage    = []string{"github.com/danielgtaylor/huma/v2", "github.com/danielgtaylor/huma/v2/adapters/humafiber", "github.com/gofiber/fiber/v2"}
 
 	mysqlDriver    = []string{"github.com/go-sql-driver/mysql"}
 	postgresDriver = []string{"github.com/jackc/pgx/v5/stdlib"}
@@ -184,6 +185,11 @@ func (p *Project) createFrameworkMap() {
 	p.FrameworkMap[flags.Echo] = Framework{
 		packageName: echoPackage,
 		templater:   framework.EchoTemplates{},
+	}
+
+	p.FrameworkMap[flags.Huma] = Framework{
+		packageName: humaPackage,
+		templater:   framework.HumaTemplates{},
 	}
 }
 

@@ -1,0 +1,89 @@
+package server
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"github.com/danielgtaylor/huma/v2"
+	"github.com/danielgtaylor/huma/v2/adapters/humafiber"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/recover"
+)
+
+type Server struct {
+	app  *fiber.App
+	api  huma.API
+}
+
+func NewServer() *Server {
+	// Create a new Fiber app
+	app := fiber.New(fiber.Config{
+		AppName:      "{{.ProjectName}} App v0.0.1",
+		ServerHeader: "Fiber",
+	})
+
+	// Add middleware
+	app.Use(cors.New())
+	app.Use(logger.New())
+	app.Use(recover.New())
+
+	// Create a Huma API
+	api := humafiber.New(app, huma.DefaultConfig("{{.ProjectName}} API", "1.0.0"))
+
+	// Register routes
+	RegisterRoutes(api, app) // Call RegisterRoutes directly
+	{{if index .AdvancedOptions "websocket"}}
+	RegisterWebsocket(app) // Call RegisterWebsocket directly
+	{{end}}
+	{{if index .AdvancedOptions "htmx"}}
+	RegisterHtmx(app) // Call RegisterHtmx directly
+	{{end}}
+
+
+	return &Server{
+		app:  app,
+		api:  api,
+	}
+}
+
+// App returns the underlying Fiber application instance.
+// This is useful for testing or direct Fiber app manipulation.
+func (s *Server) App() *fiber.App {
+	return s.app
+}
+
+func (s *Server) Start(addr string) error {
+	// Start the server in a goroutine
+	go func() {
+		if err := s.app.Listen(addr); err != nil && err != http.ErrServerClosed {
+			fmt.Fprintf(os.Stderr, "Error starting server: %v\n", err)
+			os.Exit(1)
+		}
+	}()
+
+	// Wait for interrupt signal to gracefully shut down the server
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	fmt.Println("Shutting down server...")
+
+	// Create a deadline for the shutdown
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Attempt to gracefully shut down the server
+	if err := s.app.ShutdownWithContext(ctx); err != nil {
+		return fmt.Errorf("server shutdown failed: %w", err)
+	}
+
+	fmt.Println("Server gracefully stopped")
+	return nil
+}

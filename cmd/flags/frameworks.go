@@ -18,9 +18,10 @@ const (
 	HttpRouter      Framework = "httprouter"
 	StandardLibrary Framework = "standard-library"
 	Echo            Framework = "echo"
+	Huma            Framework = "huma"
 )
 
-var AllowedProjectTypes = []string{string(Chi), string(Gin), string(Fiber), string(GorillaMux), string(HttpRouter), string(StandardLibrary), string(Echo)}
+var AllowedProjectTypes = []string{string(Chi), string(Gin), string(Fiber), string(GorillaMux), string(HttpRouter), string(StandardLibrary), string(Echo), string(Huma)}
 
 func (f Framework) String() string {
 	return string(f)

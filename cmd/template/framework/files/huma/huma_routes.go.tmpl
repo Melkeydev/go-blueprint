@@ -1,0 +1,92 @@
+package server
+
+import (
+	"context"
+	"net/http"
+
+	"github.com/danielgtaylor/huma/v2"
+	"github.com/gofiber/fiber/v2"
+)
+
+// GreetingInput represents the input for the greeting operation.
+type GreetingInput struct {
+	Name string `path:"name" maxLength:"30" example:"world" doc:"Name to greet"`
+}
+
+// GreetingOutput represents the output for the greeting operation.
+type GreetingOutput struct {
+	Body struct {
+		Message string `json:"message" example:"Hello, world!" doc:"Greeting message"`
+	}
+}
+
+// RegisterRoutes registers the Huma API routes.
+func RegisterRoutes(api huma.API, app *fiber.App) {
+	// Simple health check
+	huma.Register(api, huma.Operation{
+		OperationID: "health-check",
+		Method:      http.MethodGet,
+		Path:        "/health",
+		Summary:     "Health check endpoint",
+		Description: "Returns a 200 OK if the service is healthy.",
+		// For Huma v2, handlers generally take context.Context.
+		// For an endpoint with no specific input/output, we can use struct{}.
+	}, func(ctx context.Context, input *struct{}) (*struct{}, error) {
+		// Return nil, nil for a simple 200 OK.
+		// Huma will handle the response serialization.
+		return nil, nil
+	})
+
+	// Greeting endpoint
+	huma.Register(api, huma.Operation{
+		OperationID: "get-greeting",
+		Method:      http.MethodGet,
+		Path:        "/greet/{name}",
+		Summary:     "Get a greeting",
+		Description: "Returns a personalized greeting.",
+	}, func(ctx context.Context, input *GreetingInput) (*GreetingOutput, error) {
+		resp := &GreetingOutput{}
+		resp.Body.Message = "Hello, " + input.Name + "!"
+		return resp, nil
+	})
+}
+
+{{if index .AdvancedOptions "websocket"}}
+// RegisterWebsocket registers the WebSocket routes for Fiber.
+// Huma does not directly manage WebSocket connections in the same way as HTTP routes.
+// So, we register WebSocket routes directly with Fiber.
+func RegisterWebsocket(app *fiber.App) {
+	// Define your WebSocket routes here if needed
+	// Example:
+	// app.Get("/ws", websocket.New(func(c *websocket.Conn) {
+	//  log.Println(c.Locals("allowed")) // true
+	// 	for {
+	// 		mt, msg, err := c.ReadMessage()
+	// 		if err != nil {
+	// 			log.Println("read:", err)
+	// 			break
+	// 		}
+	// 		log.Printf("recv: %s", msg)
+	// 		err = c.WriteMessage(mt, msg)
+	// 		if err != nil {
+	// 			log.Println("write:", err)
+	// 			break
+	// 		}
+	// 	}
+	// }))
+}
+{{end}}
+
+
+{{if index .AdvancedOptions "htmx"}}
+// RegisterHtmx registers the HTMX routes for Fiber.
+// Huma does not directly manage HTMX routes in the same way as HTTP routes.
+// So, we register HTMX routes directly with Fiber.
+func RegisterHtmx(app *fiber.App) {
+	// Define your HTMX routes here if needed
+	// Example:
+	// app.Get("/htmx-example", func(c *fiber.Ctx) error {
+	// 	 return c.SendString("<h1>Hello from HTMX!</h1>")
+	// })
+}
+{{end}}

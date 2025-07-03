@@ -6,6 +6,7 @@ Created projects can utilize several Go web frameworks to handle HTTP routing an
 4. [**Gin**](https://github.com/gin-gonic/gin): A web framework with a martini-like API, but with much better performance.
 5. [**Gorilla/mux**](https://github.com/gorilla/mux): A powerful URL router and dispatcher for Golang.
 6. [**HttpRouter**](https://github.com/julienschmidt/httprouter): A high-performance HTTP request router that scales well.
+7. [**Huma**](https://huma.rocks/): A modern framework for building REST/GraphQL APIs in Go, designed for speed and developer experience. It can be used with various routers, including Fiber.
 
 ## Project Structure
 

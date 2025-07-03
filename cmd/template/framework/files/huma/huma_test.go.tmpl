@@ -1,0 +1,77 @@
+package server_test
+
+import (
+	// Adjust import path if your server package is elsewhere or named differently
+	"{{.ProjectName}}/internal/server"
+	"encoding/json"
+	"io"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
+
+func TestHealthCheckRoute(t *testing.T) {
+	// Note: To test Huma routes effectively, you might need to set up
+	// the Huma API within a Fiber app, similar to how it's done in NewServer().
+	// This example directly uses the Fiber app for simplicity, assuming
+	// Huma routes are correctly registered.
+
+	s := server.NewServer() // This creates a Fiber app with Huma routes registered
+
+	req := httptest.NewRequest("GET", "/health", nil)
+	resp, err := s.App().Test(req) // s.App() should return the underlying *fiber.App
+
+	assert.NoError(t, err)
+	assert.Equal(t, 200, resp.StatusCode)
+}
+
+func TestGreetingRoute(t *testing.T) {
+	s := server.NewServer()
+
+	req := httptest.NewRequest("GET", "/greet/TestUser", nil)
+	resp, err := s.App().Test(req)
+
+	assert.NoError(t, err)
+	assert.Equal(t, 200, resp.StatusCode)
+
+	body, err := io.ReadAll(resp.Body)
+	assert.NoError(t, err)
+	defer resp.Body.Close()
+
+	var greetingOutput struct {
+		Message string `json:"message"`
+	}
+	err = json.Unmarshal(body, &greetingOutput)
+	assert.NoError(t, err)
+	assert.Equal(t, "Hello, TestUser!", greetingOutput.Message)
+}
+
+// Add more tests for other routes as needed
+// For Huma-specific testing, you might want to explore utilities or patterns
+// recommended by the Huma documentation, if available.
+
+// Helper function to access the fiber app from the server
+// This might need to be an actual method on your Server struct if not already present.
+// For example, in your server.go:
+// func (s *Server) App() *fiber.App { return s.app }
+
+// Ensure your server.NewServer() correctly initializes and returns a server
+// instance that has an App() method returning the *fiber.App.
+// If server.NewServer() returns *fiber.App directly, you can use it as is.
+// The current template assumes server.NewServer() returns a struct that has an App() method.
+// If your server.NewServer() returns *Server which has an `app *fiber.App` field,
+// you might need to expose `app` via a method like `App() *fiber.App`.
+
+// Example of how you might add App() to your Server struct in server.go:
+/*
+package server
+
+import "github.com/gofiber/fiber/v2"
+
+// ... other server code ...
+
+func (s *Server) App() *fiber.App {
+	return s.app
+}
+*/

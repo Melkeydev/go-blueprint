@@ -1,0 +1,27 @@
+package main
+
+import (
+	"{{.ProjectName}}/internal/server"
+	"log"
+	"os"
+
+	"github.com/joho/godotenv"
+)
+
+func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found")
+	}
+
+	appPort := os.Getenv("PORT")
+	if appPort == "" {
+		appPort = "8080"
+	}
+
+	srv := server.NewServer()
+
+	log.Printf("Server starting on port %s\n", appPort)
+	if err := srv.Start(":" + appPort); err != nil {
+		log.Fatalf("could not start server: %v", err)
+	}
+}
