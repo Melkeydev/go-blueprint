@@ -59,6 +59,10 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 						Title: "Echo",
 						Desc:  "High performance, extensible, minimalist Go web framework",
 					},
+					{
+						Title: "Huma",
+						Desc:  "Modern, simple, fast & flexible micro framework for building HTTP REST/RPC APIs in Golang backed by OpenAPI 3 and JSON Schema",
+					},
 				},
 				Headers: "What framework do you want to use in your Go project?",
 				Field:   projectType.String(),
