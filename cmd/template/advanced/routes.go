@@ -28,6 +28,9 @@ var inputCssTemplate []byte
 //go:embed files/tailwind/output.css.tmpl
 var outputCssTemplate []byte
 
+//go:embed files/htmx/tailwind/tailwind.config.js.tmpl
+var htmxTailwindConfigJsTemplate []byte
+
 //go:embed files/htmx/htmx.min.js.tmpl
 var htmxMinJsTemplate []byte
 
@@ -138,6 +141,10 @@ func InputCssTemplate() []byte {
 
 func OutputCssTemplate() []byte {
 	return outputCssTemplate
+}
+
+func HtmxTailwindConfigJsTemplate() []byte {
+	return htmxTailwindConfigJsTemplate
 }
 
 func HtmxJSTemplate() []byte {
