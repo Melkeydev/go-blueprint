@@ -302,6 +302,14 @@ var createCmd = &cobra.Command{
 			fmt.Println(endingMsgStyle.Render("• Generate templ function files by running `templ generate`\n"))
 		}
 
+		if options.Advanced.Choices["Kafka"] {
+			fmt.Println(endingMsgStyle.Render("• Configure Kafka broker settings in the .env file\n"))
+			fmt.Println(endingMsgStyle.Render("• Build the consumer binary: `go build -o consumer ./cmd/consumer`\n"))
+			fmt.Println(endingMsgStyle.Render("• Run the consumer: `./consumer` or `go run ./cmd/consumer`\n"))
+			fmt.Println(endingMsgStyle.Render("• Implementation in pkg/kafka/segmentio/, example in integration_example.go\n"))
+			fmt.Println(endingMsgStyle.Render("• Customize message processing in pkg/kafka/segmentio/consumer.go\n"))
+		}
+
 		if isInteractive {
 			nonInteractiveCommand := utils.NonInteractiveCommand(cmd.Use, cmd.Flags())
 			fmt.Println(tipMsgStyle.Render("Tip: Repeat the equivalent Blueprint with the following non-interactive command:"))

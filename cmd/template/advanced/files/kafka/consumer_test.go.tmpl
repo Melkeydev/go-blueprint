@@ -1,0 +1,119 @@
+package segmentio
+
+import (
+	"context"
+	"testing"
+	"time"
+
+	"github.com/segmentio/kafka-go"
+)
+
+func TestNewConsumer(t *testing.T) {
+	brokers := []string{"localhost:9092"}
+	groupID := "test-group"
+	topic := "test-topic"
+
+	consumer := NewConsumer(brokers, groupID, topic)
+
+	if consumer == nil {
+		t.Error("Expected consumer to be created, got nil")
+	}
+
+	if consumer.reader == nil {
+		t.Error("Expected reader to be initialized, got nil")
+	}
+
+	// Clean up
+	consumer.Close()
+}
+
+func TestDefaultMessageHandler(t *testing.T) {
+	msg := kafka.Message{
+		Topic:     "test-topic",
+		Partition: 0,
+		Offset:    0,
+		Key:       []byte("test-key"),
+		Value:     []byte("test-value"),
+		Time:      time.Now(),
+	}
+
+	err := DefaultMessageHandler(msg)
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+}
+
+func TestCustomMessageHandler(t *testing.T) {
+	var processedMessage string
+	
+	customHandler := func(msg kafka.Message) error {
+		processedMessage = string(msg.Value)
+		return nil
+	}
+
+	msg := kafka.Message{
+		Topic:     "test-topic",
+		Partition: 0,
+		Offset:    0,
+		Key:       []byte("test-key"),
+		Value:     []byte("test-value"),
+		Time:      time.Now(),
+	}
+
+	err := customHandler(msg)
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	if processedMessage != "test-value" {
+		t.Errorf("Expected processed message to be 'test-value', got '%s'", processedMessage)
+	}
+}
+
+func TestConsumerClose(t *testing.T) {
+	brokers := []string{"localhost:9092"}
+	groupID := "test-group"
+	topic := "test-topic"
+
+	consumer := NewConsumer(brokers, groupID, topic)
+	
+	err := consumer.Close()
+	if err != nil {
+		t.Errorf("Expected no error when closing consumer, got %v", err)
+	}
+}
+
+// Integration test - only run if Kafka is available
+func TestConsumeIntegration(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping integration test in short mode")
+	}
+
+	brokers := []string{"localhost:9092"}
+	groupID := "test-group"
+	topic := "test-topic"
+
+	consumer := NewConsumer(brokers, groupID, topic)
+	defer consumer.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Test handler
+	handler := func(msg kafka.Message) error {
+		t.Logf("Received message: %s", string(msg.Value))
+		return nil
+	}
+
+	// This would require a running Kafka instance
+	// For now, we'll just test that the method doesn't panic
+	go func() {
+		time.Sleep(1 * time.Second)
+		cancel()
+	}()
+
+	err := consumer.Consume(ctx, handler)
+	if err != nil && err != context.Canceled {
+		t.Errorf("Unexpected error: %v", err)
+	}
+}
