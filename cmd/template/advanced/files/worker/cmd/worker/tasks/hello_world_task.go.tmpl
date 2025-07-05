@@ -1,0 +1,61 @@
+package tasks
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"log"
+
+	"github.com/hibiken/asynq"
+)
+
+// Task types
+const (
+	TypeHelloWorld = "hello_world"
+)
+
+// HelloWorldPayload represents the payload for hello world task
+type HelloWorldPayload struct {
+	Name    string `json:"name"`
+	Message string `json:"message"`
+}
+
+// NewHelloWorldTask creates a new hello world task
+func NewHelloWorldTask(name, message string) (*asynq.Task, error) {
+	payload := HelloWorldPayload{
+		Name:    name,
+		Message: message,
+	}
+
+	data, err := json.Marshal(payload)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal payload: %w", err)
+	}
+
+	return asynq.NewTask(TypeHelloWorld, data), nil
+}
+
+// HandleHelloWorldTask processes the hello world task
+func HandleHelloWorldTask(ctx context.Context, t *asynq.Task) error {
+	var payload HelloWorldPayload
+	if err := json.Unmarshal(t.Payload(), &payload); err != nil {
+		return fmt.Errorf("failed to unmarshal payload: %w", err)
+	}
+
+	// Process the task
+	log.Printf("Processing hello world task for %s: %s", payload.Name, payload.Message)
+
+	// Add your business logic here
+	// For example:
+	// - Send email notification
+	// - Update database records
+	// - Call external API
+	// - Generate reports
+	// - etc.
+
+	// Simulate some work
+	fmt.Printf("Hello, %s! Your message: %s\n", payload.Name, payload.Message)
+
+	log.Printf("Successfully processed hello world task for %s", payload.Name)
+	return nil
+}

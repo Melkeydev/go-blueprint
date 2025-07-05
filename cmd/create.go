@@ -196,35 +196,32 @@ var createCmd = &cobra.Command{
 			}
 		}
 
-		if flagAdvanced {
+		// Process feature flags (can be used independently of --advanced flag)
+		featureFlags := cmd.Flag("feature").Value.String()
 
-			featureFlags := cmd.Flag("feature").Value.String()
-
-			if featureFlags != "" {
-				featuresFlagValues := strings.Split(featureFlags, ",")
-				for _, key := range featuresFlagValues {
-					project.AdvancedOptions[key] = true
-				}
-			} else {
-				isInteractive = true
-				step := steps.Steps["advanced"]
-				tprogram = tea.NewProgram((multiSelect.InitialModelMultiSelect(step.Options, options.Advanced, step.Headers, project)))
-				if _, err := tprogram.Run(); err != nil {
-					cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
-				}
-				project.ExitCLI(tprogram)
-				for key, opt := range options.Advanced.Choices {
-					project.AdvancedOptions[strings.ToLower(key)] = opt
-					err := cmd.Flag("feature").Value.Set(strings.ToLower(key))
-					if err != nil {
-						log.Fatal("failed to set the feature flag value", err)
-					}
-				}
+		if featureFlags != "" {
+			featuresFlagValues := strings.Split(featureFlags, ",")
+			for _, key := range featuresFlagValues {
+				project.AdvancedOptions[key] = true
+			}
+		} else if flagAdvanced {
+			isInteractive = true
+			step := steps.Steps["advanced"]
+			tprogram = tea.NewProgram((multiSelect.InitialModelMultiSelect(step.Options, options.Advanced, step.Headers, project)))
+			if _, err := tprogram.Run(); err != nil {
+				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
+			}
+			project.ExitCLI(tprogram)
+			for key, opt := range options.Advanced.Choices {
+				project.AdvancedOptions[strings.ToLower(key)] = opt
+				err := cmd.Flag("feature").Value.Set(strings.ToLower(key))
 				if err != nil {
-					log.Fatal("failed to set the htmx option", err)
+					log.Fatal("failed to set the feature flag value", err)
 				}
 			}
-
+			if err != nil {
+				log.Fatal("failed to set the htmx option", err)
+			}
 		}
 
 		if project.GitOptions == "" {

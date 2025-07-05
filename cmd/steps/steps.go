@@ -126,6 +126,11 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 						Title: "Docker",
 						Desc:  "Dockerfile and docker-compose generic configuration for go project",
 					},
+					{
+						Flag:  "Worker",
+						Title: "Background Worker",
+						Desc:  "Add background worker implementation using Asynq with Redis",
+					},
 				},
 			},
 			"git": {

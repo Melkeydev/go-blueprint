@@ -1,0 +1,88 @@
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
+
+	"{{.ProjectName}}/cmd/worker/tasks"
+	"github.com/hibiken/asynq"
+	"github.com/joho/godotenv"
+)
+
+func main() {
+	// Load environment variables from .env file
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found, using environment variables")
+	}
+
+	// Get Redis connection details from environment
+	redisAddr := getEnv("REDIS_ADDR", "localhost:6379")
+	redisPassword := getEnv("REDIS_PASSWORD", "")
+	redisDB := getEnvInt("REDIS_DB", 0)
+
+	// Create Redis client options
+	redisOpt := asynq.RedisClientOpt{
+		Addr:     redisAddr,
+		Password: redisPassword,
+		DB:       redisDB,
+	}
+
+	// Create a new server with Redis connection
+	server := asynq.NewServer(
+		redisOpt,
+		asynq.Config{
+			Concurrency: 10,
+			Queues: map[string]int{
+				"critical": 6,
+				"default":  3,
+				"low":      1,
+			},
+		},
+	)
+
+	// Create a new ServeMux (similar to HTTP router)
+	mux := asynq.NewServeMux()
+
+	// Register task handlers
+	mux.HandleFunc(tasks.TypeHelloWorld, tasks.HandleHelloWorldTask)
+
+	// Start the server in a goroutine
+	go func() {
+		log.Printf("Starting worker server on Redis: %s", redisAddr)
+		if err := server.Run(mux); err != nil {
+			log.Fatalf("Failed to start worker server: %v", err)
+		}
+	}()
+
+	// Wait for interrupt signal to gracefully shutdown the server
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
+	<-sigChan
+	log.Println("Shutting down worker server...")
+
+	// Shutdown the server
+	server.Shutdown()
+	log.Println("Worker server stopped")
+}
+
+// getEnv gets an environment variable or returns a default value
+func getEnv(key, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return defaultValue
+}
+
+// getEnvInt gets an environment variable as integer or returns a default value
+func getEnvInt(key string, defaultValue int) int {
+	if value := os.Getenv(key); value != "" {
+		if intValue, err := fmt.Sscanf(value, "%d", &defaultValue); err == nil && intValue == 1 {
+			return defaultValue
+		}
+	}
+	return defaultValue
+}

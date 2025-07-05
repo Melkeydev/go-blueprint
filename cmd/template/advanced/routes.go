@@ -76,6 +76,16 @@ var fiberHtmxTemplImports []byte
 //go:embed files/websocket/imports/fiber.tmpl
 var fiberWebsocketTemplImports []byte
 
+//go:embed files/worker/cmd/worker/main.go.tmpl
+var workerMainTemplate []byte
+
+//go:embed files/worker/cmd/worker/tasks/hello_world_task.go.tmpl
+var workerHelloWorldTaskTemplate []byte
+
+//go:embed files/worker/env.tmpl
+var workerEnvTemplate []byte
+
+// Helper functions for React files
 func EchoHtmxTemplRoutesTemplate() []byte {
 	return echoHtmxTemplRoutes
 }
@@ -170,4 +180,16 @@ func FiberWebsocketTemplImportsTemplate() []byte {
 
 func GinHtmxTemplImportsTemplate() []byte {
 	return ginHtmxTemplImports
+}
+
+func WorkerMainTemplate() []byte {
+	return workerMainTemplate
+}
+
+func WorkerHelloWorldTaskTemplate() []byte {
+	return workerHelloWorldTaskTemplate
+}
+
+func WorkerEnvTemplate() []byte {
+	return workerEnvTemplate
 }
