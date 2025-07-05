@@ -616,6 +616,13 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
+	if p.AdvancedOptions[string(flags.Worker)] {
+		err := p.CreateWorkerFiles(projectPath)
+		if err != nil {
+			return err
+		}
+	}
+
 	if p.AdvancedOptions[string(flags.Kafka)] {
 		err := p.CreateKafkaFiles(projectPath)
 		if err != nil {
@@ -624,13 +631,6 @@ func (p *Project) CreateMainFile() error {
 	}
 
 	// Using the embedded static files for tailwind and htmx
-	if p.AdvancedOptions[string(flags.Worker)] {
-		err := p.CreateWorkerFiles(projectPath)
-		if err != nil {
-			return err
-		}
-	}
-
 	err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routes")
 	if err != nil {
 		log.Printf("Error injecting routes.go file: %v", err)
