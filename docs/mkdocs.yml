@@ -47,6 +47,7 @@ nav:
     - Websocket: advanced-flag/websocket.md
     - Docker: advanced-flag/docker.md
     - React & Vite (TypeScript): advanced-flag/react-vite.md
+    - Kafka Consumer: advanced-flag/kafka.md
   - Testing endpoints: 
     - Server: endpoints-test/server.md
     - DB Health Endpoints: 

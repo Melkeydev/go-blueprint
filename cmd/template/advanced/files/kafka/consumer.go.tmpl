@@ -1,0 +1,75 @@
+package segmentio
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"time"
+
+	"github.com/segmentio/kafka-go"
+)
+
+// MessageHandler defines the function signature for processing Kafka messages
+type MessageHandler func(msg kafka.Message) error
+
+// Consumer represents a Kafka consumer
+type Consumer struct {
+	reader *kafka.Reader
+}
+
+// NewConsumer creates a new Kafka consumer
+func NewConsumer(brokers []string, groupID, topic string) *Consumer {
+	config := kafka.ReaderConfig{
+		Brokers:     brokers,
+		GroupID:     groupID,
+		Topic:       topic,
+		MinBytes:    10e3, // 10KB
+		MaxBytes:    10e6, // 10MB
+		MaxWait:     1 * time.Second,
+		StartOffset: kafka.LastOffset,
+	}
+
+	reader := kafka.NewReader(config)
+
+	return &Consumer{
+		reader: reader,
+	}
+}
+
+// Consume starts consuming messages from Kafka with a custom handler
+func (c *Consumer) Consume(ctx context.Context, handler MessageHandler) error {
+	for {
+		select {
+		case <-ctx.Done():
+			return c.reader.Close()
+		default:
+			msg, err := c.reader.ReadMessage(ctx)
+			if err != nil {
+				log.Printf("Error reading message: %v", err)
+				continue
+			}
+
+			// Process the message using the provided handler
+			err = handler(msg)
+			if err != nil {
+				log.Printf("Error processing message: %v", err)
+				continue
+			}
+
+			log.Printf("Message processed successfully: key=%s, value=%s, topic=%s, partition=%d, offset=%d",
+				string(msg.Key), string(msg.Value), msg.Topic, msg.Partition, msg.Offset)
+		}
+	}
+}
+
+// DefaultMessageHandler provides a default message processing implementation
+func DefaultMessageHandler(msg kafka.Message) error {
+	// Default implementation - just log the message
+	fmt.Printf("Processing message: %s\n", string(msg.Value))
+	return nil
+}
+
+// Close closes the consumer
+func (c *Consumer) Close() error {
+	return c.reader.Close()
+}

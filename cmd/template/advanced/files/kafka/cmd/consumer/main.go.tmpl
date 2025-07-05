@@ -1,0 +1,114 @@
+package main
+
+import (
+	"context"
+	"flag"
+	"log"
+	"os"
+	"os/signal"
+	"strings"
+	"syscall"
+
+	"{{.ProjectName}}/pkg/kafka/segmentio"
+	"github.com/joho/godotenv"
+	"github.com/segmentio/kafka-go"
+)
+
+func main() {
+	// Load environment variables from .env file
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found, using environment variables")
+	}
+
+	// Command line flags
+	var (
+		brokers = flag.String("brokers", "", "Kafka broker addresses (comma-separated)")
+		groupID = flag.String("group-id", "", "Consumer group ID")
+		topic   = flag.String("topic", "", "Kafka topic to consume from")
+	)
+	flag.Parse()
+
+	// Get configuration from environment variables or command line flags
+	kafkaBrokers := getBrokers(*brokers)
+	consumerGroupID := getGroupID(*groupID)
+	kafkaTopic := getTopic(*topic)
+
+	log.Printf("Starting Kafka consumer...")
+	log.Printf("Brokers: %v", kafkaBrokers)
+	log.Printf("Group ID: %s", consumerGroupID)
+	log.Printf("Topic: %s", kafkaTopic)
+
+	// Create consumer
+	consumer := segmentio.NewConsumer(kafkaBrokers, consumerGroupID, kafkaTopic)
+
+	// Create context for graceful shutdown
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// Handle graceful shutdown
+	go func() {
+		sigChan := make(chan os.Signal, 1)
+		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+		sig := <-sigChan
+		log.Printf("Received signal %v, shutting down...", sig)
+		cancel()
+	}()
+
+	// Create a custom message handler
+	messageHandler := func(msg kafka.Message) error {
+		log.Printf("Processing message: key=%s, value=%s, topic=%s, partition=%d, offset=%d",
+			string(msg.Key), string(msg.Value), msg.Topic, msg.Partition, msg.Offset)
+		
+		// Add your custom business logic here
+		// For example, you could process the message, store it in a database, etc.
+		
+		return nil
+	}
+
+	// Start consuming
+	log.Println("Consumer started. Press Ctrl+C to stop.")
+	if err := consumer.Consume(ctx, messageHandler); err != nil {
+		log.Fatalf("Error consuming messages: %v", err)
+	}
+
+	log.Println("Consumer stopped.")
+}
+
+// getBrokers returns Kafka brokers from command line flag or environment variable
+func getBrokers(flagValue string) []string {
+	if flagValue != "" {
+		return strings.Split(flagValue, ",")
+	}
+	
+	brokers := os.Getenv("KAFKA_BROKERS")
+	if brokers == "" {
+		brokers = "localhost:9092"
+	}
+	return strings.Split(brokers, ",")
+}
+
+// getGroupID returns consumer group ID from command line flag or environment variable
+func getGroupID(flagValue string) string {
+	if flagValue != "" {
+		return flagValue
+	}
+	
+	groupID := os.Getenv("KAFKA_GROUP_ID")
+	if groupID == "" {
+		groupID = "{{.ProjectName}}-consumer-group"
+	}
+	return groupID
+}
+
+// getTopic returns Kafka topic from command line flag or environment variable
+func getTopic(flagValue string) string {
+	if flagValue != "" {
+		return flagValue
+	}
+	
+	topic := os.Getenv("KAFKA_TOPIC")
+	if topic == "" {
+		topic = "{{.ProjectName}}-topic"
+	}
+	return topic
+}

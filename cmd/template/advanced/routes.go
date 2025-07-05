@@ -76,6 +76,19 @@ var fiberHtmxTemplImports []byte
 //go:embed files/websocket/imports/fiber.tmpl
 var fiberWebsocketTemplImports []byte
 
+//go:embed files/kafka/consumer.go.tmpl
+var kafkaConsumerTemplate []byte
+
+//go:embed files/kafka/consumer_test.go.tmpl
+var kafkaConsumerTestTemplate []byte
+
+//go:embed files/kafka/env.tmpl
+var kafkaEnvTemplate []byte
+
+//go:embed files/kafka/cmd/consumer/main.go.tmpl
+var kafkaConsumerMainTemplate []byte
+
+// Helper functions for React files
 func EchoHtmxTemplRoutesTemplate() []byte {
 	return echoHtmxTemplRoutes
 }
@@ -170,4 +183,20 @@ func FiberWebsocketTemplImportsTemplate() []byte {
 
 func GinHtmxTemplImportsTemplate() []byte {
 	return ginHtmxTemplImports
+}
+
+func KafkaConsumerTemplate() []byte {
+	return kafkaConsumerTemplate
+}
+
+func KafkaConsumerTestTemplate() []byte {
+	return kafkaConsumerTestTemplate
+}
+
+func KafkaEnvTemplate() []byte {
+	return kafkaEnvTemplate
+}
+
+func KafkaConsumerMainTemplate() []byte {
+	return kafkaConsumerMainTemplate
 }

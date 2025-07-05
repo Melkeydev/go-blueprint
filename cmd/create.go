@@ -196,35 +196,32 @@ var createCmd = &cobra.Command{
 			}
 		}
 
-		if flagAdvanced {
+		// Process feature flags (can be used independently of --advanced flag)
+		featureFlags := cmd.Flag("feature").Value.String()
 
-			featureFlags := cmd.Flag("feature").Value.String()
-
-			if featureFlags != "" {
-				featuresFlagValues := strings.Split(featureFlags, ",")
-				for _, key := range featuresFlagValues {
-					project.AdvancedOptions[key] = true
-				}
-			} else {
-				isInteractive = true
-				step := steps.Steps["advanced"]
-				tprogram = tea.NewProgram((multiSelect.InitialModelMultiSelect(step.Options, options.Advanced, step.Headers, project)))
-				if _, err := tprogram.Run(); err != nil {
-					cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
-				}
-				project.ExitCLI(tprogram)
-				for key, opt := range options.Advanced.Choices {
-					project.AdvancedOptions[strings.ToLower(key)] = opt
-					err := cmd.Flag("feature").Value.Set(strings.ToLower(key))
-					if err != nil {
-						log.Fatal("failed to set the feature flag value", err)
-					}
-				}
+		if featureFlags != "" {
+			featuresFlagValues := strings.Split(featureFlags, ",")
+			for _, key := range featuresFlagValues {
+				project.AdvancedOptions[key] = true
+			}
+		} else if flagAdvanced {
+			isInteractive = true
+			step := steps.Steps["advanced"]
+			tprogram = tea.NewProgram((multiSelect.InitialModelMultiSelect(step.Options, options.Advanced, step.Headers, project)))
+			if _, err := tprogram.Run(); err != nil {
+				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
+			}
+			project.ExitCLI(tprogram)
+			for key, opt := range options.Advanced.Choices {
+				project.AdvancedOptions[strings.ToLower(key)] = opt
+				err := cmd.Flag("feature").Value.Set(strings.ToLower(key))
 				if err != nil {
-					log.Fatal("failed to set the htmx option", err)
+					log.Fatal("failed to set the feature flag value", err)
 				}
 			}
-
+			if err != nil {
+				log.Fatal("failed to set the htmx option", err)
+			}
 		}
 
 		if project.GitOptions == "" {
@@ -303,6 +300,14 @@ var createCmd = &cobra.Command{
 			options.Advanced.Choices["react"] = false
 			fmt.Println(endingMsgStyle.Render("• Install the templ cli if you haven't already by running `go install github.com/a-h/templ/cmd/templ@latest`\n"))
 			fmt.Println(endingMsgStyle.Render("• Generate templ function files by running `templ generate`\n"))
+		}
+
+		if options.Advanced.Choices["Kafka"] {
+			fmt.Println(endingMsgStyle.Render("• Configure Kafka broker settings in the .env file\n"))
+			fmt.Println(endingMsgStyle.Render("• Build the consumer binary: `go build -o consumer ./cmd/consumer`\n"))
+			fmt.Println(endingMsgStyle.Render("• Run the consumer: `./consumer` or `go run ./cmd/consumer`\n"))
+			fmt.Println(endingMsgStyle.Render("• Implementation in pkg/kafka/segmentio/, example in integration_example.go\n"))
+			fmt.Println(endingMsgStyle.Render("• Customize message processing in pkg/kafka/segmentio/consumer.go\n"))
 		}
 
 		if isInteractive {

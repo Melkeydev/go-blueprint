@@ -126,6 +126,11 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 						Title: "Docker",
 						Desc:  "Dockerfile and docker-compose generic configuration for go project",
 					},
+					{
+						Flag:  "Kafka",
+						Title: "Kafka Consumer",
+						Desc:  "Add Kafka consumer implementation using github.com/segmentio/kafka-go",
+					},
 				},
 			},
 			"git": {
