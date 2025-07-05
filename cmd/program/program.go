@@ -616,6 +616,13 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
+	if p.AdvancedOptions[string(flags.Worker)] {
+		err := p.CreateWorkerFiles(projectPath)
+		if err != nil {
+			return err
+		}
+	}
+
 	err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routes")
 	if err != nil {
 		log.Printf("Error injecting routes.go file: %v", err)
@@ -780,11 +787,24 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 				tpl.GlobalEnvTemplate(),
 				p.DBDriverMap[p.DBDriver].templater.Env(),
 			}
+
+			if p.AdvancedOptions[string(flags.Worker)] {
+				envBytes = append(envBytes, advanced.WorkerEnvTemplate())
+			}
+
 			createdTemplate := template.Must(template.New(fileName).Parse(string(bytes.Join(envBytes, []byte("\n")))))
 			err = createdTemplate.Execute(createdFile, p)
 
 		} else {
-			createdTemplate := template.Must(template.New(fileName).Parse(string(tpl.GlobalEnvTemplate())))
+			envBytes := [][]byte{
+				tpl.GlobalEnvTemplate(),
+			}
+
+			if p.AdvancedOptions[string(flags.Worker)] {
+				envBytes = append(envBytes, advanced.WorkerEnvTemplate())
+			}
+
+			createdTemplate := template.Must(template.New(fileName).Parse(string(bytes.Join(envBytes, []byte("\n")))))
 			err = createdTemplate.Execute(createdFile, p)
 		}
 	}
@@ -977,6 +997,60 @@ func (p *Project) CreateWebsocketImports(appDir string) {
 	}
 	newImports := strings.Join([]string{string(p.AdvancedTemplates.TemplateImports), importBuffer.String()}, "\n")
 	p.AdvancedTemplates.TemplateImports = newImports
+}
+
+func (p *Project) CreateWorkerFiles(appDir string) error {
+	// Install Worker dependencies
+	workerDependencies := []string{
+		"github.com/hibiken/asynq",
+		"github.com/joho/godotenv",
+	}
+	err := utils.GoGetPackage(appDir, workerDependencies)
+	if err != nil {
+		return err
+	}
+
+	// Create cmd/worker directory
+	workerDir := filepath.Join(appDir, "cmd", "worker")
+	err = os.MkdirAll(workerDir, 0755)
+	if err != nil {
+		return err
+	}
+
+	// Create cmd/worker/main.go file
+	workerMainFile, err := os.Create(filepath.Join(workerDir, "main.go"))
+	if err != nil {
+		return err
+	}
+	defer workerMainFile.Close()
+
+	workerMainTemplate := template.Must(template.New("main.go").Parse(string(advanced.WorkerMainTemplate())))
+	err = workerMainTemplate.Execute(workerMainFile, p)
+	if err != nil {
+		return err
+	}
+
+	// Create cmd/worker/tasks directory
+	tasksDir := filepath.Join(workerDir, "tasks")
+	err = os.MkdirAll(tasksDir, 0755)
+	if err != nil {
+		return err
+	}
+
+	// Create cmd/worker/tasks/hello_world_task.go file
+	helloWorldTaskFile, err := os.Create(filepath.Join(tasksDir, "hello_world_task.go"))
+	if err != nil {
+		return err
+	}
+	defer helloWorldTaskFile.Close()
+
+	helloWorldTaskTemplate := template.Must(template.New("hello_world_task.go").Parse(string(advanced.WorkerHelloWorldTaskTemplate())))
+	err = helloWorldTaskTemplate.Execute(helloWorldTaskFile, p)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func checkNpmInstalled() error {
