@@ -505,6 +505,18 @@ func (p *Project) CreateMainFile() error {
 			return err
 		}
 
+		htmxTailwindConfigJsFile, err := os.Create(fmt.Sprintf("%s/tailwind.config.js", projectPath))
+		if err != nil {
+			return err
+		}
+		defer htmxTailwindConfigJsFile.Close()
+
+		htmxTailwindConfigJsTemplate := advanced.HtmxTailwindConfigJsTemplate()
+		err = os.WriteFile(fmt.Sprintf("%s/tailwind.config.js", projectPath), htmxTailwindConfigJsTemplate, 0o644)
+		if err != nil {
+			return err
+		}
+
 		efsFile, err := os.Create(fmt.Sprintf("%s/%s/efs.go", projectPath, cmdWebPath))
 		if err != nil {
 			return err
