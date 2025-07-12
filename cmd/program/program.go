@@ -628,6 +628,21 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
+	if p.AdvancedOptions[string(flags.Worker)] {
+		err := p.CreateWorkerFiles(projectPath)
+		if err != nil {
+			return err
+		}
+	}
+
+	if p.AdvancedOptions[string(flags.Kafka)] {
+		err := p.CreateKafkaFiles(projectPath)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Using the embedded static files for tailwind and htmx
 	err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routes")
 	if err != nil {
 		log.Printf("Error injecting routes.go file: %v", err)
@@ -792,11 +807,28 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 				tpl.GlobalEnvTemplate(),
 				p.DBDriverMap[p.DBDriver].templater.Env(),
 			}
+
+			if p.AdvancedOptions[string(flags.Worker)] {
+				envBytes = append(envBytes, advanced.WorkerEnvTemplate())
+			}
+
+			if p.AdvancedOptions[string(flags.Kafka)] {
+				envBytes = append(envBytes, advanced.KafkaEnvTemplate())
+			}
+
 			createdTemplate := template.Must(template.New(fileName).Parse(string(bytes.Join(envBytes, []byte("\n")))))
 			err = createdTemplate.Execute(createdFile, p)
 
 		} else {
-			createdTemplate := template.Must(template.New(fileName).Parse(string(tpl.GlobalEnvTemplate())))
+			envBytes := [][]byte{
+				tpl.GlobalEnvTemplate(),
+			}
+
+			if p.AdvancedOptions[string(flags.Worker)] {
+				envBytes = append(envBytes, advanced.WorkerEnvTemplate())
+			}
+
+			createdTemplate := template.Must(template.New(fileName).Parse(string(bytes.Join(envBytes, []byte("\n")))))
 			err = createdTemplate.Execute(createdFile, p)
 		}
 	}
@@ -989,6 +1021,124 @@ func (p *Project) CreateWebsocketImports(appDir string) {
 	}
 	newImports := strings.Join([]string{string(p.AdvancedTemplates.TemplateImports), importBuffer.String()}, "\n")
 	p.AdvancedTemplates.TemplateImports = newImports
+}
+
+func (p *Project) CreateWorkerFiles(appDir string) error {
+	// Install Worker dependencies
+	workerDependencies := []string{
+		"github.com/hibiken/asynq",
+		"github.com/joho/godotenv",
+	}
+	err := utils.GoGetPackage(appDir, workerDependencies)
+	if err != nil {
+		return err
+	}
+
+	// Create cmd/worker directory
+	workerDir := filepath.Join(appDir, "cmd", "worker")
+	err = os.MkdirAll(workerDir, 0755)
+	if err != nil {
+		return err
+	}
+
+	// Create cmd/worker/main.go file
+	workerMainFile, err := os.Create(filepath.Join(workerDir, "main.go"))
+	if err != nil {
+		return err
+	}
+	defer workerMainFile.Close()
+
+	workerMainTemplate := template.Must(template.New("main.go").Parse(string(advanced.WorkerMainTemplate())))
+	err = workerMainTemplate.Execute(workerMainFile, p)
+	if err != nil {
+		return err
+	}
+
+	// Create cmd/worker/tasks directory
+	tasksDir := filepath.Join(workerDir, "tasks")
+	err = os.MkdirAll(tasksDir, 0755)
+	if err != nil {
+		return err
+	}
+
+	// Create cmd/worker/tasks/hello_world_task.go file
+	helloWorldTaskFile, err := os.Create(filepath.Join(tasksDir, "hello_world_task.go"))
+	if err != nil {
+		return err
+	}
+	defer helloWorldTaskFile.Close()
+
+	helloWorldTaskTemplate := template.Must(template.New("hello_world_task.go").Parse(string(advanced.WorkerHelloWorldTaskTemplate())))
+	err = helloWorldTaskTemplate.Execute(helloWorldTaskFile, p)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (p *Project) CreateKafkaFiles(appDir string) error {
+	// Install Kafka dependency
+	kafkaDependency := []string{"github.com/segmentio/kafka-go"}
+	err := utils.GoGetPackage(appDir, kafkaDependency)
+	if err != nil {
+		return err
+	}
+
+	// Create pkg/kafka/segmentio directory
+	kafkaDir := filepath.Join(appDir, "pkg", "kafka", "segmentio")
+	err = os.MkdirAll(kafkaDir, 0755)
+	if err != nil {
+		return err
+	}
+
+	// Create consumer.go file
+	consumerFile, err := os.Create(filepath.Join(kafkaDir, "consumer.go"))
+	if err != nil {
+		return err
+	}
+	defer consumerFile.Close()
+
+	consumerTemplate := template.Must(template.New("consumer.go").Parse(string(advanced.KafkaConsumerTemplate())))
+	err = consumerTemplate.Execute(consumerFile, p)
+	if err != nil {
+		return err
+	}
+
+	// Create consumer_test.go file
+	testFile, err := os.Create(filepath.Join(kafkaDir, "consumer_test.go"))
+	if err != nil {
+		return err
+	}
+	defer testFile.Close()
+
+	testTemplate := template.Must(template.New("consumer_test.go").Parse(string(advanced.KafkaConsumerTestTemplate())))
+	err = testTemplate.Execute(testFile, p)
+	if err != nil {
+		return err
+	}
+
+	// Create cmd/consumer directory for the consumer binary
+	consumerCmdDir := filepath.Join(appDir, "cmd", "consumer")
+	err = os.MkdirAll(consumerCmdDir, 0755)
+	if err != nil {
+		return err
+	}
+
+	// Create cmd/consumer/main.go file
+	consumerMainFile, err := os.Create(filepath.Join(consumerCmdDir, "main.go"))
+	if err != nil {
+		return err
+	}
+	defer consumerMainFile.Close()
+
+	consumerMainTemplate := template.Must(template.New("main.go").Parse(string(advanced.KafkaConsumerMainTemplate())))
+	err = consumerMainTemplate.Execute(consumerMainFile, p)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func checkNpmInstalled() error {
