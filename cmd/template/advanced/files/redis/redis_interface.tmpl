@@ -1,0 +1,60 @@
+package redis
+
+import (
+	"context"
+	"time"
+)
+
+// Client defines the interface for Redis operations
+type Client interface {
+	// Basic operations
+	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error
+	Get(ctx context.Context, key string) (string, error)
+	Del(ctx context.Context, keys ...string) error
+	Exists(ctx context.Context, keys ...string) (int64, error)
+	
+	// Hash operations
+	HSet(ctx context.Context, key string, values ...interface{}) error
+	HGet(ctx context.Context, key, field string) (string, error)
+	HGetAll(ctx context.Context, key string) (map[string]string, error)
+	HDel(ctx context.Context, key string, fields ...string) error
+	
+	// List operations
+	LPush(ctx context.Context, key string, values ...interface{}) error
+	RPush(ctx context.Context, key string, values ...interface{}) error
+	LPop(ctx context.Context, key string) (string, error)
+	RPop(ctx context.Context, key string) (string, error)
+	LRange(ctx context.Context, key string, start, stop int64) ([]string, error)
+	
+	// Set operations
+	SAdd(ctx context.Context, key string, members ...interface{}) error
+	SMembers(ctx context.Context, key string) ([]string, error)
+	SRem(ctx context.Context, key string, members ...interface{}) error
+	SIsMember(ctx context.Context, key string, member interface{}) (bool, error)
+	
+	// Pub/Sub operations
+	Publish(ctx context.Context, channel string, message interface{}) error
+	Subscribe(ctx context.Context, channels ...string) (<-chan *Message, error)
+	
+	// Health check
+	Ping(ctx context.Context) error
+	Health() map[string]string
+	
+	// Close connection
+	Close() error
+}
+
+// Message represents a Redis pub/sub message
+type Message struct {
+	Channel string
+	Payload string
+}
+
+// Config holds Redis configuration
+type Config struct {
+	Address  string `env:"REDIS_ADDRESS" envDefault:"localhost"`
+	Port     string `env:"REDIS_PORT" envDefault:"6379"`
+	Password string `env:"REDIS_PASSWORD"`
+	Database int    `env:"REDIS_DATABASE" envDefault:"0"`
+	PoolSize int    `env:"REDIS_POOL_SIZE" envDefault:"10"`
+}

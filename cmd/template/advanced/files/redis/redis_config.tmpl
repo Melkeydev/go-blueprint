@@ -1,0 +1,40 @@
+package redis
+
+import (
+	"log"
+	"os"
+	"strconv"
+
+	_ "github.com/joho/godotenv/autoload"
+)
+
+// LoadConfig loads Redis configuration from environment variables
+func LoadConfig() Config {
+	database, err := strconv.Atoi(getEnv("REDIS_DATABASE", "0"))
+	if err != nil {
+		log.Printf("Invalid REDIS_DATABASE value, using default: %v", err)
+		database = 0
+	}
+
+	poolSize, err := strconv.Atoi(getEnv("REDIS_POOL_SIZE", "10"))
+	if err != nil {
+		log.Printf("Invalid REDIS_POOL_SIZE value, using default: %v", err)
+		poolSize = 10
+	}
+
+	return Config{
+		Address:  getEnv("REDIS_ADDRESS", "localhost"),
+		Port:     getEnv("REDIS_PORT", "6379"),
+		Password: getEnv("REDIS_PASSWORD", ""),
+		Database: database,
+		PoolSize: poolSize,
+	}
+}
+
+// getEnv gets an environment variable with a fallback value
+func getEnv(key, fallback string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return fallback
+}
