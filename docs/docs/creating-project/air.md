@@ -23,8 +23,8 @@ watching cmd/web
 watching cmd/web/assets
 watching cmd/web/assets/js
 watching internal
-watching internal/database
-watching internal/server
+watching pkg/database
+watching cmd/api
 watching tests
 !exclude tmp
 building...

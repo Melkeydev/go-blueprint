@@ -9,7 +9,7 @@ import (
 
 	_ "github.com/joho/godotenv/autoload"
   {{if ne .DBDriver "none"}}
-	"{{.ProjectName}}/internal/database"
+	"{{.ProjectName}}/pkg/database"
   {{end}}
 )
 

@@ -9,21 +9,20 @@ To extend the project with database functionality, users can choose from a varie
 
 ## Updated Project Structure
 
-Integrating a database adds a new layer to the project structure, primarily in the `internal/database` directory:
+Integrating a database adds a new layer to the project structure, primarily in the `pkg/database` directory:
 
 ```bash
 /(Root)
 ├── /cmd
 │   └── /api
-│       └── main.go
-├── /internal
-│   ├── /database
-│   │   ├── database_test.go
-│   │   └── database.go
-│   └── /server
+│       ├── main.go
 │       ├── routes.go
 │       ├── routes_test.go
 │       └── server.go
+├── /pkg
+│   └── /database
+│       ├── database_test.go
+│       └── database.go
 ├── go.mod
 ├── go.sum
 ├── Makefile
@@ -53,7 +52,7 @@ curl -sLO get.docker.com
 
 ### Running the tests
 
-Go to the `internal/database` directory and run the following command:
+Go to the `pkg/database` directory and run the following command:
 
 ```bash
 go test -v

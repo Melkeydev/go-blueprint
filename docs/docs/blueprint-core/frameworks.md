@@ -15,9 +15,7 @@ The project is structured with a simple layout, focusing on the cmd, internal, a
 /(Root)
 ├── /cmd
 │   └── /api
-│       └── main.go
-├── /internal
-│   └── /server
+│       ├── main.go
 │       ├── routes.go
 │       ├── routes_test.go
 │       └── server.go

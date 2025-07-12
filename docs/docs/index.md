@@ -70,14 +70,16 @@ Here's an overview of the project structure created by Go Blueprint when all opt
 │   ├── tsconfig.json             # Root TypeScript configuration.
 │   ├── tsconfig.node.json        # TypeScript configuration for Node.js.
 │   └── vite.config.ts            # Vite configuration file.
-├── internal/
-│   ├── database/
-│   │   ├── database_test.go      # File containing integration tests for the database operations.
-│   │   └── database.go           # File containing functions related to database operations.
-│   └── server/
+├── cmd/
+│   └── api/
+│       ├── main.go               # Entry point of the application.
 │       ├── routes.go             # File defining HTTP routes.
 │       ├── routes_test.go        # Test file for testing HTTP handlers.
 │       └── server.go             # Main server logic.
+├── pkg/
+│   └── database/
+│       ├── database_test.go      # File containing integration tests for the database operations.
+│       └── database.go           # File containing functions related to database operations.
 ├── .air.toml                     # Configuration file for Air, a live-reload utility.
 ├── docker-compose.yml            # Docker Compose configuration.
 ├── Dockerfile                    # Dockerfile configuration for the Go project.

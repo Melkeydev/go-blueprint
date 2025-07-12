@@ -3,7 +3,7 @@ package server
 import (
 	"github.com/gofiber/fiber/v2"
   {{if ne .DBDriver "none"}}
-	"{{.ProjectName}}/internal/database"
+	"{{.ProjectName}}/pkg/database"
   {{end}}
 )
 
