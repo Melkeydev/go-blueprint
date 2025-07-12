@@ -89,6 +89,16 @@ var kafkaEnvTemplate []byte
 var kafkaConsumerMainTemplate []byte
 
 // Helper functions for React files
+//go:embed files/worker/cmd/worker/main.go.tmpl
+var workerMainTemplate []byte
+
+//go:embed files/worker/cmd/worker/tasks/hello_world_task.go.tmpl
+var workerHelloWorldTaskTemplate []byte
+
+//go:embed files/worker/env.tmpl
+var workerEnvTemplate []byte
+
+// Helper functions for React files
 func EchoHtmxTemplRoutesTemplate() []byte {
 	return echoHtmxTemplRoutes
 }
@@ -199,4 +209,16 @@ func KafkaEnvTemplate() []byte {
 
 func KafkaConsumerMainTemplate() []byte {
 	return kafkaConsumerMainTemplate
+}
+
+func WorkerMainTemplate() []byte {
+	return workerMainTemplate
+}
+
+func WorkerHelloWorldTaskTemplate() []byte {
+	return workerHelloWorldTaskTemplate
+}
+
+func WorkerEnvTemplate() []byte {
+	return workerEnvTemplate
 }
