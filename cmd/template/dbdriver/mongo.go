@@ -26,3 +26,31 @@ func (m MongoTemplate) Env() []byte {
 func (m MongoTemplate) Tests() []byte {
 	return mongoTestcontainersTemplate
 }
+
+func (m MongoTemplate) SqlcConfig() []byte {
+	return []byte{} // MongoDB doesn't use sqlc
+}
+
+func (m MongoTemplate) SchemaExample() []byte {
+	return []byte{} // MongoDB doesn't use sqlc
+}
+
+func (m MongoTemplate) QueryExample() []byte {
+	return []byte{} // MongoDB doesn't use sqlc
+}
+
+func (m MongoTemplate) UsersSchema() []byte {
+	return []byte{} // MongoDB doesn't use sqlc
+}
+
+func (m MongoTemplate) PostsSchema() []byte {
+	return []byte{} // MongoDB doesn't use sqlc
+}
+
+func (m MongoTemplate) UsersQuery() []byte {
+	return []byte{} // MongoDB doesn't use sqlc
+}
+
+func (m MongoTemplate) PostsQuery() []byte {
+	return []byte{} // MongoDB doesn't use sqlc
+}

@@ -1,0 +1,26 @@
+version: "2"
+sql:
+  - name: "users"
+    engine: "{{if eq .DBDriver "mysql"}}mysql{{else if eq .DBDriver "postgres"}}postgresql{{else if eq .DBDriver "sqlite"}}sqlite{{end}}"
+    queries: "./db/query/users"
+    schema: "./db/schema"
+    gen:
+      go:
+        package: "users"
+        out: "./pkg/repository/users"
+        emit_json_tags: true
+        emit_prepared_queries: false
+        emit_interface: true
+        emit_exact_table_names: false
+  - name: "posts"
+    engine: "{{if eq .DBDriver "mysql"}}mysql{{else if eq .DBDriver "postgres"}}postgresql{{else if eq .DBDriver "sqlite"}}sqlite{{end}}"
+    queries: "./db/query/posts"
+    schema: "./db/schema"
+    gen:
+      go:
+        package: "posts"
+        out: "./pkg/repository/posts"
+        emit_json_tags: true
+        emit_prepared_queries: false
+        emit_interface: true
+        emit_exact_table_names: false

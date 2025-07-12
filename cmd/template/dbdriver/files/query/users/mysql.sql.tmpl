@@ -1,0 +1,37 @@
+-- User queries for MySQL
+-- name: GetUser :one
+SELECT id, username, email, password_hash, created_at, updated_at
+FROM users
+WHERE id = ?;
+
+-- name: GetUserByEmail :one
+SELECT id, username, email, password_hash, created_at, updated_at
+FROM users
+WHERE email = ?;
+
+-- name: GetUserByUsername :one
+SELECT id, username, email, password_hash, created_at, updated_at
+FROM users
+WHERE username = ?;
+
+-- name: ListUsers :many
+SELECT id, username, email, created_at, updated_at
+FROM users
+ORDER BY created_at DESC
+LIMIT ? OFFSET ?;
+
+-- name: CreateUser :execresult
+INSERT INTO users (username, email, password_hash)
+VALUES (?, ?, ?);
+
+-- name: UpdateUser :exec
+UPDATE users
+SET username = ?, email = ?, updated_at = CURRENT_TIMESTAMP
+WHERE id = ?;
+
+-- name: DeleteUser :exec
+DELETE FROM users
+WHERE id = ?;
+
+-- name: CountUsers :one
+SELECT COUNT(*) FROM users;

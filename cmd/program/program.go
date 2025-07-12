@@ -79,6 +79,13 @@ type DBDriverTemplater interface {
 	Service() []byte
 	Env() []byte
 	Tests() []byte
+	SqlcConfig() []byte
+	SchemaExample() []byte
+	QueryExample() []byte
+	UsersSchema() []byte
+	PostsSchema() []byte
+	UsersQuery() []byte
+	PostsQuery() []byte
 }
 
 type DockerTemplater interface {
@@ -99,10 +106,9 @@ var (
 	fiberPackage   = []string{"github.com/gofiber/fiber/v2"}
 	echoPackage    = []string{"github.com/labstack/echo/v4", "github.com/labstack/echo/v4/middleware"}
 
-	mysqlDriver    = []string{"github.com/go-sql-driver/mysql"}
-	postgresDriver = []string{"github.com/jackc/pgx/v5/stdlib"}
-	sqliteDriver   = []string{"github.com/mattn/go-sqlite3"}
-	redisDriver    = []string{"github.com/redis/go-redis/v9"}
+	mysqlDriver    = []string{"github.com/go-sql-driver/mysql", "github.com/sqlc-dev/sqlc/cmd/sqlc"}
+	postgresDriver = []string{"github.com/jackc/pgx/v5/stdlib", "github.com/sqlc-dev/sqlc/cmd/sqlc"}
+	sqliteDriver   = []string{"github.com/mattn/go-sqlite3", "github.com/sqlc-dev/sqlc/cmd/sqlc"}
 	mongoDriver    = []string{"go.mongodb.org/mongo-driver"}
 	gocqlDriver    = []string{"github.com/gocql/gocql"}
 	scyllaDriver   = "github.com/scylladb/gocql@v1.14.4" // Replacement for GoCQL
@@ -112,12 +118,21 @@ var (
 )
 
 const (
-	root                 = "/"
-	cmdApiPath           = "cmd/api"
-	cmdWebPath           = "cmd/web"
-	internalServerPath   = "internal/server"
-	internalDatabasePath = "internal/database"
-	gitHubActionPath     = ".github/workflows"
+	root                   = "/"
+	cmdApiPath             = "cmd/api"
+	cmdWebPath             = "cmd/web"
+	internalServerPath     = "internal/server"
+	internalDatabasePath   = "internal/database"
+	gitHubActionPath       = ".github/workflows"
+	dbSchemaPath           = "db/schema"
+	dbQueryPath            = "db/query"
+	pkgRepositoryPath      = "pkg/repository"
+	dbSchemaUsersPath      = "db/schema/users"
+	dbSchemaPostsPath      = "db/schema/posts"
+	dbQueryUsersPath       = "db/query/users"
+	dbQueryPostsPath       = "db/query/posts"
+	pkgRepositoryUsersPath = "pkg/repository/users"
+	pkgRepositoryPostsPath = "pkg/repository/posts"
 )
 
 // CheckOs checks Operation system and generates MakeFile and `go build` command
@@ -317,6 +332,75 @@ func (p *Project) CreateMainFile() error {
 			err = p.CreateFileWithInjection(internalDatabasePath, projectPath, "database_test.go", "integration-tests")
 			if err != nil {
 				log.Printf("Error injecting database_test.go file: %v", err)
+				return err
+			}
+		}
+
+		// Create sqlc files for SQL databases (MySQL, PostgreSQL, SQLite)
+		if p.DBDriver == "mysql" || p.DBDriver == "postgres" || p.DBDriver == "sqlite" {
+			// Create sqlc.yaml configuration file
+			err = p.CreateFileWithInjection(root, projectPath, "sqlc.yaml", "sqlc-config")
+			if err != nil {
+				log.Printf("Error creating sqlc.yaml file: %v", err)
+				return err
+			}
+
+			// Create db/schema directory and schema files
+			err = p.CreatePath(dbSchemaPath, projectPath)
+			if err != nil {
+				log.Printf("Error creating path: %s", dbSchemaPath)
+				return err
+			}
+
+			err = p.CreateFileWithInjection(dbSchemaPath, projectPath, "users.sql", "users-schema")
+			if err != nil {
+				log.Printf("Error creating users schema file: %v", err)
+				return err
+			}
+
+			err = p.CreateFileWithInjection(dbSchemaPath, projectPath, "posts.sql", "posts-schema")
+			if err != nil {
+				log.Printf("Error creating posts schema file: %v", err)
+				return err
+			}
+
+			// Create db/query/users directory and users queries
+			err = p.CreatePath(dbQueryUsersPath, projectPath)
+			if err != nil {
+				log.Printf("Error creating path: %s", dbQueryUsersPath)
+				return err
+			}
+
+			err = p.CreateFileWithInjection(dbQueryUsersPath, projectPath, "users.sql", "users-query")
+			if err != nil {
+				log.Printf("Error creating users query file: %v", err)
+				return err
+			}
+
+			// Create db/query/posts directory and posts queries
+			err = p.CreatePath(dbQueryPostsPath, projectPath)
+			if err != nil {
+				log.Printf("Error creating path: %s", dbQueryPostsPath)
+				return err
+			}
+
+			err = p.CreateFileWithInjection(dbQueryPostsPath, projectPath, "posts.sql", "posts-query")
+			if err != nil {
+				log.Printf("Error creating posts query file: %v", err)
+				return err
+			}
+
+			// Create pkg/repository/users directory (sqlc will generate files here)
+			err = p.CreatePath(pkgRepositoryUsersPath, projectPath)
+			if err != nil {
+				log.Printf("Error creating path: %s", pkgRepositoryUsersPath)
+				return err
+			}
+
+			// Create pkg/repository/posts directory (sqlc will generate files here)
+			err = p.CreatePath(pkgRepositoryPostsPath, projectPath)
+			if err != nil {
+				log.Printf("Error creating path: %s", pkgRepositoryPostsPath)
 				return err
 			}
 		}
@@ -830,6 +914,27 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 			createdTemplate := template.Must(template.New(fileName).Parse(string(bytes.Join(envBytes, []byte("\n")))))
 			err = createdTemplate.Execute(createdFile, p)
 		}
+	case "sqlc-config":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.SqlcConfig())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "schema-example":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.SchemaExample())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "query-example":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.QueryExample())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "users-schema":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.UsersSchema())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "posts-schema":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.PostsSchema())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "users-query":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.UsersQuery())))
+		err = createdTemplate.Execute(createdFile, p)
+	case "posts-query":
+		createdTemplate := template.Must(template.New(fileName).Parse(string(p.DBDriverMap[p.DBDriver].templater.PostsQuery())))
+		err = createdTemplate.Execute(createdFile, p)
 	}
 
 	if err != nil {

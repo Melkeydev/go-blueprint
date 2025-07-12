@@ -1,0 +1,20 @@
+-- Posts table schema for SQLite
+CREATE TABLE IF NOT EXISTS posts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    content TEXT,
+    author_id INTEGER NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_posts_author_id ON posts(author_id);
+CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at);
+
+-- Trigger to update updated_at column
+CREATE TRIGGER IF NOT EXISTS update_posts_updated_at
+    AFTER UPDATE ON posts
+BEGIN
+    UPDATE posts SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+END;

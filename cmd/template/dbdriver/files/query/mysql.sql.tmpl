@@ -1,0 +1,68 @@
+-- Example queries for MySQL
+-- name: GetUser :one
+SELECT id, username, email, password_hash, created_at, updated_at
+FROM users
+WHERE id = ?;
+
+-- name: GetUserByEmail :one
+SELECT id, username, email, password_hash, created_at, updated_at
+FROM users
+WHERE email = ?;
+
+-- name: GetUserByUsername :one
+SELECT id, username, email, password_hash, created_at, updated_at
+FROM users
+WHERE username = ?;
+
+-- name: ListUsers :many
+SELECT id, username, email, created_at, updated_at
+FROM users
+ORDER BY created_at DESC
+LIMIT ? OFFSET ?;
+
+-- name: CreateUser :execresult
+INSERT INTO users (username, email, password_hash)
+VALUES (?, ?, ?);
+
+-- name: UpdateUser :exec
+UPDATE users
+SET username = ?, email = ?, updated_at = CURRENT_TIMESTAMP
+WHERE id = ?;
+
+-- name: DeleteUser :exec
+DELETE FROM users
+WHERE id = ?;
+
+-- name: GetPost :one
+SELECT p.id, p.title, p.content, p.author_id, p.created_at, p.updated_at,
+       u.username as author_username
+FROM posts p
+JOIN users u ON p.author_id = u.id
+WHERE p.id = ?;
+
+-- name: ListPosts :many
+SELECT p.id, p.title, p.content, p.author_id, p.created_at, p.updated_at,
+       u.username as author_username
+FROM posts p
+JOIN users u ON p.author_id = u.id
+ORDER BY p.created_at DESC
+LIMIT ? OFFSET ?;
+
+-- name: ListPostsByAuthor :many
+SELECT id, title, content, author_id, created_at, updated_at
+FROM posts
+WHERE author_id = ?
+ORDER BY created_at DESC;
+
+-- name: CreatePost :execresult
+INSERT INTO posts (title, content, author_id)
+VALUES (?, ?, ?);
+
+-- name: UpdatePost :exec
+UPDATE posts
+SET title = ?, content = ?, updated_at = CURRENT_TIMESTAMP
+WHERE id = ? AND author_id = ?;
+
+-- name: DeletePost :exec
+DELETE FROM posts
+WHERE id = ? AND author_id = ?;

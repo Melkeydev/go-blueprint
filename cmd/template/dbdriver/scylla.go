@@ -26,3 +26,31 @@ func (r ScyllaTemplate) Env() []byte {
 func (r ScyllaTemplate) Tests() []byte {
 	return scyllaTestcontainersTemplate
 }
+
+func (r ScyllaTemplate) SqlcConfig() []byte {
+	return []byte{} // ScyllaDB doesn't use sqlc
+}
+
+func (r ScyllaTemplate) SchemaExample() []byte {
+	return []byte{} // ScyllaDB doesn't use sqlc
+}
+
+func (r ScyllaTemplate) QueryExample() []byte {
+	return []byte{} // ScyllaDB doesn't use sqlc
+}
+
+func (r ScyllaTemplate) UsersSchema() []byte {
+	return []byte{} // ScyllaDB doesn't use sqlc
+}
+
+func (r ScyllaTemplate) PostsSchema() []byte {
+	return []byte{} // ScyllaDB doesn't use sqlc
+}
+
+func (r ScyllaTemplate) UsersQuery() []byte {
+	return []byte{} // ScyllaDB doesn't use sqlc
+}
+
+func (r ScyllaTemplate) PostsQuery() []byte {
+	return []byte{} // ScyllaDB doesn't use sqlc
+}

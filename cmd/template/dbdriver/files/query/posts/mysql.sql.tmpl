@@ -1,0 +1,40 @@
+-- Post queries for MySQL
+-- name: GetPost :one
+SELECT p.id, p.title, p.content, p.author_id, p.created_at, p.updated_at,
+       u.username as author_username
+FROM posts p
+JOIN users u ON p.author_id = u.id
+WHERE p.id = ?;
+
+-- name: GetPostsByAuthor :many
+SELECT id, title, content, author_id, created_at, updated_at
+FROM posts
+WHERE author_id = ?
+ORDER BY created_at DESC;
+
+-- name: ListPosts :many
+SELECT p.id, p.title, p.content, p.author_id, p.created_at, p.updated_at,
+       u.username as author_username
+FROM posts p
+JOIN users u ON p.author_id = u.id
+ORDER BY p.created_at DESC
+LIMIT ? OFFSET ?;
+
+-- name: CreatePost :execresult
+INSERT INTO posts (title, content, author_id)
+VALUES (?, ?, ?);
+
+-- name: UpdatePost :exec
+UPDATE posts
+SET title = ?, content = ?, updated_at = CURRENT_TIMESTAMP
+WHERE id = ? AND author_id = ?;
+
+-- name: DeletePost :exec
+DELETE FROM posts
+WHERE id = ? AND author_id = ?;
+
+-- name: CountPosts :one
+SELECT COUNT(*) FROM posts;
+
+-- name: CountPostsByAuthor :one
+SELECT COUNT(*) FROM posts WHERE author_id = ?;
