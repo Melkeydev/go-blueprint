@@ -204,10 +204,6 @@ func (p *Project) createDBDriverMap() {
 		packageName: mongoDriver,
 		templater:   dbdriver.MongoTemplate{},
 	}
-	p.DBDriverMap[flags.Redis] = Driver{
-		packageName: redisDriver,
-		templater:   dbdriver.RedisTemplate{},
-	}
 
 	p.DBDriverMap[flags.Scylla] = Driver{
 		packageName: gocqlDriver,
@@ -229,10 +225,6 @@ func (p *Project) createDockerMap() {
 	p.DockerMap[flags.Mongo] = Docker{
 		packageName: []string{},
 		templater:   docker.MongoDockerTemplate{},
-	}
-	p.DockerMap[flags.Redis] = Docker{
-		packageName: []string{},
-		templater:   docker.RedisDockerTemplate{},
 	}
 	p.DockerMap[flags.Scylla] = Docker{
 		packageName: []string{},
@@ -630,6 +622,13 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
+	if p.AdvancedOptions[string(flags.Redis)] {
+		err := p.CreateRedisFiles(projectPath)
+		if err != nil {
+			return err
+		}
+	}
+
 	// Using the embedded static files for tailwind and htmx
 	err = p.CreateFileWithInjection(internalServerPath, projectPath, "routes.go", "routes")
 	if err != nil {
@@ -804,6 +803,10 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 				envBytes = append(envBytes, advanced.KafkaEnvTemplate())
 			}
 
+			if p.AdvancedOptions[string(flags.Redis)] {
+				envBytes = append(envBytes, advanced.RedisEnv())
+			}
+
 			createdTemplate := template.Must(template.New(fileName).Parse(string(bytes.Join(envBytes, []byte("\n")))))
 			err = createdTemplate.Execute(createdFile, p)
 
@@ -814,6 +817,14 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 
 			if p.AdvancedOptions[string(flags.Worker)] {
 				envBytes = append(envBytes, advanced.WorkerEnvTemplate())
+			}
+
+			if p.AdvancedOptions[string(flags.Kafka)] {
+				envBytes = append(envBytes, advanced.KafkaEnvTemplate())
+			}
+
+			if p.AdvancedOptions[string(flags.Redis)] {
+				envBytes = append(envBytes, advanced.RedisEnv())
 			}
 
 			createdTemplate := template.Must(template.New(fileName).Parse(string(bytes.Join(envBytes, []byte("\n")))))
@@ -1122,6 +1133,83 @@ func (p *Project) CreateKafkaFiles(appDir string) error {
 
 	consumerMainTemplate := template.Must(template.New("main.go").Parse(string(advanced.KafkaConsumerMainTemplate())))
 	err = consumerMainTemplate.Execute(consumerMainFile, p)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (p *Project) CreateRedisFiles(appDir string) error {
+	// Install Redis dependency
+	redisDependency := []string{"github.com/redis/go-redis/v9"}
+	err := utils.GoGetPackage(appDir, redisDependency)
+	if err != nil {
+		return err
+	}
+
+	// Create pkg/redis directory
+	redisDir := filepath.Join(appDir, "pkg", "redis")
+	err = os.MkdirAll(redisDir, 0755)
+	if err != nil {
+		return err
+	}
+
+	// Create interface.go file
+	interfaceFile, err := os.Create(filepath.Join(redisDir, "interface.go"))
+	if err != nil {
+		return err
+	}
+	defer interfaceFile.Close()
+
+	interfaceTemplate := template.Must(template.New("interface.go").Parse(string(advanced.RedisInterface())))
+	err = interfaceTemplate.Execute(interfaceFile, p)
+	if err != nil {
+		return err
+	}
+
+	// Create client.go file
+	clientFile, err := os.Create(filepath.Join(redisDir, "client.go"))
+	if err != nil {
+		return err
+	}
+	defer clientFile.Close()
+
+	clientTemplate := template.Must(template.New("client.go").Parse(string(advanced.RedisImplementation())))
+	err = clientTemplate.Execute(clientFile, p)
+	if err != nil {
+		return err
+	}
+
+	// Create config.go file
+	configFile, err := os.Create(filepath.Join(redisDir, "config.go"))
+	if err != nil {
+		return err
+	}
+	defer configFile.Close()
+
+	configTemplate := template.Must(template.New("config.go").Parse(string(advanced.RedisConfig())))
+	err = configTemplate.Execute(configFile, p)
+	if err != nil {
+		return err
+	}
+
+	// Create internal/example_service directory
+	exampleServiceDir := filepath.Join(appDir, "internal", "example_service")
+	err = os.MkdirAll(exampleServiceDir, 0755)
+	if err != nil {
+		return err
+	}
+
+	// Create example_service.go file
+	exampleServiceFile, err := os.Create(filepath.Join(exampleServiceDir, "redis_example.go"))
+	if err != nil {
+		return err
+	}
+	defer exampleServiceFile.Close()
+
+	exampleServiceTemplate := template.Must(template.New("redis_example.go").Parse(string(advanced.RedisExampleService())))
+	err = exampleServiceTemplate.Execute(exampleServiceFile, p)
 	if err != nil {
 		return err
 	}

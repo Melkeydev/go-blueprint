@@ -80,9 +80,6 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 						Title: "Mongo",
 						Desc:  "The MongoDB supported driver for Go."},
 					{
-						Title: "Redis",
-						Desc:  "Redis driver for Go."},
-					{
 						Title: "Scylla",
 						Desc:  "ScyllaDB Enhanced driver from GoCQL."},
 					{
@@ -135,6 +132,11 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 						Flag:  "Worker",
 						Title: "Background Worker",
 						Desc:  "Add background worker implementation using Asynq with Redis",
+					},
+					{
+						Flag:  "Redis",
+						Title: "Redis Client",
+						Desc:  "Add Redis client with interface-based design for caching, sessions, and data structures",
 					},
 				},
 			},

@@ -1,0 +1,269 @@
+package example_service
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"log"
+	"time"
+
+	"{{.ProjectName}}/pkg/redis"
+)
+
+// ExampleService demonstrates Redis usage with dependency injection
+type ExampleService struct {
+	redisClient redis.Client
+}
+
+// NewExampleService creates a new example service with Redis dependency injection
+func NewExampleService(redisClient redis.Client) *ExampleService {
+	return &ExampleService{
+		redisClient: redisClient,
+	}
+}
+
+// User represents a simple user model for examples
+type User struct {
+	ID       string    `json:"id"`
+	Name     string    `json:"name"`
+	Email    string    `json:"email"`
+	CreateAt time.Time `json:"created_at"`
+}
+
+// CacheUser demonstrates caching a user object
+func (s *ExampleService) CacheUser(ctx context.Context, user User) error {
+	userJSON, err := json.Marshal(user)
+	if err != nil {
+		return fmt.Errorf("failed to marshal user: %w", err)
+	}
+
+	key := fmt.Sprintf("user:%s", user.ID)
+	err = s.redisClient.Set(ctx, key, userJSON, time.Hour*24) // Cache for 24 hours
+	if err != nil {
+		return fmt.Errorf("failed to cache user: %w", err)
+	}
+
+	log.Printf("Cached user %s successfully", user.ID)
+	return nil
+}
+
+// GetCachedUser retrieves a cached user
+func (s *ExampleService) GetCachedUser(ctx context.Context, userID string) (*User, error) {
+	key := fmt.Sprintf("user:%s", userID)
+	userJSON, err := s.redisClient.Get(ctx, key)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get cached user: %w", err)
+	}
+
+	var user User
+	err = json.Unmarshal([]byte(userJSON), &user)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal user: %w", err)
+	}
+
+	return &user, nil
+}
+
+// SessionExample demonstrates session management using Redis
+func (s *ExampleService) SetUserSession(ctx context.Context, sessionID, userID string) error {
+	key := fmt.Sprintf("session:%s", sessionID)
+	err := s.redisClient.Set(ctx, key, userID, time.Hour*2) // Session expires in 2 hours
+	if err != nil {
+		return fmt.Errorf("failed to set session: %w", err)
+	}
+
+	log.Printf("Set session %s for user %s", sessionID, userID)
+	return nil
+}
+
+func (s *ExampleService) GetUserSession(ctx context.Context, sessionID string) (string, error) {
+	key := fmt.Sprintf("session:%s", sessionID)
+	userID, err := s.redisClient.Get(ctx, key)
+	if err != nil {
+		return "", fmt.Errorf("failed to get session: %w", err)
+	}
+
+	return userID, nil
+}
+
+func (s *ExampleService) DeleteUserSession(ctx context.Context, sessionID string) error {
+	key := fmt.Sprintf("session:%s", sessionID)
+	err := s.redisClient.Del(ctx, key)
+	if err != nil {
+		return fmt.Errorf("failed to delete session: %w", err)
+	}
+
+	log.Printf("Deleted session %s", sessionID)
+	return nil
+}
+
+// CounterExample demonstrates using Redis for counters
+func (s *ExampleService) IncrementPageView(ctx context.Context, pageID string) (int64, error) {
+	key := fmt.Sprintf("pageview:%s", pageID)
+	
+	// Check if key exists, if not initialize it
+	exists, err := s.redisClient.Exists(ctx, key)
+	if err != nil {
+		return 0, fmt.Errorf("failed to check key existence: %w", err)
+	}
+
+	if exists == 0 {
+		err = s.redisClient.Set(ctx, key, "0", time.Hour*24*30) // Expire in 30 days
+		if err != nil {
+			return 0, fmt.Errorf("failed to initialize counter: %w", err)
+		}
+	}
+
+	// For this example, we'll simulate increment by getting, adding 1, and setting
+	// In a real application, you might want to use Redis INCR command directly
+	currentStr, err := s.redisClient.Get(ctx, key)
+	if err != nil {
+		return 0, fmt.Errorf("failed to get current count: %w", err)
+	}
+
+	current := 0
+	if currentStr != "" {
+		current, _ = fmt.Sscanf(currentStr, "%d", &current)
+	}
+	
+	newCount := current + 1
+	err = s.redisClient.Set(ctx, key, fmt.Sprintf("%d", newCount), time.Hour*24*30)
+	if err != nil {
+		return 0, fmt.Errorf("failed to increment counter: %w", err)
+	}
+
+	return int64(newCount), nil
+}
+
+// ListExample demonstrates list operations
+func (s *ExampleService) AddToRecentItems(ctx context.Context, userID, itemID string) error {
+	key := fmt.Sprintf("recent:%s", userID)
+	
+	// Add to the beginning of the list
+	err := s.redisClient.LPush(ctx, key, itemID)
+	if err != nil {
+		return fmt.Errorf("failed to add to recent items: %w", err)
+	}
+
+	// Keep only the last 10 items
+	recentItems, err := s.redisClient.LRange(ctx, key, 0, 9)
+	if err != nil {
+		return fmt.Errorf("failed to get recent items: %w", err)
+	}
+
+	// If we have more than 10 items, trim the list
+	if len(recentItems) > 10 {
+		// Delete the key and recreate with only the first 10 items
+		err = s.redisClient.Del(ctx, key)
+		if err != nil {
+			return fmt.Errorf("failed to delete key: %w", err)
+		}
+
+		for i := len(recentItems) - 1; i >= 0 && i >= len(recentItems)-10; i-- {
+			err = s.redisClient.RPush(ctx, key, recentItems[i])
+			if err != nil {
+				return fmt.Errorf("failed to rebuild list: %w", err)
+			}
+		}
+	}
+
+	log.Printf("Added item %s to recent items for user %s", itemID, userID)
+	return nil
+}
+
+func (s *ExampleService) GetRecentItems(ctx context.Context, userID string) ([]string, error) {
+	key := fmt.Sprintf("recent:%s", userID)
+	items, err := s.redisClient.LRange(ctx, key, 0, 9) // Get last 10 items
+	if err != nil {
+		return nil, fmt.Errorf("failed to get recent items: %w", err)
+	}
+
+	return items, nil
+}
+
+// SetExample demonstrates set operations for tags or categories
+func (s *ExampleService) AddUserTag(ctx context.Context, userID, tag string) error {
+	key := fmt.Sprintf("user_tags:%s", userID)
+	err := s.redisClient.SAdd(ctx, key, tag)
+	if err != nil {
+		return fmt.Errorf("failed to add user tag: %w", err)
+	}
+
+	log.Printf("Added tag %s to user %s", tag, userID)
+	return nil
+}
+
+func (s *ExampleService) GetUserTags(ctx context.Context, userID string) ([]string, error) {
+	key := fmt.Sprintf("user_tags:%s", userID)
+	tags, err := s.redisClient.SMembers(ctx, key)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user tags: %w", err)
+	}
+
+	return tags, nil
+}
+
+func (s *ExampleService) HasUserTag(ctx context.Context, userID, tag string) (bool, error) {
+	key := fmt.Sprintf("user_tags:%s", userID)
+	exists, err := s.redisClient.SIsMember(ctx, key, tag)
+	if err != nil {
+		return false, fmt.Errorf("failed to check user tag: %w", err)
+	}
+
+	return exists, nil
+}
+
+// HashExample demonstrates hash operations for user profiles
+func (s *ExampleService) UpdateUserProfile(ctx context.Context, userID string, profile map[string]interface{}) error {
+	key := fmt.Sprintf("profile:%s", userID)
+	
+	// Convert map to slice for HSet
+	var args []interface{}
+	for field, value := range profile {
+		args = append(args, field, value)
+	}
+
+	err := s.redisClient.HSet(ctx, key, args...)
+	if err != nil {
+		return fmt.Errorf("failed to update user profile: %w", err)
+	}
+
+	log.Printf("Updated profile for user %s", userID)
+	return nil
+}
+
+func (s *ExampleService) GetUserProfile(ctx context.Context, userID string) (map[string]string, error) {
+	key := fmt.Sprintf("profile:%s", userID)
+	profile, err := s.redisClient.HGetAll(ctx, key)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user profile: %w", err)
+	}
+
+	return profile, nil
+}
+
+// PubSubExample demonstrates publish/subscribe pattern
+func (s *ExampleService) PublishNotification(ctx context.Context, channel, message string) error {
+	err := s.redisClient.Publish(ctx, channel, message)
+	if err != nil {
+		return fmt.Errorf("failed to publish notification: %w", err)
+	}
+
+	log.Printf("Published message to channel %s: %s", channel, message)
+	return nil
+}
+
+func (s *ExampleService) SubscribeToNotifications(ctx context.Context, channels ...string) (<-chan *redis.Message, error) {
+	msgChan, err := s.redisClient.Subscribe(ctx, channels...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to subscribe to notifications: %w", err)
+	}
+
+	log.Printf("Subscribed to channels: %v", channels)
+	return msgChan, nil
+}
+
+// HealthCheck demonstrates health checking
+func (s *ExampleService) CheckRedisHealth() map[string]string {
+	return s.redisClient.Health()
+}

@@ -1,0 +1,270 @@
+package redis
+
+import (
+	"context"
+	"fmt"
+	"math"
+	"strconv"
+	"strings"
+	"time"
+
+	"github.com/redis/go-redis/v9"
+)
+
+// client implements the Client interface using go-redis
+type client struct {
+	rdb *redis.Client
+}
+
+// NewClient creates a new Redis client instance
+func NewClient(config Config) (Client, error) {
+	fullAddress := fmt.Sprintf("%s:%s", config.Address, config.Port)
+	
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     fullAddress,
+		Password: config.Password,
+		DB:       config.Database,
+		PoolSize: config.PoolSize,
+		// Note: It's important to add this for a secure connection. Most cloud services that offer Redis should already have this configured in their services.
+		// For manual setup, please refer to the Redis documentation: https://redis.io/docs/latest/operate/oss_and_stack/management/security/encryption/
+		// TLSConfig: &tls.Config{
+		// 	MinVersion:   tls.VersionTLS12,
+		// },
+	})
+
+	// Test connection
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	
+	if err := rdb.Ping(ctx).Err(); err != nil {
+		return nil, fmt.Errorf("failed to connect to Redis: %w", err)
+	}
+
+	return &client{rdb: rdb}, nil
+}
+
+// Basic operations
+func (c *client) Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error {
+	return c.rdb.Set(ctx, key, value, expiration).Err()
+}
+
+func (c *client) Get(ctx context.Context, key string) (string, error) {
+	return c.rdb.Get(ctx, key).Result()
+}
+
+func (c *client) Del(ctx context.Context, keys ...string) error {
+	return c.rdb.Del(ctx, keys...).Err()
+}
+
+func (c *client) Exists(ctx context.Context, keys ...string) (int64, error) {
+	return c.rdb.Exists(ctx, keys...).Result()
+}
+
+// Hash operations
+func (c *client) HSet(ctx context.Context, key string, values ...interface{}) error {
+	return c.rdb.HSet(ctx, key, values...).Err()
+}
+
+func (c *client) HGet(ctx context.Context, key, field string) (string, error) {
+	return c.rdb.HGet(ctx, key, field).Result()
+}
+
+func (c *client) HGetAll(ctx context.Context, key string) (map[string]string, error) {
+	return c.rdb.HGetAll(ctx, key).Result()
+}
+
+func (c *client) HDel(ctx context.Context, key string, fields ...string) error {
+	return c.rdb.HDel(ctx, key, fields...).Err()
+}
+
+// List operations
+func (c *client) LPush(ctx context.Context, key string, values ...interface{}) error {
+	return c.rdb.LPush(ctx, key, values...).Err()
+}
+
+func (c *client) RPush(ctx context.Context, key string, values ...interface{}) error {
+	return c.rdb.RPush(ctx, key, values...).Err()
+}
+
+func (c *client) LPop(ctx context.Context, key string) (string, error) {
+	return c.rdb.LPop(ctx, key).Result()
+}
+
+func (c *client) RPop(ctx context.Context, key string) (string, error) {
+	return c.rdb.RPop(ctx, key).Result()
+}
+
+func (c *client) LRange(ctx context.Context, key string, start, stop int64) ([]string, error) {
+	return c.rdb.LRange(ctx, key, start, stop).Result()
+}
+
+// Set operations
+func (c *client) SAdd(ctx context.Context, key string, members ...interface{}) error {
+	return c.rdb.SAdd(ctx, key, members...).Err()
+}
+
+func (c *client) SMembers(ctx context.Context, key string) ([]string, error) {
+	return c.rdb.SMembers(ctx, key).Result()
+}
+
+func (c *client) SRem(ctx context.Context, key string, members ...interface{}) error {
+	return c.rdb.SRem(ctx, key, members...).Err()
+}
+
+func (c *client) SIsMember(ctx context.Context, key string, member interface{}) (bool, error) {
+	return c.rdb.SIsMember(ctx, key, member).Result()
+}
+
+// Pub/Sub operations
+func (c *client) Publish(ctx context.Context, channel string, message interface{}) error {
+	return c.rdb.Publish(ctx, channel, message).Err()
+}
+
+func (c *client) Subscribe(ctx context.Context, channels ...string) (<-chan *Message, error) {
+	pubsub := c.rdb.Subscribe(ctx, channels...)
+	
+	msgChan := make(chan *Message, 100)
+	
+	go func() {
+		defer close(msgChan)
+		for msg := range pubsub.Channel() {
+			msgChan <- &Message{
+				Channel: msg.Channel,
+				Payload: msg.Payload,
+			}
+		}
+	}()
+	
+	return msgChan, nil
+}
+
+// Health check operations
+func (c *client) Ping(ctx context.Context) error {
+	return c.rdb.Ping(ctx).Err()
+}
+
+func (c *client) Health() map[string]string {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	stats := make(map[string]string)
+
+	// Check Redis health
+	pong, err := c.rdb.Ping(ctx).Result()
+	if err != nil {
+		stats["redis_status"] = "down"
+		stats["redis_message"] = fmt.Sprintf("Redis connection failed: %v", err)
+		return stats
+	}
+
+	stats["redis_status"] = "up"
+	stats["redis_message"] = "It's healthy"
+	stats["redis_ping_response"] = pong
+
+	// Get Redis server information
+	info, err := c.rdb.Info(ctx).Result()
+	if err != nil {
+		stats["redis_message"] = fmt.Sprintf("Failed to retrieve Redis info: %v", err)
+		return stats
+	}
+
+	// Parse Redis info
+	redisInfo := parseRedisInfo(info)
+	poolStats := c.rdb.PoolStats()
+
+	// Add basic stats
+	stats["redis_version"] = redisInfo["redis_version"]
+	stats["redis_mode"] = redisInfo["redis_mode"]
+	stats["redis_connected_clients"] = redisInfo["connected_clients"]
+	stats["redis_used_memory"] = redisInfo["used_memory"]
+	stats["redis_used_memory_peak"] = redisInfo["used_memory_peak"]
+	stats["redis_uptime_in_seconds"] = redisInfo["uptime_in_seconds"]
+	stats["redis_hits_connections"] = strconv.FormatUint(uint64(poolStats.Hits), 10)
+	stats["redis_misses_connections"] = strconv.FormatUint(uint64(poolStats.Misses), 10)
+	stats["redis_timeouts_connections"] = strconv.FormatUint(uint64(poolStats.Timeouts), 10)
+	stats["redis_total_connections"] = strconv.FormatUint(uint64(poolStats.TotalConns), 10)
+	stats["redis_idle_connections"] = strconv.FormatUint(uint64(poolStats.IdleConns), 10)
+	stats["redis_stale_connections"] = strconv.FormatUint(uint64(poolStats.StaleConns), 10)
+	stats["redis_max_memory"] = redisInfo["maxmemory"]
+
+	// Calculate active connections
+	activeConns := uint64(math.Max(float64(poolStats.TotalConns-poolStats.IdleConns), 0))
+	stats["redis_active_connections"] = strconv.FormatUint(activeConns, 10)
+
+	// Calculate pool size percentage
+	poolSize := c.rdb.Options().PoolSize
+	connectedClients, _ := strconv.Atoi(redisInfo["connected_clients"])
+	poolSizePercentage := float64(connectedClients) / float64(poolSize) * 100
+	stats["redis_pool_size_percentage"] = fmt.Sprintf("%.2f%%", poolSizePercentage)
+
+	// Evaluate stats for warnings
+	c.evaluateRedisStats(redisInfo, stats, poolStats, poolSize)
+
+	return stats
+}
+
+func (c *client) Close() error {
+	return c.rdb.Close()
+}
+
+// evaluateRedisStats evaluates Redis stats and adds warning messages
+func (c *client) evaluateRedisStats(redisInfo, stats map[string]string, poolStats *redis.PoolStats, poolSize int) {
+	connectedClients, _ := strconv.Atoi(redisInfo["connected_clients"])
+	highConnectionThreshold := int(float64(poolSize) * 0.8)
+
+	// Check high connection count
+	if connectedClients > highConnectionThreshold {
+		stats["redis_message"] = "Redis has a high number of connected clients"
+	}
+
+	// Check stale connections
+	minStaleConnectionsThreshold := 500
+	if int(poolStats.StaleConns) > minStaleConnectionsThreshold {
+		stats["redis_message"] = fmt.Sprintf("Redis has %d stale connections.", poolStats.StaleConns)
+	}
+
+	// Check memory usage
+	usedMemory, _ := strconv.ParseInt(redisInfo["used_memory"], 10, 64)
+	maxMemory, _ := strconv.ParseInt(redisInfo["maxmemory"], 10, 64)
+	if maxMemory > 0 {
+		usedMemoryPercentage := float64(usedMemory) / float64(maxMemory) * 100
+		if usedMemoryPercentage >= 90 {
+			stats["redis_message"] = "Redis is using a significant amount of memory"
+		}
+	}
+
+	// Check uptime
+	uptimeInSeconds, _ := strconv.ParseInt(redisInfo["uptime_in_seconds"], 10, 64)
+	if uptimeInSeconds < 3600 {
+		stats["redis_message"] = "Redis has been recently restarted"
+	}
+
+	// Check idle connections
+	idleConns := int(poolStats.IdleConns)
+	highIdleConnectionThreshold := int(float64(poolSize) * 0.7)
+	if idleConns > highIdleConnectionThreshold {
+		stats["redis_message"] = "Redis has a high number of idle connections"
+	}
+
+	// Check pool utilization
+	poolUtilization := float64(poolStats.TotalConns-poolStats.IdleConns) / float64(poolSize) * 100
+	highPoolUtilizationThreshold := 90.0
+	if poolUtilization > highPoolUtilizationThreshold {
+		stats["redis_message"] = "Redis connection pool utilization is high"
+	}
+}
+
+// parseRedisInfo parses Redis INFO command output
+func parseRedisInfo(info string) map[string]string {
+	result := make(map[string]string)
+	lines := strings.Split(info, "\r\n")
+	for _, line := range lines {
+		if strings.Contains(line, ":") {
+			parts := strings.Split(line, ":")
+			key := strings.TrimSpace(parts[0])
+			value := strings.TrimSpace(parts[1])
+			result[key] = value
+		}
+	}
+	return result
+}
