@@ -37,9 +37,14 @@ gives the option to integrate with one of the more popular Go frameworks (and th
   Install
 </h2>
 
+### Go Install
 ```bash
 go install github.com/melkeydev/go-blueprint@latest
 ```
+
+### NPM Install
+```bash
+npm install go-blueprint
 
 This installs a go binary that will automatically bind to your $GOPATH
 
