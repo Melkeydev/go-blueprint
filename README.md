@@ -42,10 +42,6 @@ gives the option to integrate with one of the more popular Go frameworks (and th
 go install github.com/melkeydev/go-blueprint@latest
 ```
 
-### NPM Install
-```bash
-npm install go-blueprint
-
 This installs a go binary that will automatically bind to your $GOPATH
 
 > if you’re using Zsh, you’ll need to add it manually to `~/.zshrc`.
@@ -58,6 +54,16 @@ don't forget to update
 
 ```bash
 source ~/.zshrc
+```
+
+### NPM Install
+```bash
+npm install -g go-blueprint
+```
+
+### Homebrew Install
+```bash
+brew install go-blueprint
 ```
 
 Then in a new terminal run:
