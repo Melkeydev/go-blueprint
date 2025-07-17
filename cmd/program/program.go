@@ -301,6 +301,9 @@ func (p *Project) CreateMainFile() error {
 	// Install the correct package for the selected driver
 	if p.DBDriver != "none" {
 		p.createDBDriverMap()
+		if p.AdvancedOptions[string(flags.Sqlc)] && (p.DBDriver != flags.Postgres && p.DBDriver != flags.MySql && p.DBDriver != flags.Sqlite) {
+			p.AdvancedOptions[string(flags.Sqlc)] = false
+		}
 		err = utils.GoGetPackage(projectPath, p.DBDriverMap[p.DBDriver].packageName)
 		if err != nil {
 			log.Println("Could not install go dependency for chosen driver")
@@ -454,6 +457,44 @@ func (p *Project) CreateMainFile() error {
 		if err != nil {
 			return err
 		}
+	}
+
+	if p.AdvancedOptions[string(flags.Sqlc)] {
+		yamlFile, err := os.Create(fmt.Sprintf("%s/sqlc.yaml", projectPath))
+		if err != nil {
+			return err
+		}
+		defer yamlFile.Close()
+
+		yamlTemplate := template.Must(template.New("sqlcyaml").Parse((string(advanced.SqlcYamlTemplate()))))
+		err = yamlTemplate.Execute(yamlFile, p)
+		if err != nil {
+			return err
+		}
+
+		err = os.MkdirAll(fmt.Sprintf("%s/%s/sql", projectPath, internalDatabasePath), 0o755)
+		if err != nil {
+			return err
+		}
+
+		schemaFile, err := os.Create(fmt.Sprintf("%s/%s/sql/schema.sql", projectPath, internalDatabasePath))
+		if err != nil {
+			return err
+		}
+		defer schemaFile.Close()
+
+		queryFile, err := os.Create(fmt.Sprintf("%s/%s/sql/query.sql", projectPath, internalDatabasePath))
+		if err != nil {
+			return err
+		}
+		defer queryFile.Close()
+
+		queryTemplate := advanced.SqlcQueryTemplate()
+		_, err = queryFile.Write(queryTemplate)
+		if err != nil {
+			return err
+		}
+
 	}
 
 	if p.AdvancedOptions[string(flags.Htmx)] {
