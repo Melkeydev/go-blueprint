@@ -16,9 +16,8 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.21.1'
-      -
-        name: Run GoReleaser
+          go-version: "1.21.1"
+      - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v5.0.0
         with:
           distribution: goreleaser
@@ -30,7 +29,11 @@ jobs:
 
   npm-publish:
     needs: goreleaser
+    permissions:
+      contents: read
+      id-token: write
     uses: ./.github/workflows/npm-publish.yml
     with:
       tag: ${{ github.ref_name }}
     secrets: inherit
+
