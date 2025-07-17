@@ -27,3 +27,10 @@ jobs:
           workdir: ./
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  npm-publish:
+    needs: goreleaser
+    uses: ./.github/workflows/npm-publish.yml
+    with:
+      tag: ${{ github.ref_name }}
+    secrets: inherit

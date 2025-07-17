@@ -37,6 +37,7 @@ gives the option to integrate with one of the more popular Go frameworks (and th
   Install
 </h2>
 
+### Go Install
 ```bash
 go install github.com/melkeydev/go-blueprint@latest
 ```
@@ -53,6 +54,16 @@ don't forget to update
 
 ```bash
 source ~/.zshrc
+```
+
+### NPM Install
+```bash
+npm install -g go-blueprint
+```
+
+### Homebrew Install
+```bash
+brew install go-blueprint
 ```
 
 Then in a new terminal run:

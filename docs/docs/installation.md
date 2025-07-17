@@ -36,6 +36,26 @@ This command installs the Go-Blueprint binary, automatically binding it to your 
 > source ~/.zshrc
 > ```
 
+## NPM Install
+
+If you prefer using Node.js package manager, you can install Go-Blueprint via NPM. This method is convenient for developers who are already working in JavaScript/Node.js environments and want to integrate Go-Blueprint into their existing workflow.
+
+```bash
+npm install -g go-blueprint
+```
+
+The `-g` flag installs Go-Blueprint globally, making it accessible from any directory on your system.
+
+## Homebrew Install
+
+For macOS and Linux users, Homebrew provides a simple way to install Go-Blueprint. Homebrew automatically handles dependencies and keeps the tool updated through its package management system.
+
+```bash
+brew install go-blueprint
+```
+
+After installation via Homebrew, Go-Blueprint will be automatically added to your PATH, making it immediately available in your terminal.
+
 ## Building and Installing from Source
 
 If you prefer to build and install Go-Blueprint directly from the source code, you can follow these steps:
