@@ -1,4 +1,4 @@
-name: NPM Publisher
+name: npm-publish
 
 on:
   workflow_call:
@@ -14,48 +14,38 @@ on:
         required: true
         type: string
 
-env:
-  NODE_VERSION: '22'
-  REGISTRY_URL: 'https://registry.npmjs.org'
-
 jobs:
   npm-publish:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code at release tag
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           ref: ${{ inputs.tag }}
       
-      - name: Setup Node
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          registry-url: ${{ env.REGISTRY_URL }}
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
       
-      - name: Extract version and download release assets
+      - name: Download release assets
         run: |
           TAG="${{ inputs.tag }}"
           VERSION=${TAG#v}
-          
           mkdir -p dist
           gh release download "$TAG" --dir dist
-          
           echo "VERSION=$VERSION" >> $GITHUB_ENV
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Generate NPM package structure
+      - name: Create npm packages
         run: |
           chmod +x ./scripts/create-npm-packages.sh
           ./scripts/create-npm-packages.sh "$VERSION"
-          
-      - name: Configure NPM authentication
-        run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
-      - name: Publish platform-specific packages
+      - name: Publish platform-specific packages to npm
         run: |
+          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
           for platform_dir in platform-packages/go-blueprint-*; do
             if [ -d "$platform_dir" ]; then
               cd "$platform_dir"
@@ -63,8 +53,13 @@ jobs:
               cd - > /dev/null
             fi
           done
-          
-      - name: Publish main package
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish main package to npm
         run: |
+          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
           cd npm-package
           npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
