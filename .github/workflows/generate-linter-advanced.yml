@@ -42,13 +42,13 @@ jobs:
         name: Install Templ & gen templates
         run: |
           go install github.com/a-h/templ/cmd/templ@latest
-          /home/runner/go/bin/templ generate -path ${{ env.PROJECT_DIRECTORY }}
+          $(go env GOPATH)/bin/templ generate -path ${{ env.PROJECT_DIRECTORY }}
 
       - if: ${{ matrix.advanced == 'sqlc'}}
         name: Install Sqlc & gen code
         run: |
           go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
-          /home/runner/go/bin/sqlc generate -f ${{ env.PROJECT_DIRECTORY }}/sqlc.yaml
+          $(go env GOPATH)/bin/sqlc generate -f ${{ env.PROJECT_DIRECTORY }}/sqlc.yaml
 
       - name: golangci-lint
         run: |
