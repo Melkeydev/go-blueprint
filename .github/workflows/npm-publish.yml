@@ -17,6 +17,8 @@ on:
 jobs:
   npm-publish:
     runs-on: ubuntu-latest
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,7 +27,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: 22
           registry-url: 'https://registry.npmjs.org'
       
       - name: Download release assets
@@ -45,7 +47,6 @@ jobs:
 
       - name: Publish platform-specific packages to npm
         run: |
-          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
           for platform_dir in platform-packages/go-blueprint-*; do
             if [ -d "$platform_dir" ]; then
               cd "$platform_dir"
@@ -53,13 +54,8 @@ jobs:
               cd - > /dev/null
             fi
           done
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish main package to npm
         run: |
-          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
           cd npm-package
           npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
