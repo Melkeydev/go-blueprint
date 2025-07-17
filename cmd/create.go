@@ -204,9 +204,12 @@ var createCmd = &cobra.Command{
 			} else {
 				isInteractive = true
 				step := optionSteps.Steps["advanced"]
-				if project.DBDriver != flags.Postgres && project.DBDriver != flags.MySql && project.DBDriver != flags.Sqlite {
-					step.Options = slices.DeleteFunc(step.Options, func(s steps.Item) bool { return s.Flag == "Sqlc" })
+				sqlcSupportedDrivers := []flags.Database{flags.Postgres, flags.MySql, flags.Sqlite}
 
+				if !slices.Contains(sqlcSupportedDrivers, project.DBDriver) {
+					step.Options = slices.DeleteFunc(step.Options, func(s steps.Item) bool {
+						return s.Flag == "Sqlc"
+					})
 				}
 				tprogram = tea.NewProgram((multiSelect.InitialModelMultiSelect(step.Options, options.Advanced, step.Headers, project)))
 				if _, err := tprogram.Run(); err != nil {
