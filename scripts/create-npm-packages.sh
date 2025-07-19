@@ -3,7 +3,7 @@
 set -euo pipefail
 
 VERSION="$1"
-PACKAGE_NAME="go-blueprint"
+PACKAGE_NAME="@melkeydev/go-blueprint"
 MAIN_PACKAGE_DIR="npm-package"
 PLATFORM_PACKAGES_DIR="platform-packages"
 
@@ -55,7 +55,7 @@ for archive in dist/*.tar.gz dist/*.zip; do
                 
                 echo "  Creating package for platform: $platform_key"
                 
-                platform_package_dir="$PLATFORM_PACKAGES_DIR/$PACKAGE_NAME-$platform_key"
+                platform_package_dir="$PLATFORM_PACKAGES_DIR/go-blueprint-$platform_key"
                 mkdir -p "$platform_package_dir/bin"
                 
                 if [[ "$archive" == *.tar.gz ]]; then
@@ -122,7 +122,7 @@ cat > "$MAIN_PACKAGE_DIR/bin/go-blueprint" << 'EOF'
 
 const { execFileSync } = require('child_process')
 
-const packageName = 'go-blueprint'
+const packageName = '@melkeydev/go-blueprint'
 
 const platformPackages = {
   'darwin-x64': `${packageName}-darwin-x64`,
@@ -144,6 +144,7 @@ function getBinaryPath() {
 
   try {
     const binaryName = process.platform === 'win32' ? 'go-blueprint.exe' : 'go-blueprint'
+    const packagePath = platformPackageName.replace('@', '').replace('/', '-')
     return require.resolve(`${platformPackageName}/bin/${binaryName}`)
   } catch (e) {
     process.exit(1)
@@ -198,7 +199,7 @@ const path = require('path')
 
 const binaryName = process.platform === 'win32' ? 'go-blueprint.exe' : 'go-blueprint'
 
-const packageName = 'go-blueprint'
+const packageName = '@melkeydev/go-blueprint'
 
 const platformPackages = {
   'darwin-x64': `${packageName}-darwin-x64`,

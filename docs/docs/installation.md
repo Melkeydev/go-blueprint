@@ -41,7 +41,7 @@ This command installs the Go-Blueprint binary, automatically binding it to your 
 If you prefer using Node.js package manager, you can install Go-Blueprint via NPM. This method is convenient for developers who are already working in JavaScript/Node.js environments and want to integrate Go-Blueprint into their existing workflow.
 
 ```bash
-npm install -g go-blueprint
+npm install -g @melkeydev/go-blueprint
 ```
 
 The `-g` flag installs Go-Blueprint globally, making it accessible from any directory on your system.
