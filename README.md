@@ -58,7 +58,7 @@ source ~/.zshrc
 
 ### NPM Install
 ```bash
-npm install -g @Melkeydev/go-blueprint
+npm install -g @melkeydev/go-blueprint
 ```
 
 ### Homebrew Install

@@ -3,7 +3,7 @@
 set -euo pipefail
 
 VERSION="$1"
-PACKAGE_NAME="@Melkeydev/go-blueprint"
+PACKAGE_NAME="@melkeydev/go-blueprint"
 MAIN_PACKAGE_DIR="npm-package"
 PLATFORM_PACKAGES_DIR="platform-packages"
 
@@ -122,7 +122,7 @@ cat > "$MAIN_PACKAGE_DIR/bin/go-blueprint" << 'EOF'
 
 const { execFileSync } = require('child_process')
 
-const packageName = '@Melkeydev/go-blueprint'
+const packageName = '@melkeydev/go-blueprint'
 
 const platformPackages = {
   'darwin-x64': `${packageName}-darwin-x64`,
@@ -199,7 +199,7 @@ const path = require('path')
 
 const binaryName = process.platform === 'win32' ? 'go-blueprint.exe' : 'go-blueprint'
 
-const packageName = '@Melkeydev/go-blueprint'
+const packageName = '@melkeydev/go-blueprint'
 
 const platformPackages = {
   'darwin-x64': `${packageName}-darwin-x64`,
