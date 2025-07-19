@@ -1,0 +1,35 @@
+package components
+
+type FeatureBlockProps struct {
+	Title          string
+	FeatureOptions []FeatureTuple
+	GroupName      string
+}
+
+templ FeatureBlock(props FeatureBlockProps) {
+    <div class="w-full">
+        <div class="px-4 py-5">
+            <h3 class="text-base font-semibold leading-6 text-gray-900">
+                { props.Title }
+            </h3>
+            <div class="mt-2 max-w-xl text-sm text-gray-500 space-y-1">
+                for i, feature := range props.FeatureOptions {
+                    <div>
+                        <label class="flex items-center">
+                            <input
+                                type="radio"
+                                name={ props.GroupName }
+                                value={ feature.Key }
+                                class="mr-2"
+                                checked?={ props.GroupName != "frontend" && i == 0 }
+                                hx-post="/update_structure"
+                                hx-target="#results"
+                            />
+                            { feature.Value }
+                        </label>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}

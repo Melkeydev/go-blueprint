@@ -1,0 +1,218 @@
+package components
+
+import (
+    "strings"
+    "fmt"
+)
+
+type FeatureTuple struct {
+    Key   string
+    Value string
+}
+
+func GetCommandString(options OptionsStruct) string {
+    var command string
+
+    projectName := strings.ReplaceAll(options.ProjectName, " ", "_")
+    if projectName == "" {
+        projectName = "myproject"
+    }
+
+    if options.LongFlags {
+        command = fmt.Sprintf("go-blueprint create --name %s --backend--framework %s", projectName, options.SelectedBackend)
+        if options.SelectedDB != "none" {
+            command += fmt.Sprintf(" --database %s", options.SelectedDB)
+        } else {
+            command += " --database none"
+        }
+        if options.SelectFrontend != "" {
+            command += " --frontend"
+            command += fmt.Sprintf(" --frontend-framework %s", options.SelectFrontend)
+            if len(options.AdvancedFrontend) > 0 {
+                for _, opt := range options.AdvancedFrontend {
+                    command += fmt.Sprintf(" --frontend-advanced %s", opt)
+                }
+            }
+        }
+        if len(options.AdvancedOptions) > 0 {
+            command += " --advanced"
+            for _, opt := range options.AdvancedOptions {
+                command += fmt.Sprintf(" --feature %s", opt)
+            }
+        }
+        command += fmt.Sprintf(" --git %s", options.SelectGit)
+    } else {
+        // short format
+        command = fmt.Sprintf("go-blueprint create -n %s -b %s", projectName, options.SelectedBackend)
+        if options.SelectedDB != "none" {
+            command += fmt.Sprintf(" -d %s", options.SelectedDB)
+        } else {
+            command += " -d none"
+        }
+        if options.SelectFrontend != "" {
+            command += " -f"
+            command += fmt.Sprintf(" --frontend-framework %s", options.SelectFrontend)
+            if len(options.AdvancedFrontend) > 0 {
+                for _, opt := range options.AdvancedFrontend {
+                    command += fmt.Sprintf(" --frontend-advanced %s", opt)
+                }
+            }
+        }
+        if len(options.AdvancedOptions) > 0 {
+            command += " -a"
+            for _, opt := range options.AdvancedOptions {
+                command += fmt.Sprintf(" --feature %s", opt)
+            }
+        }
+        command += fmt.Sprintf(" -g %s", options.SelectGit)
+    }
+    return command
+}
+
+var backend = []FeatureTuple{
+    {"standard-library", "Standard Library"},
+    {"chi", "Chi"},
+    {"echo", "Echo"},
+    {"fiber", "Fiber"},
+    {"gin", "Gin"},
+    {"gorilla/mux", "Gorilla"},
+}
+
+var databases = []FeatureTuple{
+    {"none", "None"},
+    {"mysql", "MySQL"},
+    {"postgres", "Postgres"},
+    {"sqlite", "SQLite"},
+    {"mongo", "MongoDB"},
+}
+
+var git = []FeatureTuple{
+    {"commit", "Commit"},
+    {"stage", "Stage"},
+    {"skip", "Skip"},
+}
+
+var frontend = []FeatureTuple{
+    {"htmx", "HTMX"},
+    {"react", "React"},
+}
+
+var advancedFrontend = []FeatureTuple{
+    {"tailwind", "Tailwind CSS"},
+}
+
+var advanced = []FeatureTuple{
+    {"githubaction", "CI/CD Github Actions"},
+    {"websocket", "Websocket endpoint"},
+    {"docker", "Docker"},
+}
+
+var options = OptionsStruct{
+    ProjectName:       "my_project",
+    SelectedBackend:   "standard-library",
+    SelectedDB:        "none",
+    SelectGit:         "commit",
+}
+
+templ Form() {
+    <form class="space-y-2" hx-boost="true" action="/update_structure" method="submit" hx-target="#results" >
+        <div class="flex justify-end mb-4">
+            <label class="inline-flex items-center cursor-pointer">
+                <input
+                    type="checkbox"
+                    id="longFlags"
+                    name="longFlags"
+                    class="sr-only peer"
+                    hx-post="/update_structure"
+                    hx-target="#results"
+                />
+                <div class="relative w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-200 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                <span class="ms-3 text-sm font-medium text-gray-900">Long CLI Flags</span>
+            </label>
+        </div>
+        <div class="mt-4">
+            <label
+                for="projectName"
+                class="block text-sm font-medium leading-6 text-gray-900">
+                Project Name
+            </label>
+            <div class="mt-2">
+                <input
+                    type="text"
+                    name="projectName"
+                    id="projectName"
+                    class="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    placeholder="my_project"
+                    hx-trigger="input changed delay:500ms"
+                    hx-post="/update_structure"
+                    hx-target="#results"
+                    required
+                />
+            </div>
+        </div>
+        <div class="space-y-6">
+            // Backend, Database, and Git
+            <div class="bg-white shadow sm:rounded-lg">
+                <div class="flex justify-center gap-32 px-4">
+                    <div class="w-1/4">
+                        @FeatureBlock(FeatureBlockProps{
+                            Title:          "Backend",
+                            FeatureOptions: backend,
+                            GroupName:      "backend",
+                        })
+                    </div>
+                    <div class="w-1/4">
+                        @FeatureBlock(FeatureBlockProps{
+                            Title:          "Database",
+                            FeatureOptions: databases,
+                            GroupName:      "database",
+                        })
+                    </div>
+                    <div class="w-1/4">
+                        @FeatureBlock(FeatureBlockProps{
+                            Title:          "Git",
+                            FeatureOptions: git,
+                            GroupName:      "git",
+                        })
+                    </div>
+                </div>
+            </div>
+
+            // Frontend and Frontend Advanced
+            <div class="bg-white shadow sm:rounded-lg">
+                <div class="flex justify-center gap-32 px-4">
+                    <div class="w-1/4">
+                        @FeatureBlock(FeatureBlockProps{
+                            Title:          "Frontend",
+                            FeatureOptions: frontend,
+                            GroupName:      "frontend",
+                        })
+                    </div>
+                    <div class="w-1/4">
+                        @FeatureBlockCheckbox(FeatureBlockProps{
+                            Title: "Frontend Advanced",
+                            FeatureOptions: advancedFrontend,
+                            GroupName: "advancedFrontend",
+                        })
+                    </div>
+                </div>
+            </div>
+
+            // Advanced
+            <div class="bg-white shadow sm:rounded-lg">
+                <div class="flex justify-center px-4">
+                    <div class="w-1/4">
+                        @FeatureBlockCheckbox(FeatureBlockProps{
+                            Title: "Advanced",
+                            FeatureOptions: advanced,
+                            GroupName: "advancedOptions",
+                        })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div id="results">
+        @FolderStructure(options, GetCommandString(options))
+    </div>
+}
