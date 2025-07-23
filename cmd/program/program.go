@@ -656,7 +656,6 @@ func (p *Project) CreateMainFile() error {
 	if err != nil {
 		return err
 	}
-	defer gitignoreFile.Close()
 
 	// inject gitignore template
 	gitignoreTemplate := template.Must(template.New(".gitignore").Parse(string(framework.GitIgnoreTemplate())))
@@ -664,6 +663,8 @@ func (p *Project) CreateMainFile() error {
 	if err != nil {
 		return err
 	}
+
+	gitignoreFile.Close()
 
 	// Create .air.toml file
 	airTomlFile, err := os.Create(filepath.Join(projectPath, ".air.toml"))
