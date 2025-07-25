@@ -1,0 +1,45 @@
+name: Repro Bug 416
+
+on: [push]
+
+jobs:
+  test-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.23"
+      - name: Install go-blueprint
+        run: go install .
+      - name: Setup git
+        run: |
+          git config --global user.email "test@gmail.com"
+          git config --global user.name "test"
+      - name: Test blueprint
+        run: |
+          go-blueprint create --name test --framework fiber --driver none --git commit
+          cd test
+          echo "All git tracked files:"
+          git ls-files
+          echo "git ignore contents:"
+          cat .gitignore
+          echo "All files in repo:"
+          Get-ChildItem -Force
+        shell: pwsh
+      - name: Check if .env file is committed (should fail if bug exists)
+        run: |
+          cd test
+          $envFileCommitted = git ls-files | Select-String -Pattern "\.env$"
+          if ($envFileCommitted) {
+            echo "ERROR: .env file was committed! Bug 416 is present."
+            echo "Files in commit:"
+            git ls-files
+            exit 1
+          } else {
+            echo "SUCCESS: .env file was not committed."
+            echo "Files in commit:"
+            git ls-files
+          }
+        shell: pwsh
