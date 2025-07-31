@@ -665,6 +665,11 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
+	// Ensure file is flushed to storage
+	if err := gitignoreFile.Sync(); err != nil {
+		return err
+	}
+
 	// Create .air.toml file
 	airTomlFile, err := os.Create(filepath.Join(projectPath, ".air.toml"))
 	if err != nil {
