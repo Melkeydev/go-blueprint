@@ -33,8 +33,8 @@ Here's an overview of the project structure created by Go Blueprint when all opt
 │   ├── api/
 │   │   └── main.go               # Main file for starting the server.
 │   └── web/
-│       ├── styles/               # only for generating css will not be served public
-│       │   └── input.css         # Tailwind input file for compiling output.css with CLI when HTMX is used
+│       ├── styles/               # Only for generating css will not be served public.
+│       │   └── input.css         # Tailwind input file for compiling output.css with CLI when HTMX is used.
 │       ├── assets/
 │       │   ├── css/
 │       │   │   └── output.css    # Generated CSS file.
@@ -53,7 +53,7 @@ Here's an overview of the project structure created by Go Blueprint when all opt
 │   │   └── favicon.ico
 │   ├── src/                      # React source files.
 │   │   ├── App.tsx               # Main React component.
-│   │   ├── assets/               # React assets directory
+│   │   ├── assets/               # React assets directory.
 │   │   │   └── logo.svg
 │   │   ├── components/           # React components directory.
 │   │   │   ├── Header.tsx

@@ -7,14 +7,14 @@ The React advanced flag can be combined with the Tailwind flag for enhanced styl
 ```bash
 / (Root)
 ├── frontend/                     # React advanced flag. Excludes HTMX.
-│   ├── .env                      # Frontend environment configuration
+│   ├── .env                      # Frontend environment configuration.
 │   ├── node_modules/             # Node dependencies.
 │   ├── public/
 │   │   ├── index.html
 │   │   └── favicon.ico
 │   ├── src/                      # React source files.
 │   │   ├── App.tsx               # Main React component.
-│   │   ├── assets/               # React assets directory
+│   │   ├── assets/               # React assets directory.
 │   │   │   └── logo.svg
 │   │   ├── components/           # React components directory.
 │   │   │   ├── Header.tsx
@@ -87,7 +87,7 @@ make docker-run
 ### Dockerfile
 
 ```dockerfile
-FROM golang:1.23-alpine AS build
+FROM golang:1.24.4-alpine AS build
 
 WORKDIR /app
 

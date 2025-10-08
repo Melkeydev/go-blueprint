@@ -97,6 +97,11 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 				Headers:  "Which advanced features do you want?",
 				Options: []Item{
 					{
+						Flag:  "Sqlc",
+						Title: "Sqlc",
+						Desc:  "Generates fully type-safe idiomatic Go code from Postgres, MySql, and SQlite",
+					},
+					{
 						Flag:  "React",
 						Title: "React",
 						Desc:  "Use Vite to spin up a React project in TypeScript. This disables selecting HTMX/Templ",

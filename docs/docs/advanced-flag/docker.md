@@ -4,9 +4,9 @@ The Dockerfile includes a two-stage build, and the final config depends on the u
 ## Dockerfile
 
 ```dockerfile
-FROM golang:1.23-alpine AS build
+FROM golang:1.24.4-alpine AS build
 
-RUN apk add --no-cache curl
+RUN apk add --no-cache curl libstdc++ libgcc
 
 WORKDIR /app
 
@@ -17,7 +17,7 @@ COPY . .
 
 RUN go install github.com/a-h/templ/cmd/templ@latest && \
     templ generate && \
-    curl -sL https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64 -o tailwindcss && \
+    curl -sL https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64-musl -o tailwindcss && \
     chmod +x tailwindcss && \
     ./tailwindcss -i cmd/web/styles/input.css -o cmd/web/assets/css/output.css
 
@@ -33,7 +33,7 @@ CMD ["./main"]
 Docker config if React flag is used:
 
 ```dockerfile
-FROM golang:1.23-alpine AS build
+FROM golang:1.24.4-alpine AS build
 
 WORKDIR /app
 

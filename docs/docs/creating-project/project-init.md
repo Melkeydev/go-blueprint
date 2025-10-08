@@ -39,7 +39,7 @@ To recreate the project using the same configuration semi-interactively, use the
 ```bash
 go-blueprint create --name my-project --framework chi --driver mysql --git commit --advanced
 ```
-This approach opens interactive mode only for advanced features, which allow you to choose the one or combination of available features.
+This approach opens interactive mode only for advanced features, which allows you to choose the one or combination of available features.
 
 ![AdvancedFlag](../public/blueprint_advanced.png)
 
@@ -69,8 +69,12 @@ Docker:
 ```bash
 go-blueprint create --advanced --feature docker
 ```
+Sqlc:
+```bash
+go-blueprint create --advanced --feature sqlc
+```
 
 Or all features at once:
 ```bash
-go-blueprint create --name my-project --framework chi --driver mysql --git commit --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --feature docker
+go-blueprint create --name my-project --framework chi --driver mysql --git commit --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --feature docker --feature sqlc
 ```

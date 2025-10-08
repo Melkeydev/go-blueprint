@@ -8,6 +8,7 @@ Makefile is designed for building, running, and testing a Go project. It include
 
 The default target that builds and test the application by running the `build` and `test` target.
 
+
 ***`templ-install`***
 
 This target installs the Go-based templating tool, `templ`, if it is not already installed. It supports:
@@ -22,6 +23,14 @@ This target downloads and sets up `tailwindcss`, depending on the user's operati
 - **Linux**: Downloads the Linux binary.
 - **macOS**: Downloads the macOS binary.
 - **Windows**: Uses PowerShell to download the Windows executable.
+
+***`sqlc-install`***
+
+This target installs the `sqlc` tool, which is used for generating Go code from SQL queries. It supports:
+
+- **Unix-based systems**: Prompts the user to install `sqlc` if it is not already installed.
+- **Windows**: Uses PowerShell to check for and install `sqlc`.
+
 
 ***`build`***
 

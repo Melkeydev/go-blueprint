@@ -18,6 +18,7 @@ import (
 	"github.com/melkeydev/go-blueprint/cmd/ui/textinput"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
 	"github.com/spf13/cobra"
+	"slices"
 )
 
 const logo = `
@@ -52,6 +53,11 @@ func init() {
 	createCmd.Flags().BoolP("advanced", "a", false, "Get prompts for advanced features")
 	createCmd.Flags().Var(&advancedFeatures, "feature", fmt.Sprintf("Advanced feature to use. Allowed values: %s", strings.Join(flags.AllowedAdvancedFeatures, ", ")))
 	createCmd.Flags().VarP(&flagGit, "git", "g", fmt.Sprintf("Git to use. Allowed values: %s", strings.Join(flags.AllowedGitsOptions, ", ")))
+
+	utils.RegisterStaticCompletions(createCmd, "framework", flags.AllowedProjectTypes)
+	utils.RegisterStaticCompletions(createCmd, "driver", flags.AllowedDBDrivers)
+	utils.RegisterStaticCompletions(createCmd, "feature", flags.AllowedAdvancedFeatures)
+	utils.RegisterStaticCompletions(createCmd, "git", flags.AllowedGitsOptions)
 }
 
 type Options struct {
@@ -113,7 +119,7 @@ var createCmd = &cobra.Command{
 			GitOptions:      flagGit,
 		}
 
-		steps := steps.InitSteps(flagFramework, flagDBDriver)
+		optionSteps := steps.InitSteps(flagFramework, flagDBDriver)
 		fmt.Printf("%s\n", logoStyle.Render(logo))
 
 		// Advanced option steps:
@@ -155,7 +161,7 @@ var createCmd = &cobra.Command{
 
 		if project.ProjectType == "" {
 			isInteractive = true
-			step := steps.Steps["framework"]
+			step := optionSteps.Steps["framework"]
 			tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, options.ProjectType, step.Headers, project))
 			if _, err := tprogram.Run(); err != nil {
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
@@ -175,7 +181,7 @@ var createCmd = &cobra.Command{
 
 		if project.DBDriver == "" {
 			isInteractive = true
-			step := steps.Steps["driver"]
+			step := optionSteps.Steps["driver"]
 			tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, options.DBDriver, step.Headers, project))
 			if _, err := tprogram.Run(); err != nil {
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
@@ -202,7 +208,14 @@ var createCmd = &cobra.Command{
 				}
 			} else {
 				isInteractive = true
-				step := steps.Steps["advanced"]
+				step := optionSteps.Steps["advanced"]
+				sqlcSupportedDrivers := []flags.Database{flags.Postgres, flags.MySql, flags.Sqlite}
+
+				if !slices.Contains(sqlcSupportedDrivers, project.DBDriver) {
+					step.Options = slices.DeleteFunc(step.Options, func(s steps.Item) bool {
+						return s.Flag == "Sqlc"
+					})
+				}
 				tprogram = tea.NewProgram((multiSelect.InitialModelMultiSelect(step.Options, options.Advanced, step.Headers, project)))
 				if _, err := tprogram.Run(); err != nil {
 					cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
@@ -224,7 +237,7 @@ var createCmd = &cobra.Command{
 
 		if project.GitOptions == "" {
 			isInteractive = true
-			step := steps.Steps["git"]
+			step := optionSteps.Steps["git"]
 			tprogram = tea.NewProgram(multiInput.InitialModelMulti(step.Options, options.Git, step.Headers, project))
 			if _, err := tprogram.Run(); err != nil {
 				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())

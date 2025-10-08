@@ -2,6 +2,7 @@
 
 The `--advanced` flag in Blueprint serves as a switch to enable additional features during project creation. It is applied with the `create` command and unlocks the following features:
 
+
 - **HTMX Support using Templ:**
 Enables the integration of HTMX support for dynamic web pages using Templ.
 
@@ -20,6 +21,8 @@ Docker configuration for go project.
 - **React:**
 Frontend written in TypeScript, including an example fetch request to the backend.
 
+- **SQLC:**
+Generates SQL queries and typesafe code for database interactions using SQLC.
 
 To utilize the `--advanced` flag, use the following command:
 

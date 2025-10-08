@@ -253,15 +253,17 @@ func (p *Project) CreateMainFile() error {
 	}
 
 	// Check if user.email is set.
-	emailSet, err := utils.CheckGitConfig("user.email")
-	if err != nil {
-		return err
-	}
+	if p.GitOptions.String() != flags.Skip {
 
-	if !emailSet && p.GitOptions.String() != flags.Skip {
-		fmt.Println("user.email is not set in git config.")
-		fmt.Println("Please set up git config before trying again.")
-		panic("\nGIT CONFIG ISSUE: user.email is not set in git config.\n")
+		emailSet, err := utils.CheckGitConfig("user.email")
+		if err != nil {
+			return err
+		}
+		if !emailSet {
+			fmt.Println("user.email is not set in git config.")
+			fmt.Println("Please set up git config before trying again.")
+			panic("\nGIT CONFIG ISSUE: user.email is not set in git config.\n")
+		}
 	}
 
 	p.ProjectName = strings.TrimSpace(p.ProjectName)
@@ -283,7 +285,7 @@ func (p *Project) CreateMainFile() error {
 	p.createFrameworkMap()
 
 	// Create go.mod
-	err = utils.InitGoMod(p.ProjectName, projectPath)
+	err := utils.InitGoMod(p.ProjectName, projectPath)
 	if err != nil {
 		log.Printf("Could not initialize go.mod in new project %v\n", err)
 		return err
@@ -301,6 +303,9 @@ func (p *Project) CreateMainFile() error {
 	// Install the correct package for the selected driver
 	if p.DBDriver != "none" {
 		p.createDBDriverMap()
+		if p.AdvancedOptions[string(flags.Sqlc)] && (p.DBDriver != flags.Postgres && p.DBDriver != flags.MySql && p.DBDriver != flags.Sqlite) {
+			p.AdvancedOptions[string(flags.Sqlc)] = false
+		}
 		err = utils.GoGetPackage(projectPath, p.DBDriverMap[p.DBDriver].packageName)
 		if err != nil {
 			log.Println("Could not install go dependency for chosen driver")
@@ -346,7 +351,6 @@ func (p *Project) CreateMainFile() error {
 
 	// Install the godotenv package
 	err = utils.GoGetPackage(projectPath, godotenvPackage)
-
 	if err != nil {
 		log.Println("Could not install go dependency")
 
@@ -456,6 +460,44 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
+	if p.AdvancedOptions[string(flags.Sqlc)] {
+		yamlFile, err := os.Create(fmt.Sprintf("%s/sqlc.yaml", projectPath))
+		if err != nil {
+			return err
+		}
+		defer yamlFile.Close()
+
+		yamlTemplate := template.Must(template.New("sqlcyaml").Parse((string(advanced.SqlcYamlTemplate()))))
+		err = yamlTemplate.Execute(yamlFile, p)
+		if err != nil {
+			return err
+		}
+
+		err = os.MkdirAll(fmt.Sprintf("%s/%s/sql", projectPath, internalDatabasePath), 0o755)
+		if err != nil {
+			return err
+		}
+
+		schemaFile, err := os.Create(fmt.Sprintf("%s/%s/sql/schema.sql", projectPath, internalDatabasePath))
+		if err != nil {
+			return err
+		}
+		defer schemaFile.Close()
+
+		queryFile, err := os.Create(fmt.Sprintf("%s/%s/sql/query.sql", projectPath, internalDatabasePath))
+		if err != nil {
+			return err
+		}
+		defer queryFile.Close()
+
+		queryTemplate := advanced.SqlcQueryTemplate()
+		_, err = queryFile.Write(queryTemplate)
+		if err != nil {
+			return err
+		}
+
+	}
+
 	if p.AdvancedOptions[string(flags.Htmx)] {
 		// create folders and hello world file
 		err = p.CreatePath(cmdWebPath, projectPath)
@@ -500,6 +542,18 @@ func (p *Project) CreateMainFile() error {
 
 		htmxMinJsTemplate := advanced.HtmxJSTemplate()
 		err = os.WriteFile(fmt.Sprintf("%s/%s/assets/js/htmx.min.js", projectPath, cmdWebPath), htmxMinJsTemplate, 0o644)
+		if err != nil {
+			return err
+		}
+
+		htmxTailwindConfigJsFile, err := os.Create(fmt.Sprintf("%s/tailwind.config.js", projectPath))
+		if err != nil {
+			return err
+		}
+		defer htmxTailwindConfigJsFile.Close()
+
+		htmxTailwindConfigJsTemplate := advanced.HtmxTailwindConfigJsTemplate()
+		err = os.WriteFile(fmt.Sprintf("%s/tailwind.config.js", projectPath), htmxTailwindConfigJsTemplate, 0o644)
 		if err != nil {
 			return err
 		}
@@ -679,12 +733,12 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
-	nameSet, err := utils.CheckGitConfig("user.name")
-	if err != nil {
-		return err
-	}
-
 	if p.GitOptions != flags.Skip {
+		nameSet, err := utils.CheckGitConfig("user.name")
+		if err != nil {
+			return err
+		}
+
 		if !nameSet {
 			fmt.Println("user.name is not set in git config.")
 			fmt.Println("Please set up git config before trying again.")
@@ -879,7 +933,7 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 		cmd := exec.Command("npm", "install",
 			"--prefer-offline",
 			"--no-fund",
-			"tailwindcss", "@tailwindcss/vite")
+			"tailwindcss@^4", "@tailwindcss/vite")
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
@@ -918,6 +972,7 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 
 	return nil
 }
+
 func (p *Project) CreateHtmxTemplates() {
 	routesPlaceHolder := ""
 	importsPlaceHolder := ""

@@ -44,4 +44,4 @@ func (s *service) Health() map[string]string {
 
 ## Note
 
-MongoDB does not support advanced health check functions like SQL databases or Redis. Implementation is basic, providing only a simple ping response to indicate if the server is reachable and DB connection healthy.
+MongoDB does not support advanced health check functions like SQL databases or Redis. The implementation is basic, providing only a simple ping response to indicate if the server is reachable and DB connection healthy.

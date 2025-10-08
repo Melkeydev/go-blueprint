@@ -37,6 +37,7 @@ gives the option to integrate with one of the more popular Go frameworks (and th
   Install
 </h2>
 
+### Go Install
 ```bash
 go install github.com/melkeydev/go-blueprint@latest
 ```
@@ -53,6 +54,16 @@ don't forget to update
 
 ```bash
 source ~/.zshrc
+```
+
+### NPM Install
+```bash
+npm install -g @melkeydev/go-blueprint
+```
+
+### Homebrew Install
+```bash
+brew install go-blueprint
 ```
 
 Then in a new terminal run:
@@ -126,6 +137,7 @@ You can now use the `--advanced` flag when running the `create` command to get a
 - [Tailwind](https://tailwindcss.com/) css framework
 - Docker configuration for go project
 - [React](https://react.dev/) frontend written in TypeScript, including an example fetch request to the backend
+- [SQLC](https://sqlc.dev/) for generating type-safe Go code from SQL queries
 
 Note: Selecting Tailwind option will automatically select HTMX unless React is explicitly selected
 
@@ -203,10 +215,17 @@ React:
 go-blueprint create --advanced --feature react
 ```
 
+SQLC:
+
+```bash
+go-blueprint create --advanced --feature sqlc
+```
+
+
 Or all features at once:
 
 ```bash
-go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --feature docker --git commit --feature react
+go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --feature docker --git commit --feature react --feature sqlc
 ```
 
 <p align="center">
