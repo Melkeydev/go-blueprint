@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 
@@ -80,16 +81,42 @@ var createCmd = &cobra.Command{
 
 		isInteractive := false
 		flagName := cmd.Flag("name").Value.String()
+		currentWorkingDir, err := os.Getwd()
+		if err != nil {
+			log.Printf("could not get current working directory: %v", err)
+			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
+		}
+		folderName := filepath.Base(currentWorkingDir)
 
-		if flagName != "" && !utils.ValidateModuleName(flagName) {
+		// Check if name is "." and if it is use the parent folder name``
+		if flagName == "." {
+			if isNotEmpty(currentWorkingDir) {
+				err = fmt.Errorf("'%s' is not empty", currentWorkingDir)
+				// ask if user wants to delete everything in the folder
+				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
+			}
+			// err = fmt.Errorf("checking if '%s' is a valid module name", folderName)
+			// cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
+		}
+
+		pName := func() string {
+			if flagName != "." {
+				return flagName
+			}
+			return folderName
+		}
+
+		if pName() != "" && !utils.ValidateModuleName(pName()) {
 			err = fmt.Errorf("'%s' is not a valid module name. Please choose a different name", flagName)
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
 
 		rootDirName := utils.GetRootDir(flagName)
-		if rootDirName != "" && doesDirectoryExistAndIsNotEmpty(rootDirName) {
-			err = fmt.Errorf("directory '%s' already exists and is not empty. Please choose a different name", rootDirName)
-			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
+		if flagName != "." {
+			if rootDirName != "" && doesDirectoryExistAndIsNotEmpty(rootDirName) {
+				err = fmt.Errorf("directory '%s' already exists and is not empty. Please choose a different name", rootDirName)
+				cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
+			}
 		}
 
 		// VarP already validates the contents of the framework flag.
@@ -109,13 +136,14 @@ var createCmd = &cobra.Command{
 		}
 
 		project := &program.Project{
-			ProjectName:     flagName,
+			ProjectName:     pName(),
 			ProjectType:     flagFramework,
 			DBDriver:        flagDBDriver,
 			FrameworkMap:    make(map[flags.Framework]program.Framework),
 			DBDriverMap:     make(map[flags.Database]program.Driver),
 			AdvancedOptions: make(map[string]bool),
 			GitOptions:      flagGit,
+			AbsolutePath:    filepath.Dir(currentWorkingDir),
 		}
 
 		steps := steps.InitSteps(flagFramework, flagDBDriver)
@@ -243,12 +271,13 @@ var createCmd = &cobra.Command{
 			}
 		}
 
-		currentWorkingDir, err := os.Getwd()
 		if err != nil {
 			log.Printf("could not get current working directory: %v", err)
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
-		project.AbsolutePath = currentWorkingDir
+		if flagName != "." {
+			project.AbsolutePath = currentWorkingDir
+		}
 
 		spinner := tea.NewProgram(spinner.InitialModelNew())
 
@@ -282,8 +311,10 @@ var createCmd = &cobra.Command{
 			cobra.CheckErr(textinput.CreateErrorInputModel(err).Err())
 		}
 
-		fmt.Println(endingMsgStyle.Render("\nNext steps:"))
-		fmt.Println(endingMsgStyle.Render(fmt.Sprintf("• cd into the newly created project with: `cd %s`\n", utils.GetRootDir(project.ProjectName))))
+		if flagName != "." {
+			fmt.Println(endingMsgStyle.Render("\nNext steps:"))
+			fmt.Println(endingMsgStyle.Render(fmt.Sprintf("• cd into the newly created project with: `cd %s`\n", utils.GetRootDir(project.ProjectName))))
+		}
 
 		if options.Advanced.Choices["React"] {
 			options.Advanced.Choices["Htmx"] = false
@@ -331,4 +362,16 @@ func doesDirectoryExistAndIsNotEmpty(name string) bool {
 		}
 	}
 	return false
+}
+
+// isNotEmpty checks if the directory is not empty
+func isNotEmpty(path string) bool {
+	dirEntries, err := os.ReadDir(path)
+	if err != nil {
+		log.Printf("could not read directory: %v", err)
+		cobra.CheckErr(textinput.CreateErrorInputModel(err))
+	}
+
+	// If there are no entries, it's empty
+	return len(dirEntries) > 0
 }
