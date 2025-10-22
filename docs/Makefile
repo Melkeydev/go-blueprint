@@ -27,3 +27,7 @@ b build:
 
 d deploy:
 	mkdocs gh-deploy --strict --force
+
+itest:
+	go test ./...
+
