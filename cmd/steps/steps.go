@@ -99,7 +99,12 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 					{
 						Flag:  "React",
 						Title: "React",
-						Desc:  "Use Vite to spin up a React project in TypeScript. This disables selecting HTMX/Templ",
+						Desc:  "Use Vite to spin up a React project in TypeScript. This disables selecting HTMX/Templ and Next.js",
+					},
+					{
+						Flag:  "Nextjs",
+						Title: "Next.js",
+						Desc:  "Scaffold a Next.js app (App Router, TypeScript, Tailwind, shadcn/ui). This disables selecting HTMX/Templ and React",
 					},
 					{
 						Flag:  "Htmx",

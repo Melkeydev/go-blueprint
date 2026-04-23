@@ -22,6 +22,12 @@ var reactTailwindAppFile []byte
 //go:embed files/react/app.tsx.tmpl
 var reactAppFile []byte
 
+//go:embed files/nextjs/page.tsx.tmpl
+var nextjsPageFile []byte
+
+//go:embed files/nextjs/next.config.mjs.tmpl
+var nextjsConfigFile []byte
+
 //go:embed files/tailwind/input.css.tmpl
 var inputCssTemplate []byte
 
@@ -125,6 +131,14 @@ func ReactTailwindAppfile() []byte {
 
 func ReactAppfile() []byte {
 	return reactAppFile
+}
+
+func NextJSPageFile() []byte {
+	return nextjsPageFile
+}
+
+func NextJSConfigFile() []byte {
+	return nextjsConfigFile
 }
 
 func InputCssTemplateReact() []byte {

@@ -1,0 +1,56 @@
+"use client"
+
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+
+export default function Home() {
+  const [message, setMessage] = useState<string>("")
+  const [loading, setLoading] = useState<boolean>(false)
+
+  const apiUrl =
+    process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080"
+
+  const fetchData = async () => {
+    setLoading(true)
+    try {
+      const res = await fetch(`${apiUrl}/`)
+      setMessage(await res.text())
+    } catch (err) {
+      console.error("Error fetching data:", err)
+      setMessage("Failed to reach Go backend")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-center gap-6 p-8">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>Next.js + Go Blueprint</CardTitle>
+          <CardDescription>
+            Talking to the Go backend at {apiUrl}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
+          <Button onClick={fetchData} disabled={loading}>
+            {loading ? "Fetching…" : "Fetch from Go server"}
+          </Button>
+          {message && (
+            <div className="rounded-md bg-muted p-3 text-sm">
+              <p className="font-semibold">Server response:</p>
+              <p className="whitespace-pre-wrap">{message}</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </main>
+  )
+}

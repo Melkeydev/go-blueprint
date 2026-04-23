@@ -27,6 +27,20 @@ services:
     depends_on:
       - app
 {{- end }}
+{{- if .AdvancedOptions.nextjs }}
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: frontend
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    environment:
+      NEXT_PUBLIC_API_URL: http://app:${PORT}
+    depends_on:
+      - app
+{{- end }}
 
 {{- if and (.AdvancedOptions.docker) (eq .DBDriver "sqlite") }}
 volumes:

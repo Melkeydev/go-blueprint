@@ -137,8 +137,9 @@ You can now use the `--advanced` flag when running the `create` command to get a
 - [Tailwind](https://tailwindcss.com/) css framework
 - Docker configuration for go project
 - [React](https://react.dev/) frontend written in TypeScript, including an example fetch request to the backend
+- [Next.js](https://nextjs.org/) frontend (App Router + TypeScript) with [Tailwind CSS](https://tailwindcss.com/) and [shadcn/ui](https://ui.shadcn.com/) pre-wired, including an example fetch to the Go backend
 
-Note: Selecting Tailwind option will automatically select HTMX unless React is explicitly selected
+Note: Selecting Tailwind option will automatically select HTMX unless React or Next.js is explicitly selected. React, Next.js, and HTMX are mutually exclusive — only one frontend option can be chosen at a time.
 
 <a id="blueprint-ui"></a>
 
@@ -214,10 +215,18 @@ React:
 go-blueprint create --advanced --feature react
 ```
 
-Or all features at once:
+Next.js (App Router, TypeScript, Tailwind, shadcn/ui — all bundled):
 
 ```bash
-go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --feature docker --git commit --feature react
+go-blueprint create --advanced --feature nextjs
+```
+
+The Next.js scaffold runs `create-next-app@latest` with `--ts --app --eslint --src-dir --tailwind --use-npm --import-alias "@/*"`, then initializes shadcn/ui (`init -d`) and adds the `button` and `card` components. A `frontend/.env.local` is created with `NEXT_PUBLIC_API_URL` pointing at the Go backend, and `next.config.mjs` is configured with `output: "standalone"` plus an `/api/*` → Go rewrite so server-side fetches can hit the backend without CORS. When combined with `--feature docker`, the frontend runs as its own compose service on port `3000`.
+
+Or all features at once (picking Next.js as the frontend):
+
+```bash
+go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature nextjs --feature githubaction --feature websocket --feature docker --git commit
 ```
 
 <p align="center">

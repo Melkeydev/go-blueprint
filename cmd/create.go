@@ -285,6 +285,15 @@ var createCmd = &cobra.Command{
 		fmt.Println(endingMsgStyle.Render("\nNext steps:"))
 		fmt.Println(endingMsgStyle.Render(fmt.Sprintf("• cd into the newly created project with: `cd %s`\n", utils.GetRootDir(project.ProjectName))))
 
+		if options.Advanced.Choices["Nextjs"] {
+			options.Advanced.Choices["React"] = false
+			options.Advanced.Choices["Htmx"] = false
+			options.Advanced.Choices["Tailwind"] = false
+			fmt.Println(endingMsgStyle.Render("• cd into frontend\n"))
+			fmt.Println(endingMsgStyle.Render("• npm install\n"))
+			fmt.Println(endingMsgStyle.Render("• npm run dev\n"))
+		}
+
 		if options.Advanced.Choices["React"] {
 			options.Advanced.Choices["Htmx"] = false
 			options.Advanced.Choices["Tailwind"] = false

@@ -407,6 +407,17 @@ func (p *Project) CreateMainFile() error {
 		return err
 	}
 
+	if p.AdvancedOptions[string(flags.Nextjs)] {
+		// deselect htmx/react since nextjs is selected
+		p.AdvancedOptions[string(flags.Htmx)] = false
+		p.AdvancedOptions[string(flags.React)] = false
+		if err := p.CreateNextJSProject(projectPath); err != nil {
+			return fmt.Errorf("failed to set up Next.js project: %w", err)
+		}
+		// tailwind is baked into the Next scaffold; skip downstream tailwind-for-htmx block
+		p.AdvancedOptions[string(flags.Tailwind)] = false
+	}
+
 	if p.AdvancedOptions[string(flags.React)] {
 		// deselect htmx option automatically since react is selected
 		p.AdvancedOptions[string(flags.Htmx)] = false
@@ -927,6 +938,100 @@ func (p *Project) CreateViteReactProject(projectPath string) error {
 
 		// set to false to not re-do in next step
 		p.AdvancedOptions[string(flags.Tailwind)] = false
+	}
+
+	return nil
+}
+
+func (p *Project) CreateNextJSProject(projectPath string) error {
+	if err := checkNpmInstalled(); err != nil {
+		return err
+	}
+
+	originalDir, err := os.Getwd()
+	if err != nil {
+		return fmt.Errorf("failed to get current directory: %w", err)
+	}
+	defer func() {
+		if err := os.Chdir(originalDir); err != nil {
+			fmt.Fprintf(os.Stderr, "failed to change back to original directory: %v\n", err)
+		}
+	}()
+
+	if err := os.Chdir(projectPath); err != nil {
+		return fmt.Errorf("failed to change into project directory: %w", err)
+	}
+
+	fmt.Println("Scaffolding Next.js app with create-next-app...")
+	cmd := exec.Command("npx", "--yes", "create-next-app@latest", "frontend",
+		"--ts",
+		"--app",
+		"--eslint",
+		"--src-dir",
+		"--tailwind",
+		"--use-npm",
+		"--import-alias", "@/*",
+		"--no-turbopack",
+	)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("failed to run create-next-app: %w", err)
+	}
+
+	frontendPath := filepath.Join(projectPath, "frontend")
+	if err := os.Chdir(frontendPath); err != nil {
+		return fmt.Errorf("failed to change to frontend directory: %w", err)
+	}
+
+	// Create global .env so we can read the backend PORT.
+	if err := p.CreateFileWithInjection("", projectPath, ".env", "env"); err != nil {
+		return fmt.Errorf("failed to create global .env file: %w", err)
+	}
+
+	backendPort := "8080"
+	if data, readErr := os.ReadFile(filepath.Join(projectPath, ".env")); readErr == nil {
+		for _, line := range strings.Split(string(data), "\n") {
+			if strings.HasPrefix(line, "PORT=") {
+				backendPort = strings.SplitN(line, "=", 2)[1]
+				break
+			}
+		}
+	}
+
+	frontendEnvContent := fmt.Sprintf("NEXT_PUBLIC_API_URL=http://localhost:%s\n", backendPort)
+	if err := os.WriteFile(filepath.Join(frontendPath, ".env.local"), []byte(frontendEnvContent), 0644); err != nil {
+		return fmt.Errorf("failed to create frontend .env.local: %w", err)
+	}
+
+	// Overwrite next.config with one that proxies /api/* to the Go backend and enables standalone output.
+	nextConfigPath := filepath.Join(frontendPath, "next.config.mjs")
+	if err := os.WriteFile(nextConfigPath, advanced.NextJSConfigFile(), 0644); err != nil {
+		return fmt.Errorf("failed to write next.config.mjs: %w", err)
+	}
+	// create-next-app may emit next.config.ts as well — remove it so .mjs wins.
+	_ = os.Remove(filepath.Join(frontendPath, "next.config.ts"))
+
+	// Initialize shadcn/ui with defaults and add baseline components.
+	fmt.Println("Initializing shadcn/ui...")
+	initCmd := exec.Command("npx", "--yes", "shadcn@latest", "init", "-d", "-y")
+	initCmd.Stdout = os.Stdout
+	initCmd.Stderr = os.Stderr
+	if err := initCmd.Run(); err != nil {
+		return fmt.Errorf("failed to init shadcn/ui: %w", err)
+	}
+
+	addCmd := exec.Command("npx", "--yes", "shadcn@latest", "add", "button", "card", "-y")
+	addCmd.Stdout = os.Stdout
+	addCmd.Stderr = os.Stderr
+	if err := addCmd.Run(); err != nil {
+		return fmt.Errorf("failed to add shadcn components: %w", err)
+	}
+
+	// Overwrite the starter page with one that uses our shadcn Button + Card and fetches from Go.
+	pagePath := filepath.Join(frontendPath, "src", "app", "page.tsx")
+	if err := os.WriteFile(pagePath, advanced.NextJSPageFile(), 0644); err != nil {
+		return fmt.Errorf("failed to write page.tsx template: %w", err)
 	}
 
 	return nil

@@ -44,3 +44,23 @@ COPY --from=frontend_builder /frontend/dist /app/dist
 EXPOSE 5173
 CMD ["serve", "-s", "/app/dist", "-l", "5173"]
 {{- end}}
+
+{{ if .AdvancedOptions.nextjs}}
+FROM node:20 AS frontend_builder
+WORKDIR /frontend
+
+COPY frontend/package*.json ./
+RUN npm ci
+COPY frontend/. .
+RUN npm run build
+
+FROM node:20-slim AS frontend
+WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=3000
+COPY --from=frontend_builder /frontend/.next/standalone ./
+COPY --from=frontend_builder /frontend/.next/static ./.next/static
+COPY --from=frontend_builder /frontend/public ./public
+EXPOSE 3000
+CMD ["node", "server.js"]
+{{- end}}
