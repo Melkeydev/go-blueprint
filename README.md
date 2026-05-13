@@ -137,6 +137,7 @@ You can now use the `--advanced` flag when running the `create` command to get a
 - [Tailwind](https://tailwindcss.com/) css framework
 - Docker configuration for go project
 - [React](https://react.dev/) frontend written in TypeScript, including an example fetch request to the backend
+- Swagger UI and API documentation using [Swaggo](https://github.com/swaggo/swag)
 
 Note: Selecting Tailwind option will automatically select HTMX unless React is explicitly selected
 
@@ -214,10 +215,16 @@ React:
 go-blueprint create --advanced --feature react
 ```
 
+Swagger:
+
+```bash
+go-blueprint create --advanced --feature swagger
+```
+
 Or all features at once:
 
 ```bash
-go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --feature docker --git commit --feature react
+go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --feature docker --feature swagger --git commit --feature react
 ```
 
 <p align="center">

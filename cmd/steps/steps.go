@@ -126,6 +126,11 @@ func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps 
 						Title: "Docker",
 						Desc:  "Dockerfile and docker-compose generic configuration for go project",
 					},
+					{
+						Flag:  "Swagger",
+						Title: "Swagger",
+						Desc:  "Add Swagger UI and generated API documentation using Swaggo",
+					},
 				},
 			},
 			"git": {

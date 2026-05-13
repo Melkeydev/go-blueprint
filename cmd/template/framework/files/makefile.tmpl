@@ -103,6 +103,12 @@ itest:
 	@go test ./internal/database -v
 {{- end }}
 
+{{- if .AdvancedOptions.swagger }}
+# Generate Swagger documentation
+swagger:
+	@go run github.com/swaggo/swag/cmd/swag@latest init -g cmd/api/main.go --parseInternal
+{{- end }}
+
 # Clean the binary
 clean:
 	@echo "Cleaning..."
@@ -138,4 +144,4 @@ watch:
 	}"
 {{- end }}
 
-.PHONY: all build run test clean watch{{- if and (not .AdvancedOptions.react) .AdvancedOptions.tailwind }} tailwind-install{{- end }}{{- if and (ne .DBDriver "none") (ne .DBDriver "sqlite") }} docker-run docker-down itest{{- end }}{{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }} templ-install{{- end }}
+.PHONY: all build run test clean watch{{- if .AdvancedOptions.swagger }} swagger{{- end }}{{- if and (not .AdvancedOptions.react) .AdvancedOptions.tailwind }} tailwind-install{{- end }}{{- if and (ne .DBDriver "none") (ne .DBDriver "sqlite") }} docker-run docker-down itest{{- end }}{{- if and (or .AdvancedOptions.htmx .AdvancedOptions.tailwind) (not .AdvancedOptions.react) }} templ-install{{- end }}

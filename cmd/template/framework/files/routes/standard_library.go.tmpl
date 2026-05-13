@@ -48,6 +48,13 @@ func (s *Server) corsMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+// HelloWorldHandler returns a hello world response.
+// @Summary Hello world
+// @Description Returns a hello world message.
+// @Tags server
+// @Produce json
+// @Success 200 {object} map[string]string
+// @Router / [get]
 func (s *Server) HelloWorldHandler(w http.ResponseWriter, r *http.Request) {
 	resp := map[string]string{"message": "Hello World"}
 	jsonResp, err := json.Marshal(resp)
@@ -62,6 +69,13 @@ func (s *Server) HelloWorldHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 {{if ne .DBDriver "none"}}
+// healthHandler returns database health information.
+// @Summary Database health
+// @Description Returns database connection health and pool statistics.
+// @Tags health
+// @Produce json
+// @Success 200 {object} map[string]string
+// @Router /health [get]
 func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
 	resp, err := json.Marshal(s.db.Health())
 	if err != nil {
@@ -97,4 +111,3 @@ func (s *Server) websocketHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 {{end}}
-

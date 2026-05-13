@@ -48,3 +48,11 @@ func (f FiberTemplates) HtmxTemplRoutes() []byte {
 func (f FiberTemplates) WebsocketImports() []byte {
 	return advanced.FiberWebsocketTemplImportsTemplate()
 }
+
+func (f FiberTemplates) SwaggerRoutes() []byte {
+	return advanced.FiberSwaggerRoutesTemplate()
+}
+
+func (f FiberTemplates) SwaggerImports() []byte {
+	return advanced.FiberSwaggerImportsTemplate()
+}

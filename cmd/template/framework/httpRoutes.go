@@ -46,3 +46,11 @@ func (s StandardLibTemplate) HtmxTemplRoutes() []byte {
 func (s StandardLibTemplate) WebsocketImports() []byte {
 	return advanced.StdLibWebsocketTemplImportsTemplate()
 }
+
+func (s StandardLibTemplate) SwaggerRoutes() []byte {
+	return advanced.StdLibSwaggerRoutesTemplate()
+}
+
+func (s StandardLibTemplate) SwaggerImports() []byte {
+	return advanced.StdLibSwaggerImportsTemplate()
+}

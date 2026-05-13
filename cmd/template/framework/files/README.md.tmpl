@@ -50,6 +50,18 @@ Run the test suite:
 make test
 ```
 
+{{- if .AdvancedOptions.swagger }}
+Generate Swagger documentation:
+```bash
+make swagger
+```
+
+Swagger UI is available at:
+```bash
+http://localhost:8080/swagger/index.html
+```
+{{- end }}
+
 Clean up binary from the last build:
 ```bash
 make clean

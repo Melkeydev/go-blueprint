@@ -73,6 +73,8 @@ type Templater interface {
 	HtmxTemplRoutes() []byte
 	HtmxTemplImports() []byte
 	WebsocketImports() []byte
+	SwaggerRoutes() []byte
+	SwaggerImports() []byte
 }
 
 type DBDriverTemplater interface {
@@ -109,6 +111,11 @@ var (
 
 	godotenvPackage = []string{"github.com/joho/godotenv"}
 	templPackage    = []string{"github.com/a-h/templ"}
+	swagPackage     = []string{"github.com/swaggo/swag/cmd/swag@latest"}
+	ginSwagger      = []string{"github.com/swaggo/files", "github.com/swaggo/gin-swagger"}
+	echoSwagger     = []string{"github.com/swaggo/echo-swagger"}
+	fiberSwagger    = []string{"github.com/swaggo/fiber-swagger"}
+	httpSwagger     = []string{"github.com/swaggo/http-swagger/v2"}
 )
 
 const (
@@ -597,6 +604,12 @@ func (p *Project) CreateMainFile() error {
 		p.CreateWebsocketImports(projectPath)
 	}
 
+	if p.AdvancedOptions[string(flags.Swagger)] {
+		if err := p.CreateSwaggerTemplates(projectPath); err != nil {
+			return err
+		}
+	}
+
 	if p.AdvancedOptions[string(flags.Docker)] {
 		Dockerfile, err := os.Create(filepath.Join(projectPath, "Dockerfile"))
 		if err != nil {
@@ -649,6 +662,12 @@ func (p *Project) CreateMainFile() error {
 	if err != nil {
 		log.Printf("Error injecting .env file: %v", err)
 		return err
+	}
+
+	if p.AdvancedOptions[string(flags.Swagger)] {
+		if err := p.GenerateSwaggerDocs(projectPath); err != nil {
+			return err
+		}
 	}
 
 	// Create gitignore
@@ -989,6 +1008,58 @@ func (p *Project) CreateWebsocketImports(appDir string) {
 	}
 	newImports := strings.Join([]string{string(p.AdvancedTemplates.TemplateImports), importBuffer.String()}, "\n")
 	p.AdvancedTemplates.TemplateImports = newImports
+}
+
+func (p *Project) CreateSwaggerTemplates(appDir string) error {
+	if err := utils.GoGetPackage(appDir, p.swaggerPackages()); err != nil {
+		return fmt.Errorf("could not install swagger dependency: %w", err)
+	}
+
+	routesPlaceHolder := string(p.FrameworkMap[p.ProjectType].templater.SwaggerRoutes())
+	importsPlaceHolder := string(p.FrameworkMap[p.ProjectType].templater.SwaggerImports())
+
+	routeTmpl, err := template.New("swagger-routes").Parse(routesPlaceHolder)
+	if err != nil {
+		return err
+	}
+	importTmpl, err := template.New("swagger-imports").Parse(importsPlaceHolder)
+	if err != nil {
+		return err
+	}
+
+	var routeBuffer bytes.Buffer
+	var importBuffer bytes.Buffer
+	if err := routeTmpl.Execute(&routeBuffer, p); err != nil {
+		return err
+	}
+	if err := importTmpl.Execute(&importBuffer, p); err != nil {
+		return err
+	}
+
+	p.AdvancedTemplates.TemplateRoutes = strings.Join([]string{p.AdvancedTemplates.TemplateRoutes, routeBuffer.String()}, "\n")
+	p.AdvancedTemplates.TemplateImports = strings.Join([]string{p.AdvancedTemplates.TemplateImports, importBuffer.String()}, "\n")
+	return nil
+}
+
+func (p *Project) GenerateSwaggerDocs(appDir string) error {
+	if err := utils.ExecuteCmd("go", []string{"run", swagPackage[0], "init", "-g", "cmd/api/main.go", "--parseInternal"}, appDir); err != nil {
+		return fmt.Errorf("could not generate swagger docs: %w", err)
+	}
+
+	return nil
+}
+
+func (p *Project) swaggerPackages() []string {
+	switch p.ProjectType {
+	case flags.Gin:
+		return ginSwagger
+	case flags.Echo:
+		return echoSwagger
+	case flags.Fiber:
+		return fiberSwagger
+	default:
+		return httpSwagger
+	}
 }
 
 func checkNpmInstalled() error {
