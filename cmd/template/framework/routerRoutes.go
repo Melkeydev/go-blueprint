@@ -42,3 +42,11 @@ func (r RouterTemplates) HtmxTemplRoutes() []byte {
 func (r RouterTemplates) WebsocketImports() []byte {
 	return advanced.StdLibWebsocketTemplImportsTemplate()
 }
+
+func (r RouterTemplates) SwaggerRoutes() []byte {
+	return advanced.HttpRouterSwaggerRoutesTemplate()
+}
+
+func (r RouterTemplates) SwaggerImports() []byte {
+	return advanced.StdLibSwaggerImportsTemplate()
+}

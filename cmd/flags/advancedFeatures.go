@@ -14,9 +14,10 @@ const (
 	Tailwind          string = "tailwind"
 	React             string = "react"
 	Docker            string = "docker"
+	Swagger           string = "swagger"
 )
 
-var AllowedAdvancedFeatures = []string{string(React), string(Htmx), string(GoProjectWorkflow), string(Websocket), string(Tailwind), string(Docker)}
+var AllowedAdvancedFeatures = []string{string(React), string(Htmx), string(GoProjectWorkflow), string(Websocket), string(Tailwind), string(Docker), string(Swagger)}
 
 func (f AdvancedFeatures) String() string {
 	return strings.Join(f, ",")

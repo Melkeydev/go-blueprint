@@ -42,3 +42,11 @@ func (e EchoTemplates) HtmxTemplRoutes() []byte {
 func (e EchoTemplates) WebsocketImports() []byte {
 	return advanced.StdLibWebsocketTemplImportsTemplate()
 }
+
+func (e EchoTemplates) SwaggerRoutes() []byte {
+	return advanced.EchoSwaggerRoutesTemplate()
+}
+
+func (e EchoTemplates) SwaggerImports() []byte {
+	return advanced.EchoSwaggerImportsTemplate()
+}

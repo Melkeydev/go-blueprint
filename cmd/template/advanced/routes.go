@@ -79,6 +79,39 @@ var fiberHtmxTemplImports []byte
 //go:embed files/websocket/imports/fiber.tmpl
 var fiberWebsocketTemplImports []byte
 
+//go:embed files/swagger/imports/standard_library.tmpl
+var stdLibSwaggerImports []byte
+
+//go:embed files/swagger/imports/gin.tmpl
+var ginSwaggerImports []byte
+
+//go:embed files/swagger/imports/echo.tmpl
+var echoSwaggerImports []byte
+
+//go:embed files/swagger/imports/fiber.tmpl
+var fiberSwaggerImports []byte
+
+//go:embed files/swagger/routes/standard_library.tmpl
+var stdLibSwaggerRoutes []byte
+
+//go:embed files/swagger/routes/chi.tmpl
+var chiSwaggerRoutes []byte
+
+//go:embed files/swagger/routes/gorilla.tmpl
+var gorillaSwaggerRoutes []byte
+
+//go:embed files/swagger/routes/http_router.tmpl
+var httpRouterSwaggerRoutes []byte
+
+//go:embed files/swagger/routes/gin.tmpl
+var ginSwaggerRoutes []byte
+
+//go:embed files/swagger/routes/echo.tmpl
+var echoSwaggerRoutes []byte
+
+//go:embed files/swagger/routes/fiber.tmpl
+var fiberSwaggerRoutes []byte
+
 func EchoHtmxTemplRoutesTemplate() []byte {
 	return echoHtmxTemplRoutes
 }
@@ -177,4 +210,48 @@ func FiberWebsocketTemplImportsTemplate() []byte {
 
 func GinHtmxTemplImportsTemplate() []byte {
 	return ginHtmxTemplImports
+}
+
+func StdLibSwaggerImportsTemplate() []byte {
+	return stdLibSwaggerImports
+}
+
+func GinSwaggerImportsTemplate() []byte {
+	return ginSwaggerImports
+}
+
+func EchoSwaggerImportsTemplate() []byte {
+	return echoSwaggerImports
+}
+
+func FiberSwaggerImportsTemplate() []byte {
+	return fiberSwaggerImports
+}
+
+func StdLibSwaggerRoutesTemplate() []byte {
+	return stdLibSwaggerRoutes
+}
+
+func ChiSwaggerRoutesTemplate() []byte {
+	return chiSwaggerRoutes
+}
+
+func GorillaSwaggerRoutesTemplate() []byte {
+	return gorillaSwaggerRoutes
+}
+
+func HttpRouterSwaggerRoutesTemplate() []byte {
+	return httpRouterSwaggerRoutes
+}
+
+func GinSwaggerRoutesTemplate() []byte {
+	return ginSwaggerRoutes
+}
+
+func EchoSwaggerRoutesTemplate() []byte {
+	return echoSwaggerRoutes
+}
+
+func FiberSwaggerRoutesTemplate() []byte {
+	return fiberSwaggerRoutes
 }

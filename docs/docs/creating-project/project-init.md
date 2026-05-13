@@ -29,7 +29,7 @@ Customize the flags according to your project requirements.
 
 ## Advanced Flag
 
-By including the `--advanced` flag, users can choose one or all of the advanced features, HTMX, GitHub Actions for CI/CD, Websocket, Docker and TailwindCSS support, during the project creation process. The flag enhances the simplicity of Blueprint while offering flexibility for users who require additional functionality.
+By including the `--advanced` flag, users can choose one or all of the advanced features, HTMX, GitHub Actions for CI/CD, Websocket, Docker, Swagger and TailwindCSS support, during the project creation process. The flag enhances the simplicity of Blueprint while offering flexibility for users who require additional functionality.
 
 ```bash
 go-blueprint create --advanced
@@ -70,7 +70,12 @@ Docker:
 go-blueprint create --advanced --feature docker
 ```
 
+Swagger:
+```bash
+go-blueprint create --advanced --feature swagger
+```
+
 Or all features at once:
 ```bash
-go-blueprint create --name my-project --framework chi --driver mysql --git commit --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --feature docker
+go-blueprint create --name my-project --framework chi --driver mysql --git commit --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --feature docker --feature swagger
 ```

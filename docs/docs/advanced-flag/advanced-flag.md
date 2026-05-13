@@ -20,6 +20,9 @@ Docker configuration for go project.
 - **React:**
 Frontend written in TypeScript, including an example fetch request to the backend.
 
+- **Swagger:**
+Adds Swagger UI and API documentation using Swaggo.
+
 
 To utilize the `--advanced` flag, use the following command:
 
@@ -37,5 +40,5 @@ go-blueprint create --name my-project --framework chi --driver mysql --advanced
 Non-Interactive Setup is also possible:
 
 ```bash
-go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind
+go-blueprint create --name my-project --framework chi --driver mysql --advanced --feature htmx --feature githubaction --feature websocket --feature tailwind --feature swagger
 ```
