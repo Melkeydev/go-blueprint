@@ -95,6 +95,7 @@ See `go-blueprint create -h` for all the options and shorthands.
 - [HttpRouter](https://github.com/julienschmidt/httprouter)
 - [Gorilla/mux](https://github.com/gorilla/mux)
 - [Echo](https://github.com/labstack/echo)
+- [Huma](https://github.com/danielgtaylor/huma) (built on Chi, with OpenAPI 3.1 docs and request/response validation)
 
 <a id="database-support"></a>
 

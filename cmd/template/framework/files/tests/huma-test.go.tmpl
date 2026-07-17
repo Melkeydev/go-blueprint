@@ -1,0 +1,40 @@
+package server
+
+import (
+	"encoding/json"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+)
+
+func TestHelloWorldHandler(t *testing.T) {
+	s := &Server{}
+	server := httptest.NewServer(s.RegisterRoutes())
+	defer server.Close()
+
+	resp, err := http.Get(server.URL + "/")
+	if err != nil {
+		t.Fatalf("error making request to server. Err: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("expected status OK; got %v", resp.Status)
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatalf("error reading response body. Err: %v", err)
+	}
+
+	var result map[string]string
+	if err := json.Unmarshal(body, &result); err != nil {
+		t.Fatalf("error unmarshalling response body. Err: %v", err)
+	}
+
+	expected := "Hello World"
+	if result["message"] != expected {
+		t.Errorf("expected message to be %v; got %v", expected, result["message"])
+	}
+}
